@@ -20,9 +20,9 @@ pipeline {
             steps {
                 echo "Stage second Test"
                script{
-              // bat """docker run -v="${WORKSPACE}\\Project-1-readyapi-project":/project -v="${WORKSPACE}\\Project-1-readyapi-project\\Reports":/reports -v="C:\\Program Files\\SmartBear\\ReadyAPI-3.3.0\\bin\\ext":/ext -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/project/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
-                   //sh "./run-test.sh"
-                  bat "sh ${WORKSPACE}\\run-test.sh"
+              // bat """docker run -v="${WORKSPACE}\\FraudPayments":/project -v="${WORKSPACE}\\FraudPayments\\Reports":/reports -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/FraudPayments/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
+                sh "./run-tests.sh"
+                 
                }
             }
         }

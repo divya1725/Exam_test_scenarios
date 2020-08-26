@@ -44,7 +44,7 @@ pipeline {
           publishHTML (target : [allowMissing: false,
                        alwaysLinkToLastBuild: true,
                        keepAll: true,
-                       reportDir: 'reports/FraudPayment',
+                       reportDir: 'FraudPayments/reports/FraudPayment/',
                        reportFiles: 'index.html',
                        reportName: 'HTML Report',
                        reportTitles: 'The Report']

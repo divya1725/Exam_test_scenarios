@@ -41,4 +41,32 @@ pipeline {
             }
         }
     }
+  
+   post {
+        always {
+            script {
+                sh "echo 'done'"
+            }
+        }
+        success {
+            script {
+                slackSend(
+                    channel: "#regressiontestresults",
+                    color: 'good',
+                    message: "${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+
+                )
+            }
+        }
+        failure {
+            script {
+                slackSend(
+                    channel: "#regressiontestresults",
+                    color: 'bad',
+                    message: "${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+
+                )
+            }
+        }        
+    }
 }

@@ -4,6 +4,12 @@ pipeline {
     }
         
     parameters {
+	
+		choice(
+            name: 'ReadyAPIProject',
+            choices: ['FraudPayments', 'InspectionLogging', 'PreDefined-Creditor'],          
+            description: 'Select a project to run'
+        )
         choice(
             name: 'Environments',
             choices: ['G-D4', 'G-S1', 'G-D2', 'G-D5'],          
@@ -11,7 +17,7 @@ pipeline {
         )
        choice(
             name: 'suite',
-            choices: ['FraudPayment', 'NO_ASB_SECANA_CALL', 'ASB_ACCEPTED', 'ASB_CHALLENGE'],          
+            choices: ['FraudPayment', 'Bank User Inspection Logging', 'PreDefinedCreditor', 'PreDefinedCreditor_V1.1'],          
             description: 'Test suites to run'
         )
     }
@@ -30,14 +36,12 @@ pipeline {
                script{
               		// bat """docker run -v="${WORKSPACE}\\FraudPayments":/project -v="${WORKSPACE}\\FraudPayments\\Reports":/reports -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/FraudPayments/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
               	   // sh "./run-tests.sh"
-                    sh """docker run -v="${WORKSPACE}/FraudPayments":/project -v="${WORKSPACE}/FraudPayments/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports%/ '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' '-s${params.suite}'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
-                 
-                 
+                    sh """docker run -v="${WORKSPACE}/${params.ReadyAPIProject}":/project -v="${WORKSPACE}/${params.ReadyAPIProject}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/project/' '-s${params.suite}'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                  
                }
             }
         }
-        
+
     }
   post {
         always {           
@@ -56,7 +60,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
-                    message: "${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
             }
@@ -66,7 +70,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'bad',
-                    message: "${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
             }
@@ -74,3 +78,4 @@ pipeline {
     }
    
 }
+

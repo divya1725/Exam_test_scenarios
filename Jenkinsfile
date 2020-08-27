@@ -49,7 +49,7 @@ pipeline {
           publishHTML (target : [allowMissing: false,
                        alwaysLinkToLastBuild: true,
                        keepAll: true,
-                       reportDir: 'FraudPayments/reports',
+                       reportDir: "${params.ReadyAPIProject}/reports",
                        reportFiles: 'index.html',
                        reportName: 'HTML Report',
                        reportTitles: 'The Report']
@@ -57,22 +57,24 @@ pipeline {
         }
         success {
             script {
-                slackSend(
-                    channel: "#regressiontestresults",
-                    color: 'good',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+              echo "Job success"
+                //slackSend(
+                  //  channel: "#regressiontestresults",
+                    //color: 'good',
+                    //message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
-                )
+                //)
             }
         }
         failure {
             script {
-                slackSend(
-                    channel: "#regressiontestresults",
-                    color: 'bad',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+              echo "Job failure!!"
+               // slackSend(
+                 //   channel: "#regressiontestresults",
+                 //   color: 'bad',
+                 //   message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
-                )
+               // )
             }
         }        
     }

@@ -49,7 +49,7 @@ pipeline {
           publishHTML (target : [allowMissing: false,
                        alwaysLinkToLastBuild: true,
                        keepAll: true,
-                       reportDir: '${params.ReadyAPIProject}/reports',
+                       reportDir: "${params.ReadyAPIProject}/reports",
                        reportFiles: 'index.html',
                        reportName: 'HTML Report',
                        reportTitles: 'The Report']

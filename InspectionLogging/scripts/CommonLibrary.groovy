@@ -1,5 +1,3 @@
-package fileName
-
 import java.util.*;
 import java.text.SimpleDateFormat;
 

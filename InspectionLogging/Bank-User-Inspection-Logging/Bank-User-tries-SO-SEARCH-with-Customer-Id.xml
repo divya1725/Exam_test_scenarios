@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1116</con:value>
+          <con:value>1252</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*32338717708.*42010305386.*EVRY.*PCL.*e212927.*standingOrderSearch.*(1115|1116|1117|1118).*list/read standing order' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*32338717708.*42010305386.*EVRY.*PCL.*e212927.*standingOrderSearch.*(1251|1252|1253|1254).*list/read standing order' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>32338717708</CustomerID><AccountID>42010305386</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20200828111630</DateTime><Description>list/read standing order</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>32338717708</CustomerID><AccountID>42010305386</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20200828125221</DateTime><Description>list/read standing order</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -525,13 +525,14 @@ def serviceFunction = context.expand( '${Properties#serviceFunction}' )
 def serviceDescription = context.expand( '${Properties#serviceDescription}' )
 def inspectionSource = context.expand( '${Properties#InspectionSource}' )
 def inspectionSystem = context.expand( '${Properties#InspectionSystem}' )
-
 def logRef = context.expand( '${Properties#LogRef}' )
+
+try{System.sleep(200)}catch(Exception ex){}
+def nextTime = CommonLibrary.getNextTime(logRef)
+try{System.sleep(200)}catch(Exception ex){}
+
 def accountNumberTemp = context.expand( '${StandingOrderSearch_V_2_0#Response#declare namespace ns4=\'urn:srv.stord.fs.evry.com:domain:debtor:v2_0\'; declare namespace ns6=\'urn:srv.stord.fs.evry.com:ws:standingorder:v2_0\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:srv.stord.fs.evry.com:domain:standingorder:v2_0\'; //ns6:standingOrderSearchResponse[1]/ns6:standingOrders[1]/ns2:paymentInfo[1]/ns4:debtorAccount[1]/ns3:identification[1]}' )
 if (accountNumberTemp == "") accountNumber =""
-
-def nextTime = CommonLibrary.getNextTime(logRef)
-//${nextTime}
 
 def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString

@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>01010077571</con:value>
+          <con:value>32338717708</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,11 +79,11 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42125748338</con:value>
+          <con:value>42010305386</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
-          <con:value>NOK</con:value>
+          <con:value>USD</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorAgent</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>134480</con:value>
+          <con:value>167320</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>173527</con:value>
+          <con:value>207342</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>149002</con:value>
+          <con:value>183031</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>173527</con:value>
+          <con:value>207342</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1123</con:value>
+          <con:value>1116</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*01010077571.*42125748338.*EVRY.*PCL.*e212927.*standingOrderSearch.*(1122|1123|1124|1125).*list/read standing order' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*32338717708.*42010305386.*EVRY.*PCL.*e212927.*standingOrderSearch.*(1115|1116|1117|1118).*list/read standing order' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID>42125748338</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20200720112300</DateTime><Description>list/read standing order</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>32338717708</CustomerID><AccountID>42010305386</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20200828111630</DateTime><Description>list/read standing order</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -155,7 +155,7 @@
         </con:property>
         <con:property>
           <con:name>SOAgreementID</con:name>
-          <con:value>7290</con:value>
+          <con:value>8306</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -458,7 +458,7 @@ and C.INITIATORBANKID = '4201'  order by C.TRANSACTIONSID  desc fetch first row 
                <!--Optional:-->
                
                <!--Optional:-->
-               <urn1:customerId>${Properties#customerid}</urn1:customerId><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:customerId>${Properties#customerid}</urn1:customerId><urn1:standingOrderType>PERIODIC</urn1:standingOrderType><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
                <!--Optional:-->
                <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
             </urn:searchCriteria>
@@ -527,7 +527,8 @@ def inspectionSource = context.expand( '${Properties#InspectionSource}' )
 def inspectionSystem = context.expand( '${Properties#InspectionSystem}' )
 
 def logRef = context.expand( '${Properties#LogRef}' )
-
+def accountNumberTemp = context.expand( '${StandingOrderSearch_V_2_0#Response#declare namespace ns4=\'urn:srv.stord.fs.evry.com:domain:debtor:v2_0\'; declare namespace ns6=\'urn:srv.stord.fs.evry.com:ws:standingorder:v2_0\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:srv.stord.fs.evry.com:domain:standingorder:v2_0\'; //ns6:standingOrderSearchResponse[1]/ns6:standingOrders[1]/ns2:paymentInfo[1]/ns4:debtorAccount[1]/ns3:identification[1]}' )
+if (accountNumberTemp == "") accountNumber =""
 
 def nextTime = CommonLibrary.getNextTime(logRef)
 //${nextTime}

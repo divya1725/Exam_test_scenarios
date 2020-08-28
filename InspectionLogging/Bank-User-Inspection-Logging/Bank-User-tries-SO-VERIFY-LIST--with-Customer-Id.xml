@@ -15,7 +15,7 @@
         </con:property>
         <con:property>
           <con:name>UserID</con:name>
-          <con:value>TESTUSERPI27</con:value>
+          <con:value>TESTUSERPI26</con:value>
         </con:property>
         <con:property>
           <con:name>credentials</con:name>
@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>01010002474</con:value>
+          <con:value>996351661</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42124633502</con:value>
+          <con:value>42120904315</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1123</con:value>
+          <con:value>1118</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*01010002474.*42124633502.*EVRY.*PCL.*TESTUSERPI27.*standingOrderVerifySearch.*(1122|1123|1124|1125).*list/read standing order verify search' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*996351661.*42120904315.*EVRY.*PCL.*TESTUSERPI26.*standingOrderVerifySearch.*(1117|1118|1119|1120).*list/read standing order verify search' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010002474</CustomerID><AccountID>42124633502</AccountID><Source>EVRY</Source><System>PCL</System><UserID>TESTUSERPI27</UserID><Function>standingOrderVerifySearch</Function><DateTime>20200720112310</DateTime><Description>list/read standing order verify search</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>996351661</CustomerID><AccountID>42120904315</AccountID><Source>EVRY</Source><System>PCL</System><UserID>TESTUSERPI26</UserID><Function>standingOrderVerifySearch</Function><DateTime>20200828111844</DateTime><Description>list/read standing order verify search</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -155,7 +155,7 @@
         </con:property>
         <con:property>
           <con:name>SOAgreementId</con:name>
-          <con:value>7334</con:value>
+          <con:value>8151</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -208,7 +208,7 @@
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="Authorization" id="e90af45e-ad9a-4c22-bffd-b19821106392">
+  <con:testStep type="request" name="Authorization" id="e90af45e-ad9a-4c22-bffd-b19821106392" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
@@ -476,8 +476,10 @@ def serviceFunction = context.expand( '${Properties#serviceFunction}' )
 def serviceDescription = context.expand( '${Properties#serviceDescription}' )
 def inspectionSource = context.expand( '${Properties#InspectionSource}' )
 def inspectionSystem = context.expand( '${Properties#InspectionSystem}' )
-
+def accountNumberTemp = context.expand( '${SOVerifySearch_V_2_0#Response#declare namespace ns6=\'urn:srv.stord.fs.evry.com:ws:standingorder:v2_0\'; declare namespace ns2=\'urn:srv.stord.fs.evry.com:domain:standingorder:v2_0\'; //ns6:standingOrderVerifySearchResponse[1]/ns6:standingOrders[1]/ns2:debtorAccount[1]}' )
+if (accountNumberTemp == "") accountNumber =""
 def logRef = context.expand( '${Properties#LogRef}' )
+
 
 
 def nextTime = CommonLibrary.getNextTime(logRef)

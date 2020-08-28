@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>01010002474</con:value>
+          <con:value>01014305072</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42123393613</con:value>
+          <con:value>42001871913</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>134825</con:value>
+          <con:value>167335</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>173923</con:value>
+          <con:value>207357</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>149351</con:value>
+          <con:value>183046</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>173923</con:value>
+          <con:value>207357</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1122</con:value>
+          <con:value>1120</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*01010002474.*42123393613.*EVRY.*PCL.*ET1004.*paymentReadWithReference.*(1121|1122|1123|1124).*read payment with reference' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*01014305072.*42001871913.*EVRY.*PCL.*ET1004.*paymentReadWithReference.*(1119|1120|1121|1122).*read payment with reference' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010002474</CustomerID><AccountID>42123393613</AccountID><Source>EVRY</Source><System>PCL</System><UserID>ET1004</UserID><Function>paymentReadWithReference</Function><DateTime>20200720112219</DateTime><Description>read payment with reference</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01014305072</CustomerID><AccountID>42001871913</AccountID><Source>EVRY</Source><System>PCL</System><UserID>ET1004</UserID><Function>paymentReadWithReference</Function><DateTime>20200828112014</DateTime><Description>read payment with reference</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -436,16 +436,93 @@ and C.INITIATORBANKID = '4201'  order by A.MESSAGEID  desc fetch first row only<
         <con:assertion type="Schema Compliance" id="9eb69623-b9a1-4ea2-afbd-0e9159902c76" name="Schema Compliance">
           <con:configuration/>
         </con:assertion>
-        <con:assertion type="XPath Match" id="598bda00-fc2a-4fdb-8477-2f4d1190ffad" name="Match content of [ErrorCode]">
-          <con:configuration>
-            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+        <con:assertion type="MessageContentAssertion" id="0adb0cd0-71e6-4010-a7f2-543c8f6f3e3c" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>6834</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>2</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Not authorized for vip customer</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns2:PaymentReadResponse[1]/ns3:ResponseState[1]/ns1:ErrorCode[1]/text()</path>
-            <content>0</content>
-            <allowWildcards>false</allowWildcards>
-            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
-            <ignoreComments>false</ignoreComments>
+//ns4:PaymentReadResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:PaymentReadResponse xmlns:ns10="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns9="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:creditor:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns3:ResponseState>
+            <ErrorCode>6834</ErrorCode>
+            <Severity>2</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>Not authorized for vip customer</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns3:ResponseState>
+      </ns2:PaymentReadResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -495,7 +572,8 @@ def inspectionSystem = context.expand( '${Properties#InspectionSystem}' )
 def logRef = context.expand( '${Properties#LogRef}' )
 
 def nextTime = CommonLibrary.getNextTime(logRef)
-//${nextTime}
+def accountNumberTemp = context.expand( '${PaymentRead_V_2_0#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; declare namespace ns6=\'urn:pins.payment.evry.com:domain:debtor:v2_0\'; //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentInfo[1]/ns6:debtorAccount[1]/ns5:identification[1]}' )
+if (accountNumberTemp == "") accountNumber =""
 
 def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString

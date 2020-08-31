@@ -73,7 +73,7 @@ pipeline {
                        keepAll: true,
                        reportDir: "${project}/reports",
                        reportFiles: 'index.html',
-                       reportName: '"HTML Report-${project}",
+                       reportName: "HTML Report-${project}",
                        reportTitles: 'The Report1']
                       )
                     }        

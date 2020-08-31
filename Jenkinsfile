@@ -44,6 +44,9 @@ pipeline {
 
                     sh """docker run -v="${WORKSPACE}/${params.ReadyAPIProject}":/project -v="${WORKSPACE}/${params.ReadyAPIProject}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' '-s${params.suite}'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                  
+                    sh """docker run -v="${WORKSPACE}/InspectionLogging":/InspectionLogging -v="${WORKSPACE}/InspectionLogging/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%InspectionLogging%/' '-s${params.suite}'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
+                 
+                 
                }
             }
         }
@@ -52,7 +55,9 @@ pipeline {
   post {
         always {           
           
-          publishHTML (target : [allowMissing: false,
+          script{
+            
+            publishHTML (target : [allowMissing: false,
                        alwaysLinkToLastBuild: true,
                        keepAll: true,
                        reportDir: "${params.ReadyAPIProject}/reports",
@@ -60,13 +65,27 @@ pipeline {
                        reportName: 'HTML Report',
                        reportTitles: 'The Report']
                       )
+            
+            publishHTML (target : [allowMissing: false,
+                       alwaysLinkToLastBuild: true,
+                       keepAll: true,
+                       reportDir: "InspectionLogging/reports",
+                       reportFiles: 'index.html',
+                       reportName: 'HTML Report2',
+                       reportTitles: 'The Report2']
+                      )
+            
+            
+          }
+          
+          
         }
         success {
             script {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Testing MultiProjectRun : Project:${params.ReadyAPIProject} & InspectionLogging, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
             }
@@ -76,7 +95,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'bad',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "Testing MultiProjectRun : Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
             }

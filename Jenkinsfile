@@ -69,7 +69,12 @@ pipeline {
                     message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
-              slackUploadFile channel: '#regressiontestresults', credentialId: 'slack-token', filePath: "${params.ReadyAPIProject}/reports/index.html", initialComment: 'Job atrifacts'
+              slackUploadFile(
+                channel: '#regressiontestresults',
+                credentialId: 'slack-token',
+                filePath: "${params.ReadyAPIProject}/reports/index.html",
+                initialComment: 'Job atrifacts'
+              ) 
             }
         }
         failure {
@@ -80,7 +85,12 @@ pipeline {
                     message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
-              slackUploadFile channel: '#regressiontestresults', credentialId: 'slack-token', filePath: "${params.ReadyAPIProject}/reports/index.html", initialComment: 'Job atrifacts'
+              slackUploadFile(
+                channel: '#regressiontestresults',
+                credentialId: 'slack-token',
+                filePath: "${params.ReadyAPIProject}/reports/index.html",
+                initialComment: 'Job atrifacts'
+              ) 
             }
         }  
                 

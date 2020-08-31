@@ -3,6 +3,10 @@ pipeline {
         label 'docker'
     }
           
+   triggers {
+        cron('30 05 * * 1-5')
+    }
+  
     parameters {
 	
 		choice(

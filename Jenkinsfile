@@ -46,7 +46,32 @@ pipeline {
                  
                     //sh """docker run -v="${WORKSPACE}/InspectionLogging":/InspectionLogging -v="${WORKSPACE}/InspectionLogging/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/InspectionLogging/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                  		
-                 	sh """docker run -v="${WORKSPACE}/":/project -v="${WORKSPACE}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
+                 	//sh """docker run -v="${WORKSPACE}/":/project -v="${WORKSPACE}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
+                 
+                          def allProjFolder = "${WORKSPACE}\\"
+                          File allProjFolderFiles =  new File(allProjFolder)
+                 		  def exclusionList =["ext"]
+                          if (allProjFolderFiles.exists() && allProjFolderFiles.isDirectory())
+                          {
+                             File[] listOfFiles = allProjFolderFiles.listFiles();
+                             if (listOfFiles != null)
+                             {
+                                for (File childFolder : listOfFiles )
+                                        {
+                                           if (childFolder.exists() && childFolder.isDirectory() && !exclusionList.contains(childFolder.toString()))
+                                               {
+                                                  println "Folder found " + childFolder.toString()	 + "!!!"
+                                                 def projectName = childFolder.toString()
+                                                 sh """docker run -v="${WORKSPACE}/${projectName}":/project -v="${WORKSPACE}/${projectName}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
+                                               }
+                                        }
+
+                              }
+                          }
+                          else
+                          {
+                               println sourceFolder + "  Folder does not exists"
+                          }
                  
                  
                }

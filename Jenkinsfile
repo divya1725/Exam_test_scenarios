@@ -53,17 +53,9 @@ pipeline {
   post {
         always {           
           
-          script{             
-                sh """
-                      for ${project} in */ ; do
-                        echo " Outside foldeer ${project}"
-                          if [ "${project}" != "ext/" ]
-                          then
-                              echo "run Composite Project ${project}"
-                               
-                           fi
-                      done  
-                """
+          script{          
+            	sh 'chmod +x ./publish-HTML.sh'
+                sh "./publish-HTML.sh"
             
           }
 

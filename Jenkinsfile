@@ -44,7 +44,7 @@ pipeline {
                 echo "Stage second Test"
                script{
                      sh 'chmod +x ./run-tests.sh'
-                     sh "./run-tests.sh ${params.Environments}" 
+                    // sh "./run-tests.sh ${params.Environments}" 
                }
             }
         }
@@ -56,18 +56,11 @@ pipeline {
           script{             
                 sh """
                       for project in */ ; do
-                        echo " Outside foldeer $project"
-                          if [ "$project" != "ext/" ]
+                        echo " Outside foldeer ${project}"
+                          if [ "${project}" != "ext/" ]
                           then
-                              echo "run Composite Project $project"
-                               publishHTML (target : [allowMissing: false,
-                                   alwaysLinkToLastBuild: true,
-                                   keepAll: true,
-                                   reportDir: "$project/reports",
-                                   reportFiles: "*.html",
-                                   reportName: "HTML Report-$project",
-                                   reportTitles: 'The Report1']
-                                  )
+                              echo "run Composite Project ${project}"
+                               
                            fi
                       done  
                 """

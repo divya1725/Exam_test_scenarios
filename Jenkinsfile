@@ -54,8 +54,25 @@ pipeline {
         always {           
           
           script{          
-            	sh 'chmod +x ./publish-HTML.sh'
-                sh "./publish-HTML.sh"
+            	//sh 'chmod +x ./publish-HTML.sh'
+                //sh "./publish-HTML.sh"
+            
+            sh'''#!/bin/bash
+            	for project in */ ; do
+                  echo " Outside foldeer $project"
+                    if [ "$project" != "ext/" ]
+                    then
+                        echo "run Composite Project $project"
+                         publishHTML (target : [allowMissing: false,
+                             alwaysLinkToLastBuild: true,
+                             keepAll: true,
+                             reportDir: "$project/reports",
+                             reportFiles: "*.html",
+                             reportName: "HTML Report-$project",
+                             reportTitles: 'The Report1']
+                            )
+                     fi
+              done '''
             
           }
 

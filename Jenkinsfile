@@ -1,5 +1,4 @@
 #!groovy
-#!/bin/bash
 //def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
 def projectList = ["FraudPayments"]  
 def failed_email_to ='ullasa.srinivasa@evry.com'

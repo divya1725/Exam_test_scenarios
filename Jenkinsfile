@@ -58,7 +58,7 @@ pipeline {
                     // bat """docker run -v="${WORKSPACE}\\${project}":/project -v="${WORKSPACE}\\${project}\\reports":/reports -v="C:\\Program Files\\SmartBear\\ReadyAPI-3.3.0\\bin\\ext":/ext -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/reports '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/project1/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                       //sh """docker run -v="${WORKSPACE}/${project}":/project -v="${WORKSPACE}/${project}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                      	sh 'chmod +x ./run-tests.sh'
-                      sh "./run-tests.sh"
+                        sh "./run-tests.sh ${project} ${params.Environments}"
                   }
                  
                }

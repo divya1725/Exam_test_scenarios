@@ -6,28 +6,13 @@ pipeline {
   triggers {
         cron('30 05 * * 1-5')
     }
+  
     parameters {
-	
-		choice(
-            name: 'ReadyAPIProject',
-            choices: ['FraudPayments', 'InspectionLogging', 'PreDefined-Creditor'],          
-            description: 'Select a project to run'
-        )
-        choice(
+	   choice(
             name: 'Environments',
             choices: ['G-D4', 'G-S1', 'G-D2', 'G-D5'],          
             description: 'Environment to run against'
-        )
-       choice(
-            name: 'suite',
-            choices: ['FraudPayment', 'Bank User Inspection Logging', 'PreDefinedCreditor', 'PreDefinedCreditor_V1.1'],          
-            description: 'Test suites to run'
-        )		
-		string(
-			name: 'TestCase', 
-			defaultValue: '', 
-			description: 'Enter a testcase to run'
-		)
+        )      
     }
 
   options {
@@ -88,10 +73,11 @@ pipeline {
         }
         success {
             script {
+              	def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
-                    message: "Testing MultiProjectRun : Project:${params.ReadyAPIProject} & InspectionLogging, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
             }
@@ -101,7 +87,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'bad',
-                    message: "Testing MultiProjectRun : Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "Testing MultiProjectRun : Projects:${projectList} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
             }

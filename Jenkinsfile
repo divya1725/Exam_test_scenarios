@@ -1,3 +1,19 @@
+#!groovy
+#def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
+def projectList = ["FraudPayments"]  
+def failed_email_to ='ullasa.srinivasa@evry.com'
+def success_email_to ='ullasa.srinivasa@evry.com'
+
+def emailNotification( email) {
+	emailext to: email,
+	from: 'noreply@qaTestResults.com',
+	mimeType: 'text/html',
+	subject: "[Build ${currentBuild.currentResult}:${env.BRANCH_NAME}] - Build ${currentBuild.displayName} on Branch",
+	body: '${JELLY_SCRIPT,template="static-analysis"}',
+	attachLog: true,
+	attachmentsPattern: '**/reports/index.html'
+} 
+
 pipeline {
     agent {
         label 'docker'
@@ -36,7 +52,7 @@ pipeline {
                  		
                  	//sh """docker run -v="${WORKSPACE}/":/project -v="${WORKSPACE}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' "  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
                  
-                 	def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]                 
+                 	
                     projectList.each{project->             
                  
                     // bat """docker run -v="${WORKSPACE}\\${project}":/project -v="${WORKSPACE}\\${project}\\reports":/reports -v="C:\\Program Files\\SmartBear\\ReadyAPI-3.3.0\\bin\\ext":/ext -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/reports '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/project1/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
@@ -52,9 +68,7 @@ pipeline {
   post {
         always {           
           
-          script{
-            
-            def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]                 
+          script{             
                     projectList.each{project-> 
                        publishHTML (target : [allowMissing: false,
                        alwaysLinkToLastBuild: true,
@@ -73,7 +87,7 @@ pipeline {
         }
         success {
             script {
-              	def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
+              emailNotification(success_email_to)
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
@@ -84,6 +98,7 @@ pipeline {
         }
         failure {
             script {
+              emailNotification(failed_email_to)
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'bad',

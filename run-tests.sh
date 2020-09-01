@@ -6,7 +6,7 @@ ENV=$1
 echo "LOCALDIR=$LOCALDIR and EnvironemntName is $ENV"
 
 # Declare an array of string with type
-declare -a projectArray=("FraudPayments","InspectionLogging","PreDefined-Creditor")
+declare -a projectArray=("FraudPayments" "InspectionLogging" "PreDefined-Creditor")
  
 # Iterate the string array using for loop
 for val in ${projectArray[@]}; do

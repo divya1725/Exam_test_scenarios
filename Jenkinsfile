@@ -75,7 +75,7 @@ pipeline {
                        alwaysLinkToLastBuild: true,
                        keepAll: true,
                        reportDir: "${project}/reports",
-                       reportFiles: 'index.html',
+                       reportFiles: "*.html",
                        reportName: "HTML Report-${project}",
                        reportTitles: 'The Report1']
                       )

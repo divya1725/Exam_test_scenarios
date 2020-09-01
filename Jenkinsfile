@@ -55,7 +55,7 @@ pipeline {
           
           script{             
                 sh """
-                      for project in */ ; do
+                      for ${project} in */ ; do
                         echo " Outside foldeer ${project}"
                           if [ "${project}" != "ext/" ]
                           then

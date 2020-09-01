@@ -1,9 +1,9 @@
 #!/bin/bash
 
 LOCALDIR=$PWD
-PROJECT="FraudPayments"
-ENV="G-D4"
-echo "LOCALDIR=$LOCALDIR"
+PROJECT=$1
+ENV=$2
+echo "LOCALDIR=$LOCALDIR and ProjectName is $PROJECT , EnvironemntName is $ENV"
 
 docker run -v="$LOCALDIR/$PROJECT":/project -v="$LOCALDIR/$PROJECT/reports":/reports -v="$LOCALDIR/ext":/ext/ \
 -e LICENSE_SERVER="fslicense.evry.com:1099" \

@@ -1,6 +1,6 @@
 #!groovy
-//def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
-def projectList = ["FraudPayments"]  
+def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
+//def projectList = ["FraudPayments"]  
 def failed_email_to ='ullasa.srinivasa@evry.com'
 def success_email_to ='ullasa.srinivasa@evry.com'
 
@@ -44,7 +44,7 @@ pipeline {
                 echo "Stage second Test"
                script{
                      sh 'chmod +x ./run-tests.sh'
-                    // sh "./run-tests.sh ${params.Environments}" 
+                     sh "./run-tests.sh ${params.Environments}" 
                }
             }
         }
@@ -56,23 +56,17 @@ pipeline {
           script{          
             	//sh 'chmod +x ./publish-HTML.sh'
                 //sh "./publish-HTML.sh"
-            
-            sh'''#!/bin/bash
-            	for project in */ ; do
-                  echo " Outside foldeer $project"
-                    if [ "$project" != "ext/" ]
-                    then
-                        echo "run Composite Project $project"
-                         publishHTML (target : [allowMissing: false,
-                             alwaysLinkToLastBuild: true,
-                             keepAll: true,
-                             reportDir: "$project/reports",
-                             reportFiles: "*.html",
-                             reportName: "HTML Report-$project",
-                             reportTitles: 'The Report1']
-                            )
-                     fi
-              done '''
+                  projectList.each{project-> 
+                       publishHTML (target : [allowMissing: false,
+                       alwaysLinkToLastBuild: true,
+                       keepAll: true,
+                       reportDir: "${project}/reports",
+                       reportFiles: "*.html",
+                       reportName: "HTML Report-${project}",
+                       reportTitles: 'The Report1']
+                      )
+                    }      
+           
             
           }
 

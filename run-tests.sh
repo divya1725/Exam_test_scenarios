@@ -10,7 +10,7 @@ declare -a projectArray=("FraudPayments","InspectionLogging","PreDefined-Credito
  
 # Iterate the string array using for loop
 for val in ${projectArray[@]}; do
-   
+  echo "values is $val"
   docker run -v="$LOCALDIR/$val":/project -v="$LOCALDIR/$val/reports":/reports -v="$LOCALDIR/ext":/ext/ \
     -e LICENSE_SERVER="fslicense.evry.com:1099" \
     -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E$ENV' '/%project%/' "  \

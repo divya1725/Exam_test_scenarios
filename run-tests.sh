@@ -13,6 +13,6 @@ for project in */ ; do
         docker run -v="$LOCALDIR/$project":/project -v="$LOCALDIR/$project/reports":/reports -v="$LOCALDIR/ext":/ext/ \
           -e LICENSE_SERVER="fslicense.evry.com:1099" \
           -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E$ENV' '/%project%/' "  \
-           fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0
+           fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest
 	fi
 done

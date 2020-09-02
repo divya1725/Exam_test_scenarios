@@ -57,7 +57,7 @@ pipeline {
                  files.each{ val->
                       def projStr = val.path
                       projStr = projStr.replace("project.content","")
-                   	  projectList = projectList.add(projStr)                     
+                   	  projectList.add(projStr)                     
                             publishHTML (target : [allowMissing: false,
                                    alwaysLinkToLastBuild: true,
                                    keepAll: true,

@@ -80,6 +80,12 @@ pipeline {
                     message: "Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
+              
+              slackUploadFile(
+                channel: '#regressiontestresults',                
+                filePath: "${params.ReadyAPIProject}/reports/index.html",
+                initialComment: 'Job atrifacts'
+              ) 
             }
         }
         failure {
@@ -91,6 +97,12 @@ pipeline {
                     message: "Testing MultiProjectRun : Projects:${projectList} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
+              
+              slackUploadFile(
+                channel: '#regressiontestresults',                
+                filePath: "${params.ReadyAPIProject}/reports/index.html",
+                initialComment: 'Job atrifacts'
+              ) 
             }
         }  
                 

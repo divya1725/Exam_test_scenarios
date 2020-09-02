@@ -33,5 +33,12 @@ class CommonLibrary {
 
 
 	}
+	public static def getDate(formart) {
+		return java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(formart))
+	}
+	
+	public static def getDate(plusDays,formart) {
+		return java.time.LocalDateTime.now().plusDays(plusDays).format(java.time.format.DateTimeFormatter.ofPattern(formart))
+	}
 	
 }

@@ -1,6 +1,5 @@
 #!groovy
-def projectList = ["FraudPayments","InspectionLogging","PreDefined-Creditor"]  
-//def projectList = ["FraudPayments"]  
+def projectList = [] 
 def failed_email_to ='ullasa.srinivasa@evry.com'
 def success_email_to ='ullasa.srinivasa@evry.com'
 
@@ -53,22 +52,24 @@ pipeline {
   post {
         always {           
           
-          script{          
-            	//sh 'chmod +x ./publish-HTML.sh'
-                //sh "./publish-HTML.sh"
-                  projectList.each{project-> 
-                       publishHTML (target : [allowMissing: false,
-                       alwaysLinkToLastBuild: true,
-                       keepAll: true,
-                       reportDir: "${project}/reports",
-                       reportFiles: "*.html",
-                       reportName: "HTML Report-${project}",
-                       reportTitles: 'The Report1']
-                      )
-                    }      
-           
-            
-          }
+           script{
+            	def files = findFiles(glob: "**/*/project.content")
+                 files.each{ val->
+                      def projStr = val.path
+                      projStr = projStr.replace("project.content","")
+                   	  projectList = projectList.add(projStr)
+                      println "project Name is ${projStr}*******************"
+                            publishHTML (target : [allowMissing: false,
+                                   alwaysLinkToLastBuild: true,
+                                   keepAll: true,
+                                   reportDir: "${projStr}reports",
+                                   reportFiles: 'index.html',
+                                   reportName: "HTML Report ${projStr}",
+                                   reportTitles: 'The Report']
+                                  )
+
+                          }
+               }
 
         }
         success {

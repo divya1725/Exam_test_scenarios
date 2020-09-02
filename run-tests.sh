@@ -11,7 +11,7 @@ for project in */ ; do
 	then
 		echo "run Composite Project $project"
         docker run -v="$LOCALDIR/$project":/project -v="$LOCALDIR/$project/reports":/reports -v="$LOCALDIR/ext":/ext/ \
-          -e LICENSE_SERVER="fslicense.evry.com:1099" \
+          -e LICENSE_SERVER="fslicense.evry.com:8443" \
           -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E$ENV' '/%project%/' "  \
            fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest
 	fi

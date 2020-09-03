@@ -14,5 +14,8 @@ for subProject in */ ; do
           -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E$ENV' '/%project%/' "  \
            fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest           
           
+          echo $?
+	      echo "Status is given above"
+      
 	fi
 done

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="a7a62bb1-1fb8-4471-b5d9-8bf90ece6451" created="3.2.7" activeEnvironment="G-D4" name="FraudPayment" updated="3.3.2" encryptionMode="Not encrypted" resourceRoot="${projectDir}" compositeProjectFormat="1.3" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\EvryJenkinsRegression\FraudPayments\scripts" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="a7a62bb1-1fb8-4471-b5d9-8bf90ece6451" created="3.2.7" activeEnvironment="G-D4" name="FraudPayment" updated="3.3.2" encryptionMode="Not encrypted" resourceRoot="${projectDir}" compositeProjectFormat="1.3" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\V3\pr-regression-valuechain\FraudPayments\scripts" xmlns:con="http://eviware.com/soapui/config">
   <con:description>Suite to execute regression test for Fraud Payments and SO Fraud scenarios</con:description>
   <con:settings>
     <con:setting id="a7a62bb1-1fb8-4471-b5d9-8bf90ece6451fileName">FraudPayments</con:setting>
@@ -60,7 +60,7 @@
   <con:beforeRunScript>def objProject = context.getProject()
 def projPath = objProject.getPath()
 objProject.setScriptLibrary(projPath + File.separator + "scripts")
-log.info "TestSuite setUp script!!"</con:beforeRunScript>
+log.info "TestSuite setUp script!! $projPath${File.separator}scripts"</con:beforeRunScript>
   <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
     <con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
 // This code is often used for adding custom authentication to SoapUI Pro tests
@@ -80,9 +80,8 @@ log.info "TestSuite setUp script!!"</con:beforeRunScript>
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
     <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
-def now = new Date()
-def time =  now.format("yyyyMMddHHmmssSSS", TimeZone.getTimeZone('UTC'))
-def date1 = now.format("yyyyMMdd", TimeZone.getTimeZone('UTC')).toString()
+def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
+def date1 = CommonLibrary.getDate('yyyyMMdd')
 
 def objProject = testRunner.getTestCase().getTestSuite().getProject()
 def projPath = objProject.getPath()

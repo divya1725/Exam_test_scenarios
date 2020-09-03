@@ -4,7 +4,7 @@ LOCALDIR=$PWD
 ENV=$1
 
 echo "LOCALDIR=$LOCALDIR and EnvironemntName is $ENV"
-
+exitCode=0
 for subProject in */ ; do
 	if [ "$subProject" != "ext/" ]
 	then
@@ -14,8 +14,14 @@ for subProject in */ ; do
           -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E$ENV' '/%project%/' "  \
            fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest           
           
-          echo $?
-	      echo "Status is given above"
+          tempCode=$?
+          echo "temoCode is $tempCode"
+	      if [ "$tempCode" -ne "0" ]; then
+              exitCode= $tempCode
+              echo "Exid code is $exitCode"
+          fi
       
 	fi
 done
+echo "Final Exit Code is $exitCode"
+exit exitCode

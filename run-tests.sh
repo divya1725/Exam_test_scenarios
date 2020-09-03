@@ -24,4 +24,4 @@ for subProject in */ ; do
 	fi
 done
 echo "Final Exit Code is $exitCode"
-exit exitCode
+exit $exitCode

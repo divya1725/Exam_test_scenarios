@@ -97,7 +97,7 @@ pipeline {
               emailNotification(failed_email_to)
                 slackSend(
                     channel: "#regressiontestresults",
-                    color: 'bad',
+                    color: 'danger',
                     message: "Testing MultiProjectRun : Projects:${projectList} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
@@ -109,7 +109,24 @@ pipeline {
               ) 
             }
         }  
-                
+        
+   		unstable {
+            script {
+              emailNotification(failed_email_to)
+                slackSend(
+                    channel: "#regressiontestresults",
+                    color: 'warning',
+                    message: "Testing MultiProjectRun : Projects:${projectList} unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+
+                )
+              
+              slackUploadFile(
+                channel: '#regressiontestresults',                
+                filePath: "${params.ReadyAPIProject}/reports/index.html",
+                initialComment: 'Job atrifacts'
+              ) 
+            }
+        } 
     }
    
 }

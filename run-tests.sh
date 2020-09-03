@@ -15,7 +15,7 @@ for subProject in */ ; do
            fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest           
           
           tempCode=$?
-          echo "temoCode is $tempCode"
+          echo "tempCode is $tempCode"
 	      if [ "$tempCode" -ne "0" ]; then
               exitCode= $tempCode
               echo "Exid code is $exitCode"

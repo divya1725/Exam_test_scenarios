@@ -53,6 +53,10 @@ pipeline {
         always {           
           
            script{
+             	println "Before Junit xml reports"
+             	junit "**/reports/*.xml"
+             	println "After Junit xml reports"
+             
             	def files = findFiles(glob: "**/*/project.content")
                  files.each{ val->
                       def projStr = val.path

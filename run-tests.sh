@@ -17,7 +17,7 @@ for subProject in */ ; do
           tempCode=$?
           echo "tempCode is $tempCode"
 	      if [ "$tempCode" -ne "0" ]; then
-              exitCode= $tempCode
+              exitCode=$tempCode
               echo "Exid code is $exitCode"
           fi
       

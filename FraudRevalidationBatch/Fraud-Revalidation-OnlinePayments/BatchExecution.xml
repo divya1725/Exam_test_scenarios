@@ -176,11 +176,13 @@ def a = testSuite.testCaseList.each{ eachTestCase ->
 			testRunner.getTestCase().getTestStepList().each{ testStep ->					
 					def testStepTemp = testStep.name
 					def resultStep = ""
-					if(testStepInclusionList.contains(testStepTemp)){
-							def stepRunner = testRunner.runTestStepByName(testStepTemp)	
-							try{System.sleep(1000)}catch(Exception e){}					
-							if(stepRunner.status.toString() != 'PASS'){								
-								resultStep = resultStep +" : Failed testStep = " + testStepTemp + " : Failed Reason" + stepRunner.getMessages().toString() + "\n "
+					if(testStepInclusionList.contains(testStepTemp)){							
+							def stepRunner = testRunner.runTestStepByName(testStepTemp)								
+							try{System.sleep(5000)}catch(Exception e){}					
+							if((stepRunner == null) || (stepRunner.status.toString() != 'PASS')){									
+								def StepErrorMessage = "failed to run step $testStepTemp"	
+								if (stepRunner != null) StepErrorMessage = stepRunner.getMessages().toString() 
+								resultStep = resultStep +" : Failed testStep = " + testStepTemp + " : Failed Reason" + StepErrorMessage + "\n "
 								resultCase = resultCase  + resultStep								
 							}
 					}					
@@ -206,7 +208,7 @@ if(resultSuite.trim() != "")
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
@@ -295,7 +297,7 @@ WHERE M.MESSAGEID = P.FK_MESSAGEID and
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>RBS_Forfall</con:dbConnectionName>
-      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
@@ -870,7 +872,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
       <con:password/>
       <con:connectionProperties/>

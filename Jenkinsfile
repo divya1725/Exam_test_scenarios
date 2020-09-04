@@ -39,8 +39,7 @@ pipeline {
     stages {
         
         stage('ReadyAPITest') { 
-            steps {
-                echo "Stage second Test"
+            steps {                
                script{
                      sh 'chmod +x ./run-tests.sh'
                      sh "./run-tests.sh ${params.Environments}" 
@@ -53,28 +52,18 @@ pipeline {
         always {           
           
            script{
-             	println "Before Junit xml reports"
-             	junit "**/reports/*.xml"
-             	println "After Junit xml reports"
-             
-            	def files = findFiles(glob: "**/*/project.content")
-                 files.each{ val->
-                      def projStr = val.path
-                      projStr = projStr.replace("project.content","")
-                   	  projectList.add(projStr)                     
-                            publishHTML (target : [allowMissing: false,
-                                   alwaysLinkToLastBuild: true,
-                                   keepAll: true,
-                                   reportDir: "${projStr}reports",
-                                   reportFiles: 'index.html',
-                                   reportName: "HTML Report ${projStr}",
-                                   reportTitles: 'The Report']
-                                  )
+             	
+                  junit "**/reports/*.xml"             	
 
-                          }
-               }
+                  def files = findFiles(glob: "**/*/project.content")
+                   files.each{ val->
+                        def projStr = val.path
+                        projStr = projStr.replace("project.content","")
+                        projectList.add(projStr)                                  
+                            }
+                }
 
-        }
+         }
         success {
             script {
               emailNotification(success_email_to)
@@ -85,11 +74,6 @@ pipeline {
 
                 )
               
-              slackUploadFile(
-                channel: '#regressiontestresults',                
-                filePath: "${params.ReadyAPIProject}/reports/index.html",
-                initialComment: 'Job atrifacts'
-              ) 
             }
         }
         failure {
@@ -102,11 +86,6 @@ pipeline {
 
                 )
               
-              slackUploadFile(
-                channel: '#regressiontestresults',                
-                filePath: "${params.ReadyAPIProject}/reports/index.html",
-                initialComment: 'Job atrifacts'
-              ) 
             }
         }  
         
@@ -120,11 +99,6 @@ pipeline {
 
                 )
               
-              slackUploadFile(
-                channel: '#regressiontestresults',                
-                filePath: "${params.ReadyAPIProject}/reports/index.html",
-                initialComment: 'Job atrifacts'
-              ) 
             }
         } 
     }

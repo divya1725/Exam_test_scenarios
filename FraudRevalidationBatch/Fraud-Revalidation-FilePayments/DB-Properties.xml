@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="c32311f1-2eef-4075-b95e-2580f4192502" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DB Properties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="c32311f1-2eef-4075-b95e-2580f4192502fileName">DB-Properties</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="RBS_DateUpdate" id="d723c91d-dbbe-400c-9e30-a6304c42152c">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>RBS</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+      <con:password>pen</con:password>
+      <con:connectionProperties/>
+      <con:query>update FRAUD_KRITERIER 
+set OPPRORADATO = '${=def now = new Date();now.format("dd-MMM-yy")}',
+    AJORADATO = '${=def now = new Date();now.format("dd-MMM-yy")}' 
+where INSTITUTION_CODE = '4201'</con:query>
+      <con:assertion type="JDBC Status" id="5e48ad20-885f-462a-a244-8efbb65912c5" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="RBS Fetch FraudCriteria" id="3e71cda1-fbb9-4a31-ae04-b3b19b997692">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>RBS</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+      <con:password>pen</con:password>
+      <con:connectionProperties/>
+      <con:query>select * from FRAUD_KRITERIER where INSTITUTION_CODE = '4201'</con:query>
+      <con:assertion type="JDBC Status" id="42b9adc8-8775-4145-8497-9e716948c518" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="DB Fetch Account" id="8321f658-a9dc-4ab8-80b5-5cb2510c5997">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select  VU.USERID as CUSTOMERID,VU.ACCOUNTNUMBER,VU.BANKORGID,VU.CURRENCYCODE 
+from v_authorisation VA, V_AUTH_USERINFO VU
+where VA.ACCOUNTNUMBER = VU.ACCOUNTNUMBER and 
+BANKORGID = '4201' and 
+length(userid)='11' and 
+markettype = 'BM' and 
+CHANNEL = 'INT'
+and ROWNUM=1</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="set_Properties" id="65b5e05a-3f2d-4a17-a4ad-082c04e3bb33">
+    <con:settings/>
+    <con:config>
+      <script>def responseAsXml = context.expand( '${RBS Fetch FraudCriteria#ResponseAsXml}' )
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils(context )
+def holder = groovyUtils.getXmlHolder (responseAsXml)
+//log.info holder.getXml()  
+def fraudKonto = holder.getNodeValues("//*:Row[KRITERIE_TYPE = 'KONTO']/KRITERIE[1]")[0]
+def fraudMelding = holder.getNodeValues("//*:Row[KRITERIE_TYPE = 'MELDING']/KRITERIE[1]")[0]
+def fraudIpAddress = holder.getNodeValues("//*:Row[KRITERIE_TYPE = 'IP_ADRESSE']/KRITERIE[1]")[0]
+def fraudIpKundenr = holder.getNodeValues("//*:Row[KRITERIE_TYPE = 'KUNDENR']/KRITERIE[1]")[0]
+def fraudMottaNavn = holder.getNodeValues("//*:Row[KRITERIE_TYPE = 'MOTTAKER_NAVN']/KRITERIE[1]")[0]
+
+testRunner.testCase.getTestSuite().setPropertyValue("fraudMessage",fraudMelding)
+testRunner.testCase.getTestSuite().setPropertyValue("fraudAccountNumber",fraudKonto)
+testRunner.testCase.getTestSuite().setPropertyValue("fraudAddress",fraudIpAddress)
+testRunner.testCase.getTestSuite().setPropertyValue("fraudCustomer",fraudIpKundenr)
+testRunner.testCase.getTestSuite().setPropertyValue("fraudName",fraudMottaNavn)
+
+def customerID = context.expand( '${DB Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+testRunner.testCase.getTestSuite().setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestSuite().setPropertyValue("accountNumber",debtorAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="DB Fetch KundnerAccNum" id="1f633710-b92f-482e-8387-3b41f97dacb5">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select  VU.ACCOUNTNUMBER from 
+v_authorisation VA, V_AUTH_USERINFO VU
+where VA.ACCOUNTNUMBER = VU.ACCOUNTNUMBER and
+VA.CUSTOMERID = '${#TestSuite#fraudCustomer}' and 
+ROWNUM=1</con:query>
+      <con:assertion type="JDBC Status" id="6e597518-87ca-46b7-85e7-3998105fca93" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="set_Properties_Kundner" id="5cef72ed-5d1e-4df7-acdb-4ed3090ee50a">
+    <con:settings/>
+    <con:config>
+      <script>def accountNumberKundner = context.expand( '${DB Fetch KundnerAccNum#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+testRunner.testCase.getTestSuite().setPropertyValue("accountNumberKundner",accountNumberKundner)</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>65b5e05a-3f2d-4a17-a4ad-082c04e3bb33</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

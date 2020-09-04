@@ -1,0 +1,1470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="57718dc5-a678-4152-a101-243ed0650d3a" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Fraud Revalidation FIlePayment MELDING" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Creates a Fraud file payment and run Fraud Revalidation batch</con:description>
+  <con:settings>
+    <con:setting id="57718dc5-a678-4152-a101-243ed0650d3afileName">Fraud-Revalidation-FIlePayment-MELDING</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="SetProperties" id="c4791f2c-5d02-46c1-85a1-d38e8ffc8712">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+log.info datetime
+
+def EndtoEndID = "fraud_"+datetime;
+log.info EndtoEndID
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("msgID",EndtoEndID );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="918913d9-2236-4f8c-a7b7-0e28667063af">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>${#TestSuite#customerid}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>${#TestSuite#accountNumber}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>dueDate</con:name>
+          <con:value>${=def now = new Date();now.format("yyyy-MM-dd")}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>msgID</con:name>
+          <con:value>fraud_30720111328</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messageToSendGeneral</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>BANKID</bankId><userId>CUSTOMERID</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>ACCOUNTID</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2016-05-04T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>TIMESTAMP</MsgId><CreDtTm>2016-05-04T00:06:27.355+02:00</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><InitgPty><Nm>Vin fjerner co.</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>600685</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>TIMESTAMP.P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2016-05-01</ReqdExctnDt><Dbtr><Id><OrgId><Othr><Id>921095899</Id></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>ACCOUNTID</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>TIMESTAMP.T4</InstrId><EndToEndId>TIMESTAMP.T4</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>NULL</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="EUR">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>CLCTGB21XXX</BICFI><Nm>SwedbankAB</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>GB</Ctry><AdrLine>Brunkerbergstorg 8</AdrLine><AdrLine>10534 Stockholm</AdrLine></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>Nerikes Telecom</Nm><PstlAdr><AdrTp>ADDR</AdrTp><TwnNm>London</TwnNm><Ctry>GB</Ctry><AdrLine>Kamrerarvagen 18</AdrLine><AdrLine>12930 Hagersten</AdrLine></PstlAdr><CtryOfRes>GB</CtryOfRes></Cdtr><CdtrAcct><Id><IBAN>GB44LOYD77911238108568</IBAN></Id></CdtrAcct><RmtInf><Ustrd>FREMITTANCEMESSAGE</Ustrd><Ustrd>Test</Ustrd><Ustrd>Test</Ustrd><Ustrd>Testchar</Ustrd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>4201</bankId><userId>16085502224</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>40680124185</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2016-05-04T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>fraud_30720111328</MsgId><CreDtTm>2016-05-04T00:06:27.355+02:00</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><InitgPty><Nm>Vin fjerner co.</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>600685</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>fraud_30720111328.P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2016-05-01</ReqdExctnDt><Dbtr><Id><OrgId><Othr><Id>921095899</Id></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>40680124185</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>fraud_30720111328.T4</InstrId><EndToEndId>fraud_30720111328.T4</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>NULL</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="EUR">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>CLCTGB21XXX</BICFI><Nm>SwedbankAB</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>GB</Ctry><AdrLine>Brunkerbergstorg 8</AdrLine><AdrLine>10534 Stockholm</AdrLine></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>Nerikes Telecom</Nm><PstlAdr><AdrTp>ADDR</AdrTp><TwnNm>London</TwnNm><Ctry>GB</Ctry><AdrLine>Kamrerarvagen 18</AdrLine><AdrLine>12930 Hagersten</AdrLine></PstlAdr><CtryOfRes>GB</CtryOfRes></Cdtr><CdtrAcct><Id><IBAN>GB44LOYD77911238108568</IBAN></Id></CdtrAcct><RmtInf><Ustrd>Transfer To China</Ustrd><Ustrd>Test</Ustrd><Ustrd>Test</Ustrd><Ustrd>Testchar</Ustrd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>fraudMessage</con:name>
+          <con:value>${#TestSuite#fraudMessage}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>transactionsIds</con:name>
+          <con:value>[185300]</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messageIds</con:name>
+          <con:value>[145939]</con:value>
+        </con:property>
+        <con:property>
+          <con:name>kriterieType</con:name>
+          <con:value>MELDING</con:value>
+        </con:property>
+        <con:property>
+          <con:name>UserID</con:name>
+          <con:value>e213476</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>INT</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel</con:name>
+          <con:value>INT</con:value>
+        </con:property>
+        <con:property>
+          <con:name>AgreementId</con:name>
+          <con:value>${#TestSuite#customerid}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>SourceApplication</con:name>
+          <con:value>EVRYINT</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePAIN001File" id="cace18c1-8d6d-44d1-8b52-87d06b5b90b4">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('msgID');
+log.info MsgID;
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#messageToSendGeneral}' )
+log.info(messageToSend)
+
+//Parmeters needed in message
+def Account = context.expand( '${Properties#accountNumber}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#dueDate}' )
+def BANKID = context.expand( '${Properties#bankId}' )
+def fraudMessage = context.expand( '${Properties#fraudMessage}' )
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("TIMESTAMP",MsgID) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
+messageToSend = messageToSend.replaceAll("FREMITTANCEMESSAGE",fraudMessage) ;
+log.info messageToSend
+//def transactionsIds = context.expand( '${Properties#transactionsIds#$[0]}' )
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushAndReceiveFilePayment" id="1bf89ee1-b3ff-4b8e-8893-156f9bb72d83">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+log.info(filecontent)
+
+//def filecontent = context.expand( '${TestCase#messagetoSend}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueuePAIN001}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#receiveQueuePAIN001}' )
+def msgId = context.expand( '${Properties#msgId}' )
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+// Receive message from MQ
+String receiveMessage = mqMessageUtils.browseMessage(mQMessageQueueRecieve,msgId);
+//Check results only if received message
+log.info msgId
+
+if (!(("No messsage").equals(receiveMessage))){
+	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+	def response = groovyUtils.getXmlHolder(receiveMessage)
+	log.info  response.getNodeValue("//*:OrgnlMsgId");
+	ArrayList&lt;String> transanctionList= response.getNodeValues("//*:AddtlInf");
+	log.info transanctionList;
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactionsIds",transanctionList.toString());
+// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+}
+// No message
+else log.info "No message received"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="3b92c36d-ea8f-477f-8930-7308afbfe1e3">
+    <con:settings/>
+    <con:config>
+      <delay>1000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS" id="8dff1c63-b31e-4e20-b7fd-7b1bbaa6abda">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  T.TRANSACTIONSID ,
+  M.MESSAGEID,
+  P.PAYMENTINFOID,
+  T.RISKSTATUS,
+  T.ENDTOENDID ,
+  T.PAYMENTTYPE,
+  T.PAYMENTSTATUS,
+  T.ISPC ,
+  T.FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS T,MESSAGE M, PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID and
+     P.PAYMENTINFOID = T.FK_PAYMENTINFOID and
+  	M.MESSAGEIDENTIFICATION = '${Properties#msgID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>175535</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>fraud_28720014117.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:xpath>
+            <con:element>RISKSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PFIP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>175535</TRANSACTIONSID>
+         <MESSAGEID>136314</MESSAGEID>
+         <PAYMENTINFOID>150937</PAYMENTINFOID>
+         <RISKSTATUS>PFIP</RISKSTATUS>
+         <ENDTOENDID>fraud_28720014117.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="setMessgaeId" id="5c703fc0-38c0-47eb-a050-1748a89eae42">
+    <con:settings/>
+    <con:config>
+      <script>def responseAsXml = context.expand( '${TRANSACTIONS#ResponseAsXml}' )
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils(context )
+def holder = groovyUtils.getXmlHolder (responseAsXml)
+log.info holder.getXml()  
+ArrayList&lt;String> messageIds = holder.getNodeValues('//*:MESSAGEID')
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messageIds",messageIds.toString());</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="UpdateMessageTable" id="fedf37fe-d0cf-4bd3-bd57-38fc8cb8b4a7">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>update MESSAGE set CREATIONDATETIME ='${=def now = new Date()-1;now.format("dd-MMM-yy")}' where messageid = '${Properties#messageIds#$[0]}'</con:query>
+      <con:assertion type="JDBC Status" id="2a61d24f-f613-4798-a6b8-d0bcb78df6f0" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="UpdateTransactionTable" id="3ee9c3ac-3558-431d-9d3b-9ef5540059e5">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>update TRANSACTIONS set LASTFRAUDCHECKDATE = '${=def now = new Date()-1;now.format("dd-MMM-yy")} 11.38.44.321863000 AM',
+  RISKSTATUS = null where TRANSACTIONSID in(${Properties#transactionsIds#$[0]})</con:query>
+      <con:assertion type="JDBC Status" id="330e20e4-8fd0-432b-b93c-12dd2b6464ac" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_AfterUpdate" id="9018639d-f749-4948-81e5-a9d3b756ad78">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  T.TRANSACTIONSID ,
+  M.MESSAGEID,
+  M.CREATIONDATETIME,
+  T.LASTFRAUDCHECKDATE,
+  P.PAYMENTINFOID,
+  T.RISKSTATUS,
+  T.ENDTOENDID ,
+  T.PAYMENTTYPE,
+  T.PAYMENTSTATUS,
+  T.ISPC ,
+  T.FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS T,MESSAGE M, PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID and
+     P.PAYMENTINFOID = T.FK_PAYMENTINFOID and
+     M.MESSAGEIDENTIFICATION = '${Properties#msgID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="d77ced51-653b-4f37-b867-7395210c3ae1" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${Properties#transactionsIds#$[0]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>136333</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREATIONDATETIME[1]</con:xpath>
+            <con:element>CREATIONDATETIME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-07-27 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTFRAUDCHECKDATE[1]</con:xpath>
+            <con:element>LASTFRAUDCHECKDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-07-27 11:38:44.321863</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTINFOID[1]</con:xpath>
+            <con:element>PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>150959</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:xpath>
+            <con:element>RISKSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>contains</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${Properties#msgID}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>175567</TRANSACTIONSID>
+         <MESSAGEID>136333</MESSAGEID>
+         <CREATIONDATETIME>2020-07-27 00:00:00</CREATIONDATETIME>
+         <LASTFRAUDCHECKDATE>2020-07-27 11:38:44.321863</LASTFRAUDCHECKDATE>
+         <PAYMENTINFOID>150959</PAYMENTINFOID>
+         <RISKSTATUS/>
+         <ENDTOENDID>fraud_28720034255.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="JDBC Status" id="9d52abdd-5ad1-4b5f-8016-b052b9eb51d8" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="fraudReValidationBatch" id="a830dfdc-a717-40f1-b3f5-474dab5f66e3" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Running the batch...."
+
+def nextDate =  new Date();
+nextDate = nextDate.format("yyyyMMdd")
+
+String shParameter = "pwhFraudRevalidationProcess.sh classpath:spring/pwh-fraud-revalidation-job-batch-context.xml pwhFraudRevalidationProcess paymentStatuses=\"RFDD,LAFU,TERE\" releaseDate=${nextDate} banksInProcess=\"4201\" 2>&amp;1"
+String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
+
+log.info "CommandOutput returned-->" + CommandOutPut
+ServerConnect.closeConnection()
+
+assert CommandOutPut.trim() != "", "CommandLine OutPut is empty!!, Executed command :" + command2</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_PostBatch" id="74cd3335-45dc-49a9-836f-e7eed4dd8b4d" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  T.TRANSACTIONSID ,
+  M.MESSAGEID,
+  P.PAYMENTINFOID,
+  T.RISKSTATUS,
+  T.ENDTOENDID ,
+  T.PAYMENTTYPE,
+  T.PAYMENTSTATUS,
+  T.ISPC ,
+  T.FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS T,MESSAGE M, PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID and
+     P.PAYMENTINFOID = T.FK_PAYMENTINFOID and
+  	M.MESSAGEIDENTIFICATION = '${Properties#msgID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>175535</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>fraud_28720014117.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:xpath>
+            <con:element>RISKSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PFIP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>175535</TRANSACTIONSID>
+         <MESSAGEID>136314</MESSAGEID>
+         <PAYMENTINFOID>150937</PAYMENTINFOID>
+         <RISKSTATUS>PFIP</RISKSTATUS>
+         <ENDTOENDID>fraud_28720014117.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="JDBC Status" id="bb1ca995-a9fc-4c37-8ee7-27d14dcc1b74" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="RBS_HistoricCheck" id="fcc5f552-cfd9-40e9-ac84-e8238a30350e" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>RBS_Forfall</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from FRAUD_HISTORIKK where KRITERIE_TYPE = '${Properties#kriterieType}' and BETALNR LIKE '%${Properties#msgID}%'</con:query>
+      <con:assertion type="JDBC Status" id="cf21fb11-b389-4357-8c9d-2b2016b7400d" name="JDBC Status"/>
+      <con:assertion type="MessageContentAssertion" id="9df966d0-a582-4f3c-be46-26e084e6670c" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTITUTION_CODE[1]</con:xpath>
+            <con:element>INSTITUTION_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KONTONR[1]</con:xpath>
+            <con:element>KONTONR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${Properties#accountNumber}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BETALNR[1]</con:xpath>
+            <con:element>BETALNR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>fraud_28720034255.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KUNDENR[1]</con:xpath>
+            <con:element>KUNDENR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>921095899</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BMKONTONR[1]</con:xpath>
+            <con:element>BMKONTONR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>GB44LOYD77911238108568</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BELOP[1]</con:xpath>
+            <con:element>BELOP</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LANDKODE_BANK[1]</con:xpath>
+            <con:element>LANDKODE_BANK</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>GB</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRIORITET[1]</con:xpath>
+            <con:element>PRIORITET</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KRITERIE_TYPE[1]</con:xpath>
+            <con:element>KRITERIE_TYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${Properties#kriterieType}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KRITERIE[1]</con:xpath>
+            <con:element>KRITERIE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>contains</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${#TestSuite#fraudMessage}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/GRADERING[1]</con:xpath>
+            <con:element>GRADERING</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>100</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:xpath>
+            <con:element>STATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>0</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/OPPRORADATO[1]</con:xpath>
+            <con:element>OPPRORADATO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-07-28 12:13:05</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSNR[1]</con:xpath>
+            <con:element>TRANSNR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>0</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BATCH[1]</con:xpath>
+            <con:element>BATCH</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FAKTURAVALUTASORT[1]</con:xpath>
+            <con:element>FAKTURAVALUTASORT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>EUR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BELOP_NOK[1]</con:xpath>
+            <con:element>BELOP_NOK</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10670</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <INSTITUTION_CODE>4201</INSTITUTION_CODE>
+         <KONTONR>40680124185</KONTONR>
+         <BETALNR>fraud_28720034255.T4</BETALNR>
+         <KUNDENR>921095899</KUNDENR>
+         <BMKONTONR>GB44LOYD77911238108568</BMKONTONR>
+         <BELOP>1000</BELOP>
+         <LANDKODE_BANK>GB</LANDKODE_BANK>
+         <PRIORITET>N</PRIORITET>
+         <KRITERIE_TYPE>MELDING</KRITERIE_TYPE>
+         <KRITERIE>Fraud Test Test Testchar</KRITERIE>
+         <GRADERING>100</GRADERING>
+         <STATUS>0</STATUS>
+         <OPPRORADATO>2020-07-28 12:13:05</OPPRORADATO>
+         <TRANSNR>0</TRANSNR>
+         <BATCH>N</BATCH>
+         <FAKTURAVALUTASORT>EUR</FAKTURAVALUTASORT>
+         <BELOP_NOK>10670</BELOP_NOK>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="cb65f50c-a5a6-4a2b-a062-b96c8b2e84f1" name="RemoveFraudFlag" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentRemoveFraudFlag</con:operation>
+      <con:request name="RemoveFraudFlag" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="6cf2c2cc-47fa-4388-b59b-5ba67439ed6a">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>EmployeeRemoveFraudFlag</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>INT</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>no_NO.UTF-8</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="Employee" value="${Properties#UserID}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
+            <wsc:item key="SelfService" value="false"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentRemoveFraudFlagRequest>
+         <!--You have a CHOICE of the next 4 items at this level-->
+         <urn:transactionInput>
+            <!--1 or more repetitions:-->
+            <urn1:transactionId>${Properties#transactionsIds#$[0]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentRemoveFraudFlagRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="16cfc5d8-d167-42ba-8137-4450edf58e84" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="db516454-f74b-4845-8a56-b43fd98232b9" name="Not SOAP Fault"/>
+        <con:assertion type="MessageContentAssertion" id="a34180a0-5232-4141-bbc1-51f6f8e30923" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentRemoveFraudFlagResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentRemoveFraudFlagResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentRemoveFraudFlagResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentRemoveFraudFlagResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentRemoveFraudFlagResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns4='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:PaymentRemoveFraudFlagResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:paymentStatus[1]</con:xpath>
+              <con:element>ns2:paymentStatus</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>READY_FOR_DUE_DATE</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:errorCode[1]</con:xpath>
+              <con:element>ns2:errorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:severity[1]</con:xpath>
+              <con:element>ns2:severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:message[1]</con:xpath>
+              <con:element>ns2:message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:numberOfTransactions[1]</con:xpath>
+              <con:element>ns2:numberOfTransactions</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:messageId[1]</con:xpath>
+              <con:element>ns2:messageId</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>136355</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:paymentInfoId[1]</con:xpath>
+              <con:element>ns2:paymentInfoId</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>150982</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:transactionId[1]</con:xpath>
+              <con:element>ns2:transactionId</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${Properties#transactionsIds#$[0]}</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:paymentStatus[1]</con:xpath>
+              <con:element>ns2:paymentStatus</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>READY_FOR_DUE_DATE</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:errorCode[1]</con:xpath>
+              <con:element>ns2:errorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:severity[1]</con:xpath>
+              <con:element>ns2:severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:message[1]</con:xpath>
+              <con:element>ns2:message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:operationsArray[1]</con:xpath>
+              <con:element>ns2:operationsArray</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentRemoveFraudFlagResponse[1]/ns2:paymentStatusUpdateResult[1]/ns1:operationsArray[2]</con:xpath>
+              <con:element>ns2:operationsArray</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>STOP_PAYMENT</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns3:PaymentRemoveFraudFlagResponse xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns3="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0" xmlns:ns2="urn:pins.payment.evry.com:domain:payment-status-update:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns4:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns4:ResponseState>
+         <ns3:paymentStatusUpdateSummary>
+            <ns2:paymentStatus>READY_FOR_DUE_DATE</ns2:paymentStatus>
+            <ns2:errorCode>0</ns2:errorCode>
+            <ns2:severity>0</ns2:severity>
+            <ns2:message>OK</ns2:message>
+            <ns2:numberOfTransactions>1</ns2:numberOfTransactions>
+         </ns3:paymentStatusUpdateSummary>
+         <ns3:paymentStatusUpdateResult>
+            <ns2:messageId>136355</ns2:messageId>
+            <ns2:paymentInfoId>150982</ns2:paymentInfoId>
+            <ns2:transactionId>175593</ns2:transactionId>
+            <ns2:paymentStatus>READY_FOR_DUE_DATE</ns2:paymentStatus>
+            <ns2:errorCode>0</ns2:errorCode>
+            <ns2:severity>0</ns2:severity>
+            <ns2:message>OK</ns2:message>
+            <ns2:operationsArray>VIEW_PAYMENT</ns2:operationsArray>
+            <ns2:operationsArray>STOP_PAYMENT</ns2:operationsArray>
+         </ns3:paymentStatusUpdateResult>
+      </ns3:PaymentRemoveFraudFlagResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0/PINSPaymentStatusUpdate_V2_0PortType/PaymentRemoveFraudFlagRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_PostRemoveFlag" id="21be630b-e90f-42e6-be24-c30c130bb89d" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  T.TRANSACTIONSID ,
+  M.MESSAGEID,
+  P.PAYMENTINFOID,
+  T.RISKSTATUS,
+  T.ENDTOENDID ,
+  T.PAYMENTTYPE,
+  T.PAYMENTSTATUS,
+  T.ISPC ,
+  T.FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS T,MESSAGE M, PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID and
+     P.PAYMENTINFOID = T.FK_PAYMENTINFOID and
+  	M.MESSAGEIDENTIFICATION = '${Properties#msgID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${Properties#transactionsIds#$[0]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>fraud_28720014117.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:xpath>
+            <con:element>RISKSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AFIP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>175535</TRANSACTIONSID>
+         <MESSAGEID>136314</MESSAGEID>
+         <PAYMENTINFOID>150937</PAYMENTINFOID>
+         <RISKSTATUS>PFIP</RISKSTATUS>
+         <ENDTOENDID>fraud_28720014117.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="JDBC Status" id="a80ba871-49c1-4de7-ba1a-c1cbf91b8e27" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>7ac37089-fb5d-4637-a84a-61afd3ee482d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ebe29900-da3d-4e85-91e4-b9c90f7061b5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2a65dac6-68c5-4883-a1e1-35af41df4c06</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>be2d7a6b-2eee-45e9-89ef-e268a9a85e9b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5c703fc0-38c0-47eb-a050-1748a89eae42</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9018639d-f749-4948-81e5-a9d3b756ad78</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

@@ -7,7 +7,7 @@ def emailNotification( email) {
 	emailext to: email,
 	from: 'noreply@qaTestResults.com',
 	mimeType: 'text/html',
-	subject: "[Build ${currentBuild.currentResult}:${env.BRANCH_NAME}] - Build ${currentBuild.displayName} on Branch",
+	subject: "[Build ${currentBuild.currentResult}:${env.BRANCH_NAME}:${params.Environments}] - Build ${currentBuild.displayName} on Branch",
 	body: '${JELLY_SCRIPT,template="static-analysis"}',
 	attachLog: true,
 	attachmentsPattern: '**/reports/index.html'

@@ -16,7 +16,7 @@ pipeline {
         )
         choice(
             name: 'Environments',
-            choices: ['G-D4', 'G-S1', 'G-D2', 'G-D5'],          
+            choices: [ 'G-S1','G-D4','G-D2', 'G-D5'],          
             description: 'Environment to run against'
         )
        choice(

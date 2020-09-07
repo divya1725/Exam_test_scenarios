@@ -5,7 +5,7 @@
     <con:setting id="0f5d630d-8012-4636-9bb0-57117b3984dafileName">DB-Properties</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="delay" name="Delay" id="8b33a172-98ac-435f-8c80-5dc949e712c8">
+  <con:testStep type="delay" name="Delay" id="8b33a172-98ac-435f-8c80-5dc949e712c8" disabled="true">
     <con:settings/>
     <con:config>
       <delay>20000</delay>
@@ -139,11 +139,9 @@ testRunner.testCase.getTestSuite().setPropertyValue("currencyCode",currencyCode)
       <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select  VU.ACCOUNTNUMBER,VU.CURRENCYCODE from 
-v_authorisation VA, V_AUTH_USERINFO VU
-where VA.ACCOUNTNUMBER = VU.ACCOUNTNUMBER and
-VA.CUSTOMERID = '${#TestSuite#fraudCustomer}' and 
-ROWNUM=1</con:query>
+      <con:query>select VU.ACCOUNTNUMBER,VU.CURRENCYCODE,VU.CHANNEL from 
+V_AUTH_USERINFO VU where VU.USERID= '${#TestSuite#fraudCustomer}' 
+and ROWNUM=1</con:query>
       <con:assertion type="JDBC Status" id="6e597518-87ca-46b7-85e7-3998105fca93" name="JDBC Status"/>
       <con:properties/>
     </con:config>
@@ -155,7 +153,10 @@ ROWNUM=1</con:query>
 testRunner.testCase.getTestSuite().setPropertyValue("accountNumberKundner",accountNumberKundner)
 
 def currencyKundner = context.expand( '${DB Fetch KundnerAccNum#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' )
-testRunner.testCase.getTestSuite().setPropertyValue("currencyKundner",currencyKundner)</script>
+testRunner.testCase.getTestSuite().setPropertyValue("currencyKundner",currencyKundner)
+
+def channelKundner = context.expand( '${DB Fetch KundnerAccNum#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CHANNEL[1]}' )
+testRunner.testCase.getTestSuite().setPropertyValue("channelKundner",channelKundner)</script>
     </con:config>
   </con:testStep>
   <con:properties/>

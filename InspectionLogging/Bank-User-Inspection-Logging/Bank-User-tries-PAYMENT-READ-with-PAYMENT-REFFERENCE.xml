@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>01015909028</con:value>
+          <con:value>05129513162</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42001970938</con:value>
+          <con:value>42121410286</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>172302</con:value>
+          <con:value>401912</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>212341</con:value>
+          <con:value>260191221</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>188028</con:value>
+          <con:value>448939</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>212341</con:value>
+          <con:value>260191221</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1102</con:value>
+          <con:value>1317</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*01015909028.*42001970938.*EVRY.*PCL.*ET1004.*paymentReadWithReference.*(1101|1102|1103|1104).*read payment with reference' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*05129513162.*42121410286.*EVRY.*PCL.*ET1004.*paymentReadWithReference.*(1316|1317|1318|1319).*read payment with reference' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01015909028</CustomerID><AccountID>42001970938</AccountID><Source>EVRY</Source><System>PCL</System><UserID>ET1004</UserID><Function>paymentReadWithReference</Function><DateTime>20200902110232</DateTime><Description>read payment with reference</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>05129513162</CustomerID><AccountID>42121410286</AccountID><Source>EVRY</Source><System>PCL</System><UserID>ET1004</UserID><Function>paymentReadWithReference</Function><DateTime>20200907131745</DateTime><Description>read payment with reference</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -163,7 +163,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY,AC.OTHER_ID,AC.IBAN
@@ -583,6 +583,7 @@ def nextTime = CommonLibrary.getNextTime(logRef)
 try{System.sleep(200)}catch(Exception ex){}
 
 def accountNumberTemp = context.expand( '${PaymentRead_V_2_0#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; declare namespace ns6=\'urn:pins.payment.evry.com:domain:debtor:v2_0\'; //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentInfo[1]/ns6:debtorAccount[1]/ns5:identification[1]}' )
+accountNumber = accountNumberTemp
 if (accountNumberTemp == "") accountNumber =""
 
 def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"

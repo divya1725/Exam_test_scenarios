@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1105</con:value>
+          <con:value>1129</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*873340002.*50000000088908200000.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference.*(1104|1105|1106|1107).*read historic payment with reference' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*873340002.*50000000088908200000.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference.*(1128|1129|1130|1131).*read historic payment with reference' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>873340002</CustomerID><AccountID>50000000088908200000</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20200911110504</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>873340002</CustomerID><AccountID>50000000088908200000</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20200911112922</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -502,6 +502,8 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
     <con:config>
       <script>def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
+def firstZeros = customerid.substring(0,2)
+if (firstZeros="00") customerid = Integer.parseInt(customerid)
 def accountNumber = context.expand( '${Properties#accountNumber}' )
 def userID = context.expand( '${Properties#UserID}' )
 def serviceFunction = context.expand( '${Properties#serviceFunction}' )
@@ -515,7 +517,7 @@ try{System.sleep(200)}catch(Exception ex){}
 def nextTime = CommonLibrary.getNextTime(logRef)
 try{System.sleep(200)}catch(Exception ex){}
 
-def grepString = "grep -i -E '${orgid}.*${Integer.parseInt(customerid)}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
+def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script>
     </con:config>

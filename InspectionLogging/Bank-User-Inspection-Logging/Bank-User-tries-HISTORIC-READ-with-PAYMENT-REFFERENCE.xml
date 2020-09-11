@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>30017000000</con:value>
+          <con:value>00873340002</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42029956175</con:value>
+          <con:value>50000000088908200000</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>401915</con:value>
+          <con:value>407076</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260191225</con:value>
+          <con:value>260196530</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>448942</con:value>
+          <con:value>454149</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>260191225</con:value>
+          <con:value>260196530</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1316</con:value>
+          <con:value>1105</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*30017000000.*42029956175.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference.*(1315|1316|1317|1318).*read historic payment with reference' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*873340002.*50000000088908200000.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference.*(1104|1105|1106|1107).*read historic payment with reference' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>30017000000</CustomerID><AccountID>42029956175</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20200907131634</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>873340002</CustomerID><AccountID>50000000088908200000</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20200911110504</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -169,7 +169,7 @@
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY
 from HST_MESSAGE A,HST_PAYMENTINFO B, HST_TRANSACTIONS C where 
 A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.PAYMENTSTATUS = 'COMP'
- and C.INITIATORBANKID = '4201'  order by A.MESSAGEID desc fetch first row only</con:query>
+and C.INITIATORBANKID = '4201'  order by A.MESSAGEID desc fetch first 25 row only</con:query>
       <con:assertion type="JDBC Status" id="6328a988-1e28-4718-9a78-4d0a3da788a3" name="JDBC Status"/>
       <con:properties/>
     </con:config>
@@ -515,7 +515,7 @@ try{System.sleep(200)}catch(Exception ex){}
 def nextTime = CommonLibrary.getNextTime(logRef)
 try{System.sleep(200)}catch(Exception ex){}
 
-def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
+def grepString = "grep -i -E '${orgid}.*${Integer.parseInt(customerid)}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script>
     </con:config>

@@ -31,7 +31,7 @@ pipeline {
     }
 
   options {
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 80, unit: 'MINUTES')
         timestamps()
         buildDiscarder(logRotator(artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '20', numToKeepStr: '20'))
         skipStagesAfterUnstable()

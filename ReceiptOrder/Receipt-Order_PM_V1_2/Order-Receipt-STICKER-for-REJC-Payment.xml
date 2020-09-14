@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="9918825e-ea9c-40c6-96d4-5b18b625e402" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="Order Receipt STICKER for REJC Payment" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>This testcase verfies that Receipt cannot be ordered for a payment with status REJC</con:description>
+  <con:settings>
+    <con:setting id="9918825e-ea9c-40c6-96d4-5b18b625e402fileName">Order-Receipt-STICKER-for-REJC-Payment</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="properties" name="Properties" id="93395fa9-6e5b-4c9a-9676-f8339ac92d12">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>SourceApplication</con:name>
+          <con:value>EVRYINT</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>NBA</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>item1</con:name>
+          <con:value>PaymentChannel</con:value>
+        </con:property>
+        <con:property>
+          <con:name>value1</con:name>
+          <con:value>INT</con:value>
+        </con:property>
+        <con:property>
+          <con:name>item2</con:name>
+          <con:value>LogRef</con:value>
+        </con:property>
+        <con:property>
+          <con:name>value2</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}-${=context.getCurrentStep().getTestCase().getLabel()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ConnectionString</con:name>
+          <con:value>jdbc:oracle:thin:forfall/forfall@//10.246.89.97:1530/rbst5_taf</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Fetch REJC Data" id="b16daea4-a180-4b08-83df-548cf5be7842">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select C.TRANSACTIONSID,C.DEBETACCOUNTNO,A.CUSTOMERID,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.RECEIPTORDER,A.MARKETTYPE,C.INITIATORBANKID
+from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
+ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.PAYMENTSTATUS = 'REJC' and
+ C.INITIATORBANKID = '4201'  order by A.MESSAGEID desc fetch first row only</con:query>
+      <con:assertion type="MessageContentAssertion" id="68103f0c-135c-449d-8964-d5e2304e7268" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>12063</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42022512891</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DOMM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECEIPTORDER[1]</con:xpath>
+            <con:element>RECEIPTORDER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NONE</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>12063</TRANSACTIONSID>
+         <DEBETACCOUNTNO>42022512891</DEBETACCOUNTNO>
+         <PAYMENTTYPE>DOMM</PAYMENTTYPE>
+         <PAYMENTSTATUS>COMP</PAYMENTSTATUS>
+         <RECEIPTORDER>NONE</RECEIPTORDER>
+         <MARKETTYPE>PM</MARKETTYPE>
+         <INITIATORBANKID>4201</INITIATORBANKID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="Receipt Order" id="31b48827-1d32-4fcb-b270-ba72ab852e7e">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentUtil_V1_2PortTypeSoap11</con:interface>
+      <con:operation>ReceiptOrderUpdate</con:operation>
+      <con:request name="Receipt Order" id="2be0cd79-5cf0-4518-aa92-8228becf8c77">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPaymentUtil_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentutil:v1_2" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentutil:v1_2">
+   <soapenv:Header>
+      <wsc:AutHeader>
+      <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+      <wsc:DestinationApplication>PINS</wsc:DestinationApplication>
+      <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+      <wsc:Version>1.0</wsc:Version>
+      <wsc:ClientContext>
+         <wsc:userid>${Fetch REJC Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}</wsc:userid>
+         <wsc:credentials>${Properties#credentials}</wsc:credentials>
+         <wsc:channel>${Properties#channel}</wsc:channel>
+         <wsc:orgid>${Properties#orgid}</wsc:orgid>
+         <wsc:customerid>${Fetch REJC Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}</wsc:customerid>
+         <wsc:ip>1.1.1.1</wsc:ip>
+         <wsc:item key="${Properties#item1}" value="${Properties#value1}"/> 
+         <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>
+      </wsc:ClientContext>
+   </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:ReceiptOrderUpdateRequest>
+         <urn:receiptOrder>
+            <urn1:debitAccount>${Fetch REJC Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}</urn1:debitAccount>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            
+            <urn1:transactionId>${Fetch REJC Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn1:transactionId><urn1:receiptType>STICKER</urn1:receiptType>
+         </urn:receiptOrder>
+      </urn:ReceiptOrderUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="0022e314-ac22-4cdd-bc3e-6d2fefef1ad7"/>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="81a4b559-0409-423e-8914-956e90d1faf2">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" id="74a7a3ac-358e-45d0-9c20-05618fc579fc" name="Contains">
+          <con:configuration>
+            <token>Cannot updated receipt order while transaction status is REJECTED</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>true</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bfc46098-7126-4e7a-9bb8-a84a8c09bdf4">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="8de4f088-ed70-4c0c-8902-4d113b89b9c9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="606de439-9af0-4a56-8685-3b41eae80c54">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="7e7d541d-7700-4e30-b618-2383a86673d0">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="a9fe1c68-a44a-47a3-92a0-597ac3558eed">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="62d35584-b9e8-4224-9147-332b8581935f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="89ad1e7e-0554-4e47-a121-4b99b2e5bb7a">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>8167094a-00a6-434a-9588-31a9de204fb8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>921ce22c-5c29-4284-a083-a1a1a0117555</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a70f8027-178c-4de6-8bc5-74ac99217e62</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>258ba11c-c48e-4bfc-a96a-d5f6470381a6</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>aaa0220f-b6d3-48f0-a5a7-a2b12983d00a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1c7ee62f-4466-469a-84ec-e66f85b086d2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>35f8d9ed-12a3-4131-a1a3-47b30c8a0708</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>52921ec2-4da3-4a88-a87e-bdcb9e775726</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>42d775b8-c8f2-4bac-8646-ad15bb253f8e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>08f617c7-e529-4c47-9316-68b8a02e3a43</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1b2f72c5-5fc2-440a-ae62-c56eddb5b9ed</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>0e09f67d-e171-4e98-8285-08b7c36fd12b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

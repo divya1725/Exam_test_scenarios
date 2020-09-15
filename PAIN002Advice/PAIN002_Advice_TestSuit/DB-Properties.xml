@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="0d0005e6-e67f-459e-971f-27d2622567ae" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DB Properties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="189cc5fe-5631-4cf2-b1fa-491a87ada6c6fileName">DB-Properties</con:setting>
+    <con:setting id="16e40e13-533b-40e2-bb1c-520a2bfaac03fileName">DB-Properties</con:setting>
+    <con:setting id="0d0005e6-e67f-459e-971f-27d2622567aefileName">DB-Properties</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB Fetch Account" id="aa2e95c9-b70c-4dd6-9659-ca409534e95d">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select  VU.USERID as CUSTOMERID,VU.ACCOUNTNUMBER,VU.BANKORGID,VU.CURRENCYCODE 
+from v_authorisation VA, V_AUTH_USERINFO VU
+where VA.ACCOUNTNUMBER = VU.ACCOUNTNUMBER and 
+BANKORGID = '4201' and 
+length(userid)='11' and 
+markettype = 'BM' and 
+ROLETYPE ='EIER' and
+ACCOUNTROLENAME = 'Register' and
+ROWNUM=1</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="set_Properties" id="618dc8d1-9cb9-423d-b1b1-f034e5f6d425">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${DB Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def currencyCode = context.expand( '${DB Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' )
+
+testRunner.testCase.getTestSuite().setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestSuite().setPropertyValue("accountNumber",debtorAccountNumber)
+testRunner.testCase.getTestSuite().setPropertyValue("currencyCode",currencyCode)</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>65b5e05a-3f2d-4a17-a4ad-082c04e3bb33</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>edd8ac40-c351-44e3-8220-8ef8e4d249a4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

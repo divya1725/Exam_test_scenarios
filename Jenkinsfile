@@ -70,7 +70,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
-                    message: "Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Regression Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
               
@@ -82,7 +82,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'danger',
-                    message: "Testing MultiProjectRun : Projects:${projectList} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "MultiProjectRun : Regression Testing job failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
               
@@ -95,7 +95,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'warning',
-                    message: "Testing MultiProjectRun : Projects:${projectList} unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "MultiProjectRun : Regression Testing job unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
               

@@ -19,7 +19,7 @@ pipeline {
     }
           
   triggers {
-        cron('30 05 * * 1-5')
+    	cron(env.BRANCH_NAME == 'multiProjectRun' ? '30 05 * * 1-5' : '')
     }
   
     parameters {

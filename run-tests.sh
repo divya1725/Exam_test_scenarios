@@ -2,7 +2,7 @@
 
 LOCALDIR=$PWD
 ENV=$1
-excludeProjects=('SkkoPayments' 'PORBatchSuite');
+excludeProjects=('SkkoPayments' 'PORBatchSuite' 'ext');
 
 
 echo "LOCALDIR=$LOCALDIR and EnvironemntName is $ENV"

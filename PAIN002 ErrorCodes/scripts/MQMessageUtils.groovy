@@ -77,13 +77,13 @@ class MQMessageUtils {
 	
 	public def browseMessage(def queue, def msgUnique) {
 
-		def result = "No messsage"
-		Queue queueToReceive= new MQQueue(queue);
+		def result = "No messsageStart"
+		Queue queueToReceive= new MQQueue(queue);		
 		MQQueueBrowser MqBrwse = queueSession.createBrowser(queueToReceive)
 		try {
-			Enumeration enums = MqBrwse.getEnumeration();
+			Enumeration enums = MqBrwse.getEnumeration();			
 			while (enums.hasMoreElements()) {
-				Object objMsg = enums.nextElement();
+				Object objMsg = enums.nextElement();				
 				if (objMsg instanceof TextMessage) {
 					TextMessage message = (TextMessage) objMsg;
 					result = message.getText().toString();
@@ -92,7 +92,7 @@ class MQMessageUtils {
 						break
 					}
 				}else if (objMsg instanceof ObjectMessage) {
-					result = "No messsage"
+					result = "No messsageNO"
 					break;
 				}
 
@@ -101,7 +101,7 @@ class MQMessageUtils {
 		}
 		catch(Exception e)
 		{
-			result = "No messsage"
+			result = "No messsageEx"
 			e.printStackTrace()
 		}
 

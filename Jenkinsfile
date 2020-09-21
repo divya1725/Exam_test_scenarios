@@ -1,53 +1,48 @@
+#!groovy
+def projectList = [] 
+def failed_email_to ='ullasa.srinivasa@evry.com'
+def success_email_to ='ullasa.srinivasa@evry.com'
+
+def emailNotification( email) {
+	emailext to: email,
+	from: 'noreply@qaTestResults.com',
+	mimeType: 'text/html',
+	subject: "[Build ${currentBuild.currentResult}:${env.BRANCH_NAME}:${params.Environments}] - Build ${currentBuild.displayName} on Branch",
+	body: '${JELLY_SCRIPT,template="static-analysis"}',
+	attachLog: true,
+	attachmentsPattern: '**/reports/index.html'
+} 
+
 pipeline {
     agent {
         label 'docker'
     }
           
-   triggers {
-        cron('30 05 * * 1-5')
+  triggers {
+    	cron(env.BRANCH_NAME == 'multiProjectRun' ? '30 05 * * 1-5' : '')
     }
   
     parameters {
-	
-		choice(
-            name: 'ReadyAPIProject',
-            choices: ['FraudPayments', 'InspectionLogging', 'PreDefined-Creditor'],          
-            description: 'Select a project to run'
-        )
-        choice(
+	   choice(
             name: 'Environments',
-            choices: [ 'G-S1','G-D4','G-D2', 'G-D5'],          
+            choices: ['G-S1','G-D4','G-D2', 'G-D5'],          
             description: 'Environment to run against'
-        )
-       choice(
-            name: 'suite',
-            choices: ['FraudPayment', 'Bank User Inspection Logging', 'PreDefinedCreditor', 'PreDefinedCreditor_V1.1'],          
-            description: 'Test suites to run'
-        )		
-		string(
-			name: 'TestCase', 
-			defaultValue: '', 
-			description: 'Enter a testcase to run'
-		)
+        )      
     }
 
   options {
-        timeout(time: 45, unit: 'MINUTES')
+        timeout(time: 90, unit: 'MINUTES')
         timestamps()
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '30', numToKeepStr: '30'))
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '20', numToKeepStr: '20'))
         skipStagesAfterUnstable()
     }   
     stages {
         
         stage('ReadyAPITest') { 
-            steps {
-                echo "Stage second Test"
+            steps {                
                script{
-              		// bat """docker run -v="${WORKSPACE}\\FraudPayments":/project -v="${WORKSPACE}\\FraudPayments\\Reports":/reports -e LICENSE_SERVER="fslicense.evry.com:1099" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-EDefault environment' '/FraudPayments/'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.1.0"""
-              	   // sh "./run-tests.sh"
-
-                    sh """docker run -v="${WORKSPACE}/${params.ReadyAPIProject}":/project -v="${WORKSPACE}/${params.ReadyAPIProject}/reports":/reports -v="${WORKSPACE}/ext":/ext/ -e LICENSE_SERVER="fslicense.evry.com:8443" -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '/%project%/' '-s${params.suite}'"  fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:latest"""
-                 
+                     sh 'chmod +x ./run-tests.sh'
+                     sh "./run-tests.sh ${params.Environments}" 
                }
             }
         }
@@ -56,48 +51,56 @@ pipeline {
   post {
         always {           
           
-          publishHTML (target : [allowMissing: false,
-                       alwaysLinkToLastBuild: true,
-                       keepAll: true,
-                       reportDir: "${params.ReadyAPIProject}/reports",
-                       reportFiles: 'index.html',
-                       reportName: 'HTML Report',
-                       reportTitles: 'The Report']
-                      )
-        }
+           script{
+             	
+                  junit "**/reports/*.xml"             	
+
+                  def files = findFiles(glob: "**/*/project.content")
+                   files.each{ val->
+                        def projStr = val.path
+                        projStr = projStr.replace("project.content","")
+                        projectList.add(projStr)                                  
+                            }
+                }
+
+         }
         success {
             script {
+              emailNotification(success_email_to)
                 slackSend(
-                    channel: "#slackmessgetest",
+                    channel: "#regressiontestresults",
                     color: 'good',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Regression Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
               
-              slackUploadFile(
-                channel: '#slackmessgetest',                
-                filePath: "${params.ReadyAPIProject}/reports/index.html",
-                initialComment: 'Job atrifacts'
-              ) 
             }
         }
         failure {
             script {
+              emailNotification(failed_email_to)
                 slackSend(
-                    channel: "#slackmessgetest",
-                    color: 'bad',
-                    message: "Project:${params.ReadyAPIProject}, suite:${params.suite} failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    channel: "#regressiontestresults",
+                    color: 'danger',
+                    message: "MultiProjectRun : Regression Testing job failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
               
-              slackUploadFile(
-                channel: '#slackmessgetest',                
-                filePath: "${params.ReadyAPIProject}/reports/index.html",
-                initialComment: 'Job atrifacts'
-              ) 
             }
         }  
-                
+        
+   		unstable {
+            script {
+              emailNotification(failed_email_to)
+                slackSend(
+                    channel: "#regressiontestresults",
+                    color: 'warning',
+                    message: "MultiProjectRun : Regression Testing job unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+
+                )
+              
+            }
+        } 
     }
    
 }

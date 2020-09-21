@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>996351661</con:value>
+          <con:value>01044409670</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42120904315</con:value>
+          <con:value>42021553020</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1103</con:value>
+          <con:value>1145</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,11 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*996351661.*42120904315.*EVRY.*PCL.*TESTUSERPI26.*standingOrderVerifySearch.*(1102|1103|1104|1105).*list/read standing order verify search' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*1044409670.*42021553020.*EVRY.*PCL.*TESTUSERPI26.*standingOrderVerifySearch.*(1144|1145|1146|1147).*list/read standing order verify search' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>996351661</CustomerID><AccountID>42120904315</AccountID><Source>EVRY</Source><System>PCL</System><UserID>TESTUSERPI26</UserID><Function>standingOrderVerifySearch</Function><DateTime>20200902110332</DateTime><Description>list/read standing order verify search</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01044409670</CustomerID><AccountID>42021553020</AccountID><Source>EVRY</Source><System>PCL</System><UserID>TESTUSERPI26</UserID><Function>standingOrderVerifySearch</Function><DateTime>20200911114507</DateTime><Description>list/read standing order verify search</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -155,7 +155,7 @@
         </con:property>
         <con:property>
           <con:name>SOAgreementId</con:name>
-          <con:value>8144</con:value>
+          <con:value>37581</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -167,7 +167,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select CUSTOMERID,AGREEMENTACCOUNTNUMBER,ORG_ID,AGREEMENTID,AGREEMENTTYPE from STO_AGREEMENT where STATUS = 'PENDING_VERIFICATION' order by AGREEMENTID desc fetch first row only</con:query>
@@ -552,6 +552,8 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
     <con:config>
       <script>def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
+def firstZeros = customerid.substring(0,2)
+if (firstZeros=="00") customerid = Integer.parseInt(customerid)
 def accountNumber = context.expand( '${Properties#accountNumber}' )
 //def creditAccountNumber = context.expand( '${Properties#CreditAccountNumber}' )
 
@@ -561,6 +563,7 @@ def serviceDescription = context.expand( '${Properties#serviceDescription}' )
 def inspectionSource = context.expand( '${Properties#InspectionSource}' )
 def inspectionSystem = context.expand( '${Properties#InspectionSystem}' )
 def accountNumberTemp = context.expand( '${SOVerifySearch_V_2_0#Response#declare namespace ns6=\'urn:srv.stord.fs.evry.com:ws:standingorder:v2_0\'; declare namespace ns2=\'urn:srv.stord.fs.evry.com:domain:standingorder:v2_0\'; //ns6:standingOrderVerifySearchResponse[1]/ns6:standingOrders[1]/ns2:debtorAccount[1]}' )
+accountNumber = accountNumberTemp
 if (accountNumberTemp == "") accountNumber =""
 def logRef = context.expand( '${Properties#LogRef}' )
 

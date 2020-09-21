@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="0ece698e-0012-4f66-aee4-ed96e8a741ae" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="AC03-InvalidCredAccount" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>TC will create Error Codes for AC03-InvalidCredAccount</con:description>
+  <con:settings>
+    <con:setting id="017a8d05-a342-4d82-9d4e-97ae502e8501fileName">Messagelevel</con:setting>
+    <con:setting id="0ece698e-0012-4f66-aee4-ed96e8a741aefileName">AC03-InvalidCredAccount</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB Account" id="f888a32b-2993-46b3-b104-5404a38eccf3">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select CUSTOMERID,ACCOUNTNUMBER  from V_authorisation 
+where CUSTBANKID='${Properties#bankId}' 
+and length(customerID)='11' 
+and ROWNUM=1</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetProperties" id="e1c9e96b-9c0c-4141-a2be-5a4bcbe963c6">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+
+def customerID = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNumber",debtorAccountNumber)
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+log.info datetime
+
+def EndtoEndID = "Err_"+datetime;
+log.info EndtoEndID
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="432da216-0930-4303-9e86-b5857db93b94">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>42125748338</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendFormat</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?> <Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" > <auth> <![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>BANKID</bankId><userId>CUSTOMERID</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>false</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>ACCOUNTID</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2016-05-04T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[ </auth> <content> <![CDATA[<?xml version="1.0" encoding="UTF-8"?> <Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"> <CstmrCdtTrfInitn> <GrpHdr> <MsgId>TIMESTAMP</MsgId> <CreDtTm>DATET00:06:27.355+02:00</CreDtTm> <NbOfTxs>1</NbOfTxs> <CtrlSum>10.00</CtrlSum> <InitgPty> <Nm>Vin fjerner co.</Nm> <Id> <OrgId> <AnyBIC>SPTRNO22XXX</AnyBIC> <Othr> <Id>600685</Id> <SchmeNm> <Cd>BANK</Cd> </SchmeNm> </Othr> </OrgId> </Id> </InitgPty> </GrpHdr> <PmtInf> <PmtInfId>TIMESTAMP.P1</PmtInfId> <PmtMtd>TRF</PmtMtd> <NbOfTxs>1</NbOfTxs> <CtrlSum>10.00</CtrlSum> <PmtTpInf> <InstrPrty>NORM</InstrPrty> </PmtTpInf> <ReqdExctnDt>DATE</ReqdExctnDt> <Dbtr> <Id> <OrgId> <Othr> <Id>921095899</Id> </Othr> </OrgId> </Id> </Dbtr> <DbtrAcct> <Id> <Othr> <Id>ACCOUNTID</Id> <SchmeNm> <Cd>BBAN</Cd> </SchmeNm> </Othr> </Id> </DbtrAcct> <DbtrAgt> <FinInstnId> <BICFI>SPTRNO22XXX</BICFI> </FinInstnId> </DbtrAgt> <ChrgBr>SHAR</ChrgBr> <CdtTrfTxInf> <PmtId> <InstrId>TIMESTAMP.T4</InstrId> <EndToEndId>TIMESTAMP.T4</EndToEndId> </PmtId> <PmtTpInf> <InstrPrty>NORM</InstrPrty> <CtgyPurp> <Cd>NULL</Cd> </CtgyPurp> </PmtTpInf> <Amt> <InstdAmt Ccy="NOK">10.00</InstdAmt> </Amt> <CdtrAgt> <FinInstnId><BICFI>SHEDNO22XXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry></PstlAdr></FinInstnId> </CdtrAgt> <Cdtr> <Nm>Nerikes Telecom</Nm> <PstlAdr> <AdrTp>ADDR</AdrTp> <TwnNm>London</TwnNm> <Ctry>DE</Ctry> <AdrLine>Kamrerarvagen 18</AdrLine> <AdrLine>12930 Hagersten</AdrLine> </PstlAdr> <CtryOfRes>NO</CtryOfRes> </Cdtr> <CdtrAcct><Id><Othr><Id>233</Id></Othr></Id></CdtrAcct> </CdtTrfTxInf> </PmtInf> </CstmrCdtTrfInitn> </Document>]]]]>><![CDATA[ </content> </Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqManager</con:name>
+          <con:value>QT0PPI</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqHostname</con:name>
+          <con:value>10.246.89.48</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqPort</con:name>
+          <con:value>1430</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqChannel</con:name>
+          <con:value>QT0PPI.SEPA.CL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqChannelAuth</con:name>
+          <con:value>QT0PPI.SEPA.CL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>sendQueue</con:name>
+          <con:value>PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>receiveQueue</con:name>
+          <con:value>QT0PPI.PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MsgID</con:name>
+          <con:value>Err_21920104848</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?> <Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" > <auth> <![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>4201</bankId><userId>01010077571</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>false</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>42125748338</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2016-05-04T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[ </auth> <content> <![CDATA[<?xml version="1.0" encoding="UTF-8"?> <Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"> <CstmrCdtTrfInitn> <GrpHdr> <MsgId>Err_21920104848</MsgId> <CreDtTm>2020-09-21T00:06:27.355+02:00</CreDtTm> <NbOfTxs>1</NbOfTxs> <CtrlSum>10.00</CtrlSum> <InitgPty> <Nm>Vin fjerner co.</Nm> <Id> <OrgId> <AnyBIC>SPTRNO22XXX</AnyBIC> <Othr> <Id>600685</Id> <SchmeNm> <Cd>BANK</Cd> </SchmeNm> </Othr> </OrgId> </Id> </InitgPty> </GrpHdr> <PmtInf> <PmtInfId>Err_21920104848.P1</PmtInfId> <PmtMtd>TRF</PmtMtd> <NbOfTxs>1</NbOfTxs> <CtrlSum>10.00</CtrlSum> <PmtTpInf> <InstrPrty>NORM</InstrPrty> </PmtTpInf> <ReqdExctnDt>2020-09-21</ReqdExctnDt> <Dbtr> <Id> <OrgId> <Othr> <Id>921095899</Id> </Othr> </OrgId> </Id> </Dbtr> <DbtrAcct> <Id> <Othr> <Id>42125748338</Id> <SchmeNm> <Cd>BBAN</Cd> </SchmeNm> </Othr> </Id> </DbtrAcct> <DbtrAgt> <FinInstnId> <BICFI>SPTRNO22XXX</BICFI> </FinInstnId> </DbtrAgt> <ChrgBr>SHAR</ChrgBr> <CdtTrfTxInf> <PmtId> <InstrId>Err_21920104848.T4</InstrId> <EndToEndId>Err_21920104848.T4</EndToEndId> </PmtId> <PmtTpInf> <InstrPrty>NORM</InstrPrty> <CtgyPurp> <Cd>NULL</Cd> </CtgyPurp> </PmtTpInf> <Amt> <InstdAmt Ccy="NOK">10.00</InstdAmt> </Amt> <CdtrAgt> <FinInstnId><BICFI>SHEDNO22XXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry></PstlAdr></FinInstnId> </CdtrAgt> <Cdtr> <Nm>Nerikes Telecom</Nm> <PstlAdr> <AdrTp>ADDR</AdrTp> <TwnNm>London</TwnNm> <Ctry>DE</Ctry> <AdrLine>Kamrerarvagen 18</AdrLine> <AdrLine>12930 Hagersten</AdrLine> </PstlAdr> <CtryOfRes>NO</CtryOfRes> </Cdtr> <CdtrAcct><Id><Othr><Id>233</Id></Othr></Id></CdtrAcct> </CdtTrfTxInf> </PmtInf> </CstmrCdtTrfInitn> </Document>]]]]>><![CDATA[ </content> </Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>currencyCode</con:name>
+          <con:value>NOK</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Set_Queue_Details_And_File" id="6033c09b-2b3e-42da-8155-f61f16b0a3ab">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
+log.info MsgID;
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
+log.info(messageToSend)
+
+//Parmeters needed in message
+def Account = context.expand( '${Properties#accountNumber}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#DueDate}' )
+def BANKID = context.expand( '${Properties#bankId}' )
+
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("TIMESTAMP",MsgID) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
+log.info messageToSend
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePAIN001File" id="b1ad13d9-55de-40dc-9e7a-4cfefe149a55">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+//import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+log.info(filecontent)
+
+//def filecontent = context.expand( '${TestCase#messagetoSend}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueuePAIN001}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#receiveQueuePAIN001}' )
+def msgId = context.expand( '${Properties#MsgId}' )
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+// Receive message from MQ
+String receiveMessage = mqMessageUtils.receiveMessage(mQMessageQueueRecieve);
+//Check results only if received message browseMessage(mQMessageQueueRecieve,msgId);
+log.info receiveMessage
+if (!(("No messsage").equals(receiveMessage))){
+	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+	def response = groovyUtils.getXmlHolder(receiveMessage)
+	log.info  response.getNodeValue("//*:OrgnlMsgId");
+	ArrayList&lt;String> list= response.getNodeValues("//*:AddtlInf");
+	log.info list;
+// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+}
+// No message
+else  log.info "Failed to receive message from Queue.. Trying to fetch payment from DB"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="06a88588-28a2-4cac-badb-bc41d1583885">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS" id="44b43360-af97-4f28-84c9-50cca205cf92">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  TRANSACTIONSID ,
+  ENDTOENDID ,
+  PAYMENTTYPE,
+  PAYMENTSTATUS,
+  ISPC ,
+FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS 
+WHERE 
+  ENDTOENDID LIKE '%${Properties#MsgID}%'
+  and PAYMENTSTATUS = 'REJC'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>167195</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>ETE_20200706MSG50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DOMS</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTDOMOUPSME</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>167195</TRANSACTIONSID>
+         <ENDTOENDID>ETE_20200706MSG50</ENDTOENDID>
+         <PAYMENTTYPE>DOMS</PAYMENTTYPE>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUPSME</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="STATUS_REASON" id="505669cc-ca9a-4c9c-8cbe-ffe75a2ca4a8">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from STATUSREASON
+where FK_TRANSACTIONID = '${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONID[1]</con:xpath>
+            <con:element>STATUSREASONID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CODE[1]</con:xpath>
+            <con:element>CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC03</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCESYSTEM[1]</con:xpath>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAIN</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/CODE[1]</con:xpath>
+            <con:element>CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC03</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SOURCESYSTEM[1]</con:xpath>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAIN</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <STATUSREASONID>52306</STATUSREASONID>
+         <CODE>AC03</CODE>
+         <SOURCESYSTEM>PAIN</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>167195</FK_TRANSACTIONID>
+      </Row>
+      <Row rowNumber="2">
+         <STATUSREASONID>52307</STATUSREASONID>
+         <CODE>AC03</CODE>
+         <SOURCESYSTEM>PAIN</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>167195</FK_TRANSACTIONID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="STATUSREASON_ADDT_INF" id="e8ebb833-0c8a-45bf-912b-f4fc58264b69">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from STATUSREASON_ADDT_INF 
+where FK_STATUSREASONID in ('${STATUS_REASON#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/STATUSREASONID[1]}','${STATUS_REASON#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/STATUSREASONID[1]}')</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="Simple Contains" id="4352cc71-5d80-4751-bb30-3fc9272895bc" name="Contains Invalid creditor account number length">
+        <con:configuration>
+          <token>&lt;ADDITIONALINFORMATION>Invalid creditor account number length&lt;/ADDITIONALINFORMATION></token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="Simple Contains" id="6029d52b-b4be-433d-b003-a199218341e9" name="Contains Invalid creditor account number">
+        <con:configuration>
+          <token>&lt;ADDITIONALINFORMATION>Invalid creditor account number&lt;/ADDITIONALINFORMATION></token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>7ac37089-fb5d-4637-a84a-61afd3ee482d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f888a32b-2993-46b3-b104-5404a38eccf3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="657a20b2-d63b-4bf3-808e-2c92b686c769">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

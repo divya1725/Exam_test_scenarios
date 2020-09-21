@@ -5,12 +5,6 @@
     <con:setting id="0685024e-2b8f-4aa0-af09-70079498f290fileName">Bank-User-tries-TRANSACTION-SEARCH-with-Debit_Credit-Account</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="delay" name="Delay" id="17c0268d-4d2c-422b-a0b0-9cdca9ee156e" disabled="true">
-    <con:settings/>
-    <con:config>
-      <delay>50000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="properties" name="Properties" id="2dcd456b-5a06-4bab-84ae-e5e406e8b4b9">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -117,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>172231</con:value>
+          <con:value>408785</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>212270</con:value>
+          <con:value>260198242</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>187957</con:value>
+          <con:value>455858</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>212270</con:value>
+          <con:value>260198242</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1100</con:value>
+          <con:value>1143</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -145,12 +139,12 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*01010077571.*(42125748338|42010224130).*EVRY.*PCL.*E212777.*paymentTransactionSearch.*(1059|1100|1101|1102).*list/read payment transaction' inspection.log</con:value>
+          <con:value>grep -i -E '4201.*1010077571.*(42125748338|42010224130).*EVRY.*PCL.*E212777.*paymentTransactionSearch.*(1142|1143|1144|1145).*list/read payment transaction' inspection.log</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID>42010224130</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentTransactionSearch</Function><DateTime>20200902110047</DateTime><Description>list/read payment transaction</Description></AccessLogRecord>
-<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID>42125748338</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentTransactionSearch</Function><DateTime>20200902110047</DateTime><Description>list/read payment transaction</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID>42010224130</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentTransactionSearch</Function><DateTime>20200911114319</DateTime><Description>list/read payment transaction</Description></AccessLogRecord>
+<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID>42125748338</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentTransactionSearch</Function><DateTime>20200911114319</DateTime><Description>list/read payment transaction</Description></AccessLogRecord>]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -170,7 +164,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY,AC.OTHER_ID,AC.IBAN
@@ -576,6 +570,8 @@ declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_0';
 
 def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
+def firstZeros = customerid.substring(0,2)
+if (firstZeros=="00") customerid = Integer.parseInt(customerid)
 def accountNumber = context.expand( '${Properties#accountNumber}' )
 def creditAccountNumber = context.expand( '${Properties#CreditAccountNumber}' )
 
@@ -667,11 +663,6 @@ log.info "Inspection Log verified successfully!!"</script>
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>98becb02-8c3c-4186-96b8-f165b9a4523e</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>17c0268d-4d2c-422b-a0b0-9cdca9ee156e</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

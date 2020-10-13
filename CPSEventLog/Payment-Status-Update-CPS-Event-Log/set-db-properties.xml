@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="cd6028d4-5839-4e9c-93a8-45d526745fc7" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="set db properties" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>This TestCase fetches  the Account and customerID and store it in testSuite property so that all the TC's in the suite can use the same properties
+This Testcase must be executed first.</con:description>
+  <con:settings>
+    <con:setting id="45fc42ba-6169-4094-8cbd-72e60b416fe6fileName">set-db-properties</con:setting>
+    <con:setting id="cd6028d4-5839-4e9c-93a8-45d526745fc7fileName">set-db-properties</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB Account" id="c4b1e5a7-71b8-4d5a-8df8-4cce4ac824d3">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password>sad</con:password>
+      <con:connectionProperties/>
+      <con:query>select V.CUSTOMERID as CUSTOMERID,V.ACCOUNTNUMBER, V.CURRENCY as CURRENCY from V_AUTHORISATION V 
+where CUSTBANKID  = '4201' and V.CURRENCY = 'NOK' and closed != 'Y' and ROWNUM=1</con:query>
+      <con:assertion type="JDBC Status" id="84b558eb-dd0d-4610-8f72-f8a176f49c6a" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Set account" id="b8d5db49-9983-44e0-910d-33346de8c0be">
+    <con:settings/>
+    <con:config>
+      <script>//def ActiveEnvName= testRunner.getTestCase().getTestSuite().getProject().getActiveEnvironmentName()
+//log.info(ActiveEnvName)
+////@Field   activeDbConnection
+//
+//if (ActiveEnvName== "G-D4 Functional")
+//{
+////activeDbConnection = Sql.newInstance("jdbc:oracle:thin:@//10.246.89.97:1530/pen_g_functional", "pendata", "pen", "oracle.jdbc.driver.OracleDriver");
+//def ConnectionString = "jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional";
+// ConnectionString = testRunner.testCase.testSuite.setPropertyValue('ConnectionString', ConnectionString)
+//}
+//if (ActiveEnvName=="G-S1 System Test")
+//{
+////activeDbConnection = Sql.newInstance("jdbc:oracle:thin:@//10.246.89.97:1530/pwh_g_st", "pwhdata", "pwh", "oracle.jdbc.driver.OracleDriver");
+//def ConnectionString = "jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st";
+// ConnectionString = testRunner.testCase.testSuite.setPropertyValue('ConnectionString', ConnectionString) 
+//}
+//
+//if (ActiveEnvName=="G-D6 Sprint") 
+//{
+////activeDbConnection = Sql.newInstance("jdbc:oracle:thin:@10.246.89.97:1530/pwh_g_d6", "pwhdata", "pwh", "oracle.jdbc.driver.OracleDriver");
+//def ConnectionString = "jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d6";
+// ConnectionString = testRunner.testCase.testSuite.setPropertyValue('ConnectionString', ConnectionString) 
+//}
+//
+//if (ActiveEnvName=="G-D2 Sprint") 
+//{
+////activeDbConnection = Sql.newInstance("jdbc:oracle:thin:@10.246.89.97:1530/pen_g_sprint", "pendata", "pen", "oracle.jdbc.driver.OracleDriver");
+//def ConnectionString = "jdbc:oracle:thin:pendata/pen@10.246.89.97:1530/pen_g_sprint";
+// ConnectionString = testRunner.testCase.testSuite.setPropertyValue('ConnectionString', ConnectionString) 
+//}
+
+def customerID = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def debtorAccountCcy = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountCcy=  debtorAccountCcy.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+def UserID = customerID.substring(5) as int
+UserID = UserID.toString().replaceAll("[^a-zA-Z0-9]+","")
+log.info "UserID : "+ UserID
+testRunner.testCase.testSuite.setPropertyValue("customerid",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID",UserID)
+testRunner.testCase.testSuite.setPropertyValue("AgreementId",UserID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)
+testRunner.testCase.testSuite.setPropertyValue("currencyCode",debtorAccountCcy)
+log.info (testRunner.testCase.testSuite.getPropertyValue("accountNumber"))
+//activeDbConnection.close()</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>a2507d4e-e1d5-4712-bd70-066ebe9c91e5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

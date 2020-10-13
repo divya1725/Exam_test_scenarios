@@ -77,7 +77,7 @@ class MQMessageUtils {
 	
 	public def browseMessage(def queue, def msgUnique) {
 
-		def result = "No messsageStart"
+		def result = "No messsage"
 		Queue queueToReceive= new MQQueue(queue);		
 		MQQueueBrowser MqBrwse = queueSession.createBrowser(queueToReceive)
 		try {
@@ -92,7 +92,7 @@ class MQMessageUtils {
 						break
 					}
 				}else if (objMsg instanceof ObjectMessage) {
-					result = "No messsageNO"
+					result = "No messsage"
 					break;
 				}
 
@@ -101,7 +101,7 @@ class MQMessageUtils {
 		}
 		catch(Exception e)
 		{
-			result = "No messsageEx"
+			result = "No messsage"
 			e.printStackTrace()
 		}
 

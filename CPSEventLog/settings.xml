@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="ff2f7320-b8d6-4c0a-875f-28f43117218b" created="3.2.7" activeEnvironment="G-D4" name="CPSEventLog" resourceRoot="${projectDir}" updated="3.4.0" encryptionMode="Not encrypted" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\V7_multiProject\V4\pr-regression-valuechain\CPSEventLog\scripts" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="ff2f7320-b8d6-4c0a-875f-28f43117218bfileName">CPSEventLog</con:setting>
+    <con:setting id="IncludeOverview">true</con:setting>
+    <con:setting id="IncludeResults">true</con:setting>
+    <con:setting id="FlowLayout">false</con:setting>
+    <con:setting id="ErrorDetails">true</con:setting>
+    <con:setting id="IncludeCoverage">true</con:setting>
+    <con:setting id="GeneratableJUnitReport@Style">Multiple Pages</con:setting>
+    <con:setting id="GeneratableJUnitReport@Folder">C:\Users\Ei11721\Downloads\camt54</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>G-D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>PWH</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password>sad</con:password>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+    <con:databaseConnection>
+      <con:name>RBS_BANK</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+    <con:databaseConnection>
+      <con:name>RBS_FORFALL</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>def objProject = context.getProject()
+def projPath = objProject.getPath()
+objProject.setScriptLibrary(projPath + File.separator + "scripts")
+log.info "Project setUp script!!"
+//try{System.sleep(12000)}catch(Exception ex){}</con:beforeRunScript>
+  <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
+    <con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+// This code is often used for adding custom authentication to SoapUI Pro tests
+
+// If hardcoding the token, uncomment and change line 5
+// token = '4567'
+
+// If your token is parameterized in Project level custom property, uncomment line 8
+// token = request.parent.testCase.testSuite.project.getProperty('auth_token').getValue()
+
+// To modify all outgoing calls, remove comments from lines 11 to 16
+// headers = request.requestHeaders
+// if (headers.containsKey('auth_token2') == false) {
+//   headers.put('auth_token2', token)
+//   request.requestHeaders = headers
+// }</con:script>
+  </con:eventHandlers>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+
+def time =  CommonLibrary.getDate("yyyyMMddHHmmssSSS")
+def date1 = CommonLibrary.getDate("yyyyMMdd")
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+log.info "Before-->"
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	log.info CurrentStep
+	testStepResult.writeTo(pw)
+}
+ pw.close()
+ fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="23ec9ac6-fa12-442e-abea-92ed4afbc2c0" name="G-D4" index="0">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="912e725c-0af7-47b9-98c1-63202f718438" name="G-D7" index="1">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.106</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pendata/pen@10.246.89.97:1530/pen_g_sprint</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="83180fcb-9ca1-4f1d-8de7-8f78a367f80b" name="G-D5" index="3">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D5}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_d5</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="bb72e457-8659-41a8-b968-fca7845456a3" name="G-D6" index="2">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.108</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d6</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="81de96df-6d43-4c0d-858f-3654e1a4a45f" name="R-S6" index="7">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_s6)))</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="bbf112eb-3cdd-4b64-a488-c03a5ec8871e" name="G-S1" index="4">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.109</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="706e79cc-24a2-4659-9f6d-9d2a7c6edf2f" name="G-D2" index="5">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.106</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="03caf813-288a-47fe-a637-8156149f3c73" name="R-A1" index="6">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentStatusUpdate_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPayment_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountNumber</con:name>
+      <con:value>36281079039</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ForeignAccountCID</con:name>
+      <con:value>55057203187</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWH</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_s6)))</con:connectionString>
+        <con:password>sad</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_BANK</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_FORFALL</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:tags/>
+</con:soapui-project>

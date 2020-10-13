@@ -190,17 +190,17 @@ class ServerConnect {
 	}
 
 	public static boolean closeConnection() {
-		boolean flag=false;
+
 		try {
 			objSFTPChannel.exit();
 			objChan.disconnect();
 			objSession.disconnect();
-			flag=true;
+			 
 		}
 		catch(Exception ex) {
 			ex.printStackTrace()
 		}
-		return flag;
+		return true  
 	}
 
 	public static List grepFileFromServer(String fileDirectory, String fileName , String strGrep) {

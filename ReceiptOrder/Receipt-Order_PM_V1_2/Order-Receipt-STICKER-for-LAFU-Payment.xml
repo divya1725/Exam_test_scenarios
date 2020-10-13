@@ -98,6 +98,18 @@ Verifies tag in DB tables and operational array in all the searches.</con:descri
           <con:name>AgreementId</con:name>
           <con:value>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}</con:value>
         </con:property>
+        <con:property>
+          <con:name>transactionId</con:name>
+          <con:value>282769</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messageId</con:name>
+          <con:value>241959</con:value>
+        </con:property>
+        <con:property>
+          <con:name>paymentInfoId</con:name>
+          <con:value>258108</con:value>
+        </con:property>
       </con:properties>
     </con:config>
   </con:testStep>
@@ -108,14 +120,11 @@ Verifies tag in DB tables and operational array in all the searches.</con:descri
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select C.TRANSACTIONSID,A.MESSAGEID,C.DEBETACCOUNTNO,A.CUSTOMERID,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.RECEIPTORDER,A.MARKETTYPE,C.INITIATORBANKID
-from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
- A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.PAYMENTSTATUS = 'LAFU'
- and PAYMENTTYPE LIKE 'DOMM' 
- and C.INITIATORBANKID = '4201'  order by C.TRANSACTIONSID desc fetch first row only</con:query>
+      <con:query>select V.USERID as CUSTOMERID,V.ACCOUNTNUMBER as DEBETACCOUNTNO, V.CURRENCYCODE as CURRENCY , V.MARKETTYPE,V.CHANNEL
+from V_AUTH_USERINFO V where  V.MARKETTYPE = 'PM' and V.CHANNEL = 'INT'  and  BANKORGID  = '4201' and V.CURRENCYCODE = 'NOK' and ROWNUM=1</con:query>
       <con:assertion type="MessageContentAssertion" id="68103f0c-135c-449d-8964-d5e2304e7268" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -139,52 +148,12 @@ from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>12063</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
             <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
             <con:element>DEBETACCOUNTNO</con:element>
             <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42022512891</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
-            <con:element>PAYMENTTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>DOMM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
-            <con:element>PAYMENTSTATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
+            <con:operator>exists</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>LAFU</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECEIPTORDER[1]</con:xpath>
-            <con:element>RECEIPTORDER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>NONE</con:expectedValue>
+            <con:expectedValue>42025449260</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -198,26 +167,14 @@ from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
-            <con:element>INITIATORBANKID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
           <con:originalMessage><![CDATA[<Results>
    <ResultSet fetchSize="10">
       <Row rowNumber="1">
-         <TRANSACTIONSID>12063</TRANSACTIONSID>
-         <DEBETACCOUNTNO>42022512891</DEBETACCOUNTNO>
-         <PAYMENTTYPE>DOMM</PAYMENTTYPE>
-         <PAYMENTSTATUS>COMP</PAYMENTSTATUS>
-         <RECEIPTORDER>NONE</RECEIPTORDER>
+         <CUSTOMERID>18079117796</CUSTOMERID>
+         <DEBETACCOUNTNO>42025449260</DEBETACCOUNTNO>
+         <CURRENCY>NOK</CURRENCY>
          <MARKETTYPE>PM</MARKETTYPE>
-         <INITIATORBANKID>4201</INITIATORBANKID>
+         <CHANNEL>INT</CHANNEL>
       </Row>
    </ResultSet>
 </Results>]]></con:originalMessage>
@@ -226,7 +183,7 @@ from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="goto" name="Conditional Goto" id="f15dfa63-5f22-4d16-9b05-93fca9c01182">
+  <con:testStep type="goto" name="Conditional Goto" id="f15dfa63-5f22-4d16-9b05-93fca9c01182" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:condition>
@@ -376,64 +333,6 @@ from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C where A.MARKETTYPE = 'PM' and
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="SOAP Response" id="8679ce6d-5034-44cb-bde3-51473670a4e3"/>
-        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="e1b7af21-c2c1-4377-a9b6-81244b8ffad3">
-          <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="886556d9-3298-44ab-88c8-4d5fddc5961a" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -1206,23 +1105,62 @@ declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="transfer" name="DataTransfer" id="5ad67b8a-fb16-4b9d-8acc-0b0c65b40785">
+    <con:settings/>
+    <con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false">
+        <con:name>transactionId</con:name>
+        <con:sourceType>Response</con:sourceType>
+        <con:sourceStep>Payment Create</con:sourceStep>
+        <con:sourcePath>declare namespace ns6='urn:pins.payment.edb.com:ws:paymentinitiation:v1_7';
+declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
+//ns6:PaymentCreateResponse[1]/ns6:paymentResult[1]/ns2:transactionId[1]</con:sourcePath>
+        <con:targetType>transactionId</con:targetType>
+        <con:targetStep>Properties</con:targetStep>
+        <con:targetPath/>
+        <con:upgraded>true</con:upgraded>
+      </con:transfers>
+      <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false">
+        <con:name>messageId</con:name>
+        <con:sourceType>Response</con:sourceType>
+        <con:sourceStep>Payment Create</con:sourceStep>
+        <con:sourcePath>declare namespace ns6='urn:pins.payment.edb.com:ws:paymentinitiation:v1_7';
+declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
+//ns6:PaymentCreateResponse[1]/ns6:paymentResult[1]/ns2:messageId[1]</con:sourcePath>
+        <con:targetType>messageId</con:targetType>
+        <con:targetStep>Properties</con:targetStep>
+        <con:upgraded>true</con:upgraded>
+      </con:transfers>
+      <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false">
+        <con:name>paymentId</con:name>
+        <con:sourceType>Response</con:sourceType>
+        <con:sourceStep>Payment Create</con:sourceStep>
+        <con:sourcePath>declare namespace ns6='urn:pins.payment.edb.com:ws:paymentinitiation:v1_7';
+declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
+//ns6:PaymentCreateResponse[1]/ns6:paymentResult[1]/ns2:paymentInfoId[1]</con:sourcePath>
+        <con:targetType>paymentInfoId</con:targetType>
+        <con:targetStep>Properties</con:targetStep>
+        <con:upgraded>true</con:upgraded>
+      </con:transfers>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="UpdateTransactions" id="838f0c3f-1a4d-4703-87f4-523422262d08">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>Update TRANSACTIONS set PAYMENTSTATUS = 'LAFU' where PAYMENT_REF in (${Payment Create#Response#declare namespace ns6='urn:pins.payment.edb.com:ws:paymentinitiation:v1_7'; declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7'; //ns6:PaymentCreateResponse[1]/ns6:paymentResult[1]/ns2:paymentReference[1]})</con:query>
+      <con:query>Update TRANSACTIONS set PAYMENTSTATUS = 'LAFU' where PAYMENT_REF in (${Properties#transactionId})</con:query>
       <con:storedProcedure>false</con:storedProcedure>
       <con:assertion type="JDBC Status" id="30b0ba63-c450-4b35-8142-f57f891a3c15" name="JDBC Status"/>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="groovy" name="runFetchTransactionStep" id="05cc50df-5242-4a3a-a2ec-12762d847aec">
+  <con:testStep type="groovy" name="runFetchTransactionStep" id="05cc50df-5242-4a3a-a2ec-12762d847aec" disabled="true">
     <con:settings/>
     <con:config>
       <script>testRunner.runTestStepByName("Fetch LAFU Data")</script>
@@ -1263,7 +1201,7 @@ declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
          <urn:receiptOrder>
             <urn1:debitAccount>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}</urn1:debitAccount>
             <!--You have a CHOICE of the next 2 items at this level-->
-            <urn1:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn1:transactionId>
+            <urn1:transactionId>${Properties#transactionId}</urn1:transactionId>
             <urn1:receiptType>STICKER</urn1:receiptType>
          </urn:receiptOrder>
       </urn:ReceiptOrderUpdateRequest>
@@ -1561,10 +1499,10 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select TRANSACTIONSID,PAYMENTTYPE,PAYMENTSTATUS,RECEIPTORDER from TRANSACTIONS where TRANSACTIONSID = '${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:query>select TRANSACTIONSID,PAYMENTTYPE,PAYMENTSTATUS,RECEIPTORDER from TRANSACTIONS where TRANSACTIONSID = '${Properties#transactionId}'</con:query>
       <con:assertion type="MessageContentAssertion" id="8da21536-2427-4cde-a860-6d509bf6b1f1" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -1675,7 +1613,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
    <soapenv:Body>
       <urn:PaymentReadRequest>
          <!--You have a CHOICE of the next 2 items at this level-->
-         <urn:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId>
+         <urn:transactionId>${Properties#transactionId}</urn:transactionId>
       </urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
@@ -2034,7 +1972,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
          <!--You have a CHOICE of the next 2 items at this level-->
          
          
-      <urn:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId></urn:PaymentReadRequest>
+      <urn:transactionId>${Properties#transactionId}</urn:transactionId></urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Valid HTTP Status Codes" id="aaf9935f-2460-46be-a311-a413b0276b6f" name="Valid HTTP Status Codes">
@@ -2291,68 +2229,10 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
    <soapenv:Body>
       <urn:PaymentReadRequest>
          <!--You have a CHOICE of the next 2 items at this level-->
-         <urn:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId>
+         <urn:transactionId>${Properties#transactionId}</urn:transactionId>
       </urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="bf010744-199f-4422-bd04-02b418565dee" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="GroovyScriptAssertion" id="ba484c66-2574-4a19-8683-e1cbc577df24" name="Script Assertion 2">
           <con:configuration>
             <scriptText>def testStepName
@@ -2593,7 +2473,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
    <soapenv:Body>
       <urn:PaymentReadRequest>
          <!--You have a CHOICE of the next 2 items at this level-->
-         <urn:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId>
+         <urn:transactionId>${Properties#transactionId}</urn:transactionId>
         
       </urn:PaymentReadRequest>
    </soapenv:Body>
@@ -3110,68 +2990,10 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
    <soapenv:Body>
       <urn:PaymentReadRequest>
          <!--You have a CHOICE of the next 2 items at this level-->
-         <urn:transactionId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId>
+         <urn:transactionId>${Properties#transactionId}</urn:transactionId>
       </urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="7ec1382a-d645-43b0-85b4-afde901c373a" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="GroovyScriptAssertion" id="005dc888-1020-4d47-8b3d-0051a0a480a2" name="ValidateOperationalArray">
           <con:configuration>
             <scriptText>def testStepName
@@ -3449,7 +3271,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   <!--Optional:-->
                   <!--Optional:-->
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
@@ -3834,7 +3656,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:accountCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:accountCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:accountCriteria>
          </urn:searchCriteria>
       </urn:PaymentAccountSearchRequest>
    </soapenv:Body>
@@ -4128,7 +3950,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   
                   <!--Optional:-->
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
             </urn1:accountCriteria>
          </urn:searchCriteria>
@@ -4396,7 +4218,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:accountCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:accountCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:accountCriteria>
          </urn:searchCriteria>
       </urn:PaymentAccountSearchRequest>
    </soapenv:Body>
@@ -4694,7 +4516,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                      <!--Optional:-->
                   </urn2:dateFromTo>
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
             </urn1:accountCriteria>
          </urn:searchCriteria>
@@ -4995,7 +4817,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   <!--Optional:-->
                   
                   <!--Optional:-->
-               </urn1:requestedExecutionDate><urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               </urn1:requestedExecutionDate><urn1:messageId>${Properties#messageId}</urn1:messageId>
                
                <!--Optional:-->
                <!--Optional:-->
@@ -5392,7 +5214,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:messageCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:messageCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:messageCriteria>
          </urn:searchCriteria>
       </urn:PaymentMessageSearchRequest>
    </soapenv:Body>
@@ -5683,7 +5505,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   <!--Optional:-->
                   <!--Optional:-->
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
             </urn1:messageCriteria>
          </urn:searchCriteria>
@@ -5951,7 +5773,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:messageCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:messageCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:messageCriteria>
          </urn:searchCriteria>
       </urn:PaymentMessageSearchRequest>
    </soapenv:Body>
@@ -6251,7 +6073,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   </urn2:dateFromTo>
                </urn1:requestedExecutionDate>
                <!--Optional:-->
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
             </urn1:messageCriteria>
          </urn:searchCriteria>
       </urn:PaymentMessageSearchRequest>
@@ -6556,7 +6378,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                <!--Zero or more repetitions:-->
                <!--Zero or more repetitions:-->
                <!--Optional:-->
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId><urn1:requestedExecutionDate>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId><urn1:requestedExecutionDate>
                   <!--You have a CHOICE of the next 2 items at this level-->
                   <!--Optional:-->
                   <!--Optional:-->
@@ -6881,7 +6703,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                <!--Zero or more repetitions:-->
                <!--Zero or more repetitions:-->
                <!--Optional:-->
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <urn1:requestedExecutionDate>
                   <!--You have a CHOICE of the next 2 items at this level-->
                   <!--Optional:-->
@@ -7189,7 +7011,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                <!--Zero or more repetitions:-->
                <!--Zero or more repetitions:-->
                <!--Optional:-->
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId><urn1:requestedExecutionDate>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId><urn1:requestedExecutionDate>
                   <!--You have a CHOICE of the next 2 items at this level-->
                   <!--Optional:-->
                   
@@ -7463,7 +7285,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:transactionCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:transactionCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionSearchRequest>
    </soapenv:Body>
@@ -7785,7 +7607,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                <!--Zero or more repetitions:-->
                
                <!--Optional:-->
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId><urn1:requestedExecutionDate>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId><urn1:requestedExecutionDate>
                   <!--You have a CHOICE of the next 2 items at this level-->
                   <!--Optional:-->
                   
@@ -8098,7 +7920,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   <!--Optional:-->
                   
                   <!--Optional:-->
-               </urn1:requestedExecutionDate><urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               </urn1:requestedExecutionDate><urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
@@ -8362,7 +8184,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:paymentInfoCriteria>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId></urn1:paymentInfoCriteria>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId></urn1:paymentInfoCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoSearchRequest>
    </soapenv:Body>
@@ -8656,7 +8478,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                   
                   <!--Optional:-->
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
@@ -8958,7 +8780,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                      <!--Optional:-->
                   </urn2:dateFromTo>
                </urn1:requestedExecutionDate>
-               <urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               <urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
@@ -9275,7 +9097,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
                      <!--Optional:-->
                      
                   </urn2:dateFromTo>
-               </urn1:requestedExecutionDate><urn1:messageId>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</urn1:messageId>
+               </urn1:requestedExecutionDate><urn1:messageId>${Properties#messageId}</urn1:messageId>
                <!--Optional:-->
                
                <!--Optional:-->
@@ -9597,6 +9419,11 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>05cc50df-5242-4a3a-a2ec-12762d847aec</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5ad67b8a-fb16-4b9d-8acc-0b0c65b40785</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

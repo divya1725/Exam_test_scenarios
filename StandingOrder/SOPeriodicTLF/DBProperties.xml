@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="90820bc7-3410-4e4d-9837-f85a2e48bb38" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DBProperties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="61059c26-62bb-4d6c-b022-edc40cb6920ffileName">DB_Properties</con:setting>
+    <con:setting id="4a9fc481-8b00-480d-86c0-0341f2f524a5fileName">DB_Properties</con:setting>
+    <con:setting id="90554be2-7156-4af8-8342-31aca900be37fileName">DB_Properties</con:setting>
+    <con:setting id="90820bc7-3410-4e4d-9837-f85a2e48bb38fileName">DBProperties</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="FetchAccount" id="5a84fd24-7c5c-4cb6-a490-fdc5cb2d41f7">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE,USERID  from V_AUTH_USERINFO where 
+BANKORGID='${#TestSuite#orgId}' and userID='${#TestSuite#UserID}' and MARKETTYPE='PM' and ROWNUM=1</con:query>
+      <con:assertion type="Simple Contains" id="952cf5c6-64ff-49d3-99f0-21e3165b92ac" name="Contains">
+        <con:configuration>
+          <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount" id="e8a68540-0a1e-49cf-a6e5-b99aedae2da9">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}' )
+def debtorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def USERID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/USERID[1]}' )
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+USERID= USERID.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+
+testRunner.testCase.testSuite.setPropertyValue("customerid",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID",USERID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

@@ -187,7 +187,7 @@ class ServerConnect {
 
 	}
 
-	public static void closeConnection() {
+	public static boolean closeConnection() {
 
 		try {
 			objSFTPChannel.exit();
@@ -197,6 +197,7 @@ class ServerConnect {
 		catch(Exception ex) {
 			ex.printStackTrace()
 		}
+		return true
 	}
 
 	public static List grepFileFromServer(String fileDirectory, String fileName , String strGrep) {

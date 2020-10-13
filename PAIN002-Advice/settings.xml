@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="ec293ed2-d00f-4b88-9eff-45f6e6a7ea2d" created="3.0.0-m-SNAPSHOT" activeEnvironment="G-D4" name="PAIN002_Advice" resourceRoot="" updated="3.4.0" encryptionMode="Not encrypted" compositeProjectFormat="1.2" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\V7_multiProject\V4\pr-regression-valuechain\PAIN002-Advice\scripts" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="ec293ed2-d00f-4b88-9eff-45f6e6a7ea2dfileName">PAIN002-Advice-readyapi-project</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>G-D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EnvIP</con:name>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>PENDATA</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:xvx/PASS_VALUE@127.0.0.1:1521:zvfz</con:connectionString>
+      <con:password>xcv</con:password>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>////Set scriptLibrary path - project level
+//def objProject = context.getProject()
+//def projPath = objProject.getPath()
+//objProject.setScriptLibrary(projPath + File.separator + "scripts")
+////log.info "TestSuite setUp script!!"</con:beforeRunScript>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
+def date1 = CommonLibrary.getDate('yyyyMMdd')
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+log.info "Before-->"
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	log.info CurrentStep
+	testStepResult.writeTo(pw)
+}
+ pw.close()
+ fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="cf23a59a-f8a8-4220-9c70-37192ad3655d" name="G-D4" index="0">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/d4/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value>10.246.89.48</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value>1430</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value>QT0PPI</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value>PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value>QT0PPI.PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="216e57bb-2862-49c6-9799-dc7e750e73cc" name="G-D2" index="1">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.106</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.79</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/d7/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value>10.246.89.50</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value>1432</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value>QT0PPI</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value>PAIN001.SPRINT.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value>QTOPPI.PAIN001.SPRINT.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pendata/pen@10.246.89.97:1530/pen_g_sprint</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="0bc8f3e7-1508-45f2-8dd1-f50785d4bbe3" name="G-S1" index="2">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.109</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.82</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/s1/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value>10.246.89.48</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value>1430</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value>QT0PPI</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value>PAIN001.PRSYS.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value>QTOPPI.PAIN001.PRSYS.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="7c960665-b521-49d3-ab66-f12a3d8069b0" name="G-D6" index="3">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.108</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/d6/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value>10.246.89.49</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value>1431</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value>QT0PPI</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value>PAIN001.D6.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value>QTOPPI.PAIN001.D6.CPS.PIN.ONLINE</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d6</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="4b4c9850-86ff-48ce-bce0-7e16455b6aff" name="R-S6" index="4">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/d4/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="6acad59c-c71a-413d-ab76-7c4a794d0528" name="R-S1" index="5">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S1}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EnvIP</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.107</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sourcePath</con:name>
+      <con:value>/ebs/d4/pin/data/cps/advice/p02/out/</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PENDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:sensitiveInformation/>
+  <con:environmentSpec>
+    <con:entry environmentId="216e57bb-2862-49c6-9799-dc7e750e73cc">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tags/>
+</con:soapui-project>

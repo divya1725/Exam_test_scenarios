@@ -18,20 +18,20 @@ pipeline {
         label 'docker'
     }
           
-  triggers {
-    	cron(env.BRANCH_NAME == 'multiProjectRun' ? '30 05 * * 1-5' : '')
-    }
+//  triggers {
+//    	cron(env.BRANCH_NAME == 'master' ? '30 04 * * 1-5' : '')
+//    }
   
     parameters {
 	   choice(
             name: 'Environments',
-            choices: ['G-S1','G-D4','G-D2', 'G-D5'],          
+            choices: ['G-D4','G-S1','G-D2', 'G-D5'],          
             description: 'Environment to run against'
         )      
     }
 
   options {
-        timeout(time: 90, unit: 'MINUTES')
+        timeout(time: 130, unit: 'MINUTES')
         timestamps()
         buildDiscarder(logRotator(artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '20', numToKeepStr: '20'))
         skipStagesAfterUnstable()
@@ -41,8 +41,11 @@ pipeline {
         stage('ReadyAPITest') { 
             steps {                
                script{
-                     sh 'chmod +x ./run-tests.sh'
-                     sh "./run-tests.sh ${params.Environments}" 
+                    // sh 'chmod +x ./run-tests.sh'
+                    //sh "./run-tests.sh ${params.Environments}" 
+					
+                 	sh "docker build -t soapui . -f Dockerfile"
+                 	sh """docker run -e COMMAND_LINE="${params.Environments}" --name soapucontainermultiproj soapui"""
                }
             }
         }
@@ -53,7 +56,13 @@ pipeline {
           
            script{
              	
-                  junit "**/reports/*.xml"             	
+                  sh "docker cp soapucontainermultiproj:/usr/local/SmartBear/project ${WORKSPACE}"
+             	  sh "docker stop soapucontainermultiproj"
+             	  sh "docker rm soapucontainermultiproj"
+                  
+            	  junit "**/*/reports/*.xml"   
+                  
+             	  archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
 
                   def files = findFiles(glob: "**/*/project.content")
                    files.each{ val->
@@ -62,6 +71,7 @@ pipeline {
                         projectList.add(projStr)                                  
                             }
                 }
+          cleanWs()
 
          }
         success {
@@ -70,7 +80,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'good',
-                    message: "Regression Testing master : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
+                    message: "Regression Testing MultiProjectRun : Projects:${projectList} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details âœ…".stripIndent()
 
                 )
               
@@ -82,7 +92,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'danger',
-                    message: "master : Regression Testing job failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "MultiProjectRun : Regression Testing job failed in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
               
@@ -95,7 +105,7 @@ pipeline {
                 slackSend(
                     channel: "#regressiontestresults",
                     color: 'warning',
-                    message: "master : Regression Testing job unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
+                    message: "MultiProjectRun : Regression Testing job unstable in ${params.Environments}. Check ${BUILD_URL} for details ðŸ™ˆ".stripIndent()
 
                 )
               

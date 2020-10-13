@@ -1,0 +1,1798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="7bff173b-a14d-4aad-b438-66dfe4258dd1" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="SOPeriodic" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="7bff173b-a14d-4aad-b438-66dfe4258dd1fileName">SOPeriodic</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="FetchAccount" id="544bba71-1aa4-4467-8beb-1830f44c4077">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  from V_authorisation where CUSTBANKID='4201'  and length(customerID)='11' and ROWNUM=1</con:query>
+      <con:assertion type="Simple Contains" id="952cf5c6-64ff-49d3-99f0-21e3165b92ac" name="Contains">
+        <con:configuration>
+          <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Set_Account" id="5ce0202d-986a-4bdc-900f-4f84028e0b98">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def debtorAccountCcy = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountCcy=  debtorAccountCcy.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNumber",debtorAccountNumber)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("currencyCode",debtorAccountCcy)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="81329e6a-1a5b-4b93-9130-8ea8a1d6cdda">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>UserID</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>NBA</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel_PM</con:name>
+          <con:value>INT</con:value>
+        </con:property>
+        <con:property>
+          <con:name>AgreementId</con:name>
+          <con:value>410892</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>42125748338</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountOwnerIdentifier</con:name>
+          <con:value>00956027993</con:value>
+        </con:property>
+        <con:property>
+          <con:name>currencyCode</con:name>
+          <con:value>NOK</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountType</con:name>
+          <con:value>CoreAccount</con:value>
+        </con:property>
+        <con:property>
+          <con:name>approvalLimit</con:name>
+          <con:value>500000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>registerLimit</con:name>
+          <con:value>500000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>numberOfVerifiers</con:name>
+          <con:value>0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>numberOfApprovers</con:name>
+          <con:value>1</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bookingLevel</con:name>
+          <con:value>D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreditorAgent</con:name>
+          <con:value>ESSESESSXXX</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreditorCountry</con:name>
+          <con:value>SE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreditorCurrency</con:name>
+          <con:value>SEK</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel_BM</con:name>
+          <con:value>BES</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreditAccountNumber</con:name>
+          <con:value>SE4550000000058398257466</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Amount</con:name>
+          <con:value>600</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ExceptionStartDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(4).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ExceptionEndDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(6).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="SO Auth" id="4d4ebfed-0259-472e-a898-0d4b5ddf9240">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
+      <con:operation>PaymentAuthorizationCreate</con:operation>
+      <con:request name="SO Auth" id="14845713-0e94-4ecc-97e6-5abdc30077ea">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_S1}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">
+   <soapenv:Header>
+        <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest>
+        <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData>
+               <urn2:agreementData>
+                  <urn3:agreementId>${Properties#AgreementId}</urn3:agreementId>
+                  <urn3:bankId>${Properties#bankId}</urn3:bankId>
+                  <urn3:customerID>${Properties#customerid}</urn3:customerID>
+                  <urn3:productID>${Properties#customerid}</urn3:productID>
+               </urn2:agreementData>
+               <urn2:userId>${Properties#UserID}</urn2:userId>
+               <urn2:sessionID>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:sessionID>
+               <urn2:firstName>Test</urn2:firstName>
+               <urn2:lastName>Cust</urn2:lastName>
+               <urn2:userAccount>
+                  <urn2:accountNumber>${Properties#accountNumber}</urn2:accountNumber>
+                  <urn2:accountOwnerIdentifier>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:accountOwnerIdentifier>
+                  <urn2:currencyCode>${Properties#currencyCode}</urn2:currencyCode>
+                  <urn2:accountType>${Properties#accountType}</urn2:accountType>
+                  <urn2:role>View</urn2:role>
+                  <urn2:role>Register</urn2:role>
+                  <urn2:role>Appprove</urn2:role>
+                  <urn2:role>Salary</urn2:role>
+                  <urn2:role>Transfer</urn2:role>
+                  <urn2:approvalLimit>${Properties#approvalLimit}</urn2:approvalLimit>
+                  <urn2:registerLimit>${Properties#registerLimit}</urn2:registerLimit>
+                  <urn2:numberOfVerifiers>${Properties#numberOfVerifiers}</urn2:numberOfVerifiers>
+                  <urn2:numberOfApprovers>${Properties#numberOfApprovers}</urn2:numberOfApprovers>
+                  <urn2:bookingLevel>${Properties#bookingLevel}</urn2:bookingLevel>
+               </urn2:userAccount>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="c73c546c-0144-4336-badc-39ac98bdfe80"/>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6cf14742-0c36-49d4-8965-7cceba067f95">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="dd815c52-5459-48fb-8082-7934a148a22b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="860dd8ff-0e0a-4b51-a17c-8b9dd217d889">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="41b5b409-04bf-4843-b02b-f959451ee385" name="SO_Periodic_Create_V2_0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V2_0" id="4f59e33e-49b2-466e-9db1-6662e3e7e87d">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v2_0">
+    <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <urn1:exemptions>
+               <!--1 or more repetitions:-->
+               <urn1:exemption>
+                  <urn1:startDate>2019-11-29+05:00</urn1:startDate>
+                  <urn1:endDate>2019-12-05+05:00</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+                  <!--Optional:-->
+                  <urn1:description>DescriptionOneExemption</urn1:description>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:name>Debtor Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:debtor>
+               <!--Optional:-->
+               <urn3:ultimateDebtor>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:ultimateDebtor>
+               <!--Optional:-->
+            </urn1:paymentInfo>
+            <!--1 or more repetitions:-->
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:chargeBearer>SHAR</urn4:chargeBearer>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressType>ADDR</urn2:addressType><urn2:department>dept name</urn2:department><urn2:streetName>street name</urn2:streetName><urn2:buildingNumber>1123</urn2:buildingNumber><urn2:postCode>3344</urn2:postCode><urn2:townName>town name</urn2:townName><urn2:countrySubDivision>sub division</urn2:countrySubDivision><urn2:country>SE</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressType>HOME</urn2:addressType><urn2:subDepartment>home sub dept</urn2:subDepartment><urn2:buildingNumber>3322</urn2:buildingNumber><urn2:postCode>2311</urn2:postCode><urn2:townName>home town</urn2:townName><urn2:countrySubDivision>sub division</urn2:countrySubDivision><urn2:country>SE</urn2:country>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount><urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="607cbe5f-6bcf-4621-a172-e96872982440" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="9cc323e5-2dc0-4ccf-8489-4614791bc356" name="SO_Periodic_Create_V1_5">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V1_5" id="74c836cc-f2f6-44e1-aa30-c1f666c0d4d1">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_5" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v1_5" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v1_5">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <urn1:exemptions>
+               <!--1 or more repetitions:-->
+               <urn1:exemption>
+                  <urn1:startDate>2019-11-29+05:00</urn1:startDate>
+                  <urn1:endDate>2019-12-05+05:00</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+                  <!--Optional:-->
+                  <urn1:description>DescriptionOneExemption</urn1:description>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:name>Debtor Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:debtor>
+               <!--Optional:-->
+               <urn3:ultimateDebtor>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:ultimateDebtor>
+               <!--Optional:-->
+            </urn1:paymentInfo>
+            <!--1 or more repetitions:-->
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:chargeBearer>SHAR</urn4:chargeBearer>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressType>ADDR</urn2:addressType><urn2:department>dept name</urn2:department><urn2:streetName>street name</urn2:streetName><urn2:buildingNumber>1123</urn2:buildingNumber><urn2:postCode>3344</urn2:postCode><urn2:townName>town name</urn2:townName><urn2:countrySubDivision>sub division</urn2:countrySubDivision><urn2:country>SE</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressType>HOME</urn2:addressType><urn2:subDepartment>home sub dept</urn2:subDepartment><urn2:buildingNumber>3322</urn2:buildingNumber><urn2:postCode>2311</urn2:postCode><urn2:townName>home town</urn2:townName><urn2:countrySubDivision>sub division</urn2:countrySubDivision><urn2:country>SE</urn2:country>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount><urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="6dbfe37a-b20c-4964-a04f-2c3cc53eb8ff" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5/PINSStandingOrder_V1_5ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="668a1d5d-b4e7-48e6-8a9b-7799fa7548e0" name="SO_Periodic_Create_V1_4">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_4ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V1_4" id="eb20e6f2-e66a-46f1-ae36-508b0b90779b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_4" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_4" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v1_4" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v1_4">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            
+            <urn1:exemptions><urn1:exemption><urn1:startDate>${Properties#ExceptionStartDate}</urn1:startDate><urn1:endDate>${Properties#ExceptionEndDate}</urn1:endDate><urn1:recurring>false</urn1:recurring><urn1:description>DescriptionOneExemption</urn1:description></urn1:exemption></urn1:exemptions><urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:name>Debtor Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--0 to 7 repetitions:-->
+                     
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+               </urn3:debtor>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:paymentInfo>
+            <!--1 or more repetitions:-->
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+                  
+               </urn4:amount>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn4:chargeBearer>CRED</urn4:chargeBearer>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--0 to 7 repetitions:-->
+                     
+                  <urn2:buildingNumber>2221</urn2:buildingNumber><urn2:postCode>2121</urn2:postCode><urn2:townName>town name</urn2:townName><urn2:country>SE</urn2:country></urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     <urn2:postCode>4445</urn2:postCode><urn2:townName>town name</urn2:townName><urn2:countrySubDivision>sub division</urn2:countrySubDivision><urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               <urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+            
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="993c079a-c3bc-4645-a5b6-c6a35f8603c9" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_4/PINSStandingOrder_V1_4ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="9ec0711d-8484-458e-b813-8377f77d04b8" name="SO_Periodic_Create_V1_3">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_3ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V1_3" id="eb326510-97ed-4cf5-a151-bcddd0ab982b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_3" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_3" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v1_3" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v1_3">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>BIWEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>AFTER</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <urn1:exemptions>
+               <!--1 or more repetitions:-->
+               <urn1:exemption>
+                  <urn1:startDate>${Properties#ExceptionStartDate}</urn1:startDate>
+                  <urn1:endDate>${Properties#ExceptionEndDate}</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+                  <!--Optional:-->
+                  <urn1:description>DescriptionOneExemption</urn1:description>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:name>Debtor Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:debtor>
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+                  
+               </urn4:amount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:addressType>ADDR</urn2:addressType>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:buildingNumber>3333</urn2:buildingNumber>
+                     <urn2:postCode>6657</urn2:postCode>
+                     <urn2:townName>town name</urn2:townName>
+                     <urn2:countrySubDivision>sub division</urn2:countrySubDivision>
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:postCode>4243</urn2:postCode><urn2:townName>town</urn2:townName>
+                     <urn2:countrySubDivision>division</urn2:countrySubDivision>
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="834b15a1-b14e-4c02-a672-d41059a4d8eb" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_3/PINSStandingOrder_V1_3ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="a6f7b1ce-c115-4957-bef8-e8a86db7863d" name="SO_Periodic_Create_V1_2">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_2ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V1_2" id="25952383-3d36-4ebb-991c-eacb1217b171">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v1_2" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v1_2">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>MONTHLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>AFTER</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <urn1:exemptions>
+               <!--1 or more repetitions:-->
+               <urn1:exemption>
+                  <urn1:startDate>${Properties#ExceptionStartDate}</urn1:startDate>
+                  <urn1:endDate>${Properties#ExceptionEndDate}</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+                  <!--Optional:-->
+                  <urn1:description>DescriptionOneExemption</urn1:description>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:debtor>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:instructionForDebtorAgent>?</urn3:instructionForDebtorAgent>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:chargeBearer>CRED</urn4:chargeBearer>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>ADDR</urn2:addressType>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:streetName>sdds</urn2:streetName>
+                     <urn2:buildingNumber>3444</urn2:buildingNumber>
+                     <urn2:postCode>1223</urn2:postCode>
+                     <urn2:townName>dssd</urn2:townName>
+                     <urn2:countrySubDivision>csmdlk</urn2:countrySubDivision>
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:buildingNumber>6567</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>5445</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>fddfdfg</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>fgddf</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="3f1ba649-2765-48e8-a1a9-b5fc61ef6a86" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2/PINSStandingOrder_V1_2ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="c9797567-6631-4e49-aad5-4727e6415557" name="SO_Periodic_Create_V1_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_1ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderCreate</con:operation>
+      <con:request name="SO_Periodic_Create_V1_1" id="5f885008-9f4e-4d7f-bcb3-b2810f88e960">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_1" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_1" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v3" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v1" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v1_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="dd5dbe72-42d8-4a28-a725-5224c185545b"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>DAILY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <urn1:exemptions>
+               <!--1 or more repetitions:-->
+               <urn1:exemption>
+                  <urn1:startDate>${Properties#ExceptionStartDate}</urn1:startDate>
+                  <urn1:endDate>${Properties#ExceptionEndDate}</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+                  <!--Optional:-->
+                  <urn1:description>DescriptionOneExemption</urn1:description>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>INVS</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+               </urn3:debtor>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:paymentInfo>
+            <!--1 or more repetitions:-->
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>100</urn2:amount>
+                  </urn2:instructedAmount>
+                  
+               </urn4:amount>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>ADDR</urn2:addressType>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     <urn2:streetName>fg</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>323</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>3223</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>dfdf</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>dfdf</urn2:countrySubDivision>
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>Cred Name</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     
+                     <!--Optional:-->
+                     <urn2:buildingNumber>3323</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>2333</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>fddf</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>ddfg</urn2:countrySubDivision>
+                     <urn2:country>SE</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+                  <!--Optional:-->
+                  
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>SEK</urn2:currency>
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               <urn4:remittanceInformationUnstructured>Remittance Info</urn4:remittanceInformationUnstructured>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="81b73edb-3481-40a4-a266-e5e26e5edf37" name="Contains">
+          <con:configuration>
+            <token>agreementId</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_1/PINSStandingOrder_V1_1ServicePortType/standingOrderCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="124b7527-2a31-4094-a9c4-1bba6e73df11">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>3aa1c9c5-6317-4591-a55e-ab29864c8832</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>366ac606-ba01-4c64-b3b0-842c13a9a6db</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9fcfbd99-0041-42bd-8694-fecbea7b19ff</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a8f9de3d-6eb5-4754-8e85-9c0b77e9b68f</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5f33dbcb-da25-48f1-b5db-d128ee862c71</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9189a4f7-5072-4683-881b-9b5da7106ad3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f33e2708-6709-43d2-8fbb-68da2015764f</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>544bba71-1aa4-4467-8beb-1830f44c4077</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

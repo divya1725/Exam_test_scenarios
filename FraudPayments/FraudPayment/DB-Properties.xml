@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="e8c08f71-5cdf-4df1-966b-cfe38ea266f2" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DB Properties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="8084dd8f-9e51-48d8-b4ac-a94522a6c004" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DB Properties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
     <con:setting id="e8c08f71-5cdf-4df1-966b-cfe38ea266f2fileName">DB-Properties</con:setting>
+    <con:setting id="8084dd8f-9e51-48d8-b4ac-a94522a6c004fileName">DB-Properties</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="jdbc" name="RBS_DateUpdate" id="63c49eac-9e9f-4446-98f8-a805ad7e8936">
+  <con:testStep type="jdbc" name="RBS_DateUpdate" id="e04353c4-672b-4d31-b982-e2f69f9a88e5">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>RBS</con:dbConnectionName>
+      <con:dbConnectionName>RBS_BANK</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
-      <con:password>pen</con:password>
+      <con:password/>
       <con:connectionProperties/>
       <con:query>update FRAUD_KRITERIER 
 set OPPRORADATO = '${=CommonLibrary.getDate("dd-MMM-yy")}',
@@ -22,29 +23,29 @@ where INSTITUTION_CODE = '4201'</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="RBS Fetch FraudCriteria" id="1088d464-7587-4a93-b272-2e30ae78d65a">
+  <con:testStep type="jdbc" name="RBS Fetch FraudCriteria" id="88a58c81-f664-4dab-9a23-7eb0728bd7de">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>RBS</con:dbConnectionName>
+      <con:dbConnectionName>RBS_BANK</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:bank/bank@10.246.89.97:1530/rbst5_taf</con:connectionString>
-      <con:password>pen</con:password>
+      <con:password/>
       <con:connectionProperties/>
       <con:query>select * from FRAUD_KRITERIER where INSTITUTION_CODE = '4201'</con:query>
       <con:assertion type="JDBC Status" id="42b9adc8-8775-4145-8497-9e716948c518" name="JDBC Status"/>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="FetchAccount_NOK" id="c949f089-dc37-4c81-be50-c78e89e7ab44">
+  <con:testStep type="jdbc" name="FetchAccount_NOK" id="afd9b960-cac7-430d-8962-9b1154558899">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  from V_authorisation where CUSTBANKID='4201' and CURRENCY = 'NOK' and length(customerID)='11' and ROWNUM=1</con:query>
@@ -84,7 +85,7 @@ where INSTITUTION_CODE = '4201'</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="groovy" name="set_Properties" id="8b143834-3951-4baa-8957-a1ee24cde08f">
+  <con:testStep type="groovy" name="set_Properties" id="50d21ec7-2eae-4a34-924a-08cba6fbbc48">
     <con:settings/>
     <con:config>
       <script>def responseAsXml = context.expand( '${RBS Fetch FraudCriteria#ResponseAsXml}' )
@@ -122,14 +123,14 @@ testRunner.testCase.testSuite.setPropertyValue("currencyCode",debtorAccountCcy)
 log.info (testRunner.testCase.testSuite.getPropertyValue("accountNumber"))</script>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="DB Fetch KundnerAccNum" id="2f94fd73-dc1f-4500-b2d5-a1df9d6ff0bf">
+  <con:testStep type="jdbc" name="DB Fetch KundnerAccNum" id="dc36dc06-f4fa-4f0f-854e-143596ef88ea">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select VU.ACCOUNTNUMBER,VU.CURRENCYCODE,VU.CHANNEL from 
@@ -139,7 +140,7 @@ and ROWNUM=1</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="groovy" name="set_Properties_Kundner" id="056d89f5-f10c-47f0-b08c-c98b62a560fd">
+  <con:testStep type="groovy" name="set_Properties_Kundner" id="791af995-2f19-4347-8acc-4860c3d0baab">
     <con:settings/>
     <con:config>
       <script>def accountNumberKundner = context.expand( '${DB Fetch KundnerAccNum#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )

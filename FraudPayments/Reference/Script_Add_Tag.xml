@@ -4,77 +4,122 @@
     <con:setting id="397018ee-4f21-45aa-91d6-536efb663ccffileName">Script_Add_Tag</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="setJdbcConnectionString" id="9990cf6c-6121-4893-a63a-fbfddf4d3e6a" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>//	Set "connectionString" peroperties on Project Level custom Properties
+
+def environ = context.testCase.testSuite.project.getActiveEnvironment().getName();
+
+envDetails	= DetectTestEnvironment.getDetailsOf(environ);
+pwhString	= envDetails[4];
+
+log.info environ
+log.info pwhString
+
+testRunner.testCase.testSuite.project.setPropertyValue("pwhConnectionString", pwhString)
+connectionString = context.testCase.testSuite.project.getPropertyValue("pwhConnectionString");
+
+log.info connectionString
+jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_st</script>
+    </con:config>
+  </con:testStep>
   <con:testStep type="groovy" name="Add_WSDL_EndPoint" id="d5f32975-ced7-4765-8758-1e69d24a0785" disabled="true">
     <con:settings/>
     <con:config>
-      <script>import testEnvironment.*;
-detect  = new detectTestEnvironment();
-envro   = context.testCase.testSuite.project.getActiveEnvironment().getName();
-result  = detect.getDetailsOf(envro);
-env = result[0];
-eos_ip  = result[1];
-getEnv= context.testCase.testSuite.project.getEnvironmentByName(envro);
-if (envro != null &amp;&amp; getEnv != null)
+      <script><![CDATA[import com.eviware.soapui.config.*
+import com.eviware.soapui.model.environment.*
+
+addEnvironment ("G-D14");
+//addEndPointsLoop();
+
+public void addEndPointsLoop()
 {
-    setEndPoint();
+	int envCount = context.testCase.testSuite.project.getEnvironmentCount();
+	for ( int i = 0; i <envCount ; i++ )
+	{
+		envName = context.testCase.testSuite.project.getEnvironmentAt( i ).getName();
+		log.info "Looping envName: "+envName
+		addEnvironment(envName)
+	}
 }
-else
+
+public void addEnvironment (envro)
 {
-    log.info "Test Environment is not defined"
+	getEnv	= context.testCase.testSuite.project.getEnvironmentByName(envro);
+	apiCount = testRunner.testCase.testSuite.project.getInterfaceCount();
+	
+	result	= DetectTestEnvironment.getDetailsOf(envro);
+	validEnv= result[0];
+	eos_ip	= result[1];
+	pwhString = result[4];
+	pwhConnectionString = result[4];
+	
+	if (getEnv != null && validEnv != null ) 
+	{
+		setEndPoint(envro);
+	} else if (getEnv == null && validEnv != null ) 
+	{
+		createNewTestEnvironment(envro);
+	} else if (validEnv == null ) 
+	{
+		log.info "Test Environment is not defined in \"DetectTestEnvironment\" Groovy File"
+	}
 }
-public void setEndPointFor(  wsdl_Definition, endPoint)
+
+public void createNewTestEnvironment(env) 
 {
-    wsdlSer = getEnv.getService(wsdl_Definition+"PortTypeSoap11", com.eviware.soapui.config.ServiceConfig.Type.Enum.forString("SOAP"));
-    if (wsdlSer != null)
-    {
-        urlConf = wsdlSer.getEndpoint().getConfig();
-        urlConf.setStringValue("http://"+eos_ip+"/pin/services/"+endPoint+"?wsdl");
-    }
-    else log.info "No WSDL Imported To Setup";
+	def project = context.testCase.testSuite.project;
+	def name = env
+
+	project.addNewEnvironment(name);
+	project.setActiveEnvironment(name);
+
+	def environ = project.getActiveEnvironment();
+	for ( int i = 0; i < apiCount ; i++ )
+	{
+		def wsdl = testRunner.testCase.testSuite.project.getInterfaceAt(i)
+		URL url = new URL(wsdl.getDefinition())
+		String urlDefinition = url.toString();
+
+		def binding = context.testCase.testSuite.project.getInterfaceAt(i).getName().toString();
+		newService = environ.addNewService(binding, com.eviware.soapui.config.ServiceConfig.Type.Enum.forString("SOAP"));
+
+		def serviceConfig = newService.getConfig();
+		def endpointConfig = serviceConfig.addNewEndpoint();
+		endpointConfig.setStringValue(urlDefinition)
+		newService.buildEndpoint(endpointConfig);
+		def isCopy1 = true;
+		environ.populateService(newService, isCopy1);
+		environ.release();
+	}
+	log.info "Created New Test Environment "+env
+	setEndPoint(env);
 }
-public void setEndPoint()
+
+public void setEndPoint(env) 
 {
-    //  Send in "WSDL name" and "End Point String" seperately as "String" might have "Service" in it but WSDL name will not always have it
-    setEndPointFor("PAYSPaymentAuthorization_V1_0","PAYSPaymentAuthorization_V1_0");
-    setEndPointFor("PAYSPaymentAuthorization_V1_1","PAYSPaymentAuthorization_V1_1");
-    setEndPointFor("PAYSPaymentAuthorization_V1_2","PAYSPaymentAuthorization_V1_2");
-    setEndPointFor("PINSPaymentAuthorization_V1_3","PINSPaymentAuthorization_V1_3");
-    setEndPointFor("PAYSPaymentPredefinedCreditor_V1_0","PAYSPaymentPredefinedCreditor_V1_0");
-    setEndPointFor("PINSPaymentPredefinedCreditor_V1_1","PINSPaymentPredefinedCreditor_V1_1");
-    setEndPointFor("PAYSPaymentSearch_V1_2","PAYSPaymentSearch_V1_2");
-    setEndPointFor("PINSPaymentSearch_V1_5","PINSPaymentSearch_V1_5");
-    setEndPointFor("PINSPaymentSearch_V1_6","PINSPaymentSearch_V1_6");
-    setEndPointFor("PINSPaymentSearch_V1_7","PINSPaymentSearch_V1_7Service");
-    setEndPointFor("PINSPaymentSearch_V1_8","PINSPaymentSearch_V1_8");
-    setEndPointFor("PINSPaymentSearch_V1_9","PINSPaymentSearch_V1_9");
-    setEndPointFor("PINSPaymentSearch_V2_0","PINSPaymentSearch_V2_0");
-    setEndPointFor("PAYSPaymentStatusUpdate_V1_0","PAYSPaymentStatusUpdate_V1_0");
-    setEndPointFor("PAYSPaymentStatusUpdate_V1_1","PAYSPaymentStatusUpdate_V1_1");
-    setEndPointFor("PINSPaymentStatusUpdate_V1_2","PINSPaymentStatusUpdate_V1_2Service");
-    setEndPointFor("PINSPaymentStatusUpdate_V1_3","PINSPaymentStatusUpdate_V1_3Service");
-    setEndPointFor("PINSPaymentStatusUpdate_V1_4","PINSPaymentStatusUpdate_V1_4Service");
-    setEndPointFor("PINSPaymentStatusUpdate_V1_5","PINSPaymentStatusUpdate_V1_5");
-    setEndPointFor("PINSPaymentStatusUpdate_V2_0","PINSPaymentStatusUpdate_V2_0");
-    setEndPointFor("PAYSPayment_V1_4","PAYSPayment_V1_4");
-    setEndPointFor("PINSPayment_V1_6","PINSPayment_V1_6");
-    setEndPointFor("PINSPayment_V1_7","PINSPayment_V1_7Service");
-    setEndPointFor("PINSPayment_V1_8","PINSPayment_V1_8Service");
-    setEndPointFor("PINSPayment_V1_9","PINSPayment_V1_9");
-    setEndPointFor("PINSPayment_V1_10","PINSPayment_V1_10");
-    setEndPointFor("PINSPayment_V2_0","PINSPayment_V2_0");
-    setEndPointFor("PINSPaymentAccountForecastSearch_V1","PINSPaymentAccountForecastSearch_V1");
-    setEndPointFor("PINSPaymentAccountForecastSearch_V1_1","PINSPaymentAccountForecastSearch_V1_1");
-    setEndPointFor("PINSPaymentUtil_V1_1","PINSPaymentUtil_V1_1");
-    setEndPointFor("PINSPaymentUtil_V1_2","PINSPaymentUtil_V1_2");
-    setEndPointFor("PINSPaymentUtil_V2_0","PINSPaymentUtil_V2_0");
-    setEndPointFor("PINSStandingOrder_V1_1Service","PINSStandingOrder_V1_1Service");
-    setEndPointFor("PINSStandingOrder_V1_2Service","PINSStandingOrder_V1_2Service");
-    setEndPointFor("PINSStandingOrder_V1_3Service","PINSStandingOrder_V1_3Service");
-    setEndPointFor("PINSStandingOrder_V1_4Service","PINSStandingOrder_V1_4Service");
-    setEndPointFor("PINSStandingOrder_V1_5Service","PINSStandingOrder_V1_5Service");
-    setEndPointFor("PINSStandingOrder_V2_0Service","PINSStandingOrder_V2_0Service");
-    log.info "DONE..!!";
-}</script>
+	testRunner.testCase.testSuite.project.setPropertyValue("pwhConnectionString", pwhConnectionString)
+	delimitor = "PortTypeSoap11";
+	getEnv	= context.testCase.testSuite.project.getEnvironmentByName(env);
+	for (int i = 0; i < apiCount ; i++ ) 
+	{
+		wsdlInterface = testRunner.testCase.testSuite.project.getInterfaceAt(i).getName();
+		wsdlService = getEnv.getService(wsdlInterface, com.eviware.soapui.config.ServiceConfig.Type.Enum.forString("SOAP"));
+
+		if (wsdlInterface.contains ("PINS") || wsdlInterface.contains ("PAYS")  && wsdlService != null) 
+		{
+			service = wsdlInterface.split(delimitor).toString();
+			service = service.replaceAll("[^a-zA-Z0-9_]","");
+			setString = "http://"+eos_ip+"/pin/services/"+service+"?wsdl";
+			urlConf	= wsdlService.getEndpoint().getConfig();
+			if ( urlConf != null ) {
+				urlConf.setStringValue(setString);
+			}
+		}
+	}
+	log.info "Setting endpoints for "+env+" is successful";
+}]]></script>
     </con:config>
   </con:testStep>
   <con:testStep type="groovy" name="Add_Tag_SCA_ALL" id="ccb5e808-5070-4324-8696-cb078cfe80d4" disabled="true">
@@ -399,156 +444,130 @@ public void addItems(addTag)
 }</script>
     </con:config>
   </con:testStep>
-  <con:testStep type="groovy" name="Add_Tag_LogRef" id="89e3720c-1a0e-4beb-8d6f-35424f10e4f4" disabled="true">
-    <con:settings/>
-    <con:config>
-      <script>testRunner.testCase.testSuite.project.getTestSuiteList().each { testsuite ->
-	testsuite.getTestCaseList().each { testcase ->
-		testcase.getTestStepList().each { teststep ->
-			stepType = "${teststep.getClass()}"
-			if (stepType.contains("WsdlTestRequestStep")) {
-				suiteName =  "${testsuite.getName()}"
-				caseName =  "${testcase.getName()}"
-				stepName = "${teststep.getName()}"
-				stepType = "${teststep.getClass()}"
-				setTag();
-			}
-		}
-	}
-	log.info "Done setting LogRef for test suite : " + suiteName
-}
-
-public void setTag()
-{
-	testRequest = context.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].testSteps[stepName].testRequest;
-	request = testRequest.requestContent;
-	splitRequest = request.split("\n");
-
-	LogRef = "LogRef";
-
-	for (splitString in splitRequest)
-	{
-		if (splitString.contains("&lt;wsc:item key=\"LogRef\" value=\"\${=java.util.UUID.randomUUID().toString()}\"/>"))
-		{
-			LogRef = null;
-		}
-	}
-	if(LogRef == "LogRef") 
-	{
-		addItems(LogRef);
-	}
-}
-
-public void addItems(addTag) 
-{
-	testRequest = context.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].testSteps[stepName].testRequest;
-	request = testRequest.requestContent;
-	splitRequest = request.split("\n");	// create an array of lines of the request, split by newline characters
-	newRequest = "";	// build a new, empty request
-
-	switch(addTag)
-	{
-		case "LogRef"		:	tagValue = "&lt;wsc:item key=\"LogRef\" value=\"\${=java.util.UUID.randomUUID().toString()}\"/>";
-										break;
-		default					:	throw new IllegalArgumentException("Expected Tag Did Not Match");
-	}
-
-	for (splitString in splitRequest)	// loop through every line in the request that was split
-	{
-		if (splitString.contains("&lt;wsc:item key=\"LogRef\""))	// Find the payment channel tag and add SCA tags
-		{
-			tab = splitString.tokenize("&lt;")[0];		// find the spacing tabs of the element in question
-			newSplit = tab + tagValue + "\n";
-			newRequest += newSplit;
-		}
-		else if (splitString.contains("&lt;/soapenv:Envelope>"))
-		{
-			newRequest += splitString;
-		}
-		else
-		{
-			newRequest += splitString + '\n';	// if the line is not the one being searched for, append the line as normal, with new line.
-		}
-	}
-	testRequest.setRequestContent(newRequest);
-}</script>
-    </con:config>
-  </con:testStep>
   <con:testStep type="groovy" name="Add_Tag_BM-PaymentChannel" id="239cc469-ad5d-4e5c-a5e6-85c8bf68b864" disabled="true">
     <con:settings/>
     <con:config>
-      <script>testRunner.testCase.testSuite.project.getTestSuiteList().each { testsuite ->
-	testsuite.getTestCaseList().each { testcase ->
-		testcase.getTestStepList().each { teststep ->
-			stepType = "${teststep.getClass()}"
-			if (stepType.contains("WsdlTestRequestStep")) {
-				suiteName =  "${testsuite.getName()}"
-				caseName =  "${testcase.getName()}"
-				stepName = "${teststep.getName()}"
-				stepType = "${teststep.getClass()}"
-				setTag();
-			}
+      <script>removeAssertion = "Script Assertion";
+testCaseCount = testRunner.testCase.testSuite.testCaseCount
+
+for (int i =0 ; i &lt; testCaseCount ; i++ ) {
+	caseName = testRunner.testCase.testSuite.getTestCaseAt(i).getName()
+	testStepCount = testRunner.testCase.testStepCount;
+	for ( j = 0; j &lt; testStepCount ; j++ ) {
+		testSet = testRunner.testCase.getTestStepAt(j)
+		stepType = "${testSet.getClass()}"
+		if ( testSet != null &amp;&amp; stepType.contains("WsdlTestRequestStep"))  	{
+			stepName = testSet.getName()
+			assertionsList = testRunner.testCase.testSuite.getTestCaseAt(i).getTestStepByName(stepName).getAssertionList();
+			remove_Assertion();
 		}
-	}
-	log.info "Done setting LogRef for test suite : " + suiteName
-}
-
-public void setTag()
-{
-	testRequest = context.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].testSteps[stepName].testRequest;
-	request = testRequest.requestContent;
-	splitRequest = request.split("\n");
-
-	PaymentChannel = "PaymentChannel";
-
-	for (splitString in splitRequest)
-	{
-		if (splitString.contains("&lt;wsc:item key=\"PaymentChannel\""))
-		{
-			PaymentChannel = null;
-		}
-	}
-	if(PaymentChannel == "PaymentChannel") 
-	{
-		addItems(PaymentChannel);
 	}
 }
 
-public void addItems(addTag) 
-{
-	testRequest = context.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].testSteps[stepName].testRequest;
-	request = testRequest.requestContent;
-	splitRequest = request.split("\n");	// create an array of lines of the request, split by newline characters
-	newRequest = "";	// build a new, empty request
-
-	switch(addTag)
-	{
-		case "PaymentChannel"		:	tagValue = "&lt;wsc:item key=\"PaymentChannel\" value=\"BES\"/>";
-													break;
-		default								:	throw new IllegalArgumentException("Expected Tag Did Not Match");
-	}
-
-	for (splitString in splitRequest)	// loop through every line in the request that was split
-	{
-		if (splitString.contains("&lt;wsc:item key="))	// Find the payment channel tag and add SCA tags
-		{
-			tab = splitString.tokenize("&lt;")[0];		// find the spacing tabs of the element in question
-			newSplit = tab + tagValue + "\n";
-			newRequest += newSplit;
-		}
-		else if (splitString.contains("&lt;/soapenv:Envelope>"))
-		{
-			newRequest += splitString;
-		}
-		else
-		{
-			newRequest += splitString + '\n';	// if the line is not the one being searched for, append the line as normal, with new line.
+public void remove_Assertion() {
+	for ( e in assertionsList) 	{
+		assertionSelected = e.getName()
+		if (assertionSelected.contains( removeAssertion)) {
+			testSet.removeAssertion(e)
+			log.info "DELETE SUCCESS: Case \" "+caseName+" \" and Test Step:= "+stepName+" and Assertion Removed is : "+assertionSelected
 		}
 	}
-	testRequest.setRequestContent(newRequest);
 }</script>
     </con:config>
   </con:testStep>
+  <con:testStep type="groovy" name="Update_Java_TimeStamp" id="89e3720c-1a0e-4beb-8d6f-35424f10e4f4" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>/*
+ * This updates test case properties with below mentioned time stamp
+ * Change the property name as defined in your "PROPERTIES" test step before execution
+ */
+suiteCount = testRunner.testCase.testSuite.project.getTestSuiteCount()
+for ( i = 0; i &lt; suiteCount ; i++ )
+{
+	suiteName = testRunner.testCase.testSuite.project.getTestSuiteAt( i ).getName()
+	updateDateTimeProperties(suiteName);
+}
+
+public void updateDateTimeProperties(suiteName)
+{
+	suiteCount = i+1
+	log.info "******* Test Suite: "+suiteCount+" - "+suiteName+" *******"
+	newDate = '${= java.time.LocalDate.now()+1}' as String
+	asbDate = '${= java.time.LocalDate.now()-1}T13:47:21.443376+05:30' as String
+
+	testCaseCount = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseCount()
+
+	for (int j =0 ; j &lt; testCaseCount ; j++ ) {
+		caseCount = j+1
+		caseName = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getName()
+		log.info "-->Test Case:  "+caseCount+" - "+caseName
+		
+		targetStep = testRunner.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].getTestStepByName( "Properties" )
+		if ( targetStep != null)
+		{
+			u = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").getPropertyValue("ReqExnDate")
+			v = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").getPropertyValue("SCALastPerformed")
+			if (u != null)
+			{
+				testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").setPropertyValue("ReqExnDate",newDate)
+			}
+			if (v != null)
+			{
+				testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").setPropertyValue("SCALastPerformed",asbDate)
+			}
+		}
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Remove_Script_Assertions" id="c9df7f10-2e0a-4640-b194-52f007ec3097" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>/*
+ * This will remove assertions mentioned in the name "removeAssertion" from each step of a test case
+ * Change the property name as defined in your "PROPERTIES" test step before execution
+ */
+
+//removeAssertion() ;
+log.info "Hi"
+
+public void removeAssertion() 
+{
+	removeAssertion = "Script Assertion";
+	suiteName = testRunner.testCase.testSuite.getName();
+	testCaseCount = testRunner.testCase.testSuite.testCaseCount
+	
+	for (int i =0 ; i &lt; testCaseCount ; i++ ) {
+		caseName = testRunner.testCase.testSuite.getTestCaseAt(i).getName()
+		testStepCount = testRunner.testCase.testSuite.getTestCaseByName(caseName).getTestStepCount();
+		log.info "Test Suite "+suiteName +" has "+testCaseCount+"Test Cases and the test case "+caseName+" has "+testStepCount+" test steps"
+	
+		for ( j = 0; j &lt; testStepCount ; j++ ) {
+			testSet = testRunner.testCase.testSuite.getTestCaseByName(caseName).getTestStepAt(j);
+			stepType = "${testSet.getClass()}"
+			
+			if ( testSet != null &amp;&amp; stepType.contains("WsdlTestRequestStep"))  	{
+				stepName = testSet.getName()
+				assertionsList = testSet.getAssertionList();
+				remove_Assertion();
+			}
+		}
+	}
+}
+
+public void remove_Assertion() 
+{
+	for ( e in assertionsList) 	{
+		assertionSelected = e.getName()
+		if (assertionSelected.contains( removeAssertion)) {
+			testSet.removeAssertion(e)
+		}
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:setupScript/>
   <con:properties/>
   <con:reportParameters/>
   <con:breakPoints>
@@ -581,8 +600,21 @@ public void addItems(addTag)
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>89e3720c-1a0e-4beb-8d6f-35424f10e4f4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9990cf6c-6121-4893-a63a-fbfddf4d3e6a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
   <con:environmentSpec>
     <con:entry environmentId="31411996-3421-47a9-90cc-0e150c5f5aec">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>

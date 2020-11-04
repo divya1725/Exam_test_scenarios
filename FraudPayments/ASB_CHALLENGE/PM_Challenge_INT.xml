@@ -8,7 +8,6 @@
     <con:settings/>
     <con:config>
       <script>import groovy.sql.Sql;
-import testEnvironment.*;
 
 identifyTestCase();
 fetchDetails();
@@ -24,9 +23,9 @@ public void connectPwh(status)
 		currency = "EUR"
 	}
 
-	query1 = "SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY FROM V_AUTHORISATION WHERE ROLETYPE='EIER' AND LENGTH(CUSTOMERID) = '11' "
-	query2 = "AND CUSTBANKID = "+orgid+" AND CURRENCY = '"+currency+"' "
-	query3 = "FETCH FIRST 2 ROW ONLY"
+	query1 = " SELECT USERID, ACCOUNTNUMBER,CURRENCYCODE FROM V_AUTH_USERINFO WHERE LENGTH(USERID) = '11' AND ACCOUNTROLENAME = 'Register' "
+	query2 = " AND MARKETTYPE = '"+marketType+"' AND BANKORGID = "+orgid+" AND CURRENCYCODE = '"+currency+"' "
+	query3 = " AND ROWNUM = 1"
 	sqlQuery = query1+query2+query3
 	
 	if (status == 'true')
@@ -34,12 +33,13 @@ public void connectPwh(status)
 		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
 		resultSet		=	connection.rows(sqlQuery)
 		connection.close();
+		log.info resultSet
 	}
 	if (!resultSet.isEmpty())
 	{
-		customer_1	=	resultSet.CUSTOMERID[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		account_1	= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		currency_1	= 	resultSet.CURRENCY[0].toString().replaceAll("[^a-zA-Z0-9]+","")
+		customer_1	=	resultSet.USERID[0].toString().replaceAll("[^a-zA-Z0-9]+","")
+		account_1		= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","")
+		currency_1	= 	resultSet.CURRENCYCODE[0].toString().replaceAll("[^a-zA-Z0-9]+","")
 		userid_1		= 	customer_1;
 	
 		if(marketType == 'BM' &amp;&amp; customer_1.length() > 8)
@@ -52,7 +52,6 @@ public void connectPwh(status)
 		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid_1);
 		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account_1);
 		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhURL);
 	}
 }
 
@@ -82,25 +81,21 @@ public void identifyTestCase()
 
 public void fetchDetails()
 {
-	detect = new detectTestEnvironment();
 	orgid = context.expand( '${Properties#orgid}' );
-	
-	envDetails	=	detect.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
-	orgidDetails	=	detect.getBankDetailsOf(orgid);
-	
-	pwh_url	=	envDetails[4];
-	pwh_ip	=	envDetails[5];
-	schema	=	envDetails[6];
-	paswd		=	envDetails[7];
+	envDetails		=	DetectTestEnvironment.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
+	orgidDetails	=	DetectTestEnvironment.getBankDetailsOf(orgid);
+
+	connect	=	envDetails[3];
+	pwhString = envDetails[4];
+	schema	=	"pwhdata"
+	paswd	=	"pwh"
 	
 	credentials = orgidDetails[2];
 	debtorAgent = orgidDetails[3];
-	
-	connect	=	"jdbc:oracle:thin:@//"+pwh_ip+"/"+pwh_url;
-	pwhURL	=	"jdbc:oracle:thin:"+schema+"/"+paswd+"@//"+pwh_ip+"/"+pwh_url;
-	
+
+	testRunner.testCase.testSuite.project.setPropertyValue("pwhConnectionString", pwhString)
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhURL);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhString);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent",debtorAgent);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
 }</script>
@@ -128,15 +123,15 @@ public void fetchDetails()
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>14037310000</con:value>
+          <con:value>07089522735</con:value>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
-          <con:value>14037310000</con:value>
+          <con:value>07089522735</con:value>
         </con:property>
         <con:property>
           <con:name>debitAccount</con:name>
-          <con:value>44350343730</con:value>
+          <con:value>42023706975</con:value>
         </con:property>
         <con:property>
           <con:name>DebitAcntccy</con:name>
@@ -176,7 +171,7 @@ public void fetchDetails()
         </con:property>
         <con:property>
           <con:name>ReqExnDate</con:name>
-          <con:value>${=def now = new Date()+1;now.format("yyyy-MM-dd")}</con:value>
+          <con:value>${= java.time.LocalDate.now()+1}</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
@@ -188,7 +183,7 @@ public void fetchDetails()
         </con:property>
         <con:property>
           <con:name>SCALastPerformed</con:name>
-          <con:value>${=now = new Date()-1;now.format("yyyy-MM-dd")}T13:47:21.443376+05:30</con:value>
+          <con:value>${= java.time.LocalDate.now()-1}T13:47:21.443376+05:30</con:value>
         </con:property>
         <con:property>
           <con:name>SCAExemptionType</con:name>
@@ -196,7 +191,7 @@ public void fetchDetails()
         </con:property>
         <con:property>
           <con:name>pwhURL</con:name>
-          <con:value>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_d6</con:value>
+          <con:value>jdbc:oracle:thin:pwhdata/pwh@//(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -270,7 +265,7 @@ public void fetchDetails()
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_9" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_7" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_7">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -340,49 +335,6 @@ public void fetchDetails()
       </urn:PaymentCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="d29a6acc-fc5e-4e11-9877-ab780db39dc4" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="83996a82-adf1-46fb-b88b-7af737e856d8" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -578,7 +530,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
               <con:element>@key</con:element>
               <con:type>XmlString</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>7500</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
@@ -1496,6 +1448,13 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
+        <con:assertion type="Simple Contains" id="fd48a190-432e-45a8-8e8b-d8240fdd3630" name="Contains_Perform_SCA">
+          <con:configuration>
+            <token>&lt;errorItem key="7500" value="Perform SCA"/></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -1523,7 +1482,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -1544,7 +1503,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -1573,49 +1532,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
       </urn:PaymentConfirmRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="a82171ab-59f9-4f39-a258-e8f9f17f8a07" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="19f94e18-374a-427e-9efc-57ca0752fbc6" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -1954,7 +1870,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -1975,7 +1891,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -2004,49 +1920,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       </urn:PaymentApproveRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="74f9bd7d-4c2b-494b-bc6e-1e574114c82d" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="6312f731-ebd1-4d52-b6f6-8984f506be1f" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -2518,7 +2391,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5/PINSPaymentStatusUpdate_V1_5PortType/PaymentApproveRequest"/>
         <con:wsrmConfig version="1.2"/>
         <con:environmentSpec>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -2539,7 +2412,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -2566,49 +2439,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       </urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="c6a39d55-476d-4bb7-b21f-2a536de48eed" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="4a25a301-5f8b-4bd6-a5f4-c0feb3f22c43" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -3845,7 +3675,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -3866,7 +3696,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -3892,49 +3722,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
       </urn:PaymentReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="396bca80-1369-4734-a445-b55099dcb65f" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="848035e1-b6f9-4002-bd42-c5972eb99ef6" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -5103,7 +4890,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentReadRequest" mustUnderstand="NONE" version="200508"/>
         <con:wsrmConfig version="1.2"/>
         <con:environmentSpec>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -5124,7 +4911,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -6191,49 +5978,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" id="2e6b9c71-8b9d-40d6-9afa-ef65fcd84fe5" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -6245,7 +5989,7 @@ fout.append("&lt;!--============================================================
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -6266,7 +6010,7 @@ fout.append("&lt;!--============================================================
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -7259,49 +7003,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" id="e44be68b-624b-4aa3-ba7c-be3fda3fdc62" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -7313,7 +7014,7 @@ fout.append("&lt;!--============================================================
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -7325,10 +7026,13 @@ fout.append("&lt;!--============================================================
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
-      <con:connectionString>${Properties#pwhURL}</con:connectionString>
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
       <con:connectionProperties/>
-      <con:query>select * from transactions where transactionsid = ${Create#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentinitiation:v1_9'; declare namespace ns2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9'; //ns5:PaymentCreateResponse[1]/ns5:paymentResult[1]/ns2:transactionId[1]}</con:query>
+      <con:query>select TRANSACTIONSID,PAYMENTSTATUS,RISKSTATUS
+from transactions where transactionsid = ${Create#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentinitiation:v1_9'; declare namespace ns2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9'; //ns5:PaymentCreateResponse[1]/ns5:paymentResult[1]/ns2:transactionId[1]}</con:query>
       <con:assertion type="MessageContentAssertion" id="bd1e2b66-6ee4-4f19-aded-b46a5fc1c0fa" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -8564,7 +8268,7 @@ fout.append("&lt;!--============================================================
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -9469,47 +9173,11 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" id="7ca8ad7c-5f56-4f38-b90d-b6a4e63fd298" name="Script Assertion">
+        <con:assertion type="Simple Contains" name="Contains_Perform_SCA" id="63cc0eb3-b7b2-48ac-b2f0-342da89d6c1e">
           <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
+            <token>&lt;errorItem key="7500" value="Perform SCA"/></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -9520,7 +9188,7 @@ fout.append("&lt;!--============================================================
         <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentUpdateRequest" mustUnderstand="NONE" version="200508"/>
         <con:wsrmConfig version="1.2"/>
         <con:environmentSpec>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -9541,7 +9209,7 @@ fout.append("&lt;!--============================================================
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_9" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_7" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_7">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -9611,49 +9279,6 @@ fout.append("&lt;!--============================================================
       </urn:PaymentCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="bc5bd643-76d4-4950-b699-5fe8f4610ebe" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="34cc1be1-00aa-4704-849f-5a5f9126a660" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -9849,7 +9474,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
               <con:element>@key</con:element>
               <con:type>XmlString</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>7500</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
@@ -10807,6 +10432,13 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
+        <con:assertion type="Simple Contains" name="Contains_Perform_SCA" id="175751cf-69bf-4bef-b3ff-6ec9cd112d47">
+          <con:configuration>
+            <token>&lt;errorItem key="7500" value="Perform SCA"/></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -10834,7 +10466,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -10855,7 +10487,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -10884,49 +10516,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
       </urn:PaymentConfirmRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="a82171ab-59f9-4f39-a258-e8f9f17f8a07" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="2c75a701-c02c-4983-8fee-fbfa5186f2ef" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -11265,7 +10854,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -11286,7 +10875,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -11315,49 +10904,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       </urn:PaymentApproveRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="74f9bd7d-4c2b-494b-bc6e-1e574114c82d" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="9e442777-21cb-40e8-b440-fff0ae7078f7" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -11829,7 +11375,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5/PINSPaymentStatusUpdate_V1_5PortType/PaymentApproveRequest"/>
         <con:wsrmConfig version="1.2"/>
         <con:environmentSpec>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -11850,7 +11396,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_9" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_7" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_7">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>EVRYINT</wsc:SourceApplication>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>FraudPayment</wsc:Function>
          <wsc:Version>1.0</wsc:Version>
@@ -11920,49 +11466,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       </urn:PaymentCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="GroovyScriptAssertion" id="bc5bd643-76d4-4950-b699-5fe8f4610ebe" name="Script Assertion">
-          <con:configuration>
-            <scriptText>import groovy.json.JsonOutput;
-import java.util.Date;
-
-Date date	= new Date();
-endPoint	= messageExchange.getEndpoint()
-testStep	= context.getCurrentStep().getLabel()
-datetime	= date.format("dd-M-yyyy hh:mm:ss a zz")
-timeStamp	= date.format("dd_M_yyyy_hh_mm_ss_a_zz")
-testCase	= context.getCurrentStep().getTestCase().getLabel()
-req_head	= messageExchange.getRequestHeaders()
-request		= messageExchange.getRequestContent()
-resp_head	= messageExchange.getResponseHeaders()
-response	= messageExchange.getResponseContent()
-path			= context.expand( '${projectDir}')+"\\results"
-
-File dir		= new File(path);
-if (!dir.exists())
-{
-	dir.mkdir();
-}
-
-def fout = new File(path+"\\"+testCase+" - "+testStep+"_"+timeStamp+".txt")
-
-fout.write("&lt;!--=======================================================================================================================\r\n","UTF-8")
-fout.append("Time Submitted	:	"+datetime+"\r\n")
-fout.append("End Point Used	:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in		:	"+testCase+" - "+testStep+"_"+timeStamp)
-fout.append("\n============================================================================================================================\r\n"+"REQUEST\r\n\r\n","UTF-8")
-fout.append(req_head)
-fout.append("-->\n\n")
-fout.append(request)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--=======================================================================================================================\r\n"+"RESPONSE\r\n\r\n","UTF-8")
-fout.append(resp_head)
-fout.append("-->\n\n")
-fout.append(response)
-fout.append("\r\n\r\n","UTF-8")
-fout.append("&lt;!--========================================================================================================================-->\r","UTF-8")</scriptText>
-          </con:configuration>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="12fc4bbf-01d6-4f52-befb-ec83f0b65156" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -13116,6 +12619,13 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
 </soap:Envelope>]]></con:originalMessage>
           </con:configuration>
         </con:assertion>
+        <con:assertion type="Simple Contains" name="Contains_Perform_SCA" id="957b364d-29ae-4331-91ea-a59d8eaa50c4">
+          <con:configuration>
+            <token>&lt;errorItem key="7520" value="Perform SCA"/></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -13143,7 +12653,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -13306,7 +12816,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
     <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
-    <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+    <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>

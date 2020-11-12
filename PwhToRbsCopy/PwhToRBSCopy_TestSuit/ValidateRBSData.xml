@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="4fc38e61-e984-408c-9a52-ebd929dfe89f" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="ValidateRBSData" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="4fc38e61-e984-408c-9a52-ebd929dfe89ffileName">ValidateRBSData</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="TRANSACTIONDetails" id="30e13d82-10c3-4322-bff7-31b42dbbab77">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT HTR.INITIATORBANKID,HTR.DEBETACCOUNTNO,
+HTR.REQUESTEDEXECUTIONDATE,HTR.FK_PAYMENTINFOID,
+HTR.TRANSACTIONSID,HTR.PAYMENTORDERDATE,
+HTR.INSTRUCTEDAMOUNT ,M.INITIATORID,M.AGREEMENTID,M.MESSAGEID
+FROM HST_TRANSACTIONS HTR,HST_PAYMENTINFO PI,HST_MESSAGE M
+WHERE
+HTR.FK_PAYMENTINFOID=PI.PAYMENTINFOID AND
+PI.FK_MESSAGEID=M.MESSAGEID AND
+TRANSACTIONSID IN ('${#[PwhToRBSCopy_TestSuit#PaymentCreate_PM#Properties]#transactionId}') 
+fetch first row only</con:query>
+      <con:assertion type="MessageContentAssertion" id="13abd656-9ed0-4064-9e5b-9268827441e6" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42023281230</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-11-04 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:xpath>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>351222</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>376715</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTORDERDATE[1]</con:xpath>
+            <con:element>PAYMENTORDERDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-11-05 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTEDAMOUNT[1]</con:xpath>
+            <con:element>INSTRUCTEDAMOUNT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORID[1]</con:xpath>
+            <con:element>INITIATORID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>e212927</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <INITIATORBANKID>4201</INITIATORBANKID>
+         <DEBETACCOUNTNO>42023281230</DEBETACCOUNTNO>
+         <REQUESTEDEXECUTIONDATE>2020-11-04 00:00:00</REQUESTEDEXECUTIONDATE>
+         <FK_PAYMENTINFOID>351222</FK_PAYMENTINFOID>
+         <TRANSACTIONSID>376715</TRANSACTIONSID>
+         <PAYMENTORDERDATE>2020-11-05 00:00:00</PAYMENTORDERDATE>
+         <INSTRUCTEDAMOUNT>1</INSTRUCTEDAMOUNT>
+         <INITIATORID>e212927</INITIATORID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="CREDITORACCOUNT" id="38ad8770-3b8e-4c30-9c7d-4622af300ae2">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT OTHER_ID,FK_TRANSACTIONSID,IBAN
+FROM HST_ACCOUNT_CREDITOR
+WHERE
+FK_TRANSACTIONSID IN ('${#[PwhToRBSCopy_TestSuit#PaymentCreate_PM#Properties]#transactionId}')</con:query>
+      <con:assertion type="MessageContentAssertion" id="966d63e9-7c94-4644-875b-7207131908f1" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/OTHER_ID[1]</con:xpath>
+            <con:element>OTHER_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>47000243597</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>376715</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/IBAN[1]</con:xpath>
+            <con:element>IBAN</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <OTHER_ID>47000243597</OTHER_ID>
+         <FK_TRANSACTIONSID>376715</FK_TRANSACTIONSID>
+         <IBAN/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Validate_RBSData" id="d39eba27-c8cf-4dbe-94a8-d4b63834bb47">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>RBS_forfall</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+      <con:password>xdg</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT LOPENR,INSTITUTION_CODE,KONTONR,BETALORADATO,TRANSNR,SEKVENSNR,FORFORADATO,BMKONTONR,BELOP,KID,KUNDENR,AVSENDERID,AJARKREF,PRODUKTID
+FROM BK21
+WHERE
+INSTITUTION_CODE = '4201' AND
+KONTONR = '${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}' AND
+LOPENR IN ('${#[PwhToRBSCopy_TestSuit#PaymentCreate_PM#Properties]#transactionId}')</con:query>
+      <con:assertion type="MessageContentAssertion" id="4835db10-7dd0-43ab-9a01-3f478f0cbbe0" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LOPENR[1]</con:xpath>
+            <con:element>LOPENR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTITUTION_CODE[1]</con:xpath>
+            <con:element>INSTITUTION_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KONTONR[1]</con:xpath>
+            <con:element>KONTONR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BETALORADATO[1]</con:xpath>
+            <con:element>BETALORADATO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSNR[1]</con:xpath>
+            <con:element>TRANSNR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SEKVENSNR[1]</con:xpath>
+            <con:element>SEKVENSNR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FORFORADATO[1]</con:xpath>
+            <con:element>FORFORADATO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/PAYMENTORDERDATE[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BMKONTONR[1]</con:xpath>
+            <con:element>BMKONTONR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>regex</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${CREDITORACCOUNT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/IBAN[1]}|${CREDITORACCOUNT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/OTHER_ID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BELOP[1]</con:xpath>
+            <con:element>BELOP</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>regex</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1000</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KID[1]</con:xpath>
+            <con:element>KID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/KUNDENR[1]</con:xpath>
+            <con:element>KUNDENR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${TRANSACTIONDetails#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/INITIATORID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AVSENDERID[1]</con:xpath>
+            <con:element>AVSENDERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>334367</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AJARKREF[1]</con:xpath>
+            <con:element>AJARKREF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PWH</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUKTID[1]</con:xpath>
+            <con:element>PRODUKTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>regex</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>INT</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <LOPENR>376715</LOPENR>
+         <INSTITUTION_CODE>4201</INSTITUTION_CODE>
+         <KONTONR>42023281230</KONTONR>
+         <BETALORADATO>2020-11-04 00:00:00</BETALORADATO>
+         <TRANSNR>351222</TRANSNR>
+         <SEKVENSNR>3979195485</SEKVENSNR>
+         <FORFORADATO>2020-11-05 00:00:00</FORFORADATO>
+         <BMKONTONR>47000243597</BMKONTONR>
+         <BELOP>100</BELOP>
+         <KID/>
+         <KUNDENR>e212927</KUNDENR>
+         <AVSENDERID>334367</AVSENDERID>
+         <AJARKREF>PWH</AJARKREF>
+         <PRODUKTID>INT</PRODUKTID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>d39eba27-c8cf-4dbe-94a8-d4b63834bb47</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>30e13d82-10c3-4322-bff7-31b42dbbab77</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>38ad8770-3b8e-4c30-9c7d-4622af300ae2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

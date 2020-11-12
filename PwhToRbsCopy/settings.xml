@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="bc57d56f-da92-4370-90e9-01185c3bccce" created="3.0.0" activeEnvironment="G-D2" name="PwhToRbsCopy" resourceRoot="" updated="3.4.5" encryptionMode="Not encrypted" scriptLibrary="C:\Abhijith\Evry\WSDL or Services\Project\Composite\PwhToRbsCopy\scripts" compositeProjectFormat="1.3" defaultScriptLanguage="Groovy" disableCarriageReturnEscaping="false" xmlns:con="http://eviware.com/soapui/config">
+  <con:description/>
+  <con:settings>
+    <con:setting id="bc57d56f-da92-4370-90e9-01185c3bcccefileName">ErrorCodes</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>EOSHost</con:name>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>Database</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+    <con:databaseConnection>
+      <con:name>RBS_forfall</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+      <con:password>xdg</con:password>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>def objProject = context.getProject()
+def projPath = objProject.getPath()
+objProject.setScriptLibrary(projPath + File.separator + "scripts")
+log.info "TestSuite setUp script!!"</con:beforeRunScript>
+  <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
+    <con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+// This code is often used for adding custom authentication to SoapUI Pro tests
+
+// If hardcoding the token, uncomment and change line 5
+// def token = '4567'
+
+// If your token is parameterized in Project level custom property, uncomment line 8
+// def token = request.parent.testCase.testSuite.project.getProperty('auth_token').getValue()
+
+// To modify all outgoing calls, remove comments from lines 11 to 16
+// def headers = request.requestHeaders
+// if (headers.containsKey('auth_token2') == false) {
+//   headers.put('auth_token2', token)
+//   request.requestHeaders = headers
+// }</con:script>
+  </con:eventHandlers>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+
+def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
+def date1 = CommonLibrary.getDate('yyyyMMdd')
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	
+	testStepResult.writeTo(pw)	
+}
+ pw.close()
+ fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="457af21e-28cc-497d-a733-634d703ad724" name="G-D7" index="0">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#PCAS_Env}/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#DEPS_Env}/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.83</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value>ilt-lbx-g-c01.man.cosng.net:13610</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value>10.246.89.245:10710</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="1dd17478-eebd-4cc9-8fe9-51bcacdd9117" name="G-D4" index="1">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#PCAS_Env}/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#DEPS_Env}/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value>ilt-lbx-g-c01.man.cosng.net:13610</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value>10.246.89.245:10710</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="207e0d23-b8b3-41fe-9049-29f86ad35691" name="G-D2" index="2">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#PCAS_Env}/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#DEPS_Env}/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.79</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value>ilt-lbx-g-c01.man.cosng.net:13610</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value>10.246.89.245:10710</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="338be24d-f04f-491c-bb23-cd09d5c0ce96" name="G-S1" index="3">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#PCAS_Env}/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#DEPS_Env}/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.82</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value>ilt-lbx-g-c01.man.cosng.net:13610</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value>10.246.89.245:10710</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="e0d20ad7-6949-444f-ac2a-850b97be6171" name="G-D6" index="4">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#PCAS_Env}/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#DEPS_Env}/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value>ilt-lbx-g-c01.man.cosng.net:13610</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value>10.246.89.245:10710</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="14cf7474-b8ba-48af-8725-073035fea814" name="R-S6" index="5">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://ilt-lbx-g-c01.man.cosng.net:13610/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_s6)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:xgh/PASS_VALUE@127.0.0.1:1521:xgb</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="47ce4c1b-708b-4e30-8e04-79919f1ecbe1" name="R-A1" index="6">
+    <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://ilt-lbx-g-c01.man.cosng.net:13610/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#EOSHost}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>EOSHost</con:name>
+      <con:value>10.246.89.207</con:value>
+    </con:property>
+    <con:property>
+      <con:name>UserName</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Password</con:name>
+      <con:value>e211732</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Port</con:name>
+      <con:value>22</con:value>
+    </con:property>
+    <con:property>
+      <con:name>EBSHost</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>PCAS_Env</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>DEPS_Env</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>Database</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_a1)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>RBS_forfall</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:xgh/PASS_VALUE@127.0.0.1:1521:xgb</con:connectionString>
+        <con:password>xdg</con:password>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:environmentSpec>
+    <con:entry environmentId="1dd17478-eebd-4cc9-8fe9-51bcacdd9117">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="207e0d23-b8b3-41fe-9049-29f86ad35691">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="338be24d-f04f-491c-bb23-cd09d5c0ce96">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="e0d20ad7-6949-444f-ac2a-850b97be6171">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="657a20b2-d63b-4bf3-808e-2c92b686c769">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tags/>
+</con:soapui-project>

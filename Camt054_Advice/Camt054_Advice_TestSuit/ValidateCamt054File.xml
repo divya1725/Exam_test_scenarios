@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="a0486491-578d-49a8-a8ce-e4e066aa4fc6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="prepareData&amp;Validate" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="a0486491-578d-49a8-a8ce-e4e066aa4fc6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="ValidateCamt054File" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
   <con:description>This test suite does  fetch the latest transaction for which camt54 is sent and downlaods the camt54 file to project directory</con:description>
   <con:settings>
-    <con:setting id="a0486491-578d-49a8-a8ce-e4e066aa4fc6fileName">prepareData%26Validate</con:setting>
+    <con:setting id="a0486491-578d-49a8-a8ce-e4e066aa4fc6fileName">ValidateCamt054File</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
   <con:testStep type="manualTestStep" name="ReadMe" id="699a7a10-95d1-423f-b1f3-6adb48d9cb45" disabled="true">
@@ -11,9 +11,27 @@
        jsch-0.1.54
     - Make sure the transactionID and other payment details are entered in preconditon step
     - Make sure the camt054 schema file is avaialable under below path 
-/ProjectPath/data/</con:description>
+/ProjectPath/Schema/</con:description>
     <con:settings/>
     <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+  </con:testStep>
+  <con:testStep type="groovy" name="setTransactionID" id="e154c6e5-87e8-491f-92ea-7698b5ed3fe5">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.impl.wsdl.WsdlProject
+testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("TransactionID",context.expand( '${#[Camt054_Advice_TestSuit#PaymentCreate_BM_EVRYCPS#Properties]#transactionId}' ))</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="fetchCamt054Schema" id="3ea94771-e0a8-4eae-9d56-73afd6b5e911">
+    <con:settings/>
+    <con:config>
+      <script>//In case of camt54 xsd Filename is changed, property  camt54SchemaPath must be changed accordingly
+def camt54SchemaPath =testRunner.getTestCase().getTestSuite().getProject().getPath()+ File.separator + 'Schema' + File.separator + 'camt.054.001.02.xsd' 
+camt54SchemaPath = camt54SchemaPath.replace("//","/")
+log.info camt54SchemaPath
+
+testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("camt54SchemaPath", camt54SchemaPath)</script>
+    </con:config>
   </con:testStep>
   <con:testStep type="properties" name="PreCondition" id="4ae066e1-ea93-41df-9af5-c8c75f310a4a">
     <con:settings/>
@@ -45,7 +63,7 @@
         </con:property>
         <con:property>
           <con:name>TransactionID</con:name>
-          <con:value>260229148</con:value>
+          <con:value>273030</con:value>
         </con:property>
         <con:property>
           <con:name>camt54_File</con:name>
@@ -53,16 +71,16 @@
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.054.001.02">
     <BkToCstmrDbtCdtNtfctn>
         <GrpHdr>
-            <MsgId>868675101.438481.38665</MsgId>
-            <CreDtTm>2020-09-21T13:00:57.990+02:00</CreDtTm>
+            <MsgId>05110060000.68928.5144</MsgId>
+            <CreDtTm>2020-11-13T10:51:36.438+01:00</CreDtTm>
         </GrpHdr>
         <Ntfctn>
-            <Id>f419f881b5874aa6aa346259bf4d6efb</Id>
-            <CreDtTm>2020-09-21T13:00:57.989+02:00</CreDtTm>
+            <Id>b8d0dc569ec8465c8ee9ee46ee0dd6e9</Id>
+            <CreDtTm>2020-11-13T10:51:36.438+01:00</CreDtTm>
             <Acct>
                 <Id>
                     <Othr>
-                        <Id>42010092355</Id>
+                        <Id>42130199059</Id>
                         <SchmeNm>
                             <Cd>BBAN</Cd>
                         </SchmeNm>
@@ -87,49 +105,49 @@
                 </TtlNtries>
             </TxsSummry>
             <Ntry>
-                <NtryRef>20145570567</NtryRef>
-                <Amt Ccy="NOK">6</Amt>
+                <NtryRef>00000273030</NtryRef>
+                <Amt Ccy="NOK">10</Amt>
                 <CdtDbtInd>DBIT</CdtDbtInd>
                 <Sts>BOOK</Sts>
                 <BookgDt>
-                    <Dt>2020-09-21</Dt>
+                    <Dt>2020-11-16</Dt>
                 </BookgDt>
                 <ValDt>
-                    <Dt>2020-09-21</Dt>
+                    <Dt>2020-11-16</Dt>
                 </ValDt>
-                <AcctSvcrRef>20145570567</AcctSvcrRef>
+                <AcctSvcrRef>50420139451</AcctSvcrRef>
                 <BkTxCd>
                     <Domn>
                         <Cd>PMNT</Cd>
                         <Fmly>
-                            <Cd>ICDT</Cd>
-                            <SubFmlyCd>DMCT</SubFmlyCd>
+                            <Cd>ICCN</Cd>
+                            <SubFmlyCd>ICCT</SubFmlyCd>
                         </Fmly>
                     </Domn>
                 </BkTxCd>
                 <NtryDtls>
                     <TxDtls>
                         <Refs>
-                            <MsgId>4249113</MsgId>
-                            <PmtInfId>4249113</PmtInfId>
-                            <InstrId>4249113</InstrId>
-                            <EndToEndId>PAYCTDOMOUEXRTP</EndToEndId>
+                            <MsgId>5007398</MsgId>
+                            <PmtInfId>5007398</PmtInfId>
+                            <InstrId>5007398</InstrId>
+                            <EndToEndId>332</EndToEndId>
                         </Refs>
                         <AmtDtls>
                             <InstdAmt>
-                                <Amt Ccy="NOK">6</Amt>
+                                <Amt Ccy="NOK">10</Amt>
                             </InstdAmt>
                             <TxAmt>
-                                <Amt Ccy="NOK">6</Amt>
+                                <Amt Ccy="NOK">10</Amt>
                             </TxAmt>
                             <PrtryAmt>
                                 <Tp>IBS</Tp>
-                                <Amt Ccy="NOK">6</Amt>
+                                <Amt Ccy="NOK">10</Amt>
                             </PrtryAmt>
                         </AmtDtls>
                         <RltdPties>
                             <Cdtr>
-                                <Nm>Smith</Nm>
+                                <Nm>csd</Nm>
                                 <PstlAdr>
                                     <Ctry>NO</Ctry>
                                 </PstlAdr>
@@ -137,7 +155,7 @@
                             <CdtrAcct>
                                 <Id>
                                     <Othr>
-                                        <Id>42010096504</Id>
+                                        <Id>42020812413</Id>
                                         <SchmeNm>
                                             <Cd>BBAN</Cd>
                                         </SchmeNm>
@@ -160,7 +178,6 @@
                                 <FinInstnId>
                                     <BIC>SPTRNO22XXX</BIC>
                                     <PstlAdr>
-                                        <AdrTp>ADDR</AdrTp>
                                         <Ctry>NO</Ctry>
                                     </PstlAdr>
                                 </FinInstnId>
@@ -175,85 +192,9 @@
         </con:property>
         <con:property>
           <con:name>camt54SchemaPath</con:name>
-          <con:value>C:\Ullasa\Projects\JenkinsRegression\V7_multiProject\V3\pr-regression-valuechain\Camt054_Advice\data\camt.054.001.02.xsd</con:value>
+          <con:value>C:\Abhijith\Evry\WSDL or Services\Project\Composite\Camt054_Advice\Schema\camt.054.001.02.xsd</con:value>
         </con:property>
       </con:properties>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="groovy" name="fetchCamt054Schema" id="3ea94771-e0a8-4eae-9d56-73afd6b5e911">
-    <con:settings/>
-    <con:config>
-      <script>//In case of camt54 xsd Filename is changed, property  camt54SchemaPath must be changed accordingly
-def camt54SchemaPath =testRunner.getTestCase().getTestSuite().getProject().getPath()+ File.separator + 'data' + File.separator + 'camt.054.001.02.xsd' 
-camt54SchemaPath = camt54SchemaPath.replace("//","/")
-log.info camt54SchemaPath
-
-testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("camt54SchemaPath", camt54SchemaPath)</script>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="fetchTransactionID" id="ac0b9ece-021a-49e7-ab86-99be66043ec0">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>SELECT MAX (FK_TRANSACTIONSID)
-FROM advicetransaction
-INNER JOIN advicejob ON advicetransaction.fk_jobid = advicejob.JOBID where 
-advicetransaction.SENT='Y' and advicejob.ADVICETYPE='CADT'</con:query>
-      <con:assertion type="MessageContentAssertion" id="06bf82c4-3ddf-4332-ad3d-c70cd701b152" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MAXFK_TRANSACTIONSID[1]</con:xpath>
-            <con:element>MAXFK_TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>156309</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <MAXFK_TRANSACTIONSID>156309</MAXFK_TRANSACTIONSID>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="groovy" name="setTransactionID" id="e154c6e5-87e8-491f-92ea-7698b5ed3fe5">
-    <con:settings/>
-    <con:config>
-      <script>import com.eviware.soapui.impl.wsdl.WsdlProject
-testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("TransactionID",context.expand( '${fetchTransactionID#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MAXFK_TRANSACTIONSID[1]}' ))</script>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="fetchJobIDAdviceDate" id="cbf99a78-32e6-4743-9a3f-e3e5f41906ed">
@@ -261,10 +202,10 @@ testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("Transact
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT 
 FK_JOBID,ADVICEDATE
@@ -386,6 +327,12 @@ WHERE FK_TRANSACTIONSID =(${PreCondition#TransactionID})</con:query>
           <con:entry environmentId="7c960665-b521-49d3-ab66-f12a3d8069b0">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="95e2c387-5acf-4f25-89ad-b0225330a1a2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c2493d4a-b232-433e-a2f9-a18c27ee4155">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -466,10 +413,10 @@ else
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -491,10 +438,10 @@ FK_TRANSACTIONSID IN (${PIN_HstRead#Response#declare namespace ns4='urn:pins.pay
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -804,10 +751,10 @@ ST.FK_TRANSACTIONSID IN(${PIN_HstRead#Response#declare namespace ns4='urn:pins.p
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -829,10 +776,10 @@ TRANSACTIONSID IN(${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -854,10 +801,10 @@ PAYMENTINFOID IN (${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -879,10 +826,10 @@ MESSAGEID IN (${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment.evr
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT * 
 FROM 
@@ -904,10 +851,10 @@ FK_PAYMENTINFOID IN (${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PENDATA</con:dbConnectionName>
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
-      <con:password/>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT 
 PAYMENT_CLASSIFICATION 
@@ -1292,11 +1239,6 @@ for (def i=0;i&lt;NtryCount;i++)
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>4ae066e1-ea93-41df-9af5-c8c75f310a4a</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>ac0b9ece-021a-49e7-ab86-99be66043ec0</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

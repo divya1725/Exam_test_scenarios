@@ -61,4 +61,5 @@ class CommonLibrary {
 public static def getDate(plusDays,formart) {
 	return java.time.LocalDateTime.now().plusDays(plusDays).format(java.time.format.DateTimeFormatter.ofPattern(formart))
 }
+	
 }

@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="4fe5818e-e510-41f6-b217-dfb956187a1c" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="POR&amp;adviceBatchExecution" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="4fe5818e-e510-41f6-b217-dfb956187a1cfileName">POR%26adviceBatchExecution</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="properties" name="Properties" id="ae5568a9-c006-4c8d-8e9d-8cafdf980b9a">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>POR1OutputFile</con:name>
+          <con:value>por-reservation_4201_20201118082303321.xml</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTSLastModifiedDate</con:name>
+          <con:value>1605684226</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTSResponseFile</con:name>
+          <con:value>pen_FILE_OF_RESERVATIONS_201118082426256.xml</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTS_Destination_Masked</con:name>
+          <con:value>FTS_V</con:value>
+        </con:property>
+        <con:property>
+          <con:name>POR1LastModifiedTime</con:name>
+          <con:value>1605684199</con:value>
+        </con:property>
+        <con:property>
+          <con:name>marketType</con:name>
+          <con:value>BM</con:value>
+        </con:property>
+        <con:property>
+          <con:name>jobRunType</con:name>
+          <con:value>NORMAL</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="setPORSchemaFree" id="2b3320d3-acd2-4b64-958a-96537dd09265">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password>password</con:password>
+      <con:connectionProperties/>
+      <con:query>update CTL_BATCH_RUN_SCHEMA set STATUS = 'FREE' where SCHEMA_NAME in (select SCHEMA_NAME from CTL_BATCH_RUN_SCHEMA  order by START_TIMESTAMP asc fetch first 1 rows only)</con:query>
+      <con:assertion type="JDBC Status" id="5a4aec68-6ce1-4ea9-a6c5-9c6aba3cfedd" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PORBatchJobRun" id="ef42ea86-b17f-4d84-a48f-dff6b0c162fb">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def marketType = context.expand( '${Properties#marketType}' )
+marketType = marketType.toUpperCase()
+def jobRunType = context.expand( '${Properties#jobRunType}' )
+jobRunType = jobRunType.toUpperCase()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Running the batch...."
+
+def nextDate =  new Date() ;
+nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd'))
+//nextDate = nextDate.format("yyyy/MM/dd")
+def runId = new Date()
+//runId = runId.format("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS")
+runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))
+
+//String shParameter = "pwhFraudRevalidationProcess.sh classpath:spring/pwh-fraud-revalidation-job-batch-context.xml pwhFraudRevalidationProcess paymentStatuses=\"RFDD,LAFU,TERE\" releaseDate=${nextDate} banksInProcess=\"4201\" 2>&amp;1"
+String shParameter = "porCommonReservationLauncher.sh processLine=DOM_PAYMENT_RTS paymentStatuses=RFDD,LAFU releaseDate=${nextDate} jobRunType=$jobRunType porType=CompletePOR banksInProcess=4201 marketType=$marketType runId=$runId"
+String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter,log)	
+
+log.info "shParameter : "+shParameter
+log.info "CommandOutput returned-->" + CommandOutPut
+ServerConnect.closeConnection()
+def porSuccessMessage1 = 'POR reservation job completed'
+def porSuccessMessage2 ='POR reservation job went OK'
+
+assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+
+String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime")</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay0" id="ee7f252c-fcb8-4ab1-a38f-306aba7c219c">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="DownloadPOR1OutputFile" id="f59bf532-55e4-4997-9225-98c2ef8e0020">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+def marketType = context.expand( '${Properties#marketType}' )
+marketType = marketType.toLowerCase()
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+//String str = testRunner.testCase.getTestStepByName("Properties").getPropertyValue("POR1LastModifiedTime")
+//int POR1LastModifiedTime = Integer.parseInt(str)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Downloading...."
+
+String source = "/ebs/$env/pin/data/fts/reservation/out/$marketType"
+String destination = projectPath + File.separator + "data"
+
+String POR1OutputFile = ""
+try{
+	POR1OutputFile = ServerConnect.getLatestFile(source,destination,0,log)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Uploading success!!  POR1OutputFile is $POR1OutputFile "
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1OutputFile", POR1OutputFile)
+
+ServerConnect.closeConnection()
+
+assert POR1OutputFile != "", "FTS POR1OutputFile not created"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="UploadToFTS" id="21775a33-7a25-4b5f-a08c-d5933b76ba64">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#FTSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Uploading to FTS server...."
+
+String sourceFolder = projectPath + File.separator + "data"
+String destination = "/tn/t2/fts/data/in/pe/earmarking/pen"
+File Localfolder = new File(sourceFolder)
+def latestFile = ""
+
+//Get latestModified file from "ProjectPath//data// "folder
+
+//long lastModified = 0
+//Localfolder.listFiles().each{ file ->
+//if (file.lastModified() > lastModified )
+//	{
+//		lastModified = file.lastModified()
+//		latestFile = file.absolutePath
+//	}
+//}
+//
+//log.info "latestFile:" + latestFile
+latestFile = sourceFolder + File.separator  + testRunner.testCase.getTestStepByName("Properties").getPropertyValue("POR1OutputFile")
+
+try{
+	ServerConnect.uploadFile(latestFile,destination)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+String FTSLastModifiedDate = System.currentTimeMillis().toString().substring(0,10)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate","$FTSLastModifiedDate")
+
+log.info "Uploading success!!"
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="a781f3d4-4d17-4b1d-916f-142a7cc3ee82">
+    <con:settings/>
+    <con:config>
+      <delay>2000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="091bbdd4-005f-4cf6-be45-f5b8d1bab41c" name="CAUCStartJob - RECEIVE_RESERVATION">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>CAUCJobSoapBinding</con:interface>
+      <con:operation>CAUCStartJob</con:operation>
+      <con:request name="CAUCStartJob - RECEIVE_RESERVATION" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" id="837df0b1-bb1c-4bb3-b011-975f26c8c97d" defaultOutgoingWss="" defaultIncomingWss="">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#FTS_Masked_Batch_V}/fts/services/CAUCJobService</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v10">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>CAUC_TEST</wsc:SourceApplication>
+         <wsc:DestinationApplication>${Properties#FTS_Destination_Masked}</wsc:DestinationApplication>
+         <wsc:Function>RECEIVE_RESERVATION</wsc:Function>
+         <wsc:ClientContext>
+            <wsc:userid>CAUC</wsc:userid>
+            <wsc:credentials>CAUC</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>1802</wsc:orgid>
+            <wsc:orgunit>1802</wsc:orgunit>
+            <wsc:customerid>CAUC</wsc:customerid>
+            <wsc:ip>192.168.1.1</wsc:ip>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <CAUCStartJob xmlns="http://edb.com/ws/cauc">
+         <Command>RECEIVE_RESERVATION</Command>
+         <CommandLine>-JobId 1234 -Destination pen/ -ReturnUrl NO_REPLY</CommandLine>
+      </CAUCStartJob>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="0b9c26bf-0756-4346-9574-dae202b2ae34" name="SOAP Response"/>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="edf709aa-58f7-487c-a1b8-07d08a94a929">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ed1e0db4-4b58-442d-baa9-df0a7795d8d7">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay1" id="33d0da61-8c4a-4a14-bf84-130e704e0393">
+    <con:settings/>
+    <con:config>
+      <delay>20000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="DownloadFTSResponseFile" id="61ff8f0c-b578-4631-9016-89cfeb635210">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#FTSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+String str = testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSLastModifiedDate")
+int FTSLastModifiedDate = Integer.parseInt(str)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Downloading from FTS!!...."
+
+String source = "/tn/t2/fts/data/out/pe/earmarking/pen"
+String destination = projectPath + File.separator + "data"
+
+String FTSResponseFile = ""
+try{
+	FTSResponseFile = ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Downloading success!!  FTSResponseFile is $FTSResponseFile "
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSResponseFile", FTSResponseFile)
+
+ServerConnect.closeConnection()
+
+assert FTSResponseFile != "", "FTS ResponseFile not created"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="CopyFTSResponseToEBS" id="b8e42959-7e64-46f3-816c-8edb20811a66">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+strUsername = strUsername.toLowerCase()
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Uploading to EBS  server...."
+
+String sourceFolder = projectPath + File.separator + "data"
+String destination = "/home/$strUsername"
+File Localfolder = new File(sourceFolder)
+def latestFile = ""
+
+//Get latestModified file from "ProjectPath//data// "folder
+
+//long lastModified = 0
+//Localfolder.listFiles().each{ file ->
+//if (file.lastModified() > lastModified )
+//	{
+//		lastModified = file.lastModified()
+//		latestFile = file.absolutePath
+//	}
+//}
+//
+//log.info "latestFile:" + latestFile
+latestFile = sourceFolder + File.separator  + testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSResponseFile")
+log.info "latestFile-->" + latestFile
+try{
+	log.info "upload to pOR2 is " + ServerConnect.uploadFile(latestFile,destination)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Uploading FTS res for POR2 success!!"
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="CopyFileForPOR2" id="521da2a8-a415-4089-ada4-4268e3b59808">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Copying file to POR2 folder...."
+
+def por2FileName =  testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSResponseFile")
+
+String shParameter = "echo $strPassword | sudo -S su - pin$env -c \"cp /home/$strPassword/$por2FileName /ebs/$env/pin/pin-daemon/i1/target/fts/reservation/in/por2\""
+String CommandOutPut = ServerConnect.execCommand(shParameter)		
+
+log.info "shParameter : "+shParameter
+log.info "CommandOutput returned-->" + CommandOutPut
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay2" id="f6d8df35-65ce-489c-8e08-18a1758f2529">
+    <con:settings/>
+    <con:config>
+      <delay>40000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTION_REJC" id="cf57a274-c579-45c6-8670-d40495813727">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password>password</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT PAYMENTSTATUS
+FROM TRANSACTIONS
+WHERE
+TRANSACTIONSID IN ('${#[PAIN002_AdviceBatch#PaymentCreate_BM_EVRYCPS#Properties]#transactionsID}')</con:query>
+      <con:assertion type="MessageContentAssertion" id="13abd656-9ed0-4064-9e5b-9268827441e6" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <PAYMENTSTATUS>RFCA</PAYMENTSTATUS>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PAIN002AdviceBatchJobRun" id="5489e5a0-00e8-452b-a94c-7d4868b6935b">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def marketType = 'PM'
+def jobRunType = context.expand( '${Properties#jobRunType}' )
+jobRunType = jobRunType.toUpperCase()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	{
+		assert false," Failed to conenct to linux server!!"
+	}
+else
+	{
+		//log.info "Connected to the server successfully!!"
+		//log.info "Running the batch...."
+		String shParameter = "pwhAdviceProcessing.sh classpath:spring/pwh-advice-batch-context.xml pwhAdviceProcessing adviceType='PAIN002' initiatorType='Corporate' 2>&amp;1"
+		String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter,log)	
+		//og.info "shParameter : "+shParameter
+		log.info "CommandOutput returned-->" + CommandOutPut
+		
+		ServerConnect.closeConnection()
+		def SuccessMessage1 = 'Spring Boot'
+
+		assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMessage1)), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+	}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay3" id="730a4ebe-7f00-4439-900f-5ce1be5f66bf">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:setupScript>assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")</con:setupScript>
+  <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
+  testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}</con:tearDownScript>
+  <con:properties>
+    <con:property>
+      <con:name>map</con:name>
+      <con:value>[a:a1, b:b2]</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>5381cf85-0f4b-4cb3-908b-fd81d738c6da</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72ba828d-d1a7-48f8-b672-71288be2ad10</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>94085c43-2faf-427c-afc8-e1f78c1d1285</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cdcb5c32-dac5-4bb7-b37e-e89f6dc868b2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f1cca34d-7c16-487f-a2bb-4a706de3531a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>54c926c4-5073-4beb-b8b2-ba4628702ae4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a539de08-b666-4fe9-9636-fb9b9eabba66</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72c9e7e6-b833-4294-abcd-6c0481b897cd</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4f6afbce-b605-4838-a5fc-8d48dde99963</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>18f7d99a-6a92-4f29-bfbf-825cc01087fe</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e4a54adb-f6f0-4532-9c90-3f755a97e3db</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ce642f55-9aab-4401-9507-7846f445c6d0</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>392ae598-956c-4426-8253-543059469364</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f6d8df35-65ce-489c-8e08-18a1758f2529</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>730a4ebe-7f00-4439-900f-5ce1be5f66bf</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

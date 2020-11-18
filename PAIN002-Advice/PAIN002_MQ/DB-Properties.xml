@@ -12,19 +12,18 @@
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
-      <con:password/>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password>password</con:password>
       <con:connectionProperties/>
-      <con:query>select  VU.USERID as CUSTOMERID,VU.ACCOUNTNUMBER,VU.BANKORGID,VU.CURRENCYCODE 
-from v_authorisation VA, V_AUTH_USERINFO VU
-where VA.ACCOUNTNUMBER = VU.ACCOUNTNUMBER and 
-BANKORGID = '4201' and 
-length(userid)='11' and 
-markettype = 'BM' and 
-ROLETYPE ='EIER' and
-ACCOUNTROLENAME = 'Register' and
-ROWNUM=1</con:query>
+      <con:query>SELECT VAU.CUSTOMERID,VAU.ACCOUNTNUMBER 
+FROM V_AUTH_USERINFO VUI,V_AUTHORISATION VAU 
+WHERE VUI.ACCOUNTNUMBER = VAU.ACCOUNTNUMBER AND 
+VAU.CUSTBANKID='4201' AND 
+length(VAU.CUSTOMERID)='11' AND 
+VAU.ACCOUNTNUMBER not like '4068%' AND
+VUI.NUMBEROFAPPROVERS = '0'
+fetch first 1 rows only</con:query>
       <con:storedProcedure>false</con:storedProcedure>
       <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">

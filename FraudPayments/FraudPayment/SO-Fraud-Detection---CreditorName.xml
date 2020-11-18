@@ -2383,6 +2383,181 @@ where FK_AGREEMENT_INTERNAL_ID ='${STO_AGREEMENT#ResponseAsXml#//Results[1]/Resu
       <con:properties/>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="012e2792-a90f-4990-8aa2-cc822021f996" name="SO CLOSE">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderStatusUpdate</con:operation>
+      <con:request name="SO CLOSE" id="f641c604-c2b7-4ab4-9049-aa8e04b937f9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0">
+   <soapenv:Header>
+       <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>${Properties#DestinationApplication}</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${=CommonLibrary.getDate('ddMMyyyy_HHmmss')}-${=context.getCurrentStep().getTestCase().getLabel()}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderStatusUpdateRequest>
+         <urn:standingOrderKey>
+            <urn1:agreementId>${SO Create#Response#//*/ns2:agreementId[1]}</urn1:agreementId>
+            <!--Optional:-->
+            
+         </urn:standingOrderKey>
+         <urn:standingOrderAction>CLOSE</urn:standingOrderAction>
+      </urn:standingOrderStatusUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="ab9a2770-f115-41ea-95d8-9d9044262dfa" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="5cd2286e-38c9-47b9-a45b-3891f73fe3bf" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="158d0fc6-c87d-413f-8f60-eaa8b949f038" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:assertion type="MessageContentAssertion" id="79b0e973-1e51-4f9b-a0b6-bd8b0f7c6d91" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderStatusUpdateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+//ns1:standingOrderStatusUpdateResponse[1]/ns1:standingOrderStatus[1]</con:xpath>
+              <con:element>ns6:standingOrderStatus</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>CLOSED</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderStatusUpdateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrderStatus>CLOSED</ns6:standingOrderStatus>
+      </ns6:standingOrderStatusUpdateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderStatusUpdateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:properties/>
   <con:reportParameters/>
   <con:environmentSpec>
@@ -2390,4 +2565,5 @@ where FK_AGREEMENT_INTERNAL_ID ='${STO_AGREEMENT#ResponseAsXml#//Results[1]/Resu
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>
+  <con:tagId>488c3f8f-31d9-4f88-8256-ec5f0941e0fa</con:tagId>
 </con:testCase>

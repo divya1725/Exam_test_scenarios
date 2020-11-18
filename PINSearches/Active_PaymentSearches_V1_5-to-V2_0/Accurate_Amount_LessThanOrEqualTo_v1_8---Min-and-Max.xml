@@ -1,0 +1,3352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="30dc71db-f08f-4135-a6fe-15c594e8546d" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Accurate_Amount_LessThanOrEqualTo_v1_8 - Min and Max" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description><![CDATA[Accurate Min or Max.
+
+AccountSearch: Sum of amounts in Account level <=V1.8
+PaymentInfoSearch: Sum of all amounts in Payment Info level <=1.8
+MessageLevelSearch: Sum of all amounts in Message level <=1.8
+TransactionLevelSearch: Sum of all amounts in Payment Info level <=1.8
+
+BookingLevelSearch: Sum of amounts in Account level <=V1.8 
+PaymentInfoHistoricSearch: Sum of all amounts in Payment Info level <=1.8
+TransactionHistoricSearch: Sum of all amounts in Payment Info level <=1.8]]></con:description>
+  <con:settings>
+    <con:setting id="30dc71db-f08f-4135-a6fe-15c594e8546dfileName">Accurate_Amount_LessThanOrEqualTo_v1_8---Min-and-Max</con:setting>
+    <con:setting id="FlowLayout">true</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB_searchData" id="41354538-460f-4c2f-823c-b787bb561147">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password>dgfd</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  
+FROM V_authorisation 
+WHERE CUSTBANKID='4201'  and CURRENCY = 'NOK' and length(customerID)='11' and  ROWNUM=1</con:query>
+      <con:assertion type="MessageContentAssertion" id="c137c0c9-9592-4791-8b04-5f9513ef6c01" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
+            <con:element>CUSTOMERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>865785313</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]</con:xpath>
+            <con:element>ACCOUNTNUMBER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42010010804</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Konsert hengere</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]</con:xpath>
+            <con:element>CURRENCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>NOK</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>865785313</CUSTOMERID>
+         <ACCOUNTNUMBER>42010010804</ACCOUNTNUMBER>
+         <FIRSTNAME>Konsert hengere</FIRSTNAME>
+         <CURRENCY>NOK</CURRENCY>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script" id="ee150564-9c45-4a47-a019-0e3ad9254717">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${DB_searchData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB_searchData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def dname = context.expand( '${DB_searchData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FIRSTNAME[1]}' )
+def debtorAccountCcy = context.expand( '${DB_searchData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debtorAccountNumber)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("dname",dname)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",debtorAccountCcy)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="e994ccf5-9b92-4d7b-a633-d0db74933b96">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>userid</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>debitAccount</con:name>
+          <con:value>42125748338</con:value>
+        </con:property>
+        <con:property>
+          <con:name>dname</con:name>
+          <con:value>Ingo Fatima</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DebitAcntccy</con:name>
+          <con:value>NOK</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="Authorization" id="17f991da-6752-4b4b-9cf9-35cfcfcb09cf">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
+      <con:operation>PaymentAuthorizationCreate</con:operation>
+      <con:request name="Authorization" id="2857bae6-d804-475e-b7b9-f8c0a081c922">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest>
+         <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData>
+               <urn2:agreementData>
+                  <urn3:agreementId>${#TestCase#value2}</urn3:agreementId>
+                  <urn3:bankId>${#TestCase#orgid}</urn3:bankId>
+                  <urn3:customerID>${#TestCase#customerid}</urn3:customerID>
+                  <urn3:productID>1234</urn3:productID>
+                  <urn3:migrationDate>2019-02-03+05:00</urn3:migrationDate>
+               </urn2:agreementData>
+               <urn2:userId>${#TestCase#customerid}</urn2:userId>
+               <urn2:sessionID>qw24213</urn2:sessionID>
+               <urn2:firstName>Fname</urn2:firstName>
+               <urn2:lastName>Lname</urn2:lastName>
+               <urn2:socialSecurityNumber>${#TestCase#customerid}</urn2:socialSecurityNumber>
+               <urn2:userAccount>
+                  <urn2:accountNumber>${#TestCase#debitAccount}</urn2:accountNumber>
+                  <urn2:accountOwnerIdentifier>${#TestCase#customerid}</urn2:accountOwnerIdentifier>
+                  <urn2:currencyCode>NOK</urn2:currencyCode>
+                  <urn2:accountType>CoreAccount</urn2:accountType>
+                  <urn2:role>View</urn2:role>
+                  <urn2:role>Register</urn2:role>
+                  <urn2:role>Appprove</urn2:role>
+                  <urn2:role>Salary</urn2:role>
+                  <urn2:role>Transfer</urn2:role>
+                  <urn2:approvalLimit>99999</urn2:approvalLimit>
+                  <urn2:registerLimit>99999</urn2:registerLimit>
+                  <urn2:numberOfVerifiers>0</urn2:numberOfVerifiers>
+                  <urn2:numberOfApprovers>1</urn2:numberOfApprovers>
+                  <urn2:bookingLevel>D</urn2:bookingLevel>
+               </urn2:userAccount>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="21181cb5-b0d2-4e03-8b94-9940fe8557d6"/>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentCreation" id="4d6b59ff-06cf-42ad-8029-f8fb06fee4af">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V1_10PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="PaymentCreation" id="5b057c13-ab4d-4b67-8bb6-df890fd0b8ed">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V1_10</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_10" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_10" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_8" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_8">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest>
+         <urn:paymentMessage>
+            <urn1:paymentIdentification>
+               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo>
+               <urn3:paymentMethod>TRF</urn3:paymentMethod>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <urn3:paymentTypeInformation>
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+               </urn3:paymentTypeInformation>
+               <urn3:requestedExecutionDate>${#TestCase#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:debtorAccount>
+                  <urn2:identification>${#TestCase#debitAccount}</urn2:identification>
+                  <urn2:currency>NOK</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>${#TestCase#InstAmount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer>CRED</urn4:chargeBearer><urn4:creditorAgent>
+                  
+                  <urn2:bic>SPTRNO22XXX</urn2:bic><urn2:postalAddress>
+                     <urn2:country>NO</urn2:country><urn2:addressLine>UNSTR</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <urn2:name>dsadas</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:country>NO</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount>
+                  <urn2:identification>${#TestCase#CreditAccount}</urn2:identification>
+                  <urn2:currency>NOK</urn2:currency>
+               </urn4:creditorAccount>
+            </urn1:transaction>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="0a0b293b-c231-4ff4-bc1f-1960a491f884"/>
+        <con:assertion type="XPath Match" id="40bdbb4f-8f45-49e0-891b-dc086d7fd499" name="Match content of [Message]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
+declare namespace ns3='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
+//ns2:PaymentCreateResponse[1]/ns3:ResponseState[1]/ns1:Message[1]/text()</path>
+            <content>OK</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="b0cdd86a-a0ef-4c66-b1d3-343715ee3ed8" name="Match content of [ns4:paymentStatus]">
+          <con:configuration>
+            <path>declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentStatus[1]/text()</path>
+            <content>VALIDATED</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Valid HTTP Status Codes" id="c52f648b-a9b1-48a9-9104-d5740b25215f" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="Confirm" id="72a75ebd-a27f-4e13-a444-4b969c82d27a">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentConfirm</con:operation>
+      <con:request name="Confirm" id="720262f3-dd33-4d7e-84b3-f8a03191d399">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentConfirmRequest>
+         <!--You have a CHOICE of the next 4 items at this level-->
+         <!--1 or more repetitions:-->
+         <urn:transactionInput>
+            <!--1 or more repetitions:-->
+            <urn1:transactionId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentConfirmRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="d14acd30-536c-4480-b895-d1cb99730d4f"/>
+        <con:assertion type="XPath Match" id="c26c7305-6d7f-4545-9941-e36c12a2569b" name="Match content of [ErrorCode]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns4='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentConfirmResponse[1]/ns4:ResponseState[1]/ns1:ErrorCode[1]/text()</path>
+            <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="96b8df31-0efb-471f-9060-a9e867da84a1" name="Match content of [Message]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns4='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentConfirmResponse[1]/ns4:ResponseState[1]/ns1:Message[1]/text()</path>
+            <content>OK</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="3101d2b1-d07a-4974-8fd0-35131dc990c8" name="Match content of [ns2:paymentStatus]">
+          <con:configuration>
+            <path>declare namespace ns2='urn:pins.payment.evry.com:domain:payment-status-update:v1_5';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentConfirmResponse[1]/ns3:paymentStatusUpdateSummary[1]/ns2:paymentStatus[1]/text()</path>
+            <content>TO_BE_APPROVED</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Valid HTTP Status Codes" id="8dfb7d4f-fd43-4cd6-8004-48419c75db03" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentApprove" id="e9bfe42e-3c0a-4321-91b9-40af4911044e">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentApprove</con:operation>
+      <con:request name="PaymentApprove" id="b1a8daee-3e98-4ccd-8d91-e3defaf74b08">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentApproveRequest>
+         <!--You have a CHOICE of the next 4 items at this level-->
+         <urn:transactionInput>
+            <!--1 or more repetitions:-->
+            <urn1:transactionId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentApproveRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="f529075e-ab27-4a0e-b846-6afe2f1ab17d"/>
+        <con:assertion type="XPath Match" id="fc95da04-8801-4153-b596-bca18de47123" name="Match content of [ErrorCode]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns4='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns4:ResponseState[1]/ns1:ErrorCode[1]/text()</path>
+            <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="d93aa0c8-d20f-4de3-9d17-6e816ec4d46b" name="Match content of [Message]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns4='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns4:ResponseState[1]/ns1:Message[1]/text()</path>
+            <content>OK</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="e214a3b1-12e3-47bc-b303-8f1efa08aed5" name="Match content of [ns2:paymentStatus]">
+          <con:configuration>
+            <path>declare namespace ns2='urn:pins.payment.evry.com:domain:payment-status-update:v1_5';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns3:paymentStatusUpdateSummary[1]/ns2:paymentStatus[1]/text()</path>
+            <content>READY_FOR_DUE_DATE</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Valid HTTP Status Codes" id="06cedb6e-9354-4a39-a1c9-554ecc7108c5" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentAccountSearch_V1_8" id="0de72876-e42e-4c09-93b5-22ff8aed8476">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V1_8" id="cce2dd76-70aa-46a7-b5fc-938c89148759">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_8" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_8" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAccountSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <urn1:debtorAccount>${#TestCase#debitAccount}</urn1:debtorAccount>
+            </urn1:commonCriteria>
+            <urn1:accountCriteria>
+               <urn1:amount>
+                  <urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7">
+                     <urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount>
+                     <urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount>
+                  </urn2:amountMaxMin>
+               </urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId>
+            </urn1:accountCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentAccountSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="3cbc1b89-8c15-4e98-a176-7ccbaae0a5f9"/>
+        <con:assertion type="Valid HTTP Status Codes" id="4a3bffaf-f091-4887-9c74-37edbecace62" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="2d98f58c-545a-4f74-9903-77a90e68c3e4" name="AccurateAmount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+def NoOfElements = context.expand( '${PaymentAccountSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+ 
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+{ 
+def response = context.expand( '${PaymentAccountSearch_V1_8#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; declare namespace ns4=\'urn:pins.payment.evry.com:domain:sepa-complex-types:v7\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentAccountSearch_V1_7" id="5a290019-8d42-4db2-9d98-137c88308203">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V1_7" id="2f36d16d-ba94-4b7a-8b9c-b532bf9ebd27">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_7" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAccountSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl><urn1:debtorAccount>${#TestCase#debitAccount}</urn1:debtorAccount>
+            </urn1:commonCriteria>
+            <urn1:accountCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:accountCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentAccountSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="d9a15ef5-07ff-4d7b-8fa9-828e279c512e"/>
+        <con:assertion type="Valid HTTP Status Codes" id="e45a4875-22bb-4d1a-9567-abb50eeb6c1d" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="1ac1d073-fb67-4343-9138-6f2d08c80d4b" name="AccurateAmount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+
+def NoOfElements = context.expand( '${PaymentAccountSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+{ 
+def response = context.expand( '${PaymentAccountSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns4=\'urn:pays.payment.evry.com:domain:sepa-complex-types:v6\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentAccountSearch_V1_6" id="f00d6d37-c19b-4896-96eb-874e5c6713e7">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V1_6" id="ef454126-8f69-4c82-af16-a26c994eb87b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_6Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_6" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_6" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAccountSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl><urn1:debtorAccount>${#TestCase#debitAccount}</urn1:debtorAccount>
+            </urn1:commonCriteria>
+            <urn1:accountCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:accountCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentAccountSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="fe2f2e9d-089e-4d07-ae1f-c9add7ad18c2"/>
+        <con:assertion type="Valid HTTP Status Codes" id="5a95c2af-1c65-47d8-b015-4c64ea74f87b" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="07295c75-2358-4638-a858-73bb758c33db" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+
+def NoOfElements = context.expand( '${PaymentAccountSearch_V1_6#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+{ 
+def response = context.expand( '${PaymentAccountSearch_V1_6#Response#declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; declare namespace ns4=\'urn:pays.payment.edb.com:domain:sepa-complex-types:v5\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+ 
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentAccountSearch_V1_5" id="16a2ddd4-af37-4d13-a2ed-73e7c523023c">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V1_5" id="beb32baf-72eb-470d-a15c-674905c3ce8c">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_5" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_5" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAccountSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl><urn1:debtorAccount>${#TestCase#debitAccount}</urn1:debtorAccount>
+            </urn1:commonCriteria>
+            <urn1:accountCriteria><urn1:amount><urn2:accurateAmount xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4">${#TestCase#InstAmount}</urn2:accurateAmount></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:accountCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentAccountSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="37fcd70b-59d7-47db-8c08-537c0348b6e1"/>
+        <con:assertion type="Valid HTTP Status Codes" id="2bf6d484-6621-4bbc-b2a3-e5c7ef419bf9" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentMessageSearch_V1_8" id="eafbd400-0a50-4a7a-9ec7-68f0707dfdfd">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="PaymentMessageSearch_V1_8" id="d009f1ac-ba1c-493c-933e-bfd5d7a59021">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_8" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_8" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentMessageSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:messageCriteria>
+               <urn1:amount>
+                  <urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7">
+                     <urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount>
+                     <urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount>
+                  </urn2:amountMaxMin>
+               </urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId>
+            </urn1:messageCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentMessageSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="7dff3784-860d-4b9e-bef3-51de711e9a60"/>
+        <con:assertion type="Valid HTTP Status Codes" id="9ff5bcae-ab5c-4bb3-8d79-1c42c1576687" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="e23018f5-c2ca-49a6-852f-c21fa1f6b7ea" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+
+def NoOfElements = context.expand( '${PaymentMessageSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+{ 
+def response = context.expand( '${PaymentMessageSearch_V1_8#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; declare namespace ns4=\'urn:pins.payment.evry.com:domain:sepa-complex-types:v7\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentMessageSearch_V1_7" id="e18d2bf8-1870-4c2f-878c-5027eaf46891">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="PaymentMessageSearch_V1_7" id="fc68afc9-b5a2-4fb1-8827-69bd83f9f727">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_7" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentMessageSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:messageCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:messageCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentMessageSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="fd0920fa-bd08-4bff-a20f-6c7e940b785b"/>
+        <con:assertion type="Valid HTTP Status Codes" id="dcbbd0a8-7ba9-4342-9fa0-8d1deb6354e6" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentMessageSearch_V1_6" id="715918a0-d3f6-467e-9428-bea0811f965d">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="PaymentMessageSearch_V1_6" id="23d4fa5a-c85d-4a8e-85cb-2caf2cc9d5b9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_6Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_6" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_6" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentMessageSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:messageCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:messageCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentMessageSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="3fb36854-b23f-4d35-96f3-66702f182e44"/>
+        <con:assertion type="Valid HTTP Status Codes" id="28c8dd55-4911-4fcf-a5d3-8d11765a8077" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="78035cad-4bef-4efd-9377-afe38cd3055a" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentMessageSearch_V1_6#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+{ 
+def response = context.expand( '${PaymentMessageSearch_V1_6#Response#declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; declare namespace ns4=\'urn:pays.payment.edb.com:domain:sepa-complex-types:v5\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentMessageSearch_V1_5" id="c13c4d80-0cd5-44b6-afec-9e403cec4445">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="PaymentMessageSearch_V1_5" id="fec27a22-cc40-40bb-949d-67a26f275185">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_5" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_5" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentMessageSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:messageCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:messageId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId></urn1:messageCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentMessageSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="72013c16-611b-4064-9e2f-ec05879cc771"/>
+        <con:assertion type="Valid HTTP Status Codes" id="9d1a166f-dadf-4591-a108-2d26777e327a" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="e4260c9e-4aea-4753-81c2-7cef65c82820" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentMessageSearch_V1_5#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_5\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_5\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+def response = context.expand( '${PaymentMessageSearch_V1_5#Response#declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_5\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_5\'; declare namespace ns4=\'urn:pays.payment.edb.com:domain:sepa-complex-types:v4\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoSearch_V1_8" id="1f3d8dfc-d353-4a68-aabd-e17b339a6276">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="PaymentInfoSearch_V1_8" id="f2ddaf32-d5d5-449f-a838-f92b0103d771">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_8" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_8" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:paymentInfoCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:paymentInfoCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="76c4f004-e4f0-4ac9-8f61-ba09b67bc276"/>
+        <con:assertion type="Valid HTTP Status Codes" id="6caef799-5306-42f6-b957-3bb1665ea145" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="b737dcb4-ec32-4824-bc7a-c1d9ed352193" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentInfoSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentPaymentInfoSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentInfoSearch_V1_8#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; declare namespace ns4=\'urn:pins.payment.evry.com:domain:sepa-complex-types:v7\'; //ns5:PaymentPaymentInfoSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoSearch_V1_7" id="d5133ee8-ac06-47fb-827b-287870b90dd7">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="PaymentInfoSearch_V1_7" id="800e4064-1f1c-46c1-90cc-2a8b0488e8e3">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_7" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:paymentInfoCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:paymentInfoCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="f804cdcb-85ac-4a77-beb7-4bfea238e909"/>
+        <con:assertion type="Valid HTTP Status Codes" id="f516d058-7cef-4497-b44b-7951aba16bdc" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="f76e6f82-312f-480f-bd70-dee4a24a7a3d" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentInfoSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentPaymentInfoSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' )
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentAccountSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns4=\'urn:pays.payment.evry.com:domain:sepa-complex-types:v6\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoSearch_V1_6" id="def9c34a-7777-4a65-902b-dcbb7b42b491">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="PaymentInfoSearch_V1_6" id="833447d2-3562-479e-81f8-24fe32212504">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_6Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_6" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_6" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:paymentInfoCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:paymentInfoCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="94260c9c-29f9-4b15-ba22-34db7a1d12a1"/>
+        <con:assertion type="Valid HTTP Status Codes" id="df1e8571-41ec-4bcc-8284-e9ffef8c11a8" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="c3cfc7c6-d8af-4df7-8ea5-ac98af58d71b" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentInfoSearch_V1_6#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; //ns5:PaymentPaymentInfoSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentMessageSearch_V1_6#Response#declare namespace ns3=\'urn:pins.payment.edb.com:domain:search:v1_6\'; declare namespace ns5=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_6\'; declare namespace ns4=\'urn:pays.payment.edb.com:domain:sepa-complex-types:v5\'; //ns5:PaymentMessageSearchResponse[1]/ns5:result[1]/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoSearch_V1_5" id="0e6b4ae8-5ef0-4184-9af6-d970351c243e">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="PaymentInfoSearch_V1_5" id="3c2ffdc8-9374-4442-98f2-d3e84e6e185b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_5" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_5" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:paymentInfoCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:paymentInfoCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="10f7fe1f-deaa-4c54-aeb1-6a16ba44c18e"/>
+        <con:assertion type="Valid HTTP Status Codes" id="4314cc19-756d-41e7-9dfc-2f063f513572" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="3f5181b6-c0a5-4d41-8b6a-cc142143a031" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentInfoSearch_V1_5#Response#declare namespace con=\'http://control.ws.payment.edb.com\'; declare namespace urn2=\'urn:pins.payment.edb.com:domain:search:v1_5\'; declare namespace urn=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_5\'; //urn:PaymentPaymentInfoSearchResponse[1]/urn:result[1]/urn2:elementControl[1]/con:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentInfoSearch_V1_5#Response#declare namespace urn2=\'urn:pins.payment.edb.com:domain:search:v1_5\'; declare namespace urn=\'urn:pins.payment.edb.com:ws:paymentsearch:v1_5\'; declare namespace urn3=\'urn:pays.payment.edb.com:domain:sepa-complex-types:v4\'; //urn:PaymentPaymentInfoSearchResponse[1]/urn:result['+i+']/urn2:sumAmountListed[1]/urn3:accumulatedAmounts[1]/urn3:accumulatedAmount[1]/urn3:amount[1]}' ) as Float
+
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentTransactionSearch_V1_8" id="b1177ac3-9ba5-4c0b-8924-7881dee6b900">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="PaymentTransactionSearch_V1_8" id="cbb81d56-7c52-449a-8e29-262cd7458781">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_8" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_8" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="2b131a07-850d-4642-8512-669e0bf4a4c8"/>
+        <con:assertion type="Valid HTTP Status Codes" id="53536339-1d77-4b18-bfc2-63c85871d153" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentTransactionSearch_V1_7" id="98d30ec1-fd3d-40d3-a4c4-14cc6dc2bdf0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="PaymentTransactionSearch_V1_7" id="37f5ecfe-0c31-4b8e-a2c1-d4c702780c98">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_7" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:amount>
+                  <urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6">
+                     <urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount>
+                     <urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount>
+                  </urn2:amountMaxMin>
+               </urn1:amount>
+               <urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId>
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="00ce9b9d-7fa7-4383-98b7-9ed5cdad7db1"/>
+        <con:assertion type="Valid HTTP Status Codes" id="8f187f6f-d791-45ea-bfe8-8de3860c54d0" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="370b8c4b-6f9b-42d6-82c7-5828682b23cb" name="Script Assertion 2">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentTransactionSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentTransactionSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns4=\'urn:pays.payment.evry.com:domain:sepa-complex-types:v6\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+
+
+
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentTransactionSearch_V1_6" id="eb6a0220-2414-4fe1-ad59-a290dd725a94">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="PaymentTransactionSearch_V1_6" id="d4630357-e05f-4c67-9fd7-9383f5d62cb3">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_6Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_6" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_6" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${PaymentCreation#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:paymentInfoId[1]}</urn1:paymentInfoId></urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="59508e1b-bba4-4823-947f-e43114454155"/>
+        <con:assertion type="Valid HTTP Status Codes" id="7d0d63b3-a65b-4e44-b335-fe9afe490baa" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="381a8ede-6590-4aca-8b18-450c85ca155b" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentTransactionSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentTransactionSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns4=\'urn:pays.payment.evry.com:domain:sepa-complex-types:v6\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+
+
+
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentTransactionSearch_V1_5" id="60dea245-6f80-4c76-b306-e8321ed0a2f7">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="PaymentTransactionSearch_V1_5" id="3943dd84-3065-4a3d-8478-1202bf4ae51f">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentsearch:v1_5" xmlns:urn1="urn:pins.payment.edb.com:domain:search:v1_5" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestCase#userid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${#TestCase#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${#TestCase#item4}" value="${#TestCase#value4}"/>
+            <wsc:item key="${#TestCase#item1}" value="${#TestCase#value1}"/>
+            <wsc:item key="${#TestCase#item2}" value="${#TestCase#value2}"/>
+            <wsc:item key="${#TestCase#item3}" value="${#TestCase#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount></urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="d533d13a-8713-4aec-b440-2607507886ad"/>
+        <con:assertion type="Valid HTTP Status Codes" id="edb29cb5-0dc6-43db-a3fc-ec7a965e75ca" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="44750e62-fd53-4bb2-a181-51c8181a91c1" name="Accurate Amount">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
+
+def NoOfElements = context.expand( '${PaymentTransactionSearch_V1_8#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_8\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_8\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
+
+
+NoOfElements =NoOfElements+1 as Float
+for (int i = 1; i&lt;NoOfElements;i++)
+
+{ 
+
+def response = context.expand( '${PaymentTransactionSearch_V1_7#Response#declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_7\'; declare namespace ns4=\'urn:pays.payment.evry.com:domain:sepa-complex-types:v6\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_7\'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result['+i+']/ns3:sumAmountListed[1]/ns4:accumulatedAmounts[1]/ns4:accumulatedAmount[1]/ns4:amount[1]}' ) as Float
+
+
+
+
+	
+if (response&lt;(accurateMinAmount))
+{
+	assert false;
+}
+else if (response>(accurateMaxAmount)) 
+{
+	assert false;
+}
+else
+{
+	assert true;
+}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>PaymentId</con:name>
+      <con:value>32664</con:value>
+    </con:property>
+    <con:property>
+      <con:name>SourceApplication</con:name>
+      <con:value>EVRYINT</con:value>
+    </con:property>
+    <con:property>
+      <con:name>userid</con:name>
+      <con:value>${Properties#customerid}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>credentials</con:name>
+      <con:value>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</con:value>
+    </con:property>
+    <con:property>
+      <con:name>orgid</con:name>
+      <con:value>4201</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerid</con:name>
+      <con:value>${Properties#customerid}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>debitAccount</con:name>
+      <con:value>${Properties#debitAccount}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DebitAcntccy</con:name>
+      <con:value>NOK</con:value>
+    </con:property>
+    <con:property>
+      <con:name>CreditAccount</con:name>
+      <con:value>42010308121</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item1</con:name>
+      <con:value>PaymentChannel</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value1</con:name>
+      <con:value>BES</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item2</con:name>
+      <con:value>AgreementId</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value2</con:name>
+      <con:value>${Properties#customerid}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item3</con:name>
+      <con:value>LogRef</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value3</con:name>
+      <con:value>${=CommonLibrary.getDate("ddMMyyyy_HHmmss")}-${=context.getCurrentStep().getTestCase().getLabel()}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item4</con:name>
+      <con:value>SelfService</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value4</con:name>
+      <con:value>true</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ReqExnDate</con:name>
+      <con:value>${= java.time.LocalDate.now()}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>debitResId</con:name>
+      <con:value>1234</con:value>
+    </con:property>
+    <con:property>
+      <con:name>AgreeementId</con:name>
+      <con:value>${Properties#customerid}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>orignalMessageid</con:name>
+      <con:value>20190624-PI1</con:value>
+    </con:property>
+    <con:property>
+      <con:name>MessageId</con:name>
+      <con:value>18130</con:value>
+    </con:property>
+    <con:property>
+      <con:name>BookingSearch</con:name>
+      <con:value>95</con:value>
+    </con:property>
+    <con:property>
+      <con:name>MessageSearch</con:name>
+      <con:value>95</con:value>
+    </con:property>
+    <con:property>
+      <con:name>PaymentInfoSearch</con:name>
+      <con:value>25</con:value>
+    </con:property>
+    <con:property>
+      <con:name>TransactionSearch</con:name>
+      <con:value>5</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Completed_ExnDate</con:name>
+      <con:value>2019-06-06+02:00</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Employee_User</con:name>
+      <con:value>TESTUSERPI26</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Employee_VerificationUser</con:name>
+      <con:value>TESTUSERPI29</con:value>
+    </con:property>
+    <con:property>
+      <con:name>CreditAccountCCY-INT</con:name>
+      <con:value>USD</con:value>
+    </con:property>
+    <con:property>
+      <con:name>CreditAccountCountry</con:name>
+      <con:value>DE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>InstructedAmount</con:name>
+      <con:value>8000</con:value>
+    </con:property>
+    <con:property>
+      <con:name>CreditorAgentBIC</con:name>
+      <con:value>COBADEFFXXX</con:value>
+    </con:property>
+    <con:property>
+      <con:name>CreditAccount-INT</con:name>
+      <con:value>DE87370800400106846500</con:value>
+    </con:property>
+    <con:property>
+      <con:name>InstAmount</con:name>
+      <con:value>30</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Verification_Customerid</con:name>
+      <con:value>16112313749</con:value>
+    </con:property>
+    <con:property>
+      <con:name>Verification_DebitorAcct</con:name>
+      <con:value>40680728196</con:value>
+    </con:property>
+    <con:property>
+      <con:name>AccurateMinAmount</con:name>
+      <con:value>10</con:value>
+    </con:property>
+    <con:property>
+      <con:name>AccurateMaxAmount</con:name>
+      <con:value>300</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>ff557c98-98ee-4b90-93fb-72fd1f7ce14d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2ffcbcef-7b72-4f29-80e8-94dd9c8e13fc</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4e28ffc6-8b8d-4b25-a60c-bb92efe617c3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b58640d9-074c-477f-8930-1d39305f005d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f4f3cc96-1468-474b-bea1-9fd3ccb8050e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>22576e85-ccf4-42d7-a96c-3de9543b70ea</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e6c71b73-22e3-4cad-91b5-e83e00918cd4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5b04a627-5c65-4cb5-8132-5e4be91d4cfd</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>fab792dc-6da8-4ec0-b978-8952d44b38a5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9749924f-6e1b-4410-beea-deb8a1f699dc</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5e7b2016-fa1a-4000-b52f-3c20f358226a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>41354538-460f-4c2f-823c-b787bb561147</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

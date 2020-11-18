@@ -1,0 +1,1143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:interface xsi:type="con:WsdlInterface" id="2f4c655b-30f5-4a41-b986-78f120628cdf" wsaVersion="NONE" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11" type="wsdl" bindingName="{urn:pays.payment.edb.com:ws:paymentstatusupdate:v1}PAYSPaymentStatusUpdate_V1_0PortTypeSoap11" soapVersion="1_1" anonymous="optional" definition="file:/C:/Users/Ei11681/Downloads/PAYSPaymentStatusUpdate_V1_0Service.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="2f4c655b-30f5-4a41-b986-78f120628cdffileName">PAYSPaymentStatusUpdate_V1_0PortTypeSoap11</con:setting>
+  </con:settings>
+  <con:definitionCache type="TEXT" rootPart="file:\C:\Users\Ei11681\Downloads\PAYSPaymentStatusUpdate_V1_0Service.xml">
+    <con:part>
+      <con:url>file:\C:\Users\Ei11681\Downloads\PAYSPaymentStatusUpdate_V1_0Service.xml</con:url>
+      <con:content><![CDATA[<wsdl:definitions targetNamespace="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:sch4="urn:pays.payment.edb.com:domain:payment-status-update:v1" xmlns:sch3="urn:pays.payment.edb.com:domain:sepa-simple-types:v1" xmlns:sch2="urn:pays.payment.edb.com:domain:edb-types:v1" xmlns:sch1="http://edb.com/ws/WSCommon_v21" xmlns:sch0="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1">
+  <wsdl:types>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pref="urn:pays.payment.edb.com:domain:paymentupdate:v1" xmlns:pay="urn:pays.payment.edb.com:domain:payment-status-update:v1" xmlns:edb="urn:pays.payment.edb.com:domain:edb-types:v1">
+      <xs:annotation>
+        <xs:documentation>Operations for updating status of payments. All operations can be performed on message, account, paymentInformation
+			and transcation level.
+			Short explanation of the statuses (see supplementary documentation for further details)
+				Confirm: validated -> toBeApproved | validated -> readyForDueDate (if approval is not used)
+				Approve: toBeApproved -> readyForDueDate | toBeApproved -> partlyApproved (if more than 1 approval needed)
+				Unapprove: readyForDueDate -> toBeApproved
+				Cancel: * -> cancelled
+				Prioritize: readyForDueDate -> readyForDueDate w/priority mark
+				Unprioritize: readyForDueDate w/priority mark -> readyForDueDate
+				Stop: readyForDueDate -> stopped
+				Reactivate: stopped -> readyForDueDate
+		
+			Error Conditions (responseState.ErrorCode):
+				70=Technical error (Uncategorized)
+				6426=No payments found for status update (Validation)
+				6485=Not authorized for accounts (Validation)
+				6600=Status update failed for all matching payments. Refer to ResultCode of individual StatusUpdateResults for detailed information
+			
+			Validation conditions (responseState.ErrorCode)
+				6601=Status update failed for some matching payments. Refer to ResultCode of individual StatusUpdateResults for detailed information
+			
+			In case of 6600/6601 the response will include a StatusUpdateResultCode for each payment:			
+				SUCCESS=Payment updated successfully
+				UNAUTHORIZED=User not authorized to perform requested operation on payment.
+				ILLEGAL_STATUS_UPDATE=Payment cannot be updated from its current status to the requested status.
+				PARTIALLY_APPROVED=Payment approved successfully, but more approvals are needed to fully approve payment. (This status is only used for paymentApprove).
+				ALREADY_APPROVED_BY_USER=Payment already approved by current user. (This status is only used for paymentApprove).
+				NO_APPROVALS_NEEDED=Customer agreement does not require payment approval. (This status is only used for paymentApprove/Unapprove).
+			
+			If no payments matches the requested criteria, an error will be thrown. 
+			If at least one payment fulfills the requested criteria, a validation error will be added for each failing payment.</xs:documentation>
+      </xs:annotation>
+      <xs:import namespace="urn:pays.payment.edb.com:domain:edb-types:v1"/>
+      <xs:import namespace="urn:pays.payment.edb.com:domain:payment-status-update:v1"/>
+      <xs:element name="PaymentApproveRequest" type="tns:PaymentApproveRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Approve payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentApproveResponse" type="tns:PaymentApproveResponseType">
+        <xs:annotation>
+          <xs:documentation>Resonse from Approve payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentUnapproveRequest" type="tns:PaymentUnapproveRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Unapprove payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentUnapproveResponse" type="tns:PaymentUnapproveResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from Unapprove payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentConfirmRequest" type="tns:PaymentConfirmRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Confirm payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentConfirmResponse" type="tns:PaymentConfirmResponseType">
+        <xs:annotation>
+          <xs:documentation>Rsponse from Confirm payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentStopRequest" type="tns:PaymentStopRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Stop payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentStopResponse" type="tns:PaymentStopResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from Stop payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentReactivateRequest" type="tns:PaymentReactivateRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Reactivate payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentReactivateResponse" type="tns:PaymentReactivateResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from Reactivate payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentPrioritizeRequest" type="tns:PaymentPrioritizeRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Prioritize payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentPrioritizeResponse" type="tns:PaymentPrioritizeResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from the Prioritize payment operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentUnprioritizeRequest" type="tns:PaymentUnprioritizeRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Unprioritize payment(s))</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentUnprioritizeResponse" type="tns:PaymentUnprioritizeResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from the Unprioritize payment operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentCancelRequest" type="tns:PaymentCancelRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Cancel payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentCancelResponse" type="tns:PaymentCancelResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from the Cancel payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentHideRequest" type="tns:PaymentHideRequestType">
+        <xs:annotation>
+          <xs:documentation>Request to Hide payment(s)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PaymentHideResponse" type="tns:PaymentHideResponseType">
+        <xs:annotation>
+          <xs:documentation>Response from the Hide payment(s) operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:complexType name="PaymentHideRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentHideResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="hideResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentCancelRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentCancelResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="cancelResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentApproveRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentApproveResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="approvalInformation" type="pay:PaymentApprovalInformation"/>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="approvalResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentUnapproveRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentUnapproveResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="approvalInformation" type="pay:PaymentApprovalInformation"/>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="unapprovalResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentConfirmRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentConfirmResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="confirmResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentStopRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentStopResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="stopResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentReactivateRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentReactivateResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="reactivateResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentPrioritizeRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentPrioritizeResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="prioritizeResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentUnprioritizeRequestType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="messageInput" type="pay:MessageStatusUpdateInput"/>
+            <xs:element name="accountInput" type="pay:AccountStatusUpdateInput"/>
+            <xs:element name="paymentInfoInput" type="pay:PaymentInfoStatusUpdateInput"/>
+            <xs:element name="transactionInput" type="pay:TransactionStatusUpdateInput"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentUnprioritizeResponseType">
+        <xs:complexContent>
+          <xs:extension base="edb:baseResponseType">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="unprioritizeResult" type="pay:PaymentStatusUpdateResult"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+    </xs:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://edb.com/ws/WSCommon_v21" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://edb.com/ws/WSCommon_v21">
+      <xsd:complexType name="ClientContextType">
+        <xsd:sequence>
+          <xsd:element name="userid" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Identifies the person who initiated the action This could either be the customer itself in a netbank) or an employee</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="credentials" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Authorization data. This is typically a security Object retriewed from a logon, but can also be a plain password.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="channel" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Indicated what type of application that initiated the request</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="orgid" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>The OrganizationalId - will in a banking context be Financial Institution / Konsernnr</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="orgunit" nillable="true" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>The Organizational unit will in a banking context be Branch / Registernr</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="customerid" nillable="true" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Id of the customer on which the operation is requested, may be the same as userid, but may well be different</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="locale" nillable="true" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Locale in a java syntax e.g "en_EN". May be used if application supports localized response</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ip" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>The ip adress of the client</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="itemType">
+            <xsd:annotation>
+              <xsd:documentation>Optionnal extention items - Add key/value pairs for application specific extentions</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="itemType">
+        <xsd:attribute name="key" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="EDBHeaderType">
+        <xsd:sequence>
+          <xsd:element name="SourceApplication" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Identifies the source that initiated the message. Used to separate different service consumers.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="DestinationApplication" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Identifies the destination of the message. Used to separate different service providers.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Function" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Identifies the service to be called.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Version" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Service version "X.Y.Z" according to this standard:
+                        X = Main release (major changes, not necessarily backwards compatible)
+                        Y = Minor release (backwards compatible, new functionality)
+                        Z = Bugfix (backwards compatible, error correction only)</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ClientContext" type="ClientContextType">
+            <xsd:annotation>
+              <xsd:documentation>Elements for identifying client context information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="AutHeader" type="EDBHeaderType"/>
+      <xsd:complexType name="ResponseStateType">
+        <xsd:sequence>
+          <xsd:element name="ErrorCode" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>Numeric error code reported for this error.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Severity" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>Response Status Severity Code</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ComponentId" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>Unique code identifying the component returning the service response</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="StrErrorCode" nillable="true" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Deprecated: Error code represented as String</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Message" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Message describing the error. Default is english language. Optionally localized according to the locale parameter in the
+                        service request</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="NativeError" nillable="true" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Deprecated: Optional detailed error information reported from involved components. Used for diagnostics purposes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="LogSequence" nillable="true" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>Optional key generated to be used for log correlation purposes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="errorItem" nillable="true" type="errorItemType">
+            <xsd:annotation>
+              <xsd:documentation>Optional extention items - key/value pairs are used for extented error inforamtion.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="errorItemType">
+        <xsd:annotation/>
+        <xsd:attribute name="key" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+    </xsd:schema>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:pays.payment.edb.com:domain:edb-types:v1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:edbheader="http://edb.com/ws/WSCommon_v21" xmlns="urn:pays.payment.edb.com:domain:edb-types:v1">
+      <xs:import namespace="http://edb.com/ws/WSCommon_v21"/>
+      <xs:complexType abstract="true" name="baseResponseType">
+        <xs:sequence>
+          <xs:element name="ResponseState" type="edbheader:ResponseStateType"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:pays.payment.edb.com:domain:sepa-simple-types:v1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pays.payment.edb.com:domain:sepa-simple-types:v1">
+      <xs:simpleType name="ISODate">
+        <xs:restriction base="xs:date"/>
+      </xs:simpleType>
+      <xs:simpleType name="ISODateTime">
+        <xs:restriction base="xs:dateTime"/>
+      </xs:simpleType>
+      <xs:simpleType name="Max15NumericText">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[0-9]{1,15}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="DecimalNumber">
+        <xs:restriction base="xs:decimal">
+          <xs:fractionDigits value="17"/>
+          <xs:totalDigits value="18"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="BaseOneRate">
+        <xs:restriction base="xs:decimal">
+          <xs:fractionDigits value="10"/>
+          <xs:totalDigits value="11"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Amount_SimpleType">
+        <xs:restriction base="xs:decimal">
+          <xs:fractionDigits value="5"/>
+          <xs:totalDigits value="18"/>
+          <xs:minInclusive value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Amount_SimpleType_NoFractions">
+        <xs:restriction base="xs:decimal">
+          <xs:fractionDigits value="0"/>
+          <xs:totalDigits value="12"/>
+          <xs:minInclusive value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ChargeBearerTypeCode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="DEBT">
+            <xs:annotation>
+              <xs:documentation>All transaction charges are to be borne by the debtor.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="CRED">
+            <xs:annotation>
+              <xs:documentation>All transaction charges are to be borne by the creditor.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SHAR">
+            <xs:annotation>
+              <xs:documentation>In a credit transfer context, means that transaction charges on the sender side are to be borne by the debtor,
+  				transaction charges on the receiver side are to be borne by the creditor. In a direct debit context, 
+  				means that transaction charges on the sender side are to be borne by the creditor, 
+  				transaction charges on the receiver side are to be borne by the debtor.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SLEV">
+            <xs:annotation>
+              <xs:documentation>Charges are to be applied following the rules agreed in the service level and/or scheme.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="PriorityCode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="HIGH">
+            <xs:annotation>
+              <xs:documentation>Priority level is high.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NORM">
+            <xs:annotation>
+              <xs:documentation>Priority level is normal.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="BICFIIdentifier">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"/>
+          <xs:minLength value="8"/>
+          <xs:maxLength value="11"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ActiveOrHistoricCurrencyCode">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Z]{3,3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="CountryCode">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Z]{2,2}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="PaymentTypeCode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="DOMESTIC_CURRENCY_HIGH_VALUE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY_HIGH_VALUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CURRENCY">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CURRENCY_TRANSFER_URGENT">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY_TRANSFER_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CURRENCY_TRANSFER">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY_TRANSFER</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CURRENCY_HIGH_VALUE_CHEQUE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY_HIGH_VALUE_CHEQUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CURRENCY_CHEQUE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CURRENCY_CHEQUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_HIGH_VALUE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_HIGH_VALUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_TRANSFER_URGENT">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_TRANSFER_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_TRANSFER">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_TRANSFER</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CHEQUE_URGENT">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CHEQUE_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_CHEQUE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_CHEQUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_PAYMENT_URGENT">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_PAYMENT_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_PAYMENT">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_PAYMENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_TRANSFER_URGENT">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_TRANSFER_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_TRANSFER">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_TRANSFER</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_CHEQUE_URGENT">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_CHEQUE_URGENT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="INTERNATIONAL_CHEQUE">
+            <xs:annotation>
+              <xs:documentation>INTERNATIONAL_CHEQUE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SEPA">
+            <xs:annotation>
+              <xs:documentation>SEPA</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="FOREIGN_ACCOUNT">
+            <xs:annotation>
+              <xs:documentation>FOREIGN_ACCOUNT</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DOMESTIC_EINVOICE">
+            <xs:annotation>
+              <xs:documentation>DOMESTIC_EINVOICE</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="PhoneNumber">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\+[0-9]{1,3}-[0-9()+\-]{1,30}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max10Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="10"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max16Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="16"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max34Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="34"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="AnyBICIdentifier">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"/>
+          <xs:minLength value="8"/>
+          <xs:maxLength value="11"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max30Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="30"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max35Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="35"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max40Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="40"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max50Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="50"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max70Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="70"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max128Text">
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"/>
+          <xs:maxLength value="128"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max140Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="140"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max170Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="170"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max105Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="105"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="Max254Text">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="\S.*\S|\S"/>
+          <xs:minLength value="1"/>
+          <xs:maxLength value="254"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="OriginalFormatCode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="CLIENT_GENERATED">
+            <xs:annotation>
+              <xs:documentation>Generated from a client.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ISO">
+            <xs:annotation>
+              <xs:documentation>Generated from an ISO file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NDR">
+            <xs:annotation>
+              <xs:documentation>Generated from a NDR file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="TELEPAY">
+            <xs:annotation>
+              <xs:documentation>Generated from a Telepay file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="PAYMUL">
+            <xs:annotation>
+              <xs:documentation>Generated from a Paymul file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SALARY_LIST">
+            <xs:annotation>
+              <xs:documentation>Generated from a salary file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="PAYMENT_LIST">
+            <xs:annotation>
+              <xs:documentation>Generated from a payment list file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="PREPAID_LIST">
+            <xs:annotation>
+              <xs:documentation>Generated from a prepaid list file</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="UNKNOWN">
+            <xs:annotation>
+              <xs:documentation>Unknown origin (migrated?)</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:pays.payment.edb.com:domain:payment-status-update:v1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:pays.payment.edb.com:domain:payment-status-update:v1" xmlns:st="urn:pays.payment.edb.com:domain:sepa-simple-types:v1">
+      <xs:import namespace="urn:pays.payment.edb.com:domain:sepa-simple-types:v1"/>
+      <xs:complexType abstract="true" name="BaseStatusUpdateInput"/>
+      <xs:complexType name="MessageStatusUpdateInput">
+        <xs:annotation>
+          <xs:documentation>Updates all payments within specified messages</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+          <xs:extension base="tns:BaseStatusUpdateInput">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="messageId" type="xs:long"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentInfoStatusUpdateInput">
+        <xs:annotation>
+          <xs:documentation>Updates specified payment infos</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+          <xs:extension base="tns:BaseStatusUpdateInput">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="paymentInfoId" type="xs:long"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="TransactionStatusUpdateInput">
+        <xs:annotation>
+          <xs:documentation>Updates specified transaction ids</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+          <xs:extension base="tns:BaseStatusUpdateInput">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="transactionId" type="xs:long"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="AccountStatusUpdateInput">
+        <xs:annotation>
+          <xs:documentation>Updates specified payments with specified debtor accounts within a message</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+          <xs:extension base="tns:BaseStatusUpdateInput">
+            <xs:sequence>
+              <xs:element name="messageId" type="xs:long"/>
+              <xs:element maxOccurs="unbounded" name="accountIdentification" type="st:Max35Text"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PaymentApprovalInformation">
+        <xs:annotation>
+          <xs:documentation>Information about payment approval.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="numberOfTransactions" type="tns:NumberOfTransactions"/>
+          <xs:element name="controlSum" type="st:DecimalNumber"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="NumberOfTransactions">
+        <xs:sequence>
+          <xs:element name="numberOfTransactions" type="st:Max15NumericText"/>
+          <xs:element name="paymentType" type="st:PaymentTypeCode"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PaymentStatusUpdateResult">
+        <xs:annotation>
+          <xs:documentation>The result from a payment status update for a specific payment transaction.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element name="messageId" type="xs:long"/>
+          <xs:element name="paymentInfoId" type="xs:long"/>
+          <xs:element name="transactionId" type="xs:long"/>
+          <xs:element name="result" type="tns:StatusUpdateResultCode"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="StatusUpdateResultCode">
+        <xs:annotation>
+          <xs:documentation>Indicates whether a specific payment was sucessfully updated and, the reason for failure if unsuccesful.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="SUCCESS">
+            <xs:annotation>
+              <xs:documentation>Payment updated successfully</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="UNAUTHORIZED">
+            <xs:annotation>
+              <xs:documentation>User not authorized to perform requested operation on payment</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ILLEGAL_STATUS_UPDATE">
+            <xs:annotation>
+              <xs:documentation>Payment cannot be updated from its current status to the requested status</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="PARTIALLY_APPROVED">
+            <xs:annotation>
+              <xs:documentation>Payment approved successfully, but more approvals are needed to fully approve payment. (This status is only used for paymentApprove)</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ALREADY_APPROVED_BY_USER">
+            <xs:annotation>
+              <xs:documentation>Payment already approved by current user. (This status is only used for paymentApprove)</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NO_APPROVALS_NEEDED">
+            <xs:annotation>
+              <xs:documentation>Customer agreement does not require payment approval. (This status is only used for paymentApprove/unapprove)</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="PaymentReactivateResponse">
+    <wsdl:part element="tns:PaymentReactivateResponse" name="PaymentReactivateResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentHideRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentHideRequest" name="PaymentHideRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentPrioritizeRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentPrioritizeRequest" name="PaymentPrioritizeRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentCancelResponse">
+    <wsdl:part element="tns:PaymentCancelResponse" name="PaymentCancelResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentUnapproveRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentUnapproveRequest" name="PaymentUnapproveRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentUnapproveResponse">
+    <wsdl:part element="tns:PaymentUnapproveResponse" name="PaymentUnapproveResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentStopRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentStopRequest" name="PaymentStopRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentHideResponse">
+    <wsdl:part element="tns:PaymentHideResponse" name="PaymentHideResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentCancelRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentCancelRequest" name="PaymentCancelRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentApproveResponse">
+    <wsdl:part element="tns:PaymentApproveResponse" name="PaymentApproveResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentConfirmRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentConfirmRequest" name="PaymentConfirmRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentReactivateRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentReactivateRequest" name="PaymentReactivateRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentUnprioritizeResponse">
+    <wsdl:part element="tns:PaymentUnprioritizeResponse" name="PaymentUnprioritizeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentApproveRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentApproveRequest" name="PaymentApproveRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentPrioritizeResponse">
+    <wsdl:part element="tns:PaymentPrioritizeResponse" name="PaymentPrioritizeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentStopResponse">
+    <wsdl:part element="tns:PaymentStopResponse" name="PaymentStopResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentConfirmResponse">
+    <wsdl:part element="tns:PaymentConfirmResponse" name="PaymentConfirmResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PaymentUnprioritizeRequest">
+    <wsdl:part element="sch1:AutHeader" name="SoapHeader"></wsdl:part>
+    <wsdl:part element="tns:PaymentUnprioritizeRequest" name="PaymentUnprioritizeRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PAYSPaymentStatusUpdate_V1_0PortType">
+    <wsdl:operation name="PaymentReactivate">
+      <wsdl:input message="tns:PaymentReactivateRequest" name="PaymentReactivateRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentReactivateResponse" name="PaymentReactivateResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentHide">
+      <wsdl:input message="tns:PaymentHideRequest" name="PaymentHideRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentHideResponse" name="PaymentHideResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentPrioritize">
+      <wsdl:input message="tns:PaymentPrioritizeRequest" name="PaymentPrioritizeRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentPrioritizeResponse" name="PaymentPrioritizeResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentCancel">
+      <wsdl:input message="tns:PaymentCancelRequest" name="PaymentCancelRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentCancelResponse" name="PaymentCancelResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentUnapprove">
+      <wsdl:input message="tns:PaymentUnapproveRequest" name="PaymentUnapproveRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentUnapproveResponse" name="PaymentUnapproveResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentStop">
+      <wsdl:input message="tns:PaymentStopRequest" name="PaymentStopRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentStopResponse" name="PaymentStopResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentApprove">
+      <wsdl:input message="tns:PaymentApproveRequest" name="PaymentApproveRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentApproveResponse" name="PaymentApproveResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentConfirm">
+      <wsdl:input message="tns:PaymentConfirmRequest" name="PaymentConfirmRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentConfirmResponse" name="PaymentConfirmResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentUnprioritize">
+      <wsdl:input message="tns:PaymentUnprioritizeRequest" name="PaymentUnprioritizeRequest"></wsdl:input>
+      <wsdl:output message="tns:PaymentUnprioritizeResponse" name="PaymentUnprioritizeResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11" type="tns:PAYSPaymentStatusUpdate_V1_0PortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PaymentReactivate">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentReactivateRequest">
+        <soap:header message="tns:PaymentReactivateRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentReactivateRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentReactivateResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentHide">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentHideRequest">
+        <soap:header message="tns:PaymentHideRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentHideRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentHideResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentPrioritize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentPrioritizeRequest">
+        <soap:header message="tns:PaymentPrioritizeRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentPrioritizeRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentPrioritizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentCancel">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentCancelRequest">
+        <soap:header message="tns:PaymentCancelRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentCancelRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentCancelResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentUnapprove">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentUnapproveRequest">
+        <soap:header message="tns:PaymentUnapproveRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentUnapproveRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentUnapproveResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentStop">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentStopRequest">
+        <soap:header message="tns:PaymentStopRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentStopRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentStopResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentApprove">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentApproveRequest">
+        <soap:header message="tns:PaymentApproveRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentApproveRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentApproveResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentConfirm">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentConfirmRequest">
+        <soap:header message="tns:PaymentConfirmRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentConfirmRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentConfirmResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PaymentUnprioritize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PaymentUnprioritizeRequest">
+        <soap:header message="tns:PaymentUnprioritizeRequest" part="SoapHeader" use="literal"></soap:header>
+        <soap:body parts="PaymentUnprioritizeRequest" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PaymentUnprioritizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PAYSPaymentStatusUpdate_V1_0">
+    <wsdl:port binding="tns:PAYSPaymentStatusUpdate_V1_0PortTypeSoap11" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <soap:address location="http://10.246.89.107:23621/pin/services/PAYSPaymentStatusUpdate_V1_0Service"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content>
+      <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+    </con:part>
+  </con:definitionCache>
+  <con:endpoints>
+    <con:endpoint>http://${#Project#url}/pin/services/PAYSPaymentStatusUpdate_V1_0Service</con:endpoint>
+    <con:endpoint>http://10.246.89.107:23621/pin/services/PAYSPaymentStatusUpdate_V1_0Service</con:endpoint>
+  </con:endpoints>
+  <con:environmentSpec>
+    <con:entry environmentId="a1243402-fb1f-4584-91c5-7c8b108bcedd">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:interface>

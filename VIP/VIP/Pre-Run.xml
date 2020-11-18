@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="38569762-b0ef-488f-8b83-b58e06a6f598" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Pre-Run" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="38569762-b0ef-488f-8b83-b58e06a6f598fileName">Pre-Run</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="manualTestStep" name="PWH_INSERT_QUERY" id="ebfa4f76-334d-41ad-89a7-ad28d2d246cc" disabled="true">
+    <con:description>USE BELOW SQL QUERIIES TO CREATE DATA IN PWH
+--============================================================================================================
+	SELECT * FROM AUTH_ACTIVE_DATASET WHERE STATUS='CURRENT';
+	SELECT * FROM AUTH_CUSTOMERDATA_SET1 WHERE CUSTBANKID='4201' AND CUSTOMERNUMBER='18079216670';
+	SELECT * FROM AUTH_CUSTOMERDATA_SET2 WHERE CUSTBANKID='4201' AND CUSTOMERNUMBER='18079216670'; 
+	SELECT * FROM AUTH_ACCOUNTDATA_SET1 WHERE ACCOUNTNUMBER='42123436460';
+	SELECT * FROM AUTH_ACCOUNTDATA_SET2 WHERE ACCOUNTNUMBER='42123436460';
+	SELECT * FROM AUTH_ROLEDATA_SET1 WHERE ROLEBANKID='4201' AND CUSTOMERID='18079216670';
+	SELECT * FROM AUTH_ROLEDATA_SET2 WHERE ROLEBANKID='4201' AND CUSTOMERID='18079216670';
+--============================================================================================================
+	SELECT * FROM V_AUTHORISATION WHERE CUSTBANKID = '4201' AND VIPCODE = '8';
+--============================================================================================================
+INSERT INTO AUTH_CUSTOMERDATA_SET1 VALUES 
+	('Ann-Karin Maciej','Rikardsen','Rikardsen Ann-K','P','Strandgaten 147','','','6871','JOSTEDAL','NO','00000000000','18079216670','34333470000','08500',
+	'00000','NOB','050827151397538169','4201','329422019149862533','LO kunde','01338','','N','28-AUG-20','28-AUG-20','36500','8','');
+INSERT INTO AUTH_CUSTOMERDATA_SET2 VALUES 
+	('Ann-Karin Maciej','Rikardsen','Rikardsen Ann-K','P','Strandgaten 147','','','6871','JOSTEDAL','NO','00000000000','18079216670','34333470000','08500',
+	'00000','NOB','050827151397538169','4201','329422019149862533','LO kunde','01338','','N','28-AUG-20','28-AUG-20','36500','8','');
+--============================================================================================================
+INSERT INTO AUTH_ACCOUNTDATA_SET1 VALUES ('42123436460','01','NOK','','','5499190000','RK','Y','N','','28-AUG-20','28-AUG-20','N','N','N','N','01','I','J');
+INSERT INTO AUTH_ACCOUNTDATA_SET2 VALUES ('42123436460','01','NOK','','','5499190000','RK','Y','N','','28-AUG-20','28-AUG-20','N','N','N','N','01','I','J');
+--============================================================================================================
+INSERT INTO AUTH_ROLEDATA_SET1 VALUES ('049890976115160915','4201','18079216670','42123436460','RK-KONTO','DISP','000','051724454965162161',
+	'28-AUG-20','28-AUG-20','N','N','0','28-AUG-20','28-AUG-20','8','34333470000');
+INSERT INTO AUTH_ROLEDATA_SET1 VALUES ('049890976115160915','4201','18079216670','42123436460','RK-KONTO','EIER','000','051724454965162161',
+	'28-AUG-20','28-AUG-20','N','N','0','28-AUG-20','28-AUG-20','8','34333470000');
+INSERT INTO AUTH_ROLEDATA_SET2 VALUES ('049890976115160915','4201','18079216670','42123436460','RK-KONTO','DISP','000','051724454965162161',
+	'28-AUG-20','28-AUG-20','N','N','0','28-AUG-20','28-AUG-20','8','34333470000');
+INSERT INTO AUTH_ROLEDATA_SET2 VALUES ('049890976115160915','4201','18079216670','42123436460','RK-KONTO','EIER','000','051724454965162161',
+	'28-AUG-20','28-AUG-20','N','N','0','28-AUG-20','28-AUG-20','8','34333470000');
+--============================================================================================================
+COMMIT;
+--============================================================================================================
+--4201	18079216670 INT 42123436460--4201	22015919314	INT	42022326265
+	UPDATE AUTH_CUSTOMERDATA_SET1 SET VIPCODE = 8 WHERE CUSTBANKID='4201' AND CUSTOMERNUMBER='18079216670';
+	UPDATE AUTH_CUSTOMERDATA_SET2 SET VIPCODE = 8 WHERE CUSTBANKID='4201' AND CUSTOMERNUMBER='18079216670';</con:description>
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:expectedResult>DATA PRESENT IN V_AUTHORISATION TABLE FOR VIPCODE = '8';
+
+USE
+	SELECT * FROM V_AUTHORISATION WHERE CUSTBANKID = '4201' AND VIPCODE = '8';
+	SELECT * FROM V_AUTHORISATION WHERE CUSTBANKID = '4201' AND CUSTOMERID = '18079216670' AND ACCOUNTNUMBER = '42123436460';</con:expectedResult>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="WSDL_EndPoint" id="c1099e36-69c5-422b-8103-3a4e94c878c4" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>import testEnvironment.*;
+detect  = new detectTestEnvironment();
+envro   = context.testCase.testSuite.project.getActiveEnvironment().getName();
+result  = detect.getDetailsOf(envro);
+env = result[0];
+eos_ip  = result[1];
+getEnv= context.testCase.testSuite.project.getEnvironmentByName(envro);
+if (envro != null &amp;&amp; getEnv != null)
+{
+    setEndPoint();
+}
+else
+{
+    log.info "Test Environment is not defined"
+}
+public void setEndPointFor(  wsdl_Definition, endPoint)
+{
+    wsdlSer = getEnv.getService(wsdl_Definition+"PortTypeSoap11", com.eviware.soapui.config.ServiceConfig.Type.Enum.forString("SOAP"));
+    if (wsdlSer != null)
+    {
+        urlConf = wsdlSer.getEndpoint().getConfig();
+        urlConf.setStringValue("http://"+eos_ip+"/pin/services/"+endPoint+"?wsdl");
+    }
+    else log.info "Missing WSDL: "+wsdl_Definition;
+}
+public void setEndPoint()
+{
+    //  Send in "WSDL name" and "End Point String" seperately as "String" might have "Service" in it but WSDL name will not always have it
+    setEndPointFor("PAYSPaymentAuthorization_V1_0","PAYSPaymentAuthorization_V1_0");
+    setEndPointFor("PAYSPaymentAuthorization_V1_1","PAYSPaymentAuthorization_V1_1");
+    setEndPointFor("PAYSPaymentAuthorization_V1_2","PAYSPaymentAuthorization_V1_2");
+    setEndPointFor("PINSPaymentAuthorization_V1_3","PINSPaymentAuthorization_V1_3");
+    setEndPointFor("PAYSPaymentPredefinedCreditor_V1_0","PAYSPaymentPredefinedCreditor_V1_0");
+    setEndPointFor("PINSPaymentPredefinedCreditor_V1_1","PINSPaymentPredefinedCreditor_V1_1");
+    setEndPointFor("PAYSPaymentSearch_V1_2","PAYSPaymentSearch_V1_2");
+    setEndPointFor("PINSPaymentSearch_V1_5","PINSPaymentSearch_V1_5");
+    setEndPointFor("PINSPaymentSearch_V1_6","PINSPaymentSearch_V1_6");
+    setEndPointFor("PINSPaymentSearch_V1_7","PINSPaymentSearch_V1_7Service");
+    setEndPointFor("PINSPaymentSearch_V1_8","PINSPaymentSearch_V1_8");
+    setEndPointFor("PINSPaymentSearch_V1_9","PINSPaymentSearch_V1_9");
+    setEndPointFor("PINSPaymentSearch_V2_0","PINSPaymentSearch_V2_0");
+    setEndPointFor("PAYSPaymentStatusUpdate_V1_0","PAYSPaymentStatusUpdate_V1_0");
+    setEndPointFor("PAYSPaymentStatusUpdate_V1_1","PAYSPaymentStatusUpdate_V1_1");
+    setEndPointFor("PINSPaymentStatusUpdate_V1_2","PINSPaymentStatusUpdate_V1_2Service");
+    setEndPointFor("PINSPaymentStatusUpdate_V1_3","PINSPaymentStatusUpdate_V1_3Service");
+    setEndPointFor("PINSPaymentStatusUpdate_V1_4","PINSPaymentStatusUpdate_V1_4Service");
+    setEndPointFor("PINSPaymentStatusUpdate_V1_5","PINSPaymentStatusUpdate_V1_5");
+    setEndPointFor("PINSPaymentStatusUpdate_V2_0","PINSPaymentStatusUpdate_V2_0");
+    setEndPointFor("PAYSPayment_V1_4","PAYSPayment_V1_4");
+    setEndPointFor("PINSPayment_V1_6","PINSPayment_V1_6");
+    setEndPointFor("PINSPayment_V1_7","PINSPayment_V1_7Service");
+    setEndPointFor("PINSPayment_V1_8","PINSPayment_V1_8Service");
+    setEndPointFor("PINSPayment_V1_9","PINSPayment_V1_9");
+    setEndPointFor("PINSPayment_V1_10","PINSPayment_V1_10");
+    setEndPointFor("PINSPayment_V2_0","PINSPayment_V2_0");
+    setEndPointFor("PINSPaymentAccountForecastSearch_V1","PINSPaymentAccountForecastSearch_V1");
+    setEndPointFor("PINSPaymentAccountForecastSearch_V1_1","PINSPaymentAccountForecastSearch_V1_1");
+    setEndPointFor("PINSPaymentUtil_V1_1","PINSPaymentUtil_V1_1");
+    setEndPointFor("PINSPaymentUtil_V1_2","PINSPaymentUtil_V1_2");
+    setEndPointFor("PINSPaymentUtil_V2_0","PINSPaymentUtil_V2_0");
+    setEndPointFor("PINSStandingOrder_V1_1Service","PINSStandingOrder_V1_1Service");
+    setEndPointFor("PINSStandingOrder_V1_2Service","PINSStandingOrder_V1_2Service");
+    setEndPointFor("PINSStandingOrder_V1_3Service","PINSStandingOrder_V1_3Service");
+    setEndPointFor("PINSStandingOrder_V1_4Service","PINSStandingOrder_V1_4Service");
+    setEndPointFor("PINSStandingOrder_V1_5Service","PINSStandingOrder_V1_5Service");
+    setEndPointFor("PINSStandingOrder_V2_0Service","PINSStandingOrder_V2_0Service");
+    log.info "DONE..!!";
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

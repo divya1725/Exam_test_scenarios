@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase zephyrTestName="" zephyrTestId="" wsrmVersion="1.0" wsrmEnabled="false" wsrmAckTo="" timeout="0" searchProperties="true" name="PDC-266627-PRM-682-27-step3" keepSession="false" id="f373a0d9-8644-4921-a038-928e424ad001" failTestCaseOnErrors="true" failOnError="true" discardOkResults="false" amfPassword="" amfLogin="" amfEndpoint="" amfAuthorisation="false" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Existing Predefined Creditor is not updated successfully due to invalid Creditor Address</con:description>
+  <con:settings>
+    <con:setting id="f373a0d9-8644-4921-a038-928e424ad001fileName">PDC-266627-PRM-682-27-step3</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="request" name="CreditorCreate_v2_1" id="931fa5a1-dde5-4729-b3ed-1247240e6511">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
+      <con:operation>CreditorCreate</con:operation>
+      <con:request wssPasswordType="" useWsReliableMessaging="false" useWsAddressing="false" timeout="" sslKeystore="" outgoingWss="" name="CreditorCreate_v2_1" incomingWss="" id="523c9182-0dea-4cda-b183-750b1a4fee03">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_D10}/pin/services/PINSPaymentPredefinedCreditor_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1" xmlns:urn1="urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestSuite#userid}</wsc:userid>
+            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestSuite#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestSuite#orgid}</wsc:orgunit>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestSuite#value1}" key="${#TestSuite#item1}"/>
+            <wsc:item value="${#TestSuite#value2}" key="${#TestSuite#item2}"/>
+            <wsc:item value="${#TestSuite#value3}" key="${#TestSuite#item3}"/>
+            <wsc:item value="${#TestSuite#value4}" key="${#TestSuite#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:CreditorCreateRequest>
+         <urn:creditorInformation>
+            <urn1:alias>${=org.apache.commons.lang.RandomStringUtils.random(35, true, true)}</urn1:alias>
+            <urn1:type>INTERNATIONAL</urn1:type>
+            <!--Optional:-->
+            <urn1:instructionPriority>NORM</urn1:instructionPriority>
+            <!--Optional:-->
+            <urn1:debtorAccount>
+               <urn2:identification>${#TestSuite#debitAccount}</urn2:identification>
+               <urn2:currency>${#TestSuite#debitAcntccy}</urn2:currency>
+               <!--Optional:-->
+            </urn1:debtorAccount>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:amount>
+               <!--You have a CHOICE of the next 2 items at this level-->
+                <urn2:instructedAmount currency="${#TestSuite#amountCurrency1}">
+                  <urn2:amount>1</urn2:amount>
+               </urn2:instructedAmount>
+            </urn1:amount>
+            <urn1:creditorAccount>
+               <urn2:identification>${#TestSuite#intCreditAccount}</urn2:identification>
+               <!--Optional:-->
+            </urn1:creditorAccount>
+            <!--Optional:-->
+            <urn1:creditor>
+               <!--Optional:-->
+               <urn2:name>CredName</urn2:name>
+               <urn2:postalAddress>
+                  <urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country>
+               </urn2:postalAddress>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:creditor>
+            <urn1:creditorAgent>
+               <urn2:bic>${#TestSuite#intCredAgentBic}</urn2:bic>
+               <urn2:postalAddress>
+                  <urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country>
+               </urn2:postalAddress>
+            </urn1:creditorAgent>
+            <!--Optional:-->
+         </urn:creditorInformation>
+      </urn:CreditorCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XPath Match" name="Match content of [ErrorCode]" id="1778142e-7bba-4adc-ac4a-d066ebfd25c5">
+          <con:configuration>
+            <path>${#Response#//*:ErrorCode}</path>
+            <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig version="200508" mustUnderstand="NONE" action="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1/PINSPaymentPredefinedCreditor_V2_1PortType/CreditorCreateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="DatabaseCheck" id="14be512c-9beb-4624-ba61-f67c89002702">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>${#Project#G_D10_PWH}</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select count(*) from pdc_predefinedcreditor where predefinedcreditorid=${CreditorCreate_v2_1#Response#//*:predefinedCreditorId}</con:query>
+      <con:assertion type="XPath Match" name="Match content of [COUNT]" id="af9c92d5-e9a7-4da9-8b9d-b31e0b1c9781">
+        <con:configuration>
+          <path>//Results[1]/ResultSet[1]/Row[1]/COUNT[1]/text()</path>
+          <content>1</content>
+          <allowWildcards>false</allowWildcards>
+          <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+          <ignoreComments>false</ignoreComments>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="CreditorUpdate_v2_1" id="02f08f83-f82b-459a-ba77-84f686c08469">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
+      <con:operation>CreditorUpdate</con:operation>
+      <con:request wssPasswordType="" useWsReliableMessaging="false" useWsAddressing="false" timeout="" sslKeystore="" outgoingWss="" name="CreditorUpdate_v2_1" incomingWss="" id="e4c0949f-3c0a-468c-a9f6-66dca5cd6da8">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_D10}/pin/services/PINSPaymentPredefinedCreditor_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1" xmlns:urn1="urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestSuite#userid}</wsc:userid>
+            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestSuite#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestSuite#orgid}</wsc:orgunit>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestSuite#value1}" key="${#TestSuite#item1}"/>
+            <wsc:item value="${#TestSuite#value2}" key="${#TestSuite#item2}"/>
+            <wsc:item value="${#TestSuite#value3}" key="${#TestSuite#item3}"/>
+            <wsc:item value="${#TestSuite#value4}" key="${#TestSuite#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:CreditorUpdateRequest>
+         <urn:creditorInformation>
+            <urn1:alias>${=org.apache.commons.lang.RandomStringUtils.random(35, true, true)}</urn1:alias>
+            <urn1:type>INTERNATIONAL</urn1:type>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:debtorAccount>
+               <urn2:identification>${#TestSuite#debitAccount}</urn2:identification>
+               <!--Optional:-->
+               <urn2:currency>${#TestSuite#debitAcntccy}</urn2:currency>
+            </urn1:debtorAccount>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:amount>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <urn2:instructedAmount currency="${#TestSuite#amountCurrency1}">
+                  <urn2:amount>1</urn2:amount>
+               </urn2:instructedAmount>
+            </urn1:amount>
+            <urn1:creditorAccount>
+               <urn2:identification>${#TestSuite#intCreditAccount}</urn2:identification>
+               <!--Optional:-->
+            </urn1:creditorAccount>
+            <!--Optional:-->
+            <urn1:creditor>
+               <!--Optional:-->
+               <urn2:name>Cred</urn2:name><urn2:postalAddress><urn2:addressType>ADDR</urn2:addressType><urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country></urn2:postalAddress>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:creditor>
+            <!--Optional:-->
+            <urn1:creditorAgent>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn2:bic>${#TestSuite#intCredAgentBic}</urn2:bic>
+               <urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country>
+                  <!--0 to 7 repetitions:-->
+               </urn2:postalAddress>
+            </urn1:creditorAgent>
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+         </urn:creditorInformation>
+         <urn:predefinedCreditorId>${CreditorCreate_v2_1#Response#//*:predefinedCreditorId}</urn:predefinedCreditorId>
+      </urn:CreditorUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="MessageContentAssertion" id="e89009a6-7462-4efd-9333-1bd3c58bd060" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns4='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns4:CreditorUpdateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]</con:xpath>
+              <con:element>errorItem</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@key</con:xpath>
+              <con:element>@key</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>6884</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@value</con:xpath>
+              <con:element>@value</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Bank is not configured for payment template feature</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorUpdateResponse[1]/ns2:creditorInformation[1]/ns1:alias[1]</con:xpath>
+              <con:element>ns2:alias</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>GCC9laVjUf1zpJZKoOQyeCrQDzygHaXS2sh</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorUpdateResponse[1]/ns2:creditorInformation[1]/ns1:type[1]</con:xpath>
+              <con:element>ns2:type</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>INTERNATIONAL</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAccount[1]/ns1:identification[1]</con:xpath>
+              <con:element>ns5:identification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1233443554618</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditor[1]/ns1:name[1]</con:xpath>
+              <con:element>ns5:name</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Cred</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:addressType[1]</con:xpath>
+              <con:element>ns5:addressType</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>ADDR</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>US</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAgent[1]/ns1:bic[1]</con:xpath>
+              <con:element>ns5:bic</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>CITIUS33XXX</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorUpdateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>US</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns1:CreditorUpdateResponse[1]/ns1:predefinedCreditorId[1]</con:xpath>
+              <con:element>ns4:predefinedCreditorId</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2349</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns4:CreditorUpdateResponse xmlns:ns9="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns8="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_1" xmlns:ns4="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns3:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <errorItem key="6884" value="Bank is not configured for payment template feature"/>
+         </ns3:ResponseState>
+         <ns4:creditorInformation>
+            <ns2:alias>GCC9laVjUf1zpJZKoOQyeCrQDzygHaXS2sh</ns2:alias>
+            <ns2:type>INTERNATIONAL</ns2:type>
+            <ns2:creditorAccount>
+               <ns5:identification>1233443554618</ns5:identification>
+            </ns2:creditorAccount>
+            <ns2:creditor>
+               <ns5:name>Cred</ns5:name>
+               <ns5:postalAddress>
+                  <ns5:addressType>ADDR</ns5:addressType>
+                  <ns5:country>US</ns5:country>
+               </ns5:postalAddress>
+            </ns2:creditor>
+            <ns2:creditorAgent>
+               <ns5:bic>CITIUS33XXX</ns5:bic>
+               <ns5:postalAddress>
+                  <ns5:country>US</ns5:country>
+               </ns5:postalAddress>
+            </ns2:creditorAgent>
+         </ns4:creditorInformation>
+         <ns4:predefinedCreditorId>2349</ns4:predefinedCreditorId>
+      </ns4:CreditorUpdateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig version="200508" mustUnderstand="NONE" action="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1/PINSPaymentPredefinedCreditor_V2_1PortType/CreditorUpdateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="CreditorDelete_v2_1" id="d625c65e-ae99-467c-a4d4-197fe1574e34">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
+      <con:operation>CreditorDelete</con:operation>
+      <con:request wssPasswordType="" useWsReliableMessaging="false" useWsAddressing="false" timeout="" sslKeystore="" outgoingWss="" name="CreditorDelete_v2_1" incomingWss="" id="315126ce-a2a4-448b-aae6-d9b21507cfad">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_D10}/pin/services/PINSPaymentPredefinedCreditor_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1">
+   <soapenv:Header>
+     <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestSuite#userid}</wsc:userid>
+            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestSuite#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestSuite#orgid}</wsc:orgunit>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestSuite#value1}" key="${#TestSuite#item1}"/>
+            <wsc:item value="${#TestSuite#value2}" key="${#TestSuite#item2}"/>
+            <wsc:item value="${#TestSuite#value3}" key="${#TestSuite#item3}"/>
+            <wsc:item value="${#TestSuite#value4}" key="${#TestSuite#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:CreditorDeleteRequest>
+         <urn:predefinedCreditorId>${CreditorCreate_v2_1#Response#//*:predefinedCreditorId}</urn:predefinedCreditorId>
+      </urn:CreditorDeleteRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="GroovyScriptAssertion" name="writeToFile" id="17a5535d-0108-4ba8-bce1-839ea4cf7fff">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="MessageContentAssertion" id="5edd6718-6b63-4379-9995-352cf8892726" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:originalMessage><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1" xmlns:urn1="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:CreditorDeleteResponse>
+         <urn1:ResponseState>
+            <wsc:ErrorCode>?</wsc:ErrorCode>
+            <wsc:Severity>?</wsc:Severity>
+            <wsc:ComponentId>?</wsc:ComponentId>
+            <wsc:Message>?</wsc:Message>
+            <!--Optional:-->
+            <wsc:LogSequence>?</wsc:LogSequence>
+            <!--Zero or more repetitions:-->
+            <wsc:errorItem key="?" value="?"/>
+         </urn1:ResponseState>
+      </urn:CreditorDeleteResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig version="200508" mustUnderstand="NONE" action="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1/PINSPaymentPredefinedCreditor_V2_1PortType/CreditorDeleteRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>e43c3d9d-4cdf-4b1a-9974-35f02f657325</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e78693f9-5442-4515-ade6-197bf8ffdb80</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>66feb8b1-4121-4d03-a320-9160e9ec7bb2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>0d938ba4-a70e-46d2-9760-9b67f05ec017</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1eaf3c83-9b37-4478-8991-16f4ba53228c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1e8b0176-8ee0-415e-a1cd-ce6c921e2f02</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>3cb5ae88-0b09-4e5d-805e-a533d8082f51</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4fad1fba-354d-41dd-bc7e-8c93eb1e1382</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ac2bef6f-b2db-43e2-a7a8-002bdc43b7d6</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>bbff79cf-aca8-43bb-a674-54eb0104734c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>6ee1066b-f3a2-4f96-b0b2-d9e0a6f61bb1</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dc914df2-cd41-4145-b561-52b26505040a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4ab91958-7f90-4998-bc40-d5e19f275df5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>60ce1ec3-3397-4551-897d-f5eda1add330</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>92f4b219-dc0b-43b7-a0cd-e4a566f17ef3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9b14cd43-289d-4c19-bb14-fef0f2ec42de</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>5837808c-750a-45d4-8f5f-eb1e6519ec1e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

@@ -7,7 +7,7 @@ class CommonLibrary {
 
 		def d = new Date()
 		def sdf = new SimpleDateFormat (format)
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT+2"))		
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT+1"))		
 		return sdf.format(d).toString()
 	}
 	

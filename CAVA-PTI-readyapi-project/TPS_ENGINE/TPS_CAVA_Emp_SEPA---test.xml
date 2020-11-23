@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="e320197c-57b2-4ba8-817e-37fc519fb30a" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TPS_CAVA_Emp_SEPA---test" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>PIDOM-6838</con:description>
+  <con:settings>
+    <con:setting id="e320197c-57b2-4ba8-817e-37fc519fb30afileName">TPS_CAVA_Emp_SEPA---test</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="Fetch_Data" id="40d11a3b-5fd5-4b7f-87f4-d1a496437cca">
+    <con:settings/>
+    <con:config>
+      <script>import groovy.sql.Sql;
+
+project = context.testCase.testSuite.project;
+connectPwh("true");
+
+public void connectPwh(status)
+{
+	identifyTestCase();
+	fetchDetails();
+
+	def resultSet;
+	def currency = "NOK";
+	if(sepa) {
+		currency = "EUR"
+	}
+
+	query1 = "SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY,CUSTOMERTYPE FROM V_AUTHORISATION WHERE ROLETYPE='EIER' "
+	query2 = "AND CUSTBANKID = "+orgid+" AND CURRENCY = '"+currency+"'  AND CUSTOMERID NOT LIKE '%000%' "
+	query3 = "AND ROWNUM = 1"
+	sqlQuery = query1+query2+query3
+
+	if (status == 'true')
+	{
+		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
+		resultSet		=	connection.rows(sqlQuery)
+		connection.close();
+		log.info resultSet
+	}
+	if (resultSet != null)
+	{
+		log.info "test"
+		def customers = resultSet.CUSTOMERID[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		def account = resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		currency = resultSet.CURRENCY[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		def custType = resultSet.CUSTOMERTYPE[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		def userid = customers;
+
+		if(marketType == 'BM' || custType != 'P' )
+		{
+			userid	= (customers.substring(5) as int).toString().replaceAll("[^a-zA-Z0-9]+","")
+			testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid);
+		}
+		if (marketType == 'EMP')
+		{
+			userid = "e600685";
+		}
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customers);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency);
+		log.info "Test Data setting Done.!"
+	}
+}
+
+public void identifyTestCase()
+{
+	testCaseName	=	context.getCurrentStep().getTestCase().getLabel();
+	testCaseName	= 	testCaseName.toLowerCase();
+	marketType	= null;
+	sepa = false;
+	cava = false;
+
+	if (testCaseName.contains("sepa")) {
+		sepa = true;
+	}
+	if (testCaseName.contains("cava")) {
+		cava = true;
+	}
+
+	if (testCaseName.contains("bm")) 	{
+		marketType = "BM"
+		payChannel = "BES";
+	}
+	else if (testCaseName.contains("pm")) {
+		marketType = "PM"
+		payChannel = "INT";
+	}
+
+	if (testCaseName.contains("emp")) 
+		marketType = "EMP"
+		payChannel = "ITR";
+	}
+}
+
+public void fetchDetails()
+{
+	orgid = context.expand( '${Properties#orgid}' );
+	env = project.getActiveEnvironment().getName();
+	activeEnv = checkForCava();
+	envDetails =	DetectTestEnvironment.getDetailsOf(env);
+	orgidDetails = DetectTestEnvironment.getBankDetailsOf(orgid);
+
+	connect = envDetails[3];
+	credentials = orgidDetails[2];
+	debtorAgent = orgidDetails[3];
+
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent_Bic",debtorAgent);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
+}
+
+public void checkForCava(env)
+{
+	if (cava) {
+		env = env.toLowerCase();
+		if ( ! env.contains ( "d17" ) || ! env.contains ( "shb" ))
+		
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="c4756f1f-ab80-4500-a2fd-d5b92b0543a2">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>SourceApplication</con:name>
+          <con:value>PaymentClient</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>2544</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>031110130104004250tu4YEEzPmBtrqnqspzaepmTJZQe%2BFzz%2FRASphHZEo9Vo%2Bzq0WRhPZ%2FP3hY9BTDejrSIpQnXuqKD%2FMjoNuGS8TkX6gR1agFyi03KQsWFB8BXfj%2BAtAgQbSaQcGy0csN5dHfX94rnv%2BvYLqKvAWlCL3GmfsOE%2BimPYAkyRKA%2FtIa1gSbV8PL7TnEYVTVAJx4r68CQtGWcP1JJdSy2emkS3y6yjge28rRaLF%2FZDAw52VE%3DF%2BBuvl5Swo7QVycQAlssDjzA%2FqUYwG5I%2Bn9Yc77Cs5IifWIRMpjIt89tk4zeyJMN6oeBYS9lDE7io0LHd6JJOdmFGZWyNUfk5%2BNO8WAxUjXVP4S5ZgUBHouwzBpDTyarrLwle0lsgGHBvaIeSsJ5ysnvZLV4aJjU2BawhuaDYjs%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>userid</con:name>
+          <con:value>e600685</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Employee</con:name>
+          <con:value>e600685</con:value>
+        </con:property>
+        <con:property>
+          <con:name>SelfService</con:name>
+          <con:value>false</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>880340719</con:value>
+        </con:property>
+        <con:property>
+          <con:name>debitAccount</con:name>
+          <con:value>24700869373</con:value>
+        </con:property>
+        <con:property>
+          <con:name>debitAcntccy</con:name>
+          <con:value>EUR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DebtorAgent_Bic</con:name>
+          <con:value>VEFONO21XXX</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel</con:name>
+          <con:value>ITR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>verifier_1</con:name>
+          <con:value>e212927</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditorAgent_Bic</con:name>
+          <con:value>COBADEFFXXX</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditorAgent_Country</con:name>
+          <con:value>DE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditAccount</con:name>
+          <con:value>DE89370400440532013000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Unstructured_Remittance</con:name>
+          <con:value>Test_TPS</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Unique_ID</con:name>
+          <con:value>${=Math.abs(new Random().nextInt() % 6000000) + 1}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>EndToEndId</con:name>
+          <con:value>${=context.getCurrentStep().getTestCase().getLabel().substring(0, Math.min(12, ${=context.getCurrentStep().getLabel().length()}))}.${=context.getCurrentStep().getLabel().substring(0, Math.min(22, ${=context.getCurrentStep().getLabel().length()}))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd_HHmmss'))}_${=context.getCurrentStep().getTestCase().getLabel()}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="58256bd9-1310-4bf5-b40d-8cadbc0fa644" name="Create">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="Create" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="695c9e85-d2cf-4922-8678-bf6a74d755f7">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="${Properties#SelfService}" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+            <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:paymentMessage>
+            <urn1:paymentIdentification xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn2:messageIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#Unique_ID}</urn2:messageIdentification>
+               <urn2:endToEndIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#EndToEndId}</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn3:paymentMethod xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">TRF</urn3:paymentMethod>
+               <urn3:requestedExecutionDate xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:debtorAccount xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn4:amount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:instructedAmount currency="EUR" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:amount>11</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">SHAR</urn4:chargeBearer>
+               <urn4:creditorAgent xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:bic xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#creditorAgent_Bic}</urn2:bic>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${Properties#creditorAgent_Country}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:name xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">TPSCred</urn2:name>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:department>Dept</urn2:department>
+                     <urn2:subDepartment>subDept</urn2:subDepartment>
+                     <urn2:streetName>street</urn2:streetName>
+                     <urn2:buildingNumber>building</urn2:buildingNumber>
+                     <urn2:postCode>56777</urn2:postCode>
+                     <urn2:townName>town</urn2:townName>
+                     <urn2:countrySubDivision>countrySubDiv</urn2:countrySubDivision>
+                     <urn2:country>${Properties#creditorAgent_Country}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#creditAccount}</urn2:identification>
+                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">EUR</urn2:currency>
+               </urn4:creditorAccount>
+               <urn1:remittanceInformationUnstructured>${Properties#Unstructured_Remittance}</urn1:remittanceInformationUnstructured>
+            </urn1:transaction>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentCreateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="4582ce3e-027b-4c1d-b653-788e6d9aa2c9" name="Confirm">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentConfirm</con:operation>
+      <con:request name="Confirm" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="f85380ab-ba2c-4f3a-b9b7-023346f51aca">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="${Properties#SelfService}" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+            <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentConfirmRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0">
+         <urn:transactionInput>
+            <urn1:transactionId xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v2_0">${Create#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //urn:PaymentCreateResponse[1]/urn:paymentResult[1]/urn2:transactionId[1]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentConfirmRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0/PINSPaymentStatusUpdate_V2_0PortType/PaymentConfirmRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="cd3cc881-abe1-48c8-90b1-06f3d0f0e29e" name="Read">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentRead</con:operation>
+      <con:request name="Read" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a85cf60f-da53-4c93-86cd-affc1ad66057">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="${Properties#SelfService}" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+            <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentReadRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:transactionId>${Create#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //urn:PaymentCreateResponse[1]/urn:paymentResult[1]/urn2:transactionId[1]}</urn:transactionId>
+      </urn:PaymentReadRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentReadRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Validate_Database" id="b11b2213-e8d4-451f-8b07-0059d0a0aa3f">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d17</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * FROM TRANSACTIONS WHERE 
+TRANSACTIONSID = '${Create#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>SourceApplication</con:name>
+      <con:value>PaymentClient</con:value>
+    </con:property>
+    <con:property>
+      <con:name>userid</con:name>
+      <con:value>e232105</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value2</con:name>
+      <con:value>e232105</con:value>
+    </con:property>
+    <con:property>
+      <con:name>credentials</con:name>
+      <con:value>03110012010400425tdQSjWYVcoG36klZPsLHw5LT7ztioudZ03eS0IgWm1WWIO7EfpSL4DE/lDFi69n1sSaabKNt2t+xJppso23a37EmmmyjbdrfNv5bgigJbh8O7wfYR8vyc7EmmmyjbdrfsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=K2QkXB/7QNWrqFXOIqO5a16AetYmaX2YB0d97ncUQcrd2/G/etenGKPMQrU/rpuGTJakx/v4reemOOLCjjoA/N89BtC3daDMycpc589NHfGt9TLtcQwjLVvxx06kI8POrpT5qKMWcB/XUJK9z+s5vYxm9eEzRL0CVa5cLAl2OM4=</con:value>
+    </con:property>
+    <con:property>
+      <con:name>orgid</con:name>
+      <con:value>35803100</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerid</con:name>
+      <con:value>311280-999J</con:value>
+    </con:property>
+    <con:property>
+      <con:name>debitAccount</con:name>
+      <con:value>FI9931312200033335</con:value>
+    </con:property>
+    <con:property>
+      <con:name>debitAcntccy</con:name>
+      <con:value>EUR</con:value>
+    </con:property>
+    <con:property>
+      <con:name>debitAgentBic</con:name>
+      <con:value>asdfsa</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item1</con:name>
+      <con:value>PaymentChannel</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value1</con:name>
+      <con:value>ITR</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item2</con:name>
+      <con:value>Employee</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item3</con:name>
+      <con:value>SelfService</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value3</con:name>
+      <con:value>false</con:value>
+    </con:property>
+    <con:property>
+      <con:name>item4</con:name>
+      <con:value>LogRef</con:value>
+    </con:property>
+    <con:property>
+      <con:name>value4</con:name>
+      <con:value>${=new Date().format("ddMMyy_HHmmss")}-${=context.getCurrentStep().getTestCase().getLabel()}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ReqExnDate</con:name>
+      <con:value>${=new Date().format("yyyy-MM-dd")}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>intCredAgentBic</con:name>
+      <con:value>DAAEDEDDXXX</con:value>
+    </con:property>
+    <con:property>
+      <con:name>intCreditAccount</con:name>
+      <con:value>DE89370400440532013000</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ReqExnDateTmrw</con:name>
+      <con:value>${=new Date().format("yyyy-MM-dd")}</con:value>
+    </con:property>
+    <con:property>
+      <con:name>intCredAgentCountry</con:name>
+      <con:value>DE</con:value>
+    </con:property>
+    <con:property>
+      <con:name>verifyUser1</con:name>
+      <con:value>e212927</con:value>
+    </con:property>
+    <con:property>
+      <con:name>PaymentIDHist</con:name>
+      <con:value>1231</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>59835206-61eb-4952-bbe6-5fe032e176eb</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2a7a14bd-3df4-4966-b2a1-f761776eaa48</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d7e5830c-da39-49e3-a94a-2cb5e449949b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a0093888-8b60-42e4-9cdb-f1e40cffa9e4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1c898248-0c39-4def-8cbe-bd1549fb332e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>3af11c1d-d6eb-4fea-810a-fdac3fb604e9</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>38bc6697-8db4-41da-ae2b-ee1aed385024</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d3b1e47f-ca96-4992-a364-6aeb08e62e94</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>16767c20-a37c-49d3-a0a8-35b76ba9d12b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

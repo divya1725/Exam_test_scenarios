@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="2d0a51e6-831b-420a-b9bd-8b8a4f4c09b9" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="SOSearch" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="2d0a51e6-831b-420a-b9bd-8b8a4f4c09b9" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="SOSearch" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
   <con:description>SO Search Related Cases</con:description>
   <con:settings>
     <con:setting id="2d0a51e6-831b-420a-b9bd-8b8a4f4c09b9fileName">SOSearch</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="properties" name="Properties" id="00336942-4106-4536-8cdb-933b55a6f6d3">
+  <con:testStep type="properties" name="Properties" id="00336942-4106-4536-8cdb-933b55a6f6d3" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
@@ -91,7 +91,7 @@
         </con:property>
         <con:property>
           <con:name>PaymentChannel_BM</con:name>
-          <con:value>BES</con:value>
+          <con:value>ITR</con:value>
         </con:property>
         <con:property>
           <con:name>CreditAccountNumber</con:name>
@@ -143,11 +143,11 @@
             <wsc:credentials>${Properties#credentials}</wsc:credentials>
             <wsc:channel>${Properties#channel}</wsc:channel>
             <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
             <wsc:ip>1.1.1.1</wsc:ip>
             <wsc:item value="${Properties#UserID}" key="Employee"/>
             <wsc:item key="SelfService" value="false"/>
-            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
             <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
          </wsc:ClientContext>
@@ -205,6 +205,9 @@
           <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -232,11 +235,11 @@
             <wsc:credentials>${Properties#credentials}</wsc:credentials>
             <wsc:channel>${Properties#channel}</wsc:channel>
             <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
             <wsc:ip>1.1.1.1</wsc:ip>
             <wsc:item value="${Properties#UserID}" key="Employee"/>
             <wsc:item key="SelfService" value="false"/>
-            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
             <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
          </wsc:ClientContext>
@@ -252,7 +255,745 @@
                <!--Zero or more repetitions:-->
                <!--Zero or more repetitions:-->
                <!--Optional:-->
-               <urn1:standingOrderDebitAccount>42023946402</urn1:standingOrderDebitAccount><urn1:standingOrderDebitAccount>42022050391</urn1:standingOrderDebitAccount>
+               <!--Optional:-->
+               <urn1:customerId>${#TestSuite#customerid}</urn1:customerId><urn1:standingOrderDebitAccount>${#TestSuite#accountNumber}</urn1:standingOrderDebitAccount><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>50</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="b566f954-be5f-4e8f-81fa-7a8b5305b41e" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="8488038b-519b-4cdb-9a8c-588573a55019" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="f1be0245-2272-4212-b016-d580a3ea176c" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5/PINSStandingOrder_V1_5ServicePortType/standingOrderSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="c0c0ed44-fcb4-4b8f-b37d-f1d6861fe965" name="SO Search Customer">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Customer" id="4ec74a6f-00e6-4c2d-a856-409f9590d0b9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_5" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:customerId>${#TestSuite#customerid}</urn1:customerId><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>50</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="b566f954-be5f-4e8f-81fa-7a8b5305b41e" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="8488038b-519b-4cdb-9a8c-588573a55019" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="f1be0245-2272-4212-b016-d580a3ea176c" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5/PINSStandingOrder_V1_5ServicePortType/standingOrderSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="bf07127b-632d-4151-abec-ef443c8c8fa4" name="SO Search Account_V1_2">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_2ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Account_V1_2" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8f260f0b-91b8-4e70-b4e3-669b2951959b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:standingOrderDebitAccount>${#TestSuite#accountNumber}</urn1:standingOrderDebitAccount><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>100</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="60c368f6-33bd-4576-98ff-d8da859e5ef4" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="6efba053-d323-4458-9059-96f70c90bd93" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2/PINSStandingOrder_V1_2ServicePortType/standingOrderSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="6d81ab59-4ca1-4632-befd-d6642f6e1eb2" name="SO Search Customer_V1_2">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_2ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Customer_V1_2" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8f260f0b-91b8-4e70-b4e3-669b2951959b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:customerId>${#TestSuite#customerid}</urn1:customerId><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>100</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="60c368f6-33bd-4576-98ff-d8da859e5ef4" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="6efba053-d323-4458-9059-96f70c90bd93" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2/PINSStandingOrder_V1_2ServicePortType/standingOrderSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="db7ec9e5-593b-47a9-83e6-b1807b0ebc1b" name="SO Search Customer_1_5_01" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Customer_1_5_01" id="4ec74a6f-00e6-4c2d-a856-409f9590d0b9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_5" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>801378</wsc:userid>
+            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:customerid>01034801378</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="AgreementId" value="801378"/>
+            <wsc:item key="PaymentChannel" value="BES"/>
+            <wsc:item key="LogRef" value="fae0d920-f155-4157-bdee-ee0cc9336da7"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <urn1:customerId>01034801378</urn1:customerId>
+               
+               <urn1:standingOrderDebitAccount>42020454266</urn1:standingOrderDebitAccount><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>100</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="b566f954-be5f-4e8f-81fa-7a8b5305b41e" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="8488038b-519b-4cdb-9a8c-588573a55019" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="f1be0245-2272-4212-b016-d580a3ea176c" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5/PINSStandingOrder_V1_5ServicePortType/standingOrderSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="e232d90c-7891-4f32-8307-af11e684e3a3" name="SO Search Customer_V1_2_AggrementId">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_2ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Customer_V1_2_AggrementId" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8f260f0b-91b8-4e70-b4e3-669b2951959b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+               
+               
+               <urn1:standingOrderKey>
+                  <urn1:agreementId>1234</urn1:agreementId>
+                  
+               </urn1:standingOrderKey>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>100</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="60c368f6-33bd-4576-98ff-d8da859e5ef4" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="6efba053-d323-4458-9059-96f70c90bd93" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:assertion type="MessageContentAssertion" id="e3709fa1-a73e-478c-91fa-bdf7bb69e071" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:StrErrorCode[1]</con:xpath>
+              <con:element>StrErrorCode</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns4:standingOrderSearchResponse[1]/ns3:ResponseState[1]/ns2:StrErrorCode[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:NativeError[1]</con:xpath>
+              <con:element>NativeError</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns4:standingOrderSearchResponse[1]/ns3:ResponseState[1]/ns2:NativeError[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns4:standingOrderSearchResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://control.ws.payment.edb.com';
+declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:StartIndex[1]</con:xpath>
+              <con:element>ns5:StartIndex</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://control.ws.payment.edb.com';
+declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:NumberOfElements[1]</con:xpath>
+              <con:element>ns5:NumberOfElements</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://control.ws.payment.edb.com';
+declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v1_2';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:MoreElementsAvailable[1]</con:xpath>
+              <con:element>ns5:MoreElementsAvailable</con:element>
+              <con:type>XmlBoolean</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>false</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns3:standingOrderSearchResponse xmlns:ns8="urn:srv.stord.fs.evry.com:domain:creditor:v1_2" xmlns:ns7="urn:srv.stord.fs.evry.com:domain:debtor:v1_2" xmlns:ns6="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:ns5="http://control.ws.payment.edb.com" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:common:v1" xmlns:ns3="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns="http://edb.com/ws/WSCommon_v21">
+         <ns4:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <StrErrorCode xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <Message>OK</Message>
+            <NativeError xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns4:ResponseState>
+         <ns3:elementControl>
+            <ns5:StartIndex>0</ns5:StartIndex>
+            <ns5:NumberOfElements>0</ns5:NumberOfElements>
+            <ns5:MoreElementsAvailable>false</ns5:MoreElementsAvailable>
+         </ns3:elementControl>
+      </ns3:standingOrderSearchResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2/PINSStandingOrder_V1_2ServicePortType/standingOrderSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="b3b82838-fc39-4c61-84e3-71951a53ba85" name="SO Search V1_2_BlankSearch">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_2ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search V1_2_BlankSearch" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8f260f0b-91b8-4e70-b4e3-669b2951959b">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_2" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="ITR"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>100</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="60c368f6-33bd-4576-98ff-d8da859e5ef4" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="6efba053-d323-4458-9059-96f70c90bd93" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_2/PINSStandingOrder_V1_2ServicePortType/standingOrderSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="7aaca139-f260-410a-8ece-496ce0b800ce" name="SO Search Pending Verification_BlanckSearch">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderSearch</con:operation>
+      <con:request name="SO Search Pending Verification_BlanckSearch" id="4ec74a6f-00e6-4c2d-a856-409f9590d0b9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_5" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#UserID}" key="Employee"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
+            <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Zero or more repetitions:-->
+               <!--Zero or more repetitions:-->
+               <!--Optional:-->
                <!--Optional:-->
                <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
                <!--Optional:-->
@@ -290,22 +1031,25 @@
           <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="c0c0ed44-fcb4-4b8f-b37d-f1d6861fe965" name="SO Search Customer">
+  <con:testStep type="request" id="d60f0690-9f9f-4639-8ba0-24804edbae7a" name="SOAP Request">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
+      <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
       <con:operation>standingOrderSearch</con:operation>
-      <con:request name="SO Search Customer" id="4ec74a6f-00e6-4c2d-a856-409f9590d0b9">
+      <con:request name="SOAP Request" id="101a2f6e-ec10-49dc-8fb1-e7da641c66e1">
         <con:settings>
           <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v1_5" xmlns:urn2="urn:srv.stord.fs.evry.com:domain:common:v1">
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>
@@ -317,11 +1061,12 @@
             <wsc:credentials>${Properties#credentials}</wsc:credentials>
             <wsc:channel>${Properties#channel}</wsc:channel>
             <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:orgunit xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
             <wsc:ip>1.1.1.1</wsc:ip>
             <wsc:item value="${Properties#UserID}" key="Employee"/>
             <wsc:item key="SelfService" value="false"/>
-            <wsc:item key="AgreementId" value="${Properties#AgreementId}"/>
+            <wsc:item key="AgreementId" value="${#TestSuite#customerid}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_BM}"/>
             <wsc:item key="LogRef" value="${Properties#Log_ref}"/>
          </wsc:ClientContext>
@@ -337,28 +1082,28 @@
                <!--Zero or more repetitions:-->
                <!--Zero or more repetitions:-->
                <!--Optional:-->
-               
                <!--Optional:-->
-               <urn1:customerId>${Properties#customerid}</urn1:customerId><urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:standingOrderStatuses>VALIDATED</urn1:standingOrderStatuses>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
                <!--Optional:-->
                <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
             </urn:searchCriteria>
             <urn:pagingElement>
                <urn2:startIndex>0</urn2:startIndex>
-               <urn2:pageSize>50</urn2:pageSize>
+               <urn2:pageSize>10</urn2:pageSize>
             </urn:pagingElement>
          </urn:standingOrderSearch>
       </urn:standingOrderSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="Valid HTTP Status Codes" id="b566f954-be5f-4e8f-81fa-7a8b5305b41e" name="Valid HTTP Status Codes">
+        <con:assertion type="Valid HTTP Status Codes" id="08507233-53ff-4e87-bcb5-08d49cf71ab0" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="SOAP Fault Assertion" id="8488038b-519b-4cdb-9a8c-588573a55019" name="Not SOAP Fault"/>
-        <con:assertion type="Schema Compliance" id="f1be0245-2272-4212-b016-d580a3ea176c" name="Schema Compliance">
+        <con:assertion type="SOAP Fault Assertion" id="48670e78-814c-49df-99e1-88fb8b46189c" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="a3f3f4f3-e686-4410-96da-ec8e2a314815" name="Schema Compliance">
           <con:configuration/>
         </con:assertion>
         <con:credentials>
@@ -366,16 +1111,8 @@
           <con:authType>No Authorization</con:authType>
         </con:credentials>
         <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v1_5/PINSStandingOrder_V1_5ServicePortType/standingOrderSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderSearchRequest" mustUnderstand="NONE" version="200508"/>
         <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="fd21079d-f7e1-4e02-a9c4-7d4b2e0017d9">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="10319fd0-cf50-473a-8859-e76325fc9957">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
       </con:request>
     </con:config>
   </con:testStep>

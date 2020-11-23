@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="93645ee6-af63-4464-bc59-f4d36cfcd8c7" created="3.3.2" activeEnvironment="G-D17" name="CAVA_PTI_PROJECT" resourceRoot="" compositeProjectFormat="1.3" updated="3.5.0" scriptLibrary="C:\Ullasa\Projects\CAVA\pin-legacy-soapui\CAVA_PTI_INTEGRATION\CAVA-PTI-readyapi-project\scripts" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="93645ee6-af63-4464-bc59-f4d36cfcd8c7fileName">CAVA_PTI_PROJECT</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>pwhConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_d17</con:value>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>PWHDATA</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdada/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d10)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>def objProject = context.getProject()
+def projPath = objProject.getPath()
+objProject.setScriptLibrary(projPath + File.separator + "scripts")
+log.info "TestSuite setUp script!!"</con:beforeRunScript>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+
+def now = new Date()
+def time =  now.format("yyyyMMddHHmmssSSS", TimeZone.getTimeZone('UTC'))
+def date1 = now.format("yyyyMMdd", TimeZone.getTimeZone('UTC')).toString()
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+pw = new PrintWriter(fos)
+
+def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+log.info "Before-->"
+
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	log.info CurrentStep
+	testStepResult.writeTo(pw)
+}
+pw.close()
+fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="bc18700a-b433-421d-af81-6aa5607f0d32" name="G-D17" index="0">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:25781/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:25781/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:25781/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:25781/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.1PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V11</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V10</con:endpoint>
+    </con:service>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d17</con:connectionString>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="ddd0b05f-bf2f-45c5-8c83-f5630d0b1e78" name="G-D6" index="1">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:22641/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:22641/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:22641/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:22641/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.1PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization"/>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.106:22971/fundscheck/services/FNDSReservationService_V10</con:endpoint>
+    </con:service>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="06086256-efad-4f7d-ba8a-11d8d8344b09" name="G-D14" index="2">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:29241/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:29241/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:29241/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.108:29241/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.1PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V11</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" wssType="" wssTimeToLive="" outgoingWss="" incomingWss="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V10</con:endpoint>
+    </con:service>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=10.246.89.97)(PORT=1530))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d14)))</con:connectionString>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="208f8252-be9f-4835-a3ab-6780a27654cc" name="G-D10" index="3">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.108:25781/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.212:29191/pin/services/PINSPayment_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.212:29191/pin/services/PINSPaymentStatusUpdate_V2_0?wsdl</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.1PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V11?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V11</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="FNDSReservationService_V1.0PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V10?wsdl</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.106:27661/fundscheck/services/FNDSReservationService_V10</con:endpoint>
+    </con:service>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d10)))</con:connectionString>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:tags>
+    <con:tag>
+      <con:id>15454858-1063-4860-b877-878381408972</con:id>
+      <con:name>SMOKETEST</con:name>
+    </con:tag>
+  </con:tags>
+</con:soapui-project>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="7e68a9dd-2368-4d21-bab8-fd3e9960f4f6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="SetUp" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="7e68a9dd-2368-4d21-bab8-fd3e9960f4f6fileName">SetUp</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="TestEnvironment" id="1757fc34-b3a1-46c7-9c45-78e89ae1fa20" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>/*
+ * CREATE NEW TEST ENVIRONMENT 
+ * USE "ADD" METHOD TO CREATE NEW TEST ENVIRONMENT IN PAYMENT RENEWAL
+ * THIS METHOD WILL ALSO ADD END POINTS ALONG WITH JDBC CONNECTIONS PER ENVIRONMENT
+ * USE "REMOVE" OR "REMOVEALL" METHODS TO DELETE THE TEST ENVIRONMENT
+ * FOR TODAY, WE MUST SEND IN THE PARAMETERS CONTEXT AND LOG ALONG WITH ENVIRONMENT NAME
+ * Ex: TestEnvironment.add ( "G-D17" , context , log ); OR TestEnvironment.remove( "G-D4" , context , log ); OR TestEnvironment.removeAll(context , log );
+ */
+
+TestEnvironment.add ( "G-D10" , context , log );
+
+//TestEnvironment.remove( "G-S4" , context , log );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Remove_Assertions" id="1d9ee103-48cc-40f5-b177-983ff59beadc" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>/*
+ * This will remove assertions mentioned in the name "removeAssertion" from each step of a test case
+ * Change the property name as defined in your "PROPERTIES" test step before execution
+ */
+removeAssertion("Script Assertion") ;
+removeAssertion("Valid HTTP Status Codes") ;
+removeAssertion("Not SOAP Fault") ;
+removeAssertion("writeToFile") ;
+
+public void removeAssertion(removeAssertion) 
+{
+	suiteName = testRunner.testCase.testSuite.getName();
+	testCaseCount = testRunner.testCase.testSuite.testCaseCount
+	
+	for (int i =0 ; i &lt; testCaseCount ; i++ ) {
+		caseName = testRunner.testCase.testSuite.getTestCaseAt(i).getName()
+		testStepCount = testRunner.testCase.testSuite.getTestCaseByName(caseName).getTestStepCount();
+		log.info "Test Suite "+suiteName +" has "+testCaseCount+"Test Cases and the test case "+caseName+" has "+testStepCount+" test steps"
+	
+		for ( j = 0; j &lt; testStepCount ; j++ ) {
+			testSet = testRunner.testCase.testSuite.getTestCaseByName(caseName).getTestStepAt(j);
+			stepType = "${testSet.getClass()}"
+			
+			if ( testSet != null &amp;&amp; stepType.contains("WsdlTestRequestStep"))  	{
+				stepName = testSet.getName()
+				assertionsList = testSet.getAssertionList();
+				remove_Assertion(removeAssertion);
+			}
+		}
+	}
+}
+
+public void remove_Assertion(removeAssertion) 
+{
+	for ( e in assertionsList) 	{
+		assertionSelected = e.getName()
+		if (assertionSelected.contains( removeAssertion)) {
+			testSet.removeAssertion(e)
+			log.info "Success - Suite: "+suiteName+" Test Case: "+caseName" Removed: "+assertionSelected
+		}
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Remove_Assertions_Repeat" id="7ea569e3-990f-4481-80ae-a2e0dd223e0b" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>suiteCount = testRunner.testCase.testSuite.project.getTestSuiteCount()
+
+for ( i = 0; i &lt; suiteCount ; i++ )
+{
+	suiteName = testRunner.testCase.testSuite.project.getTestSuiteAt( i ).getName()
+	updateDateTimeProperties(suiteName);
+}
+
+public void updateDateTimeProperties(suiteName)
+{
+	suiteCount = i+1
+	log.info "******* Test Suite: "+suiteCount+" - "+suiteName+" *******"
+
+	testCaseCount = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseCount()
+
+	for (int j =0 ; j &lt; testCaseCount ; j++ ) {
+		caseCount = j+1
+		caseName = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getName()
+		log.info "-->Test Case:  "+caseCount+" - "+caseName
+		
+		targetStep = testRunner.testCase.testSuite.project.testSuites[suiteName].testCases[caseName].getTestStepByName( "Properties" )
+		if ( targetStep != null)
+		{
+			u = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").getPropertyValue("ReqExnDate")
+			v = testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").getPropertyValue("SCALastPerformed")
+			if (u != null)
+			{
+				testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").setPropertyValue("ReqExnDate",newDate)
+			}
+			if (v != null)
+			{
+				testRunner.testCase.testSuite.project.testSuites[suiteName].getTestCaseAt( j ).getTestStepByName("Properties").setPropertyValue("SCALastPerformed",asbDate)
+			}
+		}
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

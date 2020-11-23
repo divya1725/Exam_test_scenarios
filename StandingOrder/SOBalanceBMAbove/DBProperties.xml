@@ -136,7 +136,7 @@
         </con:property>
         <con:property>
           <con:name>AvailableBalance</con:name>
-          <con:value>163689.05</con:value>
+          <con:value>338.53</con:value>
         </con:property>
         <con:property>
           <con:name>SourceApplicationDeps</con:name>
@@ -176,7 +176,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY
@@ -202,21 +202,11 @@ FETCH FIRST 5 ROW ONLY</con:query>
     <con:config>
       <script>def customerID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
 def debtorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
-def CreditAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
-
-customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
-debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
-CreditAccountNumber= CreditAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
-
-
-def UserID = customerID.substring(5) as int
-UserID = UserID.toString().replaceAll("[^a-zA-Z0-9]+","")
 
 testRunner.testCase.testSuite.setPropertyValue("customerid",customerID)
-testRunner.testCase.testSuite.setPropertyValue("UserID",UserID)
-testRunner.testCase.testSuite.setPropertyValue("AgreementId",UserID)
-testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)
-testRunner.testCase.testSuite.setPropertyValue("CreditAccountNumber",CreditAccountNumber)</script>
+testRunner.testCase.testSuite.setPropertyValue("UserID",customerID)
+testRunner.testCase.testSuite.setPropertyValue("AgreementId",customerID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)</script>
     </con:config>
   </con:testStep>
   <con:testStep type="request" id="7cbab6b0-752d-482e-921e-2ddc2293e7c3" name="BalanceCheck">
@@ -747,6 +737,11 @@ declare namespace ns1='urn:corews.enterprise.fs.edb.com:domain:common:v1';
         <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
         <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.dep.savings.fs.edb.com:ws:account:v15_3/DEPSAccountService_V15_3PortType/accountReadBalanceInformationRequest"/>
         <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
       </con:request>
     </con:config>
   </con:testStep>
@@ -1006,6 +1001,11 @@ declare namespace ns3='http://reservations.ws.pca.finance.edb.com';
         <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
         <con:wsaConfig action="pCASReservationCreate_V1_1" mustUnderstand="NONE" version="200508"/>
         <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
       </con:request>
     </con:config>
   </con:testStep>
@@ -1016,7 +1016,7 @@ declare namespace ns3='http://reservations.ws.pca.finance.edb.com';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select AGREEMENTID,VERSIONNR,STATUS from STO_AGREEMENT where AGREEMENTACCOUNTNUMBER = '${#TestSuite#accountNumber}' 
@@ -1084,6 +1084,11 @@ and STATUS = 'ACTIVE' and AGREEMENTTYPE = 'BALANCE'</con:query>
         <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
         <con:wsaConfig action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderStatusUpdateRequest" mustUnderstand="NONE" version="200508"/>
         <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="ab02220b-4eec-4859-800d-d5d1f5a10707">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
       </con:request>
     </con:config>
   </con:testStep>

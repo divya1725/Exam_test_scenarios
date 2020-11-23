@@ -48,7 +48,12 @@ where INSTITUTION_CODE = '4201'</con:query>
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  from V_authorisation where CUSTBANKID='4201' and CURRENCY = 'NOK' and length(customerID)='11' and ROWNUM=1</con:query>
+      <con:query>select distinct(CUSTOMERID),ACCOUNTNUMBER,FIRSTNAME,CURRENCY  
+from V_authorisation
+where CUSTBANKID='4201' 
+and CURRENCY = 'NOK' 
+and length(customerID)='11' 
+fetch first 2 rows only</con:query>
       <con:storedProcedure>false</con:storedProcedure>
       <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -107,6 +112,7 @@ testRunner.testCase.getTestSuite().setPropertyValue("fraudName",fraudMottaNavn)
 def customerID = context.expand( '${FetchAccount_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
 def debtorAccountNumber = context.expand( '${FetchAccount_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
 def debtorAccountCcy = context.expand( '${FetchAccount_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+def credAccountNumber = context.expand( '${FetchAccount_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
 
 customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
 debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
@@ -119,6 +125,7 @@ testRunner.testCase.testSuite.setPropertyValue("customerid",customerID)
 testRunner.testCase.testSuite.setPropertyValue("UserID",UserID)
 testRunner.testCase.testSuite.setPropertyValue("AgreementId",UserID)
 testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)
+testRunner.testCase.testSuite.setPropertyValue("credAccountNumber",credAccountNumber)
 testRunner.testCase.testSuite.setPropertyValue("currencyCode",debtorAccountCcy)
 log.info (testRunner.testCase.testSuite.getPropertyValue("accountNumber"))</script>
     </con:config>
@@ -170,4 +177,5 @@ testRunner.testCase.getTestSuite().setPropertyValue("channelKundner",channelKund
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
+  <con:tagId>488c3f8f-31d9-4f88-8256-ec5f0941e0fa</con:tagId>
 </con:testCase>

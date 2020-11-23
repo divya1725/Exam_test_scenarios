@@ -4,7 +4,7 @@ ENV=$1
 SUITENAME=$2
 TAGS=$3
 
-excludeProjects=('PORBatchSuite' 'SkkoPayments' 'ext' 'PINSearches' 'PwhToRbsCopy' 'PreDefined-CreditorSmokeTest' 'ReceiptOrderSmokeTest' 'PaymentCreateAllISPCSmokeTest' 'CAVA-PTI-readyapi-project' 'predefined-creditor-readyapi');
+excludeProjects=('PORBatchSuite' 'SkkoPayments' 'ext' 'PwhToRbsCopy' 'PreDefined-CreditorSmokeTest' 'ReceiptOrderSmokeTest' 'PaymentCreateAllISPCSmokeTest' 'CAVA-PTI-readyapi-project' 'PredefinedCreditorCAVA');
 
 FOUNDFLAG=""
 echo "Env is $ENV and Tag is $TAGS and suiteName is $SUITENAME"

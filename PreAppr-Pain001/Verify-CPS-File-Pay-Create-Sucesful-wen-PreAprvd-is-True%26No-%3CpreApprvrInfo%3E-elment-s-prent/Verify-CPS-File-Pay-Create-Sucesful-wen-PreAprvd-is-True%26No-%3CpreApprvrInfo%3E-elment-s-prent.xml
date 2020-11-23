@@ -1,0 +1,2977 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="42a86042-166a-4448-b54e-e2ac73c9eeb0" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Verify CPS File Pay Create Sucesful wen PreAprvd is True&amp;No &lt;preApprvrInfo> elment s prent" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description/>
+  <con:settings>
+    <con:setting id="017a8d05-a342-4d82-9d4e-97ae502e8501fileName">Messagelevel</con:setting>
+    <con:setting id="0ece698e-0012-4f66-aee4-ed96e8a741aefileName">AC03-InvalidCredAccount</con:setting>
+    <con:setting id="04e3d42c-604c-47d3-88a4-0934771077c7fileName">Verify-CPS-File-Payment-Create-Successful-for-CPS-Validated-Approver</con:setting>
+    <con:setting id="5e594e4e-60fd-4674-86fa-d1a1e23baa6efileName">PRM-1545-2-Verify-CPS-File-Payment-Create-Successful-when-Pre-Approved-is--False-and-number-of-Approver-zero</con:setting>
+    <con:setting id="42a86042-166a-4448-b54e-e2ac73c9eeb0fileName">Verify-CPS-File-Pay-Create-Sucesful-wen-PreAprvd-is-True%26No-%3CpreApprvrInfo%3E-elment-s-prent</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB Account" id="f88ee896-6ec6-4888-a965-04cfb98a0af1">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>Select unique(ACCOUNTNUMBER),CUSTOMERID  from V_authorisation
+where CUSTBANKID='4201'
+and length(customerID)='11'
+FETCH FIRST 2 ROWS ONLY</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetProperties" id="7ffd9c03-1707-42c2-8ddc-8af470809e84">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+
+def customerID = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+def debtorAccountNumber2 = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNumber",debtorAccountNumber)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNumber2",debtorAccountNumber2)
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+log.info datetime
+
+def EndtoEndID = "PreApprvd_"+datetime;
+log.info EndtoEndID
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="3d8ae8a6-08b9-4773-9076-632573075950">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>18028302114</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>40680100251</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendFormat</con:name>
+          <con:value><![CDATA[<Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0"><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>146205</agreementId><bankId>BANKID</bankId><userId>CUSTOMERID</userId><userFirstName>Ext.PAIN001</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>10</productID><organizationId>CUSTOMERID</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>ISO</origin><confidential>false</confidential><suspendFundsCheck>false</suspendFundsCheck><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>ACCOUNTID1</accountNumber><swiftAdress>swiftAdress1</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>999999999999</approvalLimit><registerLimit>999999999999</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><agreementAccount><accountNumber>ACCOUNTID2</accountNumber><swiftAdress>swiftAdress1</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>999999999999</approvalLimit><registerLimit>999999999999</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2020-10-06T22:56:59</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>TIMESTAMP</MsgId><CreDtTm>DATET00:53:46.638+02:00</CreDtTm><NbOfTxs>20</NbOfTxs><InitgPty><Nm>Norwell AS</Nm><Id><OrgId><AnyBIC>swiftAdress1</AnyBIC><Othr><Id>118839</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>TIMESTAMP.P1</PmtInfId><PmtMtd>TRF</PmtMtd><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>DATE</ReqdExctnDt><Dbtr><Nm>Norwell AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>FugleskjÃƒÂ¦rgata 8</AdrLine><AdrLine>6905 FLORÃƒËœ</AdrLine></PstlAdr><Id><OrgId><Othr><Id>7025200179</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr><Othr><Id>21118117945</Id><SchmeNm><Cd>SOSE</Cd></SchmeNm></Othr><Othr><Id>ERP_VISMA1</Id><SchmeNm><Cd>XAVD</Cd></SchmeNm></Othr><Othr><Id>ERP_2FA_APPLE1</Id><SchmeNm><Cd>XAMT</Cd></SchmeNm></Othr><Othr><Id>20200427121212.887256#0102</Id><SchmeNm><Cd>XARF</Cd></SchmeNm></Othr><Othr><Id>2020-08-24T14:43:59</Id><SchmeNm><Cd>XADT</Cd></SchmeNm></Othr><Othr><Id>HASH#001</Id><SchmeNm><Cd>HASH</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>ACCOUNTID1</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>swiftAdress1</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T1</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">5</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T2</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">6</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T3</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">7</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T4</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">8</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T5</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">9</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T6</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T7</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">11</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T8</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">12</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T9</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">13</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P1T10</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">14</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf></PmtInf><PmtInf><PmtInfId>TIMESTAMP.P2</PmtInfId><PmtMtd>TRF</PmtMtd><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>DATE</ReqdExctnDt><Dbtr><Nm>Norwell AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>FugleskjÃƒÂ¦rgata 8</AdrLine><AdrLine>6905 FLORÃƒËœ</AdrLine></PstlAdr><Id><OrgId><Othr><Id>7025200179</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr><Othr><Id>27036705049</Id><SchmeNm><Cd>SOSE</Cd></SchmeNm></Othr><Othr><Id>ERP_VISMA1</Id><SchmeNm><Cd>XAVD</Cd></SchmeNm></Othr><Othr><Id>ERP_2FA_APPLE1</Id><SchmeNm><Cd>XAMT</Cd></SchmeNm></Othr><Othr><Id>20200427125050.887996#0667</Id><SchmeNm><Cd>XARF</Cd></SchmeNm></Othr><Othr><Id>2020-08-24T16:46:56</Id><SchmeNm><Cd>XADT</Cd></SchmeNm></Othr><Othr><Id>HASH#001</Id><SchmeNm><Cd>HASH</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>ACCOUNTID2</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>swiftAdress1</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T11</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">5</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T12</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">6</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T13</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">7</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T14</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">8</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T15</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">9</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T16</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T17</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">11</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T18</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">12</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T19</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">13</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>TIMESTAMP.P2T20</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">14</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqManager</con:name>
+          <con:value>QT0PPI</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqHostname</con:name>
+          <con:value>10.246.89.48</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqPort</con:name>
+          <con:value>1430</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqChannel</con:name>
+          <con:value>QT0PPI.SEPA.CL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>mqChannelAuth</con:name>
+          <con:value>QT0PPI.SEPA.CL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>sendQueue</con:name>
+          <con:value>PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>receiveQueue</con:name>
+          <con:value>QT0PPI.PAIN001.PRFUNC.CPS.PIN.ONLINE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MsgID</con:name>
+          <con:value>PreApprvd_231120014600</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend</con:name>
+          <con:value><![CDATA[<Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0"><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>146205</agreementId><bankId>4201</bankId><userId>18028302114</userId><userFirstName>Ext.PAIN001</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>10</productID><organizationId>18028302114</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>ISO</origin><confidential>false</confidential><suspendFundsCheck>false</suspendFundsCheck><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>40680100251</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>999999999999</approvalLimit><registerLimit>999999999999</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><agreementAccount><accountNumber>40680101541</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>999999999999</approvalLimit><registerLimit>999999999999</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2020-10-06T22:56:59</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>PreApprvd_231120014600</MsgId><CreDtTm>2020-11-23T00:53:46.638+02:00</CreDtTm><NbOfTxs>20</NbOfTxs><InitgPty><Nm>Norwell AS</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>118839</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>PreApprvd_231120014600.P1</PmtInfId><PmtMtd>TRF</PmtMtd><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2020-11-23</ReqdExctnDt><Dbtr><Nm>Norwell AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>FugleskjÃƒÂ¦rgata 8</AdrLine><AdrLine>6905 FLORÃƒËœ</AdrLine></PstlAdr><Id><OrgId><Othr><Id>7025200179</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr><Othr><Id>21118117945</Id><SchmeNm><Cd>SOSE</Cd></SchmeNm></Othr><Othr><Id>ERP_VISMA1</Id><SchmeNm><Cd>XAVD</Cd></SchmeNm></Othr><Othr><Id>ERP_2FA_APPLE1</Id><SchmeNm><Cd>XAMT</Cd></SchmeNm></Othr><Othr><Id>20200427121212.887256#0102</Id><SchmeNm><Cd>XARF</Cd></SchmeNm></Othr><Othr><Id>2020-08-24T14:43:59</Id><SchmeNm><Cd>XADT</Cd></SchmeNm></Othr><Othr><Id>HASH#001</Id><SchmeNm><Cd>HASH</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>40680100251</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T1</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">5</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T2</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">6</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T3</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">7</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T4</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">8</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T5</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">9</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T6</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T7</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">11</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T8</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">12</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T9</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">13</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P1T10</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">14</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf></PmtInf><PmtInf><PmtInfId>PreApprvd_231120014600.P2</PmtInfId><PmtMtd>TRF</PmtMtd><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2020-11-23</ReqdExctnDt><Dbtr><Nm>Norwell AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>FugleskjÃƒÂ¦rgata 8</AdrLine><AdrLine>6905 FLORÃƒËœ</AdrLine></PstlAdr><Id><OrgId><Othr><Id>7025200179</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr><Othr><Id>27036705049</Id><SchmeNm><Cd>SOSE</Cd></SchmeNm></Othr><Othr><Id>ERP_VISMA1</Id><SchmeNm><Cd>XAVD</Cd></SchmeNm></Othr><Othr><Id>ERP_2FA_APPLE1</Id><SchmeNm><Cd>XAMT</Cd></SchmeNm></Othr><Othr><Id>20200427125050.887996#0667</Id><SchmeNm><Cd>XARF</Cd></SchmeNm></Othr><Othr><Id>2020-08-24T16:46:56</Id><SchmeNm><Cd>XADT</Cd></SchmeNm></Othr><Othr><Id>HASH#001</Id><SchmeNm><Cd>HASH</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>40680101541</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T11</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">5</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T12</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">6</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T13</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">7</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T14</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">8</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T15</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">9</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T16</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T17</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">11</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T18</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">12</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T19</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">13</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf><CdtTrfTxInf><PmtId><EndToEndId>PreApprvd_231120014600.P2T20</EndToEndId></PmtId><PmtTpInf><CtgyPurp><Cd>SALA</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">14</InstdAmt></Amt><Cdtr><Nm>SKATTETREKK</Nm><PstlAdr><StrtNm>Adress missing</StrtNm><PstCd>5012</PstCd><TwnNm>BERGEN</TwnNm><Ctry>NO</Ctry></PstlAdr></Cdtr><CdtrAcct><Id><Othr><Id>36331475771</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></CdtrAcct><RmtInf><Ustrd>Lonnskjoring 2</Ustrd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>currencyCode</con:name>
+          <con:value>NOK</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber2</con:name>
+          <con:value>40680101541</con:value>
+        </con:property>
+        <con:property>
+          <con:name>swiftAdress</con:name>
+          <con:value>SPTRNO22XXX</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Set_Queue_Details_And_File" id="2bc0e8e4-8285-48e2-a9e4-7994a49ccd7e">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
+
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
+
+
+//Parmeters needed in message
+def Account = context.expand( '${Properties#accountNumber}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#DueDate}' )
+def BANKID = context.expand( '${Properties#bankId}' )
+def Account2 = context.expand( '${Properties#accountNumber2}' )
+def swiftAdress = context.expand( '${Properties#swiftAdress}' )
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("TIMESTAMP",MsgID) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID1",Account) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID2",Account2) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
+messageToSend = messageToSend.replaceAll("swiftAdress1",swiftAdress) ;
+
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePAIN001File" id="c03bab92-2441-429c-9fde-f7f4953ebc40">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+//import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+
+//def filecontent = context.expand( '${TestCase#messagetoSend}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueuePAIN001}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#receiveQueuePAIN001}' )
+def msgId = context.expand( '${Properties#MsgId}' )
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent);
+// Receive message from MQ
+//String receiveMessage = mqMessageUtils.receiveMessage(mQMessageQueueRecieve);
+////Check results only if received message browseMessage(mQMessageQueueRecieve,msgId);
+//log.info receiveMessage
+//if (!(("No messsage").equals(receiveMessage))){
+//	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+//	def response = groovyUtils.getXmlHolder(receiveMessage)
+//	log.info  response.getNodeValue("//*:OrgnlMsgId");
+//	ArrayList&lt;String> list= response.getNodeValues("//*:AddtlInf");
+//	log.info list;
+//// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+//}
+//// No message
+//else  log.info "Failed to receive message from Queue.. Trying to fetch payment from DB"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="e4c0f035-85ef-44b6-a45c-5106d5f210be">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS" id="99c0534b-b73c-46ad-a7c5-cecb9ce12f6d">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  TRANSACTIONSID ,
+  ENDTOENDID ,
+  PAYMENTTYPE,
+  PAYMENTSTATUS,
+  ISPC ,
+FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS 
+WHERE 
+  ENDTOENDID LIKE '%${Properties#MsgID}%'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="4478c544-1a5f-4f02-955f-996d4cb474c5" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388814</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388815</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>3</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388816</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T3</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388817</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>5</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388818</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T5</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[5]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>6</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388819</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T6</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[6]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>7</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388820</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T7</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[7]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388821</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[8]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>9</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388822</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T9</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[9]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388823</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P1T10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[10]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>11</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388824</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T11</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[11]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>12</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388825</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T12</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[12]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>13</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388826</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T13</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[13]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>14</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388827</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T14</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[14]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>15</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388828</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T15</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[15]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>16</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388829</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T16</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[16]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>17</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388830</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T17</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[17]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>18</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388831</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T18</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[18]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>19</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388832</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T19</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[19]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>20</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>388833</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120090126.P2T20</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOSA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUSALA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[20]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>388814</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T1</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="2">
+         <TRANSACTIONSID>388815</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T2</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="3">
+         <TRANSACTIONSID>388816</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T3</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="4">
+         <TRANSACTIONSID>388817</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T4</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="5">
+         <TRANSACTIONSID>388818</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T5</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="6">
+         <TRANSACTIONSID>388819</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T6</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="7">
+         <TRANSACTIONSID>388820</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T7</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="8">
+         <TRANSACTIONSID>388821</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T8</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="9">
+         <TRANSACTIONSID>388822</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T9</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="10">
+         <TRANSACTIONSID>388823</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P1T10</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="11">
+         <TRANSACTIONSID>388824</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T11</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="12">
+         <TRANSACTIONSID>388825</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T12</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="13">
+         <TRANSACTIONSID>388826</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T13</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="14">
+         <TRANSACTIONSID>388827</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T14</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="15">
+         <TRANSACTIONSID>388828</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T15</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="16">
+         <TRANSACTIONSID>388829</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T16</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="17">
+         <TRANSACTIONSID>388830</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T17</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="18">
+         <TRANSACTIONSID>388831</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T18</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="19">
+         <TRANSACTIONSID>388832</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T19</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+      <Row rowNumber="20">
+         <TRANSACTIONSID>388833</TRANSACTIONSID>
+         <ENDTOENDID>PreApprvd_111120090126.P2T20</ENDTOENDID>
+         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTDOMOUSALA</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Payminfo" id="44793bc3-f0a4-4907-b3bc-15a6684d7ca2">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT *from paymentinfo where PMTINFOID like '%${Properties#MsgID}%'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="eed4b51c-f518-49dd-97d8-2bb6d404c57d" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTINFOID[1]</con:xpath>
+            <con:element>PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>362832</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PMTINFOID[1]</con:xpath>
+            <con:element>PMTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PreApprvd_111120090608.P1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTMETHOD[1]</con:xpath>
+            <con:element>PAYMENTMETHOD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TRF</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-11-11 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_MESSAGEID[1]</con:xpath>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${Properties#MsgID}.P1T1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHARGEBEARER[1]</con:xpath>
+            <con:element>CHARGEBEARER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SHAR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BATCHBOOKING[1]</con:xpath>
+            <con:element>BATCHBOOKING</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CONTROLSUM[1]</con:xpath>
+            <con:element>CONTROLSUM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>95</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/POOLINGADJUSTMENTDATE[1]</con:xpath>
+            <con:element>POOLINGADJUSTMENTDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRFORDBTRAGT[1]</con:xpath>
+            <con:element>INSTRFORDBTRAGT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SALARY[1]</con:xpath>
+            <con:element>SALARY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Y</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:xpath>
+            <con:element>RELEASEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CATEGORYPURPOSECODE[1]</con:xpath>
+            <con:element>CATEGORYPURPOSECODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONPRIORITY[1]</con:xpath>
+            <con:element>INSTRUCTIONPRIORITY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NORM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SERVICELEVEL[1]</con:xpath>
+            <con:element>SERVICELEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>3625</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>36250741779</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNOISIBAN[1]</con:xpath>
+            <con:element>DEBETACCOUNTNOISIBAN</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SERVICEID[1]</con:xpath>
+            <con:element>SERVICEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FOREIGNACCOUNTFILEFORMAT[1]</con:xpath>
+            <con:element>FOREIGNACCOUNTFILEFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FOREIGNACCOUNTTYPE[1]</con:xpath>
+            <con:element>FOREIGNACCOUNTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDCREDITVALUEDATE[1]</con:xpath>
+            <con:element>REQUESTEDCREDITVALUEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONFORMAT[1]</con:xpath>
+            <con:element>INSTRUCTIONFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONFIELD[1]</con:xpath>
+            <con:element>INSTRUCTIONFIELD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONFUNCTION[1]</con:xpath>
+            <con:element>INSTRUCTIONFUNCTION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTINFOID[1]</con:xpath>
+            <con:element>PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>362833</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PMTINFOID[1]</con:xpath>
+            <con:element>PMTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PreApprvd_111120090608.P2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTMETHOD[1]</con:xpath>
+            <con:element>PAYMENTMETHOD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TRF</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-11-11 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_MESSAGEID[1]</con:xpath>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${Properties#MsgID}.P1T2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/CHARGEBEARER[1]</con:xpath>
+            <con:element>CHARGEBEARER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SHAR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/BATCHBOOKING[1]</con:xpath>
+            <con:element>BATCHBOOKING</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/CONTROLSUM[1]</con:xpath>
+            <con:element>CONTROLSUM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>95</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/POOLINGADJUSTMENTDATE[1]</con:xpath>
+            <con:element>POOLINGADJUSTMENTDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INSTRFORDBTRAGT[1]</con:xpath>
+            <con:element>INSTRFORDBTRAGT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SALARY[1]</con:xpath>
+            <con:element>SALARY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Y</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/RELEASEDATE[1]</con:xpath>
+            <con:element>RELEASEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/CATEGORYPURPOSECODE[1]</con:xpath>
+            <con:element>CATEGORYPURPOSECODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INSTRUCTIONPRIORITY[1]</con:xpath>
+            <con:element>INSTRUCTIONPRIORITY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>NORM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SERVICELEVEL[1]</con:xpath>
+            <con:element>SERVICELEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>3625</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>36250741779</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/DEBETACCOUNTNOISIBAN[1]</con:xpath>
+            <con:element>DEBETACCOUNTNOISIBAN</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SERVICEID[1]</con:xpath>
+            <con:element>SERVICEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FOREIGNACCOUNTFILEFORMAT[1]</con:xpath>
+            <con:element>FOREIGNACCOUNTFILEFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FOREIGNACCOUNTTYPE[1]</con:xpath>
+            <con:element>FOREIGNACCOUNTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/REQUESTEDCREDITVALUEDATE[1]</con:xpath>
+            <con:element>REQUESTEDCREDITVALUEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INSTRUCTIONFORMAT[1]</con:xpath>
+            <con:element>INSTRUCTIONFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INSTRUCTIONFIELD[1]</con:xpath>
+            <con:element>INSTRUCTIONFIELD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/INSTRUCTIONFUNCTION[1]</con:xpath>
+            <con:element>INSTRUCTIONFUNCTION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <PAYMENTINFOID>362832</PAYMENTINFOID>
+         <PMTINFOID>PreApprvd_111120090608.P1</PMTINFOID>
+         <PAYMENTMETHOD>TRF</PAYMENTMETHOD>
+         <REQUESTEDEXECUTIONDATE>2020-11-11 00:00:00</REQUESTEDEXECUTIONDATE>
+         <FK_MESSAGEID>346080</FK_MESSAGEID>
+         <CHARGEBEARER>SHAR</CHARGEBEARER>
+         <BATCHBOOKING>N</BATCHBOOKING>
+         <NUMBEROFTRANSACTIONS>10</NUMBEROFTRANSACTIONS>
+         <CONTROLSUM>95</CONTROLSUM>
+         <POOLINGADJUSTMENTDATE/>
+         <INSTRFORDBTRAGT/>
+         <SALARY>Y</SALARY>
+         <RELEASEDATE/>
+         <CATEGORYPURPOSECODE/>
+         <INSTRUCTIONPRIORITY>NORM</INSTRUCTIONPRIORITY>
+         <SERVICELEVEL/>
+         <INITIATORBANKID>3625</INITIATORBANKID>
+         <DEBETACCOUNTNO>36250741779</DEBETACCOUNTNO>
+         <DEBETACCOUNTNOISIBAN>N</DEBETACCOUNTNOISIBAN>
+         <SERVICEID/>
+         <FOREIGNACCOUNTFILEFORMAT/>
+         <FOREIGNACCOUNTTYPE/>
+         <REQUESTEDCREDITVALUEDATE/>
+         <INSTRUCTIONFORMAT/>
+         <INSTRUCTIONFIELD/>
+         <INSTRUCTIONFUNCTION/>
+      </Row>
+      <Row rowNumber="2">
+         <PAYMENTINFOID>362833</PAYMENTINFOID>
+         <PMTINFOID>PreApprvd_111120090608.P2</PMTINFOID>
+         <PAYMENTMETHOD>TRF</PAYMENTMETHOD>
+         <REQUESTEDEXECUTIONDATE>2020-11-11 00:00:00</REQUESTEDEXECUTIONDATE>
+         <FK_MESSAGEID>346080</FK_MESSAGEID>
+         <CHARGEBEARER>SHAR</CHARGEBEARER>
+         <BATCHBOOKING>N</BATCHBOOKING>
+         <NUMBEROFTRANSACTIONS>10</NUMBEROFTRANSACTIONS>
+         <CONTROLSUM>95</CONTROLSUM>
+         <POOLINGADJUSTMENTDATE/>
+         <INSTRFORDBTRAGT/>
+         <SALARY>Y</SALARY>
+         <RELEASEDATE/>
+         <CATEGORYPURPOSECODE/>
+         <INSTRUCTIONPRIORITY>NORM</INSTRUCTIONPRIORITY>
+         <SERVICELEVEL/>
+         <INITIATORBANKID>3625</INITIATORBANKID>
+         <DEBETACCOUNTNO>36250741779</DEBETACCOUNTNO>
+         <DEBETACCOUNTNOISIBAN>N</DEBETACCOUNTNOISIBAN>
+         <SERVICEID/>
+         <FOREIGNACCOUNTFILEFORMAT/>
+         <FOREIGNACCOUNTTYPE/>
+         <REQUESTEDCREDITVALUEDATE/>
+         <INSTRUCTIONFORMAT/>
+         <INSTRUCTIONFIELD/>
+         <INSTRUCTIONFUNCTION/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Message" id="52fff943-98f4-4632-8051-abc57b5411fc">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT *From message where MESSAGEIDENTIFICATION like '%${Properties#MsgID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="4caa9eb1-c7fa-49aa-8253-5b253b5f7724" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>346076</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
+            <con:element>CUSTOMERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>15086567005</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORID[1]</con:xpath>
+            <con:element>INITIATORID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>15086567005</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>3625</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEIDENTIFICATION[1]</con:xpath>
+            <con:element>MESSAGEIDENTIFICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PreApprvd_111120085259</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREATIONDATETIME[1]</con:xpath>
+            <con:element>CREATIONDATETIME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2020-11-11 16:23:32</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>20</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CONTROLSUM[1]</con:xpath>
+            <con:element>CONTROLSUM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>190</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CONFIDENTIAL[1]</con:xpath>
+            <con:element>CONFIDENTIAL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORIGINALFORMAT[1]</con:xpath>
+            <con:element>ORIGINALFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>ISO</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REJECTIONLEVEL[1]</con:xpath>
+            <con:element>REJECTIONLEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TRNS</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AUTHORIZATIONLEVEL[1]</con:xpath>
+            <con:element>AUTHORIZATIONLEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>ILEV</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:xpath>
+            <con:element>AGREEMENTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>146205</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORORGUNIT[1]</con:xpath>
+            <con:element>INITIATORORGUNIT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISEMPLOYEEINITIATED[1]</con:xpath>
+            <con:element>ISEMPLOYEEINITIATED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAINVERSION[1]</con:xpath>
+            <con:element>PAINVERSION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATINGPARTYELEMENT[1]</con:xpath>
+            <con:element>INITIATINGPARTYELEMENT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns3:PartyIdentification43 xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04" xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:ns3="com.edb.payment.pays.core.pain.pain001.v00104"><Nm>Norwell AS</Nm><Id><OrgId><AnyBIC>SPAVNOBBXXX</AnyBIC><Othr><Id>118839</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></ns3:PartyIdentification43>]]></con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISRETAILPAYMENTAPPROVALNEEDED[1]</con:xpath>
+            <con:element>ISRETAILPAYMENTAPPROVALNEEDED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCEAPPLICATION[1]</con:xpath>
+            <con:element>SOURCEAPPLICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>EVRYCPS</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORIGINALCHANNEL[1]</con:xpath>
+            <con:element>ORIGINALCHANNEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BES</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SEGMENT[1]</con:xpath>
+            <con:element>SEGMENT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEVICE_ID[1]</con:xpath>
+            <con:element>DEVICE_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATINGPARTYBICFI[1]</con:xpath>
+            <con:element>INITIATINGPARTYBICFI</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SPAVNOBBXXX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANK_EMPLOYEE_ID_EDITED_BY[1]</con:xpath>
+            <con:element>BANK_EMPLOYEE_ID_EDITED_BY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>346076</MESSAGEID>
+         <MARKETTYPE>BM</MARKETTYPE>
+         <CUSTOMERID>15086567005</CUSTOMERID>
+         <INITIATORID>15086567005</INITIATORID>
+         <INITIATORBANKID>3625</INITIATORBANKID>
+         <MESSAGEIDENTIFICATION>PreApprvd_111120085259</MESSAGEIDENTIFICATION>
+         <CREATIONDATETIME>2020-11-11 16:23:32</CREATIONDATETIME>
+         <NUMBEROFTRANSACTIONS>20</NUMBEROFTRANSACTIONS>
+         <CONTROLSUM>190</CONTROLSUM>
+         <CONFIDENTIAL>N</CONFIDENTIAL>
+         <ORIGINALFORMAT>ISO</ORIGINALFORMAT>
+         <REJECTIONLEVEL>TRNS</REJECTIONLEVEL>
+         <AUTHORIZATIONLEVEL>ILEV</AUTHORIZATIONLEVEL>
+         <AGREEMENTID>146205</AGREEMENTID>
+         <INITIATORORGUNIT/>
+         <ISEMPLOYEEINITIATED/>
+         <PAINVERSION>4</PAINVERSION>
+         <INITIATINGPARTYELEMENT><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns3:PartyIdentification43 xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04" xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:ns3="com.edb.payment.pays.core.pain.pain001.v00104"><Nm>Norwell AS</Nm><Id><OrgId><AnyBIC>SPAVNOBBXXX</AnyBIC><Othr><Id>118839</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></ns3:PartyIdentification43>]]]]>><![CDATA[</INITIATINGPARTYELEMENT>
+         <ISRETAILPAYMENTAPPROVALNEEDED>N</ISRETAILPAYMENTAPPROVALNEEDED>
+         <SOURCEAPPLICATION>EVRYCPS</SOURCEAPPLICATION>
+         <ORIGINALCHANNEL>BES</ORIGINALCHANNEL>
+         <SEGMENT/>
+         <DEVICE_ID/>
+         <INITIATINGPARTYBICFI>SPAVNOBBXXX</INITIATINGPARTYBICFI>
+         <BANK_EMPLOYEE_ID_EDITED_BY/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="APPROVER" id="4d01b987-4f3d-45ed-8939-c829471ce8b9">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * from approver where FK_TRANSACTIONSID = '${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="d9810171-4cd5-4990-a9ce-0b788bd648df" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]</con:xpath>
+            <con:element>APPROVERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>138705</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVERIDENTIFIER[1]</con:xpath>
+            <con:element>APPROVERIDENTIFIER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>15086567005</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVALDATE[1]</con:xpath>
+            <con:element>APPROVALDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2020-11-20 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>Ext.PAIN001</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTNAME[1]</con:xpath>
+            <con:element>LASTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>EvryFileArchive</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>404765</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXTERN_APPR_VENDOR[1]</con:xpath>
+            <con:element>EXTERN_APPR_VENDOR</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXTERN_APPR_METHOD[1]</con:xpath>
+            <con:element>EXTERN_APPR_METHOD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXTERN_APPR_REF[1]</con:xpath>
+            <con:element>EXTERN_APPR_REF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <APPROVERID>138705</APPROVERID>
+         <APPROVERIDENTIFIER>15086567005</APPROVERIDENTIFIER>
+         <APPROVALDATE>2020-11-20 00:00:00</APPROVALDATE>
+         <FIRSTNAME>Ext.PAIN001</FIRSTNAME>
+         <LASTNAME>EvryFileArchive</LASTNAME>
+         <FK_TRANSACTIONSID>404765</FK_TRANSACTIONSID>
+         <EXTERN_APPR_VENDOR/>
+         <EXTERN_APPR_METHOD/>
+         <EXTERN_APPR_REF/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>7ac37089-fb5d-4637-a84a-61afd3ee482d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f888a32b-2993-46b3-b104-5404a38eccf3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>436733ea-4fb1-4c73-8914-2bb9de370be6</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>eb47033c-f7bb-4a15-80f5-c114f9b7eed5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f742b041-99e0-4004-87a4-909502f9f648</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="657a20b2-d63b-4bf3-808e-2c92b686c769">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

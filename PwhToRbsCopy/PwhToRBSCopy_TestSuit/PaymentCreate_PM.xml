@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <con:testCase id="96757d24-bead-437b-b23c-a73c62778a50" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="PaymentCreate_PM" searchProperties="true" timeout="0" maxResults="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Test case to create PM payment and process payment from RFCA to COMP by executing capitalisation batch.</con:description>
   <con:settings>
     <con:setting id="96757d24-bead-437b-b23c-a73c62778a50fileName">PaymentCreate_PM</con:setting>
   </con:settings>
@@ -11,7 +12,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  and ROWNUM=1</con:query>
@@ -98,7 +99,7 @@
       <con:properties>
         <con:property>
           <con:name>SourceApplication</con:name>
-          <con:value>EVRYCPS</con:value>
+          <con:value>EVRYINT</con:value>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
@@ -190,7 +191,7 @@
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>93468.17</con:value>
+          <con:value>92608.17</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>
@@ -198,7 +199,7 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>925448</con:value>
+          <con:value>260401435</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -256,16 +257,6 @@
       </urn:accountReadBalanceInformationRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="Valid HTTP Status Codes" id="856d8d22-f506-41c6-8154-f200e13608b7" name="Valid HTTP Status Codes">
-          <con:settings/>
-          <con:configuration>
-            <codes>200</codes>
-          </con:configuration>
-        </con:assertion>
-        <con:assertion type="SOAP Fault Assertion" id="f27ec154-745f-4f67-a091-2346402e6d4a" name="Not SOAP Fault"/>
-        <con:assertion type="Schema Compliance" id="ff22f967-0a57-4f11-a840-da2b78cda933" name="Schema Compliance">
-          <con:configuration/>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="943d356b-2b2b-4a47-8cd6-26a9ee714378" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -769,7 +760,7 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
       <script>def debitAmount = context.expand( '${Properties#amount}' )
 def availableBalance = context.expand( '${Properties#availableBalance}' )
 
-log.info "debitAmount: " + debitAmount + " ,  availableBalance: "+ availableBalance
+//log.info "debitAmount: " + debitAmount + " ,  availableBalance: "+ availableBalance
 
 int debitAmountInt = Double.parseDouble(debitAmount)
 int availableBalanceInt = Double.parseDouble(availableBalance)
@@ -841,16 +832,6 @@ if (availableBalanceInt > debitAmountInt){
       </res:PCASReservationCreate_V1_1InputArgs>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="Valid HTTP Status Codes" id="ecf8380b-630e-4810-9ac6-5fbef105979f" name="Valid HTTP Status Codes">
-          <con:settings/>
-          <con:configuration>
-            <codes>200</codes>
-          </con:configuration>
-        </con:assertion>
-        <con:assertion type="SOAP Fault Assertion" id="5e8a048d-92c3-4f46-95e9-df65d40ca6e0" name="Not SOAP Fault"/>
-        <con:assertion type="Schema Compliance" id="1f32a0eb-2552-4690-b36c-f0ac8b355a11" name="Schema Compliance">
-          <con:configuration/>
-        </con:assertion>
         <con:assertion type="MessageContentAssertion" id="bb5611cd-0be9-4054-acad-1b15f7721c7c" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
@@ -2509,7 +2490,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>SELECT PAYMENTSTATUS
@@ -2567,7 +2548,7 @@ TRANSACTIONSID IN ('${PaymentConfirm_v2_0#Response#declare namespace urn='urn:pi
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>update CTL_BATCH_RUN_SCHEMA set STATUS = 'FREE' where SCHEMA_NAME in (select SCHEMA_NAME from CTL_BATCH_RUN_SCHEMA  order by START_TIMESTAMP asc fetch first 1 rows only)</con:query>
@@ -2582,7 +2563,7 @@ TRANSACTIONSID IN ('${PaymentConfirm_v2_0#Response#declare namespace urn='urn:pi
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>Commit</con:query>
@@ -2604,23 +2585,23 @@ String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().to
 env = env.toString().substring(2)
 
 if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
-	assert false," Failed to conenct to linux server!!"
+	{
+		assert false," Failed to conenct to linux server!!"
+	}
 else
- log.info "Connected to the server successfully!!"
+	{
+		//log.info "Connected to the server successfully!!"
+		//log.info "Running the batch...."
+		String shParameter = "pwhPorFtsDeliverCapitalProcess.sh classpath:spring/pwh-por-ftsdelivercapital-job-batch-context.xml pwhPorProcessFtsDeliverCapital processLines='DOM_PAYMENT_RTS' banksInProcess='4201' marketType='PM' 2>&amp;1"
+		String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
+		//log.info "shParameter : "+shParameter
+		//log.info "CommandOutput returned-->" + CommandOutPut
+		
+		ServerConnect.closeConnection()
+		def SuccessMessage1 = 'Spring Boot'
 
-log.info "Running the batch...."
-
-//String shParameter = "porCommonReservationLauncher.sh processLine=DOM_PAYMENT_RTS paymentStatuses=RFDD,LAFU releaseDate=${nextDate} jobRunType=$jobRunType porType=CompletePOR banksInProcess=4201 marketType=$marketType runId=$runId"
-String shParameter = "pwhPorFtsDeliverCapitalProcess.sh classpath:spring/pwh-por-ftsdelivercapital-job-batch-context.xml pwhPorProcessFtsDeliverCapital processLines='DOM_PAYMENT_RTS' banksInProcess='4201' marketType='PM' 2>&amp;1"
-
-String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
-
-log.info "shParameter : "+shParameter
-log.info "CommandOutput returned-->" + CommandOutPut
-ServerConnect.closeConnection()
-def SuccessMessage1 = 'Spring Boot'
-
-assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMessage1)), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut</script>
+		assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMessage1)), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+	}</script>
     </con:config>
   </con:testStep>
   <con:testStep type="delay" name="Delay_COMP" id="fe85be97-5714-4305-93a3-79148b5912c2">
@@ -2636,7 +2617,7 @@ assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMess
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>SELECT PAYMENTSTATUS
@@ -2687,6 +2668,13 @@ TRANSACTIONSID IN ('${PaymentConfirm_v2_0#Response#declare namespace urn='urn:pi
       <con:properties/>
     </con:config>
   </con:testStep>
+  <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
+  testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}
+else
+{
+	  testCase.testSuite.setPropertyValue("TestSuiteResult", "OK")
+}</con:tearDownScript>
   <con:properties/>
   <con:reportParameters/>
   <con:breakPoints>

@@ -10,15 +10,15 @@
       <con:properties>
         <con:property>
           <con:name>POR1OutputFile</con:name>
-          <con:value>por-reservation_4201_20201118082303321.xml</con:value>
+          <con:value>por-reservation_4201_20201125115802774.xml</con:value>
         </con:property>
         <con:property>
           <con:name>FTSLastModifiedDate</con:name>
-          <con:value>1605684226</con:value>
+          <con:value>1606301871</con:value>
         </con:property>
         <con:property>
           <con:name>FTSResponseFile</con:name>
-          <con:value>pen_FILE_OF_RESERVATIONS_201118082426256.xml</con:value>
+          <con:value>pen_FILE_OF_RESERVATIONS_201125115833836.xml</con:value>
         </con:property>
         <con:property>
           <con:name>FTS_Destination_Masked</con:name>
@@ -26,7 +26,7 @@
         </con:property>
         <con:property>
           <con:name>POR1LastModifiedTime</con:name>
-          <con:value>1605684199</con:value>
+          <con:value>1606301850</con:value>
         </con:property>
         <con:property>
           <con:name>marketType</con:name>
@@ -46,7 +46,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password>password</con:password>
       <con:connectionProperties/>
       <con:query>update CTL_BATCH_RUN_SCHEMA set STATUS = 'FREE' where SCHEMA_NAME in (select SCHEMA_NAME from CTL_BATCH_RUN_SCHEMA  order by START_TIMESTAMP asc fetch first 1 rows only)</con:query>
@@ -253,6 +253,9 @@ ServerConnect.closeConnection()</script>
           <con:entry environmentId="ed1e0db4-4b58-442d-baa9-df0a7795d8d7">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="fbac4f6b-520b-4f85-9262-838a64a079b7">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -328,17 +331,6 @@ String destination = "/home/$strUsername"
 File Localfolder = new File(sourceFolder)
 def latestFile = ""
 
-//Get latestModified file from "ProjectPath//data// "folder
-
-//long lastModified = 0
-//Localfolder.listFiles().each{ file ->
-//if (file.lastModified() > lastModified )
-//	{
-//		lastModified = file.lastModified()
-//		latestFile = file.absolutePath
-//	}
-//}
-//
 //log.info "latestFile:" + latestFile
 latestFile = sourceFolder + File.separator  + testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSResponseFile")
 log.info "latestFile-->" + latestFile
@@ -393,7 +385,7 @@ ServerConnect.closeConnection()</script>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
       <con:password>password</con:password>
       <con:connectionProperties/>
       <con:query>SELECT PAYMENTSTATUS
@@ -487,6 +479,10 @@ else
   <con:setupScript>assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")</con:setupScript>
   <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
   testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}
+else
+{
+	  testCase.testSuite.setPropertyValue("TestSuiteResult", "OK")
 }</con:tearDownScript>
   <con:properties>
     <con:property>

@@ -25,6 +25,18 @@ class ServerConnect {
 	public static Channel objChan
 	public static ChannelSftp objSFTPChannel
 
+	public static void main(String[] args) {
+
+		ServerConnect.Connect(strHost,strUsername,strPassword,intPort)
+
+		String command2="cd /ebs/d4/pin/logs/piPaymentProcessor;grep -B 10 -A 10 '<OrgnlMsgId>DomAllPmts_20200708MSG083</OrgnlMsgId>' mqpayload.log";
+		
+
+		println ("Command2 -" + ServerConnect.execCommand(command2))
+		
+		ServerConnect.closeConnection()
+	}
+
 	public static String Connect(String strHost, String strUsername, String strPassword,def intPort  ) {
 		this.strHost = strHost
 		this.strUsername = strUsername
@@ -91,7 +103,7 @@ class ServerConnect {
 		return lineReader.getLineNumber()
 
 	}
-		public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
+			public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
 		
 		String latestFile = ""
 		try {
@@ -155,6 +167,7 @@ class ServerConnect {
 			println "uploadFile Success!!"
 
 	}
+
 
 	public static String readFileFromServer(String fileDirectory, String fileName) {
 		this.strFileDirectory = fileDirectory
@@ -241,17 +254,17 @@ class ServerConnect {
 	}
 
 	public static boolean closeConnection() {
-		boolean flag=false;
+		def returnFlag = true
 		try {
-			objSFTPChannel.exit();
-			objChan.disconnect();
-			objSession.disconnect();
-			flag=true;
+			if(objSFTPChannel != null )objSFTPChannel.exit();
+			if(objChan != null ) objChan.disconnect();
+			if(objSession != null ) objSession.disconnect();
 		}
 		catch(Exception ex) {
+			returnFlag = false
 			ex.printStackTrace()
 		}
-		return flag;
+		return returnFlag
 	}
 
 	public static List grepFileFromServer(String fileDirectory, String fileName , String strGrep) {
@@ -329,7 +342,7 @@ class ServerConnect {
 		return resultStr;
 	}
 	
-	public static String execBatchCommand(String env , String areaPinPen , String command, def log) {
+	public static String execBatchCommand(String env , String areaPinPen , String command) {
 		
 		def res = ""
 		def tempBatchFolder = ""
@@ -344,7 +357,6 @@ class ServerConnect {
 		objChan = objSession.openChannel("sftp");
 		objChan.connect();
 		objSFTPChannel = (ChannelSftp)objChan;
-		log.info "tempBatchFolder $tempBatchFolder" 
 		objSFTPChannel.cd(tempBatchFolder);
 		int modifiedTime = 0		
 		SftpATTRS att = objSFTPChannel.ls(tempBatchFolder, new LsEntrySelector() {
@@ -364,8 +376,8 @@ class ServerConnect {
 		objSFTPChannel.exit()
 		objChan.disconnect()
 		def binFilePath = tempBatchFolder + latestFolder + "/bin/"
-		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'cd $binFilePath && ./$command\'"
-		log.info "command2:" + command2
+		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'$binFilePath$command\'"
+		//println "command2:" + command2
 		res = execCommand(command2)				
 		return res
 

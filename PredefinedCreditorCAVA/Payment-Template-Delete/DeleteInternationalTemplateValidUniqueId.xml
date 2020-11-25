@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase zephyrTestName="" zephyrTestId="" wsrmVersion="1.0" wsrmEnabled="false" wsrmAckTo="" timeout="0" searchProperties="true" name="296128-PRM-687-1" keepSession="false" id="74fd62c2-7cdf-4964-bfb8-1a3c3ccb1314" failTestCaseOnErrors="true" failOnError="true" discardOkResults="false" amfPassword="" amfLogin="" amfEndpoint="" amfAuthorisation="false" xmlns:con="http://eviware.com/soapui/config">
-  <con:description>PRM-687-1 - Delete SEPA payment template successful with valid unique id</con:description>
+<con:testCase zephyrTestName="" zephyrTestId="" wsrmVersion="1.0" wsrmEnabled="false" wsrmAckTo="" timeout="0" searchProperties="true" name="DeleteInternationalTemplateValidUniqueId" keepSession="false" id="7e5d7424-620e-4222-89b6-c3da636bfe63" failTestCaseOnErrors="true" failOnError="true" discardOkResults="false" amfPassword="" amfLogin="" amfEndpoint="" amfAuthorisation="false" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>PRM-687-2 - Delete International payment template successful with valid unique id</con:description>
   <con:settings>
-    <con:setting id="74fd62c2-7cdf-4964-bfb8-1a3c3ccb1314fileName">296128-PRM-687-1</con:setting>
-    <con:setting id="e8168c89-a11b-4729-adb9-229c07904047fileName">296128-PRM-687-1</con:setting>
+    <con:setting id="7e5d7424-620e-4222-89b6-c3da636bfe63fileName">DeleteInternationalTemplateValidUniqueId</con:setting>
+    <con:setting id="a2b0b490-a991-4276-bc99-1611f5049b25fileName">296130-PRM-687-2</con:setting>
     <con:setting id="42b1621f-7af4-4e2b-b47c-bcf3804818c0fileName">ToBeCloned</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="request" name="CreditorCreate_v2_1" id="61c44b43-ddab-4261-9921-58898e851374">
+  <con:testStep type="request" name="CreditorCreate_v2_1" id="785c487c-76f9-4355-b564-151ff9017f8e">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -45,7 +45,7 @@
       <urn:CreditorCreateRequest>
          <urn:creditorInformation>
             <urn1:alias>${=org.apache.commons.lang.RandomStringUtils.random(35, true, true)}</urn1:alias>
-            <urn1:type>SEPA</urn1:type>
+            <urn1:type>INTERNATIONAL</urn1:type>
             <!--Optional:-->
             <urn1:instructionPriority>NORM</urn1:instructionPriority>
             <!--Optional:-->
@@ -63,7 +63,7 @@
                </urn2:instructedAmount>
             </urn1:amount>
             <urn1:creditorAccount>
-               <urn2:identification>${#TestSuite#sepaCreditAccount}</urn2:identification>
+               <urn2:identification>${#TestSuite#intCreditAccount}</urn2:identification>
                <!--Optional:-->
             </urn1:creditorAccount>
             <!--Optional:-->
@@ -98,6 +98,288 @@
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
+        <con:assertion type="MessageContentAssertion" id="39c8079e-505b-4457-9ecc-36d356c000ea" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns4='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns4:CreditorCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorCreateResponse[1]/ns2:creditorInformation[1]/ns1:alias[1]</con:xpath>
+              <con:element>ns2:alias</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1aLaQdfma9jjLMuq0sAsx0EE3QUcE7wSlkh</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorCreateResponse[1]/ns2:creditorInformation[1]/ns1:type[1]</con:xpath>
+              <con:element>ns2:type</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>INTERNATIONAL</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorCreateResponse[1]/ns2:creditorInformation[1]/ns1:instructionPriority[1]</con:xpath>
+              <con:element>ns2:instructionPriority</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>NORM</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:debtorAccount[1]/ns1:identification[1]</con:xpath>
+              <con:element>ns5:identification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>FI2031512000004264</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:debtorAccount[1]/ns1:currency[1]</con:xpath>
+              <con:element>ns5:currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>EUR</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:amount[1]/ns1:instructedAmount[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>EUR</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:amount[1]/ns1:instructedAmount[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAccount[1]/ns1:identification[1]</con:xpath>
+              <con:element>ns5:identification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1233443554656</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:creditor[1]/ns1:name[1]</con:xpath>
+              <con:element>ns5:name</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>CredName</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>US</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAgent[1]/ns1:bic[1]</con:xpath>
+              <con:element>ns5:bic</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>CITIUS33XXX</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns3:CreditorCreateResponse[1]/ns3:creditorInformation[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>US</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns2:CreditorCreateResponse[1]/ns2:creditorInformation[1]/ns1:chargeBearer[1]</con:xpath>
+              <con:element>ns2:chargeBearer</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>SHAR</con:expectedValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
+//ns1:CreditorCreateResponse[1]/ns1:predefinedCreditorId[1]</con:xpath>
+              <con:element>ns4:predefinedCreditorId</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>1379</con:expectedValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns4:CreditorCreateResponse xmlns:ns9="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns8="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_1" xmlns:ns4="urn:pins.payment.evry.com:ws:paymentcreditor:v2_1" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:domain:predefinedcreditor:v2_1" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns3:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns3:ResponseState>
+         <ns4:creditorInformation>
+            <ns2:alias>1aLaQdfma9jjLMuq0sAsx0EE3QUcE7wSlkh</ns2:alias>
+            <ns2:type>INTERNATIONAL</ns2:type>
+            <ns2:instructionPriority>NORM</ns2:instructionPriority>
+            <ns2:debtorAccount>
+               <ns5:identification>FI2031512000004264</ns5:identification>
+               <ns5:currency>EUR</ns5:currency>
+            </ns2:debtorAccount>
+            <ns2:amount>
+               <ns5:instructedAmount currency="EUR">
+                  <ns5:amount>1.00</ns5:amount>
+               </ns5:instructedAmount>
+            </ns2:amount>
+            <ns2:creditorAccount>
+               <ns5:identification>1233443554656</ns5:identification>
+            </ns2:creditorAccount>
+            <ns2:creditor>
+               <ns5:name>CredName</ns5:name>
+               <ns5:postalAddress>
+                  <ns5:country>US</ns5:country>
+               </ns5:postalAddress>
+            </ns2:creditor>
+            <ns2:creditorAgent>
+               <ns5:bic>CITIUS33XXX</ns5:bic>
+               <ns5:postalAddress>
+                  <ns5:country>US</ns5:country>
+               </ns5:postalAddress>
+            </ns2:creditorAgent>
+            <ns2:chargeBearer>SHAR</ns2:chargeBearer>
+         </ns4:creditorInformation>
+         <ns4:predefinedCreditorId>1379</ns4:predefinedCreditorId>
+      </ns4:CreditorCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -108,14 +390,14 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="DatabaseCheck_before_delete" id="75ef4c82-2df7-4ef2-b97c-3e0521ff2092">
+  <con:testStep type="jdbc" name="DatabaseCheck_before_delete" id="ac4f494d-ef9d-48a2-bd03-8826f3645d3a">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>${#Project#G_D10_PWH}</con:connectionString>
+      <con:connectionString>${#Project#G_D17_PWH}</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select count(*) from pdc_predefinedcreditor where predefinedcreditorid=${CreditorCreate_v2_1#Response#//*:predefinedCreditorId}</con:query>
@@ -131,7 +413,7 @@
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorSearch_v2_1" id="ddf28c2a-7043-4748-9e1b-d7bbf14aac44">
+  <con:testStep type="request" name="CreditorSearch_v2_1" id="c7f3e477-4ef6-4454-b8ec-3342c1e7cfdf">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -201,7 +483,7 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorRead_v2_1" id="32be2ac2-cd89-475b-a4f7-af570b8a64e4">
+  <con:testStep type="request" name="CreditorRead_v2_1" id="268571c9-0332-4f11-8504-56cb3680337d">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -260,7 +542,7 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorUpdate_v2_1" id="4cae92c2-ab3f-47e0-874e-eb7d12175591" disabled="true">
+  <con:testStep type="request" name="CreditorUpdate_v2_1" id="6af7dbf5-8328-4ca7-80a2-d323df7af41f" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -378,7 +660,7 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorRead_v2_1_afterUpdate" id="f654ddb3-a6a4-4d37-b73a-0323e03bfa94" disabled="true">
+  <con:testStep type="request" name="CreditorRead_v2_1_afterUpdate" id="d9e5c4fc-df55-44b1-9c75-9cc8c15232cf" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -437,7 +719,7 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorSearch_v2_1_afterUpdate" id="ab028b58-9202-4f11-bfae-8fcdeb5d00e9" disabled="true">
+  <con:testStep type="request" name="CreditorSearch_v2_1_afterUpdate" id="d017dd21-67ab-44d7-b775-c870eef3ef55" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -507,7 +789,7 @@
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorDelete_v2_1" id="1d32b2e0-5859-4169-92de-1946bdaed252">
+  <con:testStep type="request" name="CreditorDelete_v2_1" id="4d3427e4-9d9c-4e33-86e6-b7d35c655754">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -649,14 +931,14 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="DatabaseCheck_after_delete" id="fdba5278-b73d-47f4-a260-32970367dd92">
+  <con:testStep type="jdbc" name="DatabaseCheck_after_delete" id="2aa700a8-aa65-4fbb-b08c-1f6e974d5b50">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>${#Project#G_D10_PWH}</con:connectionString>
+      <con:connectionString>${#Project#G_D17_PWH}</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select count(*) from pdc_predefinedcreditor where predefinedcreditorid=${CreditorCreate_v2_1#Response#//*:predefinedCreditorId}</con:query>
@@ -672,7 +954,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentcreditor:v2_1';
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorRead_v2_1_afterDelete" id="afcb65f5-cbab-439e-8070-9ea7320b9740">
+  <con:testStep type="request" name="CreditorRead_v2_1_afterDelete" id="46ba6dde-8b32-48f4-8147-8ff6fef3ae81">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -789,7 +1071,7 @@ fout.append("===================================================================
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="CreditorSearch_v2_1_afterDelete" id="72498b75-a2c2-445d-bc49-97f78a884686">
+  <con:testStep type="request" name="CreditorSearch_v2_1_afterDelete" id="7e6ee0d1-4481-4eb7-b62b-568e1de8133c">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11</con:interface>
@@ -965,47 +1247,47 @@ fout.append("===================================================================
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>61c44b43-ddab-4261-9921-58898e851374</con:testStepId>
+    <con:testStepId>785c487c-76f9-4355-b564-151ff9017f8e</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>75ef4c82-2df7-4ef2-b97c-3e0521ff2092</con:testStepId>
+    <con:testStepId>ac4f494d-ef9d-48a2-bd03-8826f3645d3a</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>ddf28c2a-7043-4748-9e1b-d7bbf14aac44</con:testStepId>
+    <con:testStepId>c7f3e477-4ef6-4454-b8ec-3342c1e7cfdf</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>32be2ac2-cd89-475b-a4f7-af570b8a64e4</con:testStepId>
+    <con:testStepId>268571c9-0332-4f11-8504-56cb3680337d</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>4cae92c2-ab3f-47e0-874e-eb7d12175591</con:testStepId>
+    <con:testStepId>6af7dbf5-8328-4ca7-80a2-d323df7af41f</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>f654ddb3-a6a4-4d37-b73a-0323e03bfa94</con:testStepId>
+    <con:testStepId>d9e5c4fc-df55-44b1-9c75-9cc8c15232cf</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>ab028b58-9202-4f11-bfae-8fcdeb5d00e9</con:testStepId>
+    <con:testStepId>d017dd21-67ab-44d7-b775-c870eef3ef55</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>1d32b2e0-5859-4169-92de-1946bdaed252</con:testStepId>
+    <con:testStepId>4d3427e4-9d9c-4e33-86e6-b7d35c655754</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>fdba5278-b73d-47f4-a260-32970367dd92</con:testStepId>
+    <con:testStepId>2aa700a8-aa65-4fbb-b08c-1f6e974d5b50</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

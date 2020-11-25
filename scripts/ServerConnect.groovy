@@ -103,6 +103,70 @@ class ServerConnect {
 		return lineReader.getLineNumber()
 
 	}
+			public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
+		
+		String latestFile = ""
+		try {
+
+			objChan = objSession.openChannel("sftp");
+			objChan.connect();
+			println "objChan.connect--"
+
+			objSFTPChannel = (ChannelSftp) objChan;
+
+			println "objSFTPChannel.connect--"
+
+			ServerConnect.objSFTPChannel.cd(sourceFolder);
+
+			int modifiedTime = lastModifiedTime
+			SftpATTRS att = objSFTPChannel.ls(sourceFolder, new LsEntrySelector() {
+						@Override
+						public int select(LsEntry entry) {
+							String fileName = entry.getFilename();
+							if(!entry.getAttrs().isDir()) {
+								if(entry.getAttrs().getMTime() >= modifiedTime )	{
+									modifiedTime = entry.getAttrs().getMTime()
+									latestFile = entry.getFilename();
+									log.info "lastModifiedTime:$lastModifiedTime -- modifiedTime:$modifiedTime and file is $latestFile "
+								}
+							}
+							return com.jcraft.jsch.ChannelSftp.LsEntrySelector.CONTINUE;
+						}
+					})
+
+			println "latestFile->" + latestFile
+			objSFTPChannel.get(sourceFolder + "/" + latestFile,DestinationFolder );
+
+			println "Success!!"			
+
+		}catch(Exception ex) {
+			println ex.printStackTrace()
+			latestFile = ""
+		}
+		
+		return latestFile
+
+	}
+
+	public static def uploadFile(String fileFullPath, String DestinationFolder) {
+		
+			objChan = objSession.openChannel("sftp");
+			objChan.connect();
+			println "objChan.connect--"
+
+			objSFTPChannel = (ChannelSftp) objChan;
+
+			println "objSFTPChannel.connect--"
+
+			ServerConnect.objSFTPChannel.cd(DestinationFolder);
+
+			File file = new File(fileFullPath);
+			FileInputStream fileInputStream = new FileInputStream(file);
+			objSFTPChannel.put(fileInputStream, file.getName());
+
+			println "uploadFile Success!!"
+
+	}
 
 
 	public static String readFileFromServer(String fileDirectory, String fileName) {

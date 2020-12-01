@@ -13,8 +13,8 @@ ADD /ext $READYAPI_FOLDER/bin/ext
 
 WORKDIR $PROJECT_FOLDER
 
-RUN chmod 755 ready-api-license-manager-1.3.2.jar && \
-    echo 1 | sh license-manager.sh -s $LICENSE_SERVER
+RUN chmod 755 $READYAPI_FOLDER/bin/ext/ready-api-license-manager-1.3.2.jar && \
+    echo 1 | sh $READYAPI_FOLDER/bin/ext/license-manager.sh -s $LICENSE_SERVER
 
 RUN chmod 755 multiProject.sh
 

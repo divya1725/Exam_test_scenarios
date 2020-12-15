@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="bc57d56f-da92-4370-90e9-01185c3bccce" created="3.0.0" activeEnvironment="G-S1" name="PwhToRbsCopy" resourceRoot="" updated="3.4.5" encryptionMode="Not encrypted" scriptLibrary="C:\Abhijith\Evry\WSDL or Services\Project\Composite\PwhToRbsCopy\scripts" compositeProjectFormat="1.3" defaultScriptLanguage="Groovy" disableCarriageReturnEscaping="false" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="bc57d56f-da92-4370-90e9-01185c3bccce" created="3.0.0" activeEnvironment="G-D4" name="PwhToRbsCopy" resourceRoot="" updated="3.5.0" encryptionMode="Not encrypted" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\V9_Master\V3\pr-regression-valuechain\PwhToRbsCopy\scripts" compositeProjectFormat="1.3" defaultScriptLanguage="Groovy" disableCarriageReturnEscaping="false" xmlns:con="http://eviware.com/soapui/config">
   <con:description/>
   <con:settings>
     <con:setting id="bc57d56f-da92-4370-90e9-01185c3bcccefileName">ErrorCodes</con:setting>
@@ -93,26 +93,24 @@ log.info "TestSuite setUp script!!"</con:beforeRunScript>
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
     <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
-
-def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
-def date1 = CommonLibrary.getDate('yyyyMMdd')
-
+def now = new Date()
+def time =  java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmssSSS'))
+def date1 = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd')) 
 def objProject = testRunner.getTestCase().getTestSuite().getProject()
 def projPath = objProject.getPath()
-
 filePath =projPath + File.separator + "results"
 new File(filePath).mkdir()
 filePathDate =filePath + File.separator +date1 + File.separator
 new File(filePathDate).mkdir()
 def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
 filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+filePathCaseName = filePathSuite + testRunner.testCase.name + File.separator
 new File(filePathSuite).mkdir()
-
- fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+new File(filePathCaseName).mkdir()
+ fos = new FileOutputStream(filePathCaseName + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
  pw = new PrintWriter(fos)
  def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
 def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
-
 if ( testStep instanceof JdbcRequestTestStep )
 {
 	def lineSeperator =  "\n ****************************************************************************\n " 
@@ -120,8 +118,7 @@ if ( testStep instanceof JdbcRequestTestStep )
 	pw.write(res)
 }
 else{
-	
-	testStepResult.writeTo(pw)	
+	testStepResult.writeTo(pw)
 }
  pw.close()
  fos.close()</con:script>

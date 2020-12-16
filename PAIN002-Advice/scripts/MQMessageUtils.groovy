@@ -27,7 +27,7 @@ class MQMessageUtils {
 		queueConnection= connectionFactory.createQueueConnection ();
 		queueConnection.start();
 		queueSession=queueConnection.createQueueSession (false, Session.AUTO_ACKNOWLEDGE);
-		log.info ("Connection started...");
+		//log.info ("Connection started...");
 		}
 		catch(all){
 			log.info "Failed to Connect MQ.. "+all

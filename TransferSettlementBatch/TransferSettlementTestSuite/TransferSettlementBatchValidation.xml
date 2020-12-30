@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="a0486491-578d-49a8-a8ce-e4e066aa4fc6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TransferSettlementBatchValidation" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+  <con:description/>
+  <con:settings>
+    <con:setting id="a0486491-578d-49a8-a8ce-e4e066aa4fc6fileName">TransferSettlementBatchValidation</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="manualTestStep" name="ReadMe" id="699a7a10-95d1-423f-b1f3-6adb48d9cb45" disabled="true">
+    <con:description>Make sure that  HST_TRANSACTIONS table has pastdate data(BM &amp; EVRYCPS &amp; COMP) with additional service.</con:description>
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+  </con:testStep>
+  <con:testStep type="properties" name="PreCondition" id="4ae066e1-ea93-41df-9af5-c8c75f310a4a">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>userID</con:name>
+          <con:value>TESTUSERPI28</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>NBA</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerID</con:name>
+          <con:value>13040300001</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TransactionID</con:name>
+          <con:value>437394</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TransferSettlement_Log</con:name>
+          <con:value><![CDATA[<settlement>
+        <transactionId>438206</transactionId>
+        <bookingDate>2020-12-29+01:00</bookingDate>
+        <agreementId>25084208127</agreementId>
+        <debitAccount>42000107624</debitAccount>
+        <IPC>PAYCTDOMOUPME</IPC>
+        <originalFormat>CLGE</originalFormat>
+        <settlementReturnedDate>2020-12-29+01:00</settlementReturnedDate>
+    </settlement>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${=CommonLibrary.getDate(-1,'yyyy-MM-dd')}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>todayDate</con:name>
+          <con:value>${=CommonLibrary.getDate('dd-MMM-yy')}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="fetchTransactionId" id="cbf99a78-32e6-4743-9a3f-e3e5f41906ed">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password>sdfs</con:password>
+      <con:connectionProperties/>
+      <con:query>select HT.TRANSACTIONSID,HT.PAYMENTTYPE,HT.PAYMENTSTATUS,M.SOURCEAPPLICATION,M.MARKETTYPE,HT.ISPC,HT.INITIATORBANKID,HT.RELEASEDATE,HA.NAME as ADDITIONALSERVICE,HA.CHARGEAMT, HA.ISPC as ADDSERVICEISPC
+from MESSAGE M , PAYMENTINFO P , HST_TRANSACTIONS HT, HST_ADDITIONALSERVICE HA 
+where M.MESSAGEID = P.FK_MESSAGEID 
+and P.PAYMENTINFOID = HT.FK_PAYMENTINFOID
+and HT.TRANSACTIONSID = HA.FK_TRANSACTIONSID 
+and HT.RELEASEDATE != '${PreCondition#todayDate}'
+and M.MARKETTYPE = 'BM'
+and M.SOURCEAPPLICATION = 'EVRYCPS'
+order by HT.TRANSACTIONSID DESC 
+fetch first 1 row only</con:query>
+      <con:assertion type="MessageContentAssertion" id="06bf82c4-3ddf-4332-ad3d-c70cd701b152" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>437947</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DOMM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PAYCTDOMOUPME</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:xpath>
+            <con:element>RELEASEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2020-12-23 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>437947</TRANSACTIONSID>
+         <PAYMENTTYPE>DOMM</PAYMENTTYPE>
+         <ISPC>PAYCTDOMOUPME</ISPC>
+         <INITIATORBANKID>4201</INITIATORBANKID>
+         <RELEASEDATE>2020-12-23 00:00:00</RELEASEDATE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SettlementBatchJobRun" id="7a622c87-41d8-4a05-a033-c774aa5687fd">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+//def jobRunType = context.expand( '${Properties#jobRunType}' )
+//jobRunType = jobRunType.toUpperCase()
+def settlementDate = context.expand( '${fetchTransactionId#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]}' ).toString().replace(" 00:00:00","")
+log.info settlementDate;
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	{
+		assert false," Failed to conenct to linux server!!"
+	}
+else
+	{
+		String shParameter = "pwhTransferSettlementData.sh classpath:spring/pwh-transfer-settlement-job-batch-context.xml pwhTransferSettlementDataProcessing date='"+settlementDate+"' 2>&amp;1"
+		String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
+		log.info "CommandOutput returned-->" + CommandOutPut
+		
+		ServerConnect.closeConnection()
+		def SuccessMessage1 = 'Spring Boot'
+
+		assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMessage1)), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+	}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="1ff6d0f3-5a63-4801-9906-f40f19ed2b5a">
+    <con:settings/>
+    <con:config>
+      <delay>4000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="fetchSettlementDataMQLogFromServer" id="209bbd4e-71e5-4c44-a407-2fd6fc54c28c">
+    <con:settings/>
+    <con:config>
+      <script>import com.jcraft.jsch.*
+import org.apache.commons.io.FileUtils
+
+//Folder create in project directory for Camt054 file
+ new File(testRunner.getTestCase().getTestSuite().getProject().getPath()+ File.separator + "data").mkdir()
+ 
+// Properties
+def  ebsHost = context.expand( '${#Project#EBSHost}' )
+def  Port =  context.expand( '${#Project#Port}' );
+def  ftpUsername = context.expand( '${#Project#UserName}' )
+def  ftpPassword = context.expand( '${#Project#Password}' )
+def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env=env.substring(2)
+def  SourcePath = "/ebs/$env/pin/logs/pin/pwhTransferSettlementData"
+def transactionId = context.expand( '${fetchTransactionId#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}' )
+
+if (!(ServerConnect.Connect(ebsHost ,ftpUsername, ftpPassword, Integer.parseInt(Port)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+String commandToExecute = "cd $SourcePath;  grep -B 1 -A 7 $transactionId mqpayload.log"
+def CommandOutput = ServerConnect.execCommand(commandToExecute)
+
+if (!(ServerConnect.closeConnection()))
+	assert false," Failed to close linux server!!"
+else
+ log.info "Connection closed successfully!!"
+
+def splitOutput = CommandOutput.split('--')
+
+def TransferSettlement_Log = splitOutput[splitOutput.size() -1].toString().trim()
+testRunner.testCase.testSteps['PreCondition'].setPropertyValue('TransferSettlement_Log',TransferSettlement_Log)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="HST_SETTLEMENT" id="9378b3ee-777a-40fc-8d69-fecd49d68d50">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDB</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password>sdfs</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT T.TRANSACTIONSID, HS.BOOKINGDATE,M.AGREEMENTID,T.DEBETACCOUNTNO,T.ISPC,M.ORIGINALFORMAT,HS.SETTLEMENTRETURNEDDATE 
+from HST_MESSAGE M , HST_PAYMENTINFO P , HST_TRANSACTIONS T, HST_SETTLEMENT HS
+where M.MESSAGEID = P.FK_MESSAGEID 
+and P.PAYMENTINFOID = T.FK_PAYMENTINFOID
+and T.TRANSACTIONSID = HS.FK_TRANSACTIONSID
+and T.TRANSACTIONSID = '${fetchTransactionId#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:assertion type="MessageContentAssertion" id="fbda880f-b6cf-4d1a-a499-17f0342b2911" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SETTLEMENTRETURNEDDATE[1]</con:xpath>
+            <con:element>SETTLEMENTRETURNEDDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/settlementReturnedDate[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/transactionId[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:xpath>
+            <con:element>AGREEMENTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/agreementId[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/debitAccount[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/IPC[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORIGINALFORMAT[1]</con:xpath>
+            <con:element>ORIGINALFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/originalFormat[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BOOKINGDATE[1]</con:xpath>
+            <con:element>BOOKINGDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>regex</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${PreCondition#TransferSettlement_Log#//settlement[1]/bookingDate[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>437947</TRANSACTIONSID>
+         <BOOKINGDATE>2020-12-23 00:00:00</BOOKINGDATE>
+         <AGREEMENTID>404212</AGREEMENTID>
+         <DEBETACCOUNTNO>42125875194</DEBETACCOUNTNO>
+         <ISPC>PAYCTDOMOUPME</ISPC>
+         <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
+         <SETTLEMENTRETURNEDDATE>2020-12-23 17:08:37</SETTLEMENTRETURNEDDATE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="GroovyScriptAssertion" id="f18b91a6-8951-4224-87da-a5365e6b6808" name="DateAssertion">
+        <con:configuration>
+          <scriptText>def bookingDate = context.expand( '${PreCondition#TransferSettlement_Log#//settlement[1]/bookingDate[1]}' ).substring(0,10)
+def settlementReturnedDate = context.expand( '${PreCondition#TransferSettlement_Log#//settlement[1]/settlementReturnedDate[1]}' ).substring(0,10)
+
+
+def ExpectedBookingDate = context.expand( '${HST_SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/BOOKINGDATE[1]}' ).substring(0,10)
+def ExpectedSettlementReturnedDate = context.expand( '${HST_SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/SETTLEMENTRETURNEDDATE[1]}' ).substring(0,10)
+
+
+
+assert bookingDate == ExpectedBookingDate , "bookingDate not matching"
+
+assert settlementReturnedDate == ExpectedSettlementReturnedDate, "settlementReturnedDate not matching"</scriptText>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:setupScript>assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")
+testRunner.testCase.testSteps['PreCondition'].setPropertyValue('TransferSettlement_Log','')</con:setupScript>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>699a7a10-95d1-423f-b1f3-6adb48d9cb45</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4ae066e1-ea93-41df-9af5-c8c75f310a4a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cbf99a78-32e6-4743-9a3f-e3e5f41906ed</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1ff6d0f3-5a63-4801-9906-f40f19ed2b5a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>7a622c87-41d8-4a05-a033-c774aa5687fd</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>209bbd4e-71e5-4c44-a407-2fd6fc54c28c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:tagId>9b92cc6f-574d-46f3-9a33-d67cbbe2ba56</con:tagId>
+</con:testCase>

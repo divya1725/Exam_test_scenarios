@@ -38,7 +38,7 @@ pipeline {
         )
 	   choice(
             name: 'SuiteName',
-            choices: ['', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','OnlineReservation','PAIN002 ErrorCodes','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PreDefined-Creditor','PredefinedCreditorCAVA','ReceiptOrder','Regulatory-Reporting','SkkoPayments','StandingOrder','VIP','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','ReceiptOrderSmokeTest','TransferSettlementBatch'],          
+            choices: ['', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','OnlineReservation','PAIN002 ErrorCodes','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PreDefined-Creditor','PredefinedCreditorCAVA','ReceiptOrder','Regulatory-Reporting','SkkoPayments','StandingOrder','VIP','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','ReceiptOrderSmokeTest','STOLBatchExecution','TransferSettlementBatch'],          
             description: 'Select a project to run'
         )
 		

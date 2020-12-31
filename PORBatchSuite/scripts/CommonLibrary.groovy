@@ -1,34 +1,13 @@
-package fileName
-
 import java.util.*;
 import java.text.SimpleDateFormat;
 
 class CommonLibrary {
 	
-	public static String compareMap(Map<String,String> Ex_Map , Map<String,String> Ac_Map){
-//	public static void main(String[] args) {
-		
-//		Map<String,String> Ex_Map = [LogCode:'57234',message:'adaaadad',method:'Crate',tppId:'1'];
-//		Map<String,String> Ac_Map = [method:'Create',message:'adaadadad',tppId:'12',LogCode:'5723'];
-		Ex_Map.sort();
-		Ac_Map.sort();
-		
-		def res = ""
-		for  (key in Ex_Map.keySet()){
-			
-			if (Ex_Map.get(key).toString().trim().toUpperCase() != Ac_Map.get(key).toString().trim().toUpperCase())
-				res = res + "\n" +key + " : Expected = "+ Ex_Map.get(key) + "| Actual = " + Ac_Map.get(key)
-		}
-		
-		return res
-		
-	}
-	
 	public static String getNorwayTime(String format) {
 
 		def d = new Date()
 		def sdf = new SimpleDateFormat (format)
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT+2"))		
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT+1"))		
 		return sdf.format(d).toString()
 	}
 	
@@ -53,6 +32,13 @@ class CommonLibrary {
 		return  res.substring(1)
 
 
+	}
+	public static def getDate(formart) {
+		return java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(formart))
+	}
+	
+	public static def getDate(plusDays,formart) {
+		return java.time.LocalDateTime.now().plusDays(plusDays).format(java.time.format.DateTimeFormatter.ofPattern(formart))
 	}
 	
 }

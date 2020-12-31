@@ -176,8 +176,6 @@ fetch first 1 row only</con:query>
 def strUsername = context.expand( '${#Project#UserName}' )
 def strPassword = context.expand( '${#Project#Password}' )
 def  intPort = context.expand( '${#Project#Port}' )
-//def jobRunType = context.expand( '${Properties#jobRunType}' )
-//jobRunType = jobRunType.toUpperCase()
 def settlementDate = context.expand( '${fetchTransactionId#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]}' ).toString().replace(" 00:00:00","")
 log.info settlementDate;
 
@@ -192,7 +190,6 @@ else
 	{
 		String shParameter = "pwhTransferSettlementData.sh classpath:spring/pwh-transfer-settlement-job-batch-context.xml pwhTransferSettlementDataProcessing date='"+settlementDate+"' 2>&amp;1"
 		String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
-		log.info "CommandOutput returned-->" + CommandOutPut
 		
 		ServerConnect.closeConnection()
 		def SuccessMessage1 = 'Spring Boot'
@@ -229,7 +226,7 @@ def transactionId = context.expand( '${fetchTransactionId#ResponseAsXml#//Result
 if (!(ServerConnect.Connect(ebsHost ,ftpUsername, ftpPassword, Integer.parseInt(Port)) == "PASS"))
 	assert false," Failed to conenct to linux server!!"
 else
- log.info "Connected to the server successfully!!"
+	assert true
 
 String commandToExecute = "cd $SourcePath;  grep -B 1 -A 7 $transactionId mqpayload.log"
 def CommandOutput = ServerConnect.execCommand(commandToExecute)
@@ -237,7 +234,7 @@ def CommandOutput = ServerConnect.execCommand(commandToExecute)
 if (!(ServerConnect.closeConnection()))
 	assert false," Failed to close linux server!!"
 else
- log.info "Connection closed successfully!!"
+ 	assert true
 
 def splitOutput = CommandOutput.split('--')
 

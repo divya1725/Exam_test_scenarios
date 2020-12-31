@@ -25,18 +25,6 @@ class ServerConnect {
 	public static Channel objChan
 	public static ChannelSftp objSFTPChannel
 
-	public static void main(String[] args) {
-
-		ServerConnect.Connect(strHost,strUsername,strPassword,intPort)
-
-		String command2="cd /ebs/d4/pin/logs/piPaymentProcessor;grep -B 10 -A 10 '<OrgnlMsgId>DomAllPmts_20200708MSG083</OrgnlMsgId>' mqpayload.log";
-		
-
-		println ("Command2 -" + ServerConnect.execCommand(command2))
-		
-		ServerConnect.closeConnection()
-	}
-
 	public static String Connect(String strHost, String strUsername, String strPassword,def intPort  ) {
 		this.strHost = strHost
 		this.strUsername = strUsername
@@ -376,7 +364,7 @@ class ServerConnect {
 		objSFTPChannel.exit()
 		objChan.disconnect()
 		def binFilePath = tempBatchFolder + latestFolder + "/bin/"
-		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'$binFilePath$command\'"
+		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'cd $binFilePath && ./$command\'"
 		//println "command2:" + command2
 		res = execCommand(command2)				
 		return res

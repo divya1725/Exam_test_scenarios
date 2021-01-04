@@ -25,18 +25,6 @@ class ServerConnect {
 	public static Channel objChan
 	public static ChannelSftp objSFTPChannel
 
-	public static void main(String[] args) {
-
-		ServerConnect.Connect(strHost,strUsername,strPassword,intPort)
-
-		String command2="cd /ebs/d4/pin/logs/piPaymentProcessor;grep -B 10 -A 10 '<OrgnlMsgId>DomAllPmts_20200708MSG083</OrgnlMsgId>' mqpayload.log";
-		
-
-		println ("Command2 -" + ServerConnect.execCommand(command2))
-		
-		ServerConnect.closeConnection()
-	}
-
 	public static String Connect(String strHost, String strUsername, String strPassword,def intPort  ) {
 		this.strHost = strHost
 		this.strUsername = strUsername
@@ -101,6 +89,70 @@ class ServerConnect {
 		objInputStream.close();
 
 		return lineReader.getLineNumber()
+
+	}
+			public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
+		
+		String latestFile = ""
+		try {
+
+			objChan = objSession.openChannel("sftp");
+			objChan.connect();
+			println "objChan.connect--"
+
+			objSFTPChannel = (ChannelSftp) objChan;
+
+			println "objSFTPChannel.connect--"
+
+			ServerConnect.objSFTPChannel.cd(sourceFolder);
+
+			int modifiedTime = lastModifiedTime
+			SftpATTRS att = objSFTPChannel.ls(sourceFolder, new LsEntrySelector() {
+						@Override
+						public int select(LsEntry entry) {
+							String fileName = entry.getFilename();
+							if(!entry.getAttrs().isDir()) {
+								if(entry.getAttrs().getMTime() >= modifiedTime )	{
+									modifiedTime = entry.getAttrs().getMTime()
+									latestFile = entry.getFilename();
+									log.info "lastModifiedTime:$lastModifiedTime -- modifiedTime:$modifiedTime and file is $latestFile "
+								}
+							}
+							return com.jcraft.jsch.ChannelSftp.LsEntrySelector.CONTINUE;
+						}
+					})
+
+			println "latestFile->" + latestFile
+			objSFTPChannel.get(sourceFolder + "/" + latestFile,DestinationFolder );
+
+			println "Success!!"			
+
+		}catch(Exception ex) {
+			println ex.printStackTrace()
+			latestFile = ""
+		}
+		
+		return latestFile
+
+	}
+
+	public static def uploadFile(String fileFullPath, String DestinationFolder) {
+		
+			objChan = objSession.openChannel("sftp");
+			objChan.connect();
+			println "objChan.connect--"
+
+			objSFTPChannel = (ChannelSftp) objChan;
+
+			println "objSFTPChannel.connect--"
+
+			ServerConnect.objSFTPChannel.cd(DestinationFolder);
+
+			File file = new File(fileFullPath);
+			FileInputStream fileInputStream = new FileInputStream(file);
+			objSFTPChannel.put(fileInputStream, file.getName());
+
+			println "uploadFile Success!!"
 
 	}
 
@@ -190,17 +242,17 @@ class ServerConnect {
 	}
 
 	public static boolean closeConnection() {
-		boolean flag=false;
+		def returnFlag = true
 		try {
-			objSFTPChannel.exit();
-			objChan.disconnect();
-			objSession.disconnect();
-			flag=true;
+			if(objSFTPChannel != null )objSFTPChannel.exit();
+			if(objChan != null ) objChan.disconnect();
+			if(objSession != null ) objSession.disconnect();
 		}
 		catch(Exception ex) {
+			returnFlag = false
 			ex.printStackTrace()
 		}
-		return flag;
+		return returnFlag
 	}
 
 	public static List grepFileFromServer(String fileDirectory, String fileName , String strGrep) {
@@ -312,7 +364,7 @@ class ServerConnect {
 		objSFTPChannel.exit()
 		objChan.disconnect()
 		def binFilePath = tempBatchFolder + latestFolder + "/bin/"
-		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'$binFilePath$command\'"
+		String command2 = "echo ${ServerConnect.strUsername} | sudo -S su - $areaPinPen$env -c \'cd $binFilePath && ./$command\'"
 		//println "command2:" + command2
 		res = execCommand(command2)				
 		return res

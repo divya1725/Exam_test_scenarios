@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="d9b81338-c898-45e5-af3c-9b4f6e17254d" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BatchExecution_International" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="d9b81338-c898-45e5-af3c-9b4f6e17254d" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BatchExecution_International_BM" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
-    <con:setting id="d9b81338-c898-45e5-af3c-9b4f6e17254dfileName">BatchExecution_International</con:setting>
+    <con:setting id="d9b81338-c898-45e5-af3c-9b4f6e17254dfileName">BatchExecution_International_BM</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
   <con:testStep type="properties" name="Properties" id="ed86814b-b380-4bed-a009-0773823764cf">
@@ -39,6 +39,10 @@
         <con:property>
           <con:name>STOLPaymentStatus</con:name>
           <con:value>STOL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>POR1LastModifiedTime</con:name>
+          <con:value>1609768560</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -2523,11 +2527,8 @@ else
 
 def nextDate =  new Date() ;
 nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd'))
-def runId = new Date()
-runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))
 
-//String shParameter = "pwhFraudRevalidationProcess.sh classpath:spring/pwh-fraud-revalidation-job-batch-context.xml pwhFraudRevalidationProcess paymentStatuses=\"RFDD,LAFU,TERE\" releaseDate=${nextDate} banksInProcess=\"4201\" 2>&amp;1"
-String shParameter = "pwhDueDateProcessing.sh classpath:spring/pwh-due-date-job-batch-context.xml pwhDueDateProcessing processLine='PE_INT_OUT' paymentStatuses='RFDD,LAFU' releaseDate=$nextDate lastOfDay='true' porType='CompletePOR' banksInProcess='4201' 2>&amp;1"
+String shParameter = "pwhDueDateProcessing.sh classpath:spring/pwh-due-date-job-batch-context.xml pwhDueDateProcessing processLine='PE_INT_OUT' paymentStatuses='RFDD,LAFU' releaseDate=$nextDate lastOfDay='true' porType='CompletePOR' banksInProcess='4201' marketType='BM' 2>&amp;1"
 String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
 
 ServerConnect.closeConnection()
@@ -2560,7 +2561,7 @@ C.FK_PROCESSINGLINEID,C.BOOKINGLEVEL,C.PRIORITIZED,C.DEBETACCOUNTNO,C.RELEASEDAT
 C.PAYMENT_REF,C.PROCESSINGBANKORGID,C.PEPROCESSINGLINE,
 C.DEBIT_BOOKING_ID,C.TRANSFER_IN_SAME_BANK,C.DEBITTEXTCODE,C.CREDITTEXTCODE
 from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where
-A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRANSACTIONSID in (${#TestSuite#transactionsIds}) order by C.TRANSACTIONSID asc</con:query>
+A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRANSACTIONSID in (${#TestSuite#transactionsIdsBM}) order by C.TRANSACTIONSID asc</con:query>
       <con:storedProcedure>false</con:storedProcedure>
       <con:assertion type="MessageContentAssertion" id="ae41a809-cc43-4dae-b63e-cafa529c3743" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -2590,7 +2591,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>391561</con:expectedValue>
+            <con:expectedValue>391698</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2600,7 +2601,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>INT</con:expectedValue>
+            <con:expectedValue>BES</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2610,7 +2611,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>PM</con:expectedValue>
+            <con:expectedValue>BM</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2620,7 +2621,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2630,7 +2631,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2650,7 +2651,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>624051</con:expectedValue>
+            <con:expectedValue>1774426</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2660,7 +2661,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>skko311220042256</con:expectedValue>
+            <con:expectedValue>skko04121063938</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2680,7 +2681,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2710,7 +2711,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>EVRYINT</con:expectedValue>
+            <con:expectedValue>EVRYCPS</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2720,7 +2721,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>438553</con:expectedValue>
+            <con:expectedValue>438683</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2740,7 +2741,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>409093</con:expectedValue>
+            <con:expectedValue>409210</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2830,7 +2831,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>42120941377</con:expectedValue>
+            <con:expectedValue>42009514206</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2840,7 +2841,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
+            <con:expectedValue>2021-01-04 00:00:00</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2850,7 +2851,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
+            <con:expectedValue>2021-01-04 00:00:00</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2860,7 +2861,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>438553</con:expectedValue>
+            <con:expectedValue>438683</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2934,155 +2935,38 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MARKETTYPE[1]</con:xpath>
-            <con:element>MARKETTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ORIGINALCHANNEL[1]</con:xpath>
-            <con:element>ORIGINALCHANNEL</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BES</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>438554</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTSTATUS[1]</con:xpath>
-            <con:element>PAYMENTSTATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${Properties#STOLPaymentStatus}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PEPROCESSINGLINE[1]</con:xpath>
-            <con:element>PEPROCESSINGLINE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>PE_INT_OUT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PROCESSINGBANKORGID[1]</con:xpath>
-            <con:element>PROCESSINGBANKORGID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTTYPE[1]</con:xpath>
-            <con:element>PAYMENTTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>INTP</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SOURCEAPPLICATION[1]</con:xpath>
-            <con:element>SOURCEAPPLICATION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>EVRYCPS</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
           <con:originalMessage><![CDATA[<Results>
    <ResultSet fetchSize="10">
       <Row rowNumber="1">
-         <MESSAGEID>391561</MESSAGEID>
-         <SKKOTYPE>N</SKKOTYPE>
-         <ORIGINALCHANNEL>INT</ORIGINALCHANNEL>
-         <MARKETTYPE>PM</MARKETTYPE>
-         <CUSTOMERID>01010002474</CUSTOMERID>
-         <INITIATORID>01010002474</INITIATORID>
-         <INITIATORBANKID>4201</INITIATORBANKID>
-         <MESSAGEIDENTIFICATION>624051</MESSAGEIDENTIFICATION>
-         <ENDTOENDID>skko311220042256</ENDTOENDID>
-         <DEBITCOUNTERVALUEAMT>1000</DEBITCOUNTERVALUEAMT>
-         <AGREEMENTID>01010002474</AGREEMENTID>
-         <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
-         <NUMBEROFTRANSACTIONS>1</NUMBEROFTRANSACTIONS>
-         <SOURCEAPPLICATION>EVRYINT</SOURCEAPPLICATION>
-         <TRANSACTIONSID>438553</TRANSACTIONSID>
-         <RISKSTATUS/>
-         <FK_PAYMENTINFOID>409093</FK_PAYMENTINFOID>
-         <CHARGEBEARER>DEBT</CHARGEBEARER>
-         <PAYMENTTYPE>INTP</PAYMENTTYPE>
-         <PAYMENTSTATUS>STOL</PAYMENTSTATUS>
-         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
-         <ISPC>PAYCTINTOUPNP</ISPC>
-         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
-         <BOOKINGLEVEL>T</BOOKINGLEVEL>
-         <PRIORITIZED>N</PRIORITIZED>
-         <DEBETACCOUNTNO>42120941377</DEBETACCOUNTNO>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438553</PAYMENT_REF>
-         <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
-         <PEPROCESSINGLINE>PE_INT_OUT</PEPROCESSINGLINE>
-         <DEBIT_BOOKING_ID/>
-         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
-         <DEBITTEXTCODE>301</DEBITTEXTCODE>
-         <CREDITTEXTCODE>301</CREDITTEXTCODE>
-      </Row>
-      <Row rowNumber="2">
-         <MESSAGEID>391562</MESSAGEID>
+         <MESSAGEID>391698</MESSAGEID>
          <SKKOTYPE>N</SKKOTYPE>
          <ORIGINALCHANNEL>BES</ORIGINALCHANNEL>
          <MARKETTYPE>BM</MARKETTYPE>
          <CUSTOMERID>32334114456</CUSTOMERID>
          <INITIATORID>32334114456</INITIATORID>
          <INITIATORBANKID>4201</INITIATORBANKID>
-         <MESSAGEIDENTIFICATION>2231978</MESSAGEIDENTIFICATION>
-         <ENDTOENDID>skko311220042322</ENDTOENDID>
+         <MESSAGEIDENTIFICATION>1774426</MESSAGEIDENTIFICATION>
+         <ENDTOENDID>skko04121063938</ENDTOENDID>
          <DEBITCOUNTERVALUEAMT>1000</DEBITCOUNTERVALUEAMT>
          <AGREEMENTID>32334114456</AGREEMENTID>
          <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
          <NUMBEROFTRANSACTIONS>1</NUMBEROFTRANSACTIONS>
          <SOURCEAPPLICATION>EVRYCPS</SOURCEAPPLICATION>
-         <TRANSACTIONSID>438554</TRANSACTIONSID>
+         <TRANSACTIONSID>438683</TRANSACTIONSID>
          <RISKSTATUS/>
-         <FK_PAYMENTINFOID>409094</FK_PAYMENTINFOID>
+         <FK_PAYMENTINFOID>409210</FK_PAYMENTINFOID>
          <CHARGEBEARER>DEBT</CHARGEBEARER>
          <PAYMENTTYPE>INTP</PAYMENTTYPE>
-         <PAYMENTSTATUS>STOL</PAYMENTSTATUS>
+         <PAYMENTSTATUS>LAFU</PAYMENTSTATUS>
          <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
          <ISPC>PAYCTINTOUPNP</ISPC>
          <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
          <BOOKINGLEVEL>T</BOOKINGLEVEL>
          <PRIORITIZED>N</PRIORITIZED>
          <DEBETACCOUNTNO>42009514206</DEBETACCOUNTNO>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438554</PAYMENT_REF>
+         <RELEASEDATE>2021-01-04 00:00:00</RELEASEDATE>
+         <REQUESTEDEXECUTIONDATE>2021-01-04 00:00:00</REQUESTEDEXECUTIONDATE>
+         <PAYMENT_REF>438683</PAYMENT_REF>
          <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
          <PEPROCESSINGLINE>PE_INT_OUT</PEPROCESSINGLINE>
          <DEBIT_BOOKING_ID/>
@@ -3157,7 +3041,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionProperties/>
       <con:query>select * from STATUSREASON S   
 where S.FK_TRANSACTIONID
-in (${#TestSuite#transactionsIds})</con:query>
+in (${#TestSuite#transactionsIdsBM})</con:query>
       <con:assertion type="JDBC Status" id="4fa4e65b-8071-4637-b414-5e6a334fb78d" name="JDBC Status"/>
       <con:assertion type="MessageContentAssertion" id="7247a86f-4fc5-4c21-9a14-39e20c941dc1" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -3187,7 +3071,7 @@ in (${#TestSuite#transactionsIds})</con:query>
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>238789</con:expectedValue>
+            <con:expectedValue>238904</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3235,99 +3119,21 @@ in (${#TestSuite#transactionsIds})</con:query>
             <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONID[1]</con:xpath>
             <con:element>FK_TRANSACTIONID</con:element>
             <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>438553</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>2</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/STATUSREASONID[1]</con:xpath>
-            <con:element>STATUSREASONID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>238788</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/CODE[1]</con:xpath>
-            <con:element>CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>AM04</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SOURCESYSTEM[1]</con:xpath>
-            <con:element>SOURCESYSTEM</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>FTSS</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_MESSAGEID[1]</con:xpath>
-            <con:element>FK_MESSAGEID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_PAYMENTINFOID[1]</con:xpath>
-            <con:element>FK_PAYMENTINFOID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_TRANSACTIONID[1]</con:xpath>
-            <con:element>FK_TRANSACTIONID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>438554</con:expectedValue>
+            <con:expectedValue>${#TestSuite#transactionsIdsBM}</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:originalMessage><![CDATA[<Results>
    <ResultSet fetchSize="10">
       <Row rowNumber="1">
-         <STATUSREASONID>238789</STATUSREASONID>
+         <STATUSREASONID>238904</STATUSREASONID>
          <CODE>AM04</CODE>
          <SOURCESYSTEM>FTSS</SOURCESYSTEM>
          <FK_MESSAGEID/>
          <FK_PAYMENTINFOID/>
-         <FK_TRANSACTIONID>438553</FK_TRANSACTIONID>
-      </Row>
-      <Row rowNumber="2">
-         <STATUSREASONID>238788</STATUSREASONID>
-         <CODE>AM04</CODE>
-         <SOURCESYSTEM>FTSS</SOURCESYSTEM>
-         <FK_MESSAGEID/>
-         <FK_PAYMENTINFOID/>
-         <FK_TRANSACTIONID>438554</FK_TRANSACTIONID>
+         <FK_TRANSACTIONID>438690</FK_TRANSACTIONID>
       </Row>
    </ResultSet>
 </Results>]]></con:originalMessage>
@@ -3353,7 +3159,7 @@ C.FK_PROCESSINGLINEID,C.BOOKINGLEVEL,C.PRIORITIZED,C.DEBETACCOUNTNO,C.RELEASEDAT
 C.PAYMENT_REF,C.PROCESSINGBANKORGID,C.PEPROCESSINGLINE,
 C.DEBIT_BOOKING_ID,C.TRANSFER_IN_SAME_BANK,C.DEBITTEXTCODE,C.CREDITTEXTCODE
 from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where
-A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRANSACTIONSID in (${#TestSuite#transactionsIds}) order by C.TRANSACTIONSID asc</con:query>
+A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRANSACTIONSID in (${#TestSuite#transactionsIdsBM}) order by C.TRANSACTIONSID asc</con:query>
       <con:storedProcedure>false</con:storedProcedure>
       <con:assertion type="MessageContentAssertion" id="ae41a809-cc43-4dae-b63e-cafa529c3743" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -3383,7 +3189,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>391561</con:expectedValue>
+            <con:expectedValue>391705</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3393,7 +3199,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>INT</con:expectedValue>
+            <con:expectedValue>BES</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3403,7 +3209,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>PM</con:expectedValue>
+            <con:expectedValue>BM</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3413,7 +3219,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3423,7 +3229,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3443,7 +3249,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>624051</con:expectedValue>
+            <con:expectedValue>3147044</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3453,7 +3259,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>skko311220042256</con:expectedValue>
+            <con:expectedValue>skko04121070810</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3473,7 +3279,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>01010002474</con:expectedValue>
+            <con:expectedValue>32334114456</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3503,7 +3309,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>EVRYINT</con:expectedValue>
+            <con:expectedValue>EVRYCPS</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3513,7 +3319,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>438553</con:expectedValue>
+            <con:expectedValue>438690</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3533,7 +3339,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>409093</con:expectedValue>
+            <con:expectedValue>409217</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3563,7 +3369,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>STOP</con:expectedValue>
+            <con:expectedValue>REJC</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3592,7 +3398,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:element>FK_PROCESSINGLINEID</con:element>
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
+            <con:enabled>true</con:enabled>
             <con:expectedValue>8</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
@@ -3623,7 +3429,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>42120941377</con:expectedValue>
+            <con:expectedValue>42009514206</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3633,7 +3439,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
+            <con:expectedValue>2021-01-04 00:00:00</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3643,7 +3449,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
+            <con:expectedValue>2021-01-04 00:00:00</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3653,7 +3459,7 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>438553</con:expectedValue>
+            <con:expectedValue>438690</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -3727,155 +3533,38 @@ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRAN
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MARKETTYPE[1]</con:xpath>
-            <con:element>MARKETTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ORIGINALCHANNEL[1]</con:xpath>
-            <con:element>ORIGINALCHANNEL</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BES</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>438554</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTSTATUS[1]</con:xpath>
-            <con:element>PAYMENTSTATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>REJC</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PEPROCESSINGLINE[1]</con:xpath>
-            <con:element>PEPROCESSINGLINE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>PE_INT_OUT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PROCESSINGBANKORGID[1]</con:xpath>
-            <con:element>PROCESSINGBANKORGID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTTYPE[1]</con:xpath>
-            <con:element>PAYMENTTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>INTP</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SOURCEAPPLICATION[1]</con:xpath>
-            <con:element>SOURCEAPPLICATION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>EVRYCPS</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
           <con:originalMessage><![CDATA[<Results>
    <ResultSet fetchSize="10">
       <Row rowNumber="1">
-         <MESSAGEID>391561</MESSAGEID>
-         <SKKOTYPE>N</SKKOTYPE>
-         <ORIGINALCHANNEL>INT</ORIGINALCHANNEL>
-         <MARKETTYPE>PM</MARKETTYPE>
-         <CUSTOMERID>01010002474</CUSTOMERID>
-         <INITIATORID>01010002474</INITIATORID>
-         <INITIATORBANKID>4201</INITIATORBANKID>
-         <MESSAGEIDENTIFICATION>624051</MESSAGEIDENTIFICATION>
-         <ENDTOENDID>skko311220042256</ENDTOENDID>
-         <DEBITCOUNTERVALUEAMT>1000</DEBITCOUNTERVALUEAMT>
-         <AGREEMENTID>01010002474</AGREEMENTID>
-         <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
-         <NUMBEROFTRANSACTIONS>1</NUMBEROFTRANSACTIONS>
-         <SOURCEAPPLICATION>EVRYINT</SOURCEAPPLICATION>
-         <TRANSACTIONSID>438553</TRANSACTIONSID>
-         <RISKSTATUS/>
-         <FK_PAYMENTINFOID>409093</FK_PAYMENTINFOID>
-         <CHARGEBEARER>DEBT</CHARGEBEARER>
-         <PAYMENTTYPE>INTP</PAYMENTTYPE>
-         <PAYMENTSTATUS>STOL</PAYMENTSTATUS>
-         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
-         <ISPC>PAYCTINTOUPNP</ISPC>
-         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
-         <BOOKINGLEVEL>T</BOOKINGLEVEL>
-         <PRIORITIZED>N</PRIORITIZED>
-         <DEBETACCOUNTNO>42120941377</DEBETACCOUNTNO>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438553</PAYMENT_REF>
-         <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
-         <PEPROCESSINGLINE>PE_INT_OUT</PEPROCESSINGLINE>
-         <DEBIT_BOOKING_ID/>
-         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
-         <DEBITTEXTCODE>301</DEBITTEXTCODE>
-         <CREDITTEXTCODE>301</CREDITTEXTCODE>
-      </Row>
-      <Row rowNumber="2">
-         <MESSAGEID>391562</MESSAGEID>
+         <MESSAGEID>391705</MESSAGEID>
          <SKKOTYPE>N</SKKOTYPE>
          <ORIGINALCHANNEL>BES</ORIGINALCHANNEL>
          <MARKETTYPE>BM</MARKETTYPE>
          <CUSTOMERID>32334114456</CUSTOMERID>
          <INITIATORID>32334114456</INITIATORID>
          <INITIATORBANKID>4201</INITIATORBANKID>
-         <MESSAGEIDENTIFICATION>2231978</MESSAGEIDENTIFICATION>
-         <ENDTOENDID>skko311220042322</ENDTOENDID>
+         <MESSAGEIDENTIFICATION>3147044</MESSAGEIDENTIFICATION>
+         <ENDTOENDID>skko04121070810</ENDTOENDID>
          <DEBITCOUNTERVALUEAMT>1000</DEBITCOUNTERVALUEAMT>
          <AGREEMENTID>32334114456</AGREEMENTID>
          <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
          <NUMBEROFTRANSACTIONS>1</NUMBEROFTRANSACTIONS>
          <SOURCEAPPLICATION>EVRYCPS</SOURCEAPPLICATION>
-         <TRANSACTIONSID>438554</TRANSACTIONSID>
+         <TRANSACTIONSID>438690</TRANSACTIONSID>
          <RISKSTATUS/>
-         <FK_PAYMENTINFOID>409094</FK_PAYMENTINFOID>
+         <FK_PAYMENTINFOID>409217</FK_PAYMENTINFOID>
          <CHARGEBEARER>DEBT</CHARGEBEARER>
          <PAYMENTTYPE>INTP</PAYMENTTYPE>
-         <PAYMENTSTATUS>STOL</PAYMENTSTATUS>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
          <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
          <ISPC>PAYCTINTOUPNP</ISPC>
          <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
          <BOOKINGLEVEL>T</BOOKINGLEVEL>
          <PRIORITIZED>N</PRIORITIZED>
          <DEBETACCOUNTNO>42009514206</DEBETACCOUNTNO>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438554</PAYMENT_REF>
+         <RELEASEDATE>2021-01-04 00:00:00</RELEASEDATE>
+         <REQUESTEDEXECUTIONDATE>2021-01-04 00:00:00</REQUESTEDEXECUTIONDATE>
+         <PAYMENT_REF>438690</PAYMENT_REF>
          <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
          <PEPROCESSINGLINE>PE_INT_OUT</PEPROCESSINGLINE>
          <DEBIT_BOOKING_ID/>

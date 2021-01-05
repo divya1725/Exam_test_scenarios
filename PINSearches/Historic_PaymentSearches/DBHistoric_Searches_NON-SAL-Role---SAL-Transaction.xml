@@ -11,12 +11,12 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT M.INITIATORBANKID,M.CUSTOMERID,TRANSACTIONSID,M.AGREEMENTID,PAYMENTINFOID,HT.DEBETACCOUNTNO,PAYMENTSTATUS,INSTRUCTEDAMOUNT
 FROM MESSAGE M INNER JOIN PAYMENTINFO PI ON M.MESSAGEID = PI.FK_MESSAGEID INNER JOIN HST_TRANSACTIONS HT ON PI.PAYMENTINFOID = HT.FK_PAYMENTINFOID 
-WHERE HT.ISPC='PAYCTDOMOUSALA' and M.INITIATORBANKID='4201' and MARKETTYPE='BM' and PAYMENTSTATUS='COMP' and INSTRUCTEDAMOUNT>'100' 
+WHERE HT.ISPC='PAYCTDOMOUSALA' and M.INITIATORBANKID='4201' and MARKETTYPE='BM' and PAYMENTSTATUS='COMP' --and INSTRUCTEDAMOUNT>'100' 
 ORDER BY MESSAGEID DESC fetch first row only</con:query>
       <con:assertion type="MessageContentAssertion" id="a65b0f53-baeb-4e35-8cd3-4a088da1b8a3" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -151,15 +151,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       <con:properties>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>01010077571</con:value>
+          <con:value>959172706</con:value>
         </con:property>
         <con:property>
           <con:name>userID</con:name>
-          <con:value>01010077571</con:value>
+          <con:value>959172706</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccount</con:name>
-          <con:value>42125748338</con:value>
+          <con:value>42010020958</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccountCurrency</con:name>
@@ -167,15 +167,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>467618</con:value>
+          <con:value>409303</con:value>
         </con:property>
         <con:property>
           <con:name>transactionid</con:name>
-          <con:value>260210113</con:value>
+          <con:value>438794</con:value>
         </con:property>
         <con:property>
           <con:name>instamt</con:name>
-          <con:value>600</con:value>
+          <con:value>1</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -248,7 +248,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentAuthorizationCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="74ab129a-6510-4943-911c-930ea74e373e"/>
         <con:credentials>
           <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -304,6 +303,151 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="b3a482d0-8d76-4fa8-9b32-a5f3831df15c" name="PaymentBookingSearch_V2_0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentBookingSearch</con:operation>
+      <con:request name="PaymentBookingSearch_V2_0" id="b5b8df47-8fc2-4967-be7a-5aed87e07e2a">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentBookingSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentBookingSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="1994cb3e-f679-4032-8b1a-e5ef44330757" name="Not SOAP Fault"/>
+        <con:assertion type="Simple Contains" name="PaymentType" id="0dfbaa66-c75a-4878-8cd9-1b2d2bac074c">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="48150983-db7b-4c0a-8a1c-09717573f7a1">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="b968c587-ca03-414c-82f7-a3ea701755da">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentBookingSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" name="PaymentBookingSearch_V1_9" id="86cc5ce4-5c94-456f-b192-867869d04dfb">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -353,229 +497,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="5727d9da-8f5a-4367-bd4c-cb6c6290024f"/>
         <con:assertion type="Valid HTTP Status Codes" id="3ea02f3c-30f3-4bbb-bfec-106a1da6efc0" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
         </con:assertion>
-        <con:credentials>
-          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" name="PaymentInfoHistoricSearch_V1_9" id="535e1f46-009d-4bdb-91c6-dfaf93fea833">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
-      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
-      <con:request name="PaymentInfoHistoricSearch_V1_9" id="fa455681-751b-4fdd-abd3-7d3fd2186f6c">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentPaymentInfoHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <con:StartIndex>0</con:StartIndex>
-                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
-               </urn1:elementControl>
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentPaymentInfoHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="6591cbde-5cdd-405d-b263-c15b68744e1c"/>
-        <con:assertion type="Valid HTTP Status Codes" id="d2bb2df1-3a58-49e7-8e5e-5835a9c2d84b" name="Valid HTTP Status Codes">
-          <con:settings/>
+        <con:assertion type="Simple Contains" name="PaymentType" id="924972a1-0509-42c5-a4c8-4d63fa266d06">
           <con:configuration>
-            <codes>200</codes>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
-        <con:credentials>
-          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_9" id="c52e6f32-c0ee-48a7-805a-4b427b82b109">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
-      <con:operation>PaymentTransactionHistoricSearch</con:operation>
-      <con:request name="PaymentTransactionHistoricSearch_V1_9" id="168bf085-3f28-4446-9f1f-d8dc050b6873">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com">
-   <soapenv:Header>
-       <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentTransactionHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <con:StartIndex>0</con:StartIndex>
-                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
-               </urn1:elementControl>
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentTransactionHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="4ba341c0-2da4-4008-8a8e-868065daea8b"/>
-        <con:assertion type="Valid HTTP Status Codes" id="1c867936-0d47-46a4-b154-792c8cefcf6f" name="Valid HTTP Status Codes">
-          <con:settings/>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="dcc94417-bb20-4d51-848f-c8087b316fa3">
           <con:configuration>
-            <codes>200</codes>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="b04c832e-30ff-48ba-b69b-81123f2666dc">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -682,11 +628,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="aca2bfd3-29e6-4560-89d3-64f12b310854"/>
         <con:assertion type="Valid HTTP Status Codes" id="84cbfb7b-5068-407d-8a6d-2ba4fb468f0e" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="f6a93628-5c20-4845-8a27-f79ad1a4dc53">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="1508ef62-9534-4751-a2e3-746fb667961c">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="299c03b5-f4e7-4435-b92e-4d60ffb9663d">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -792,11 +758,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="73ac75da-ff4f-43dc-8a9c-23456139b0b8"/>
         <con:assertion type="Valid HTTP Status Codes" id="3aa40c9b-302f-4e4e-856d-38a4ac8ea42d" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="d8bd5402-af7f-44d0-98b2-1b69f7683aef">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="0ae5e87d-e0dd-4d35-b02b-a6f8e177963f">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="2e0e57a5-e07f-464a-b62a-4013307d8b89">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -900,11 +886,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="df9c3315-252a-4ee5-b096-95cd70b8e711"/>
         <con:assertion type="Valid HTTP Status Codes" id="23cc1dfe-16f0-4ab5-b3f1-92bc335bc178" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="4bf4a627-ba37-4fba-94d2-b23b8aedc97d">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="94a4c24d-6c2a-4b1b-9734-72b30bba87c8">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="2999b27a-5606-4fb0-9625-fdb32382c5a7">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1008,11 +1014,305 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="54d22b47-0caa-4b28-8f83-6949ea1aa753"/>
         <con:assertion type="Valid HTTP Status Codes" id="9de503ba-e881-483d-af64-14646814d6ec" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="b731ed4f-7eb6-42a0-a0da-d241be662456">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="64338eff-3ab7-4991-a5da-3abd0b3a5fa5">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="c1ba8d2a-5a44-4006-9687-005ad277c7b4">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="c686072d-0703-4b19-b232-e3566b15b3f8" name="PaymentInfoHistoricSearch_V2_0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
+      <con:request name="PaymentInfoHistoricSearch_V2_0" id="bafd2327-e6ea-4f1d-86c0-3829152ed87e">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+       <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" name="PaymentType" id="38f1cd1a-856c-4691-807f-acc4a1a9e49a">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="95a30c8f-a8aa-42b8-9fb3-b770f4325c87">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="23930d40-4c69-4311-868b-6088fb97bf08">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentPaymentInfoHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoHistoricSearch_V1_9" id="535e1f46-009d-4bdb-91c6-dfaf93fea833">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
+      <con:request name="PaymentInfoHistoricSearch_V1_9" id="fa455681-751b-4fdd-abd3-7d3fd2186f6c">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="d2bb2df1-3a58-49e7-8e5e-5835a9c2d84b" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="0589bb90-4145-411b-85ba-8689d132c68b">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="b9ac922f-3d72-4639-a770-e0b401df9626">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="1c04ecb0-11de-4b9a-ae71-f775330b3e35">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1116,11 +1416,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="a713658c-dac3-4eec-891d-4e2d23e81769"/>
         <con:assertion type="Valid HTTP Status Codes" id="b06607ad-3774-44ff-bbb4-bff4cb2772fa" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="57559669-ca3c-4d29-80f3-e4546198fa4b">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="2eab7642-8447-4559-b130-df978ee6c814">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="20902b76-6dc9-4450-9ac1-9da787a35bb3">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1224,11 +1544,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="eb3c7d3d-3286-42f8-a8c1-ddb5578e809d"/>
         <con:assertion type="Valid HTTP Status Codes" id="dcb5c95b-3784-4293-8ca0-420344fc3f72" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="cb23ca79-2dff-48b0-921e-7ce35311ccaa">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="4e2713ff-a21b-4322-a8e4-66a5f2eca8c2">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="1d9e83a9-9f91-481e-b8ea-93c6523c366d">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1332,11 +1672,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="a2ac49f1-7fc8-4748-bd0e-239bad83c944"/>
         <con:assertion type="Valid HTTP Status Codes" id="3293d0d0-4640-4145-b97a-7274624d3f23" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="91568f01-f33a-4d6d-bac9-046e300c2d42">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="ed87030b-b2a4-4c75-baeb-292621a9e9d4">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="b02c0203-dc68-44da-98f3-d0a4b69ea445">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1440,11 +1800,283 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="78fbd205-3294-4f15-81ee-5fe1a8d72188"/>
         <con:assertion type="Valid HTTP Status Codes" id="b8949bc9-12d8-4a17-b458-deb943ccdbdd" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="757e3526-897f-4f03-a6eb-485b56f7ad99">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="1b791942-79bc-4d57-b4c3-5c9be215c9c1">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="8fd70888-ca1c-451b-a572-56d4752ade81">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="b2b2c61c-7b7a-4b78-8d1f-7ee7d842a497" name="PaymentTransactionHistoricSearch_V2_0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionHistoricSearch</con:operation>
+      <con:request name="PaymentTransactionHistoricSearch_V2_0" id="435fc080-a9ff-460d-af0f-2368293e5443">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" name="PaymentType" id="5eb97dc5-01d7-4152-9851-c17b19af5ff7">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="96d1f26a-6360-419e-92c7-98618f85a538">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="a1992d1e-121f-4e52-b9c5-e30057a909be">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentTransactionHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_9" id="c52e6f32-c0ee-48a7-805a-4b427b82b109">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionHistoricSearch</con:operation>
+      <con:request name="PaymentTransactionHistoricSearch_V1_9" id="168bf085-3f28-4446-9f1f-d8dc050b6873">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v1_9" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_9" xmlns:con="http://control.ws.payment.edb.com">
+   <soapenv:Header>
+       <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <con:StartIndex>0</con:StartIndex>
+                  <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="1c867936-0d47-46a4-b154-792c8cefcf6f" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="ae2cda12-5196-48f2-abf8-4eaeb362d053">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="2ae5e0c5-ac8d-4fec-80a3-445393d231ab">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="cf6b7655-ad22-4ded-8c98-b840dedd69a7">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1548,11 +2180,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="a8351b44-49bb-4787-ae57-9b24d159fac0"/>
         <con:assertion type="Valid HTTP Status Codes" id="48f2999b-cb90-4ba0-adf4-8c657a82d986" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="64aa9978-0251-4672-9fc1-9af21db20e03">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="77925bdf-7546-48a9-b9b3-5455e16cfe59">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="78afbcb0-4b25-4b23-9247-3fdb8a2f0eb7">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1656,11 +2308,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="eb45b199-d30e-434d-aa92-f1e485e69a76"/>
         <con:assertion type="Valid HTTP Status Codes" id="007f903b-c557-4a99-b242-ee52008158c6" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="1c230161-c8b0-4707-a8dc-f6d5b050537c">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="678f5d5a-9f76-44a1-8a12-3ee7fcb7eac4">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="ef3e75d3-ea0f-4dfc-b806-209571a03294">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1764,11 +2436,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="d8c38705-068c-4622-b713-be8ce323c7dd"/>
         <con:assertion type="Valid HTTP Status Codes" id="09233d22-f377-43c8-8a38-75c74b3c9214" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="01f9eb33-31d4-4eea-a028-2fd8b8056860">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="58050570-663c-4643-823d-c614076914c0">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="6d16b421-72df-44f2-9f5f-8af47faa9a4b">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1872,11 +2564,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="3a186561-574f-4595-9ca5-3658ffca24ed"/>
         <con:assertion type="Valid HTTP Status Codes" id="7b0d6f03-285d-47ce-86e2-e4a5f55b6397" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentType" id="5d71cca5-a8f7-46cc-b1ea-96dbd6238f82">
+          <con:configuration>
+            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="PaymentStatus" id="d9831175-205b-418f-b159-417f3f892118">
+          <con:configuration>
+            <token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Source" id="174aba7e-374c-4582-a8bf-4751f24f38f8">
+          <con:configuration>
+            <token>&lt;ns3:source>PWH&lt;/ns3:source></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1933,359 +2645,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="b3a482d0-8d76-4fa8-9b32-a5f3831df15c" name="BookingSearch_v2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentBookingSearch</con:operation>
-      <con:request name="BookingSearch_v2_0" id="b5b8df47-8fc2-4967-be7a-5aed87e07e2a">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentBookingSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentBookingSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Fault Assertion" id="1994cb3e-f679-4032-8b1a-e5ef44330757" name="Not SOAP Fault"/>
-        <con:assertion type="SOAP Response" id="136868c3-4036-4853-82cb-6de255bdf7be" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentBookingSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="b2b2c61c-7b7a-4b78-8d1f-7ee7d842a497" name="TransactionHistoricSearch_V2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentTransactionHistoricSearch</con:operation>
-      <con:request name="TransactionHistoricSearch_V2_0" id="435fc080-a9ff-460d-af0f-2368293e5443">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentTransactionHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentTransactionHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="11842d88-dcb0-4f1c-89e4-9b673f6897df" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentTransactionHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="c686072d-0703-4b19-b232-e3566b15b3f8" name="PaymentInfoHistoricSearch_V2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
-      <con:request name="PaymentInfoHistoricSearch_V2_0" id="bafd2327-e6ea-4f1d-86c0-3829152ed87e">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-       <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentPaymentInfoHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentPaymentInfoHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="b2094a6f-77fd-441a-af73-598a171cec4f" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentPaymentInfoHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
   <con:properties>
     <con:property>
       <con:name>PaymentId</con:name>
@@ -2293,7 +2652,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
     </con:property>
     <con:property>
       <con:name>SourceApplication</con:name>
-      <con:value>EVRYINT</con:value>
+      <con:value>EVRYCPS</con:value>
     </con:property>
     <con:property>
       <con:name>userid</con:name>
@@ -2693,6 +3052,31 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>7485c323-82ac-4295-a2ff-8940172e4df8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b2b2c61c-7b7a-4b78-8d1f-7ee7d842a497</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c52e6f32-c0ee-48a7-805a-4b427b82b109</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b3a482d0-8d76-4fa8-9b32-a5f3831df15c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c686072d-0703-4b19-b232-e3566b15b3f8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>535e1f46-009d-4bdb-91c6-dfaf93fea833</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

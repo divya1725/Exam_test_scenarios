@@ -9,6 +9,31 @@
     <con:setting id="f7a5221c-a5a9-4c2c-949a-07a158278891fileName">DBHistoric_Searches_PaymentStatus</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="Groovy Script 2" id="0a9c9d9d-a265-44a5-8797-9ef707ce91f1" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>int j = testRunner.testCase.testSuite.testCaseCount
+	log.info(j)
+	for (int i =0 ; i&lt;j ;i++)
+		{
+			def testStepCount= testRunner.testCase.testSuite.getTestCaseAt(i).
+			getTestStepsOfType(com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep)
+			log.info testStepCount
+			//getTestStepsOfType(com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep).size()
+		//int testStepCount= testRunner.testCase.testSuite.getTestCaseAt(i).getTestStepCount()
+		for (testStep in testStepCount )
+		{
+					//def testStep=testRunner.testCase.testSuite.getTestCaseAt(i).getTestStepAt(z)
+					def assertion=testStep.getAssertionByName("SOAP Response")
+					if (assertion!=null)
+					{
+					testStep.removeAssertion(assertion)
+					//log.info ("removed assertion in test case and test step" +  testStep.getName()+ assertion.getName() )
+				}
+		}
+		}</script>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="DB_searchData" id="99897951-f675-421e-a945-5070d046584a">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -16,12 +41,12 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT M.INITIATORBANKID,M.CUSTOMERID,TRANSACTIONSID,M.AGREEMENTID,PI.PAYMENTINFOID,HT.DEBETACCOUNTNO,PAYMENTSTATUS 
 FROM MESSAGE M INNER JOIN PAYMENTINFO PI ON M.MESSAGEID = PI.FK_MESSAGEID INNER JOIN HST_TRANSACTIONS HT ON PI.PAYMENTINFOID = HT.FK_PAYMENTINFOID 
-WHERE M.INITIATORBANKID='4201' and PAYMENTSTATUS='COMP' and HT.DEBETACCOUNTNO='42025844682' 
+WHERE M.INITIATORBANKID='4201' and PAYMENTSTATUS='COMP' --and HT.DEBETACCOUNTNO='42025844682' 
 ORDER BY TRANSACTIONSID DESC fetch first row only</con:query>
       <con:assertion type="MessageContentAssertion" id="a65b0f53-baeb-4e35-8cd3-4a088da1b8a3" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -154,15 +179,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactio
       <con:properties>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>921095899</con:value>
+          <con:value>25084208127</con:value>
         </con:property>
         <con:property>
           <con:name>userID</con:name>
-          <con:value>921095899</con:value>
+          <con:value>25084208127</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccount</con:name>
-          <con:value>42025844682</con:value>
+          <con:value>42000107624</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccountCurrency</con:name>
@@ -170,11 +195,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactio
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>452173</con:value>
+          <con:value>409140</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260194471</con:value>
+          <con:value>438606</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -248,7 +273,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactio
       </urn:PaymentAuthorizationCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="74ab129a-6510-4943-911c-930ea74e373e"/>
         <con:credentials>
           <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -304,6 +328,147 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactio
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="c99eba50-6943-42bb-ad05-160787f5877a" name="PaymentInfoHistoricSearch_V2_0_COMP">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
+      <con:request name="PaymentInfoHistoricSearch_V2_0_COMP" id="bafd2327-e6ea-4f1d-86c0-3829152ed87e">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+       <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XQuery Match" id="b26aa923-e206-47e3-93fc-b871bc89c865" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns6='urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns4='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns7='urn:pins.payment.evry.com:domain:paymentutil:v2_0';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_0';
+declare namespace ns8='urn:pins.payment.evry.com:ws:paymentutil:v2_0';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v2_0">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentPaymentInfoHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" name="PaymentInfoHistoricSearch_V1_9_COMP" id="ec762575-3c46-4c51-8cec-34b9514b8494">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -353,7 +518,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("transactio
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="9222de13-1220-494f-9476-31d723117dd7"/>
         <con:assertion type="XPath Match" name="XPath Match" id="4b28049c-af00-4315-ba7a-a0d2e53dfbc9">
           <con:configuration>
             <path>//*:ErrorCode</path>
@@ -378,6 +542,21 @@ declare namespace ns7='urn:srv.pays.payment.fs.evry.com:ws:paymentread:v1_3';
 declare namespace ns2='http://control.ws.payment.edb.com';
 &lt;ns3:source>PWH&lt;/ns3:source></path>
             <content>&lt;ns3:source xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">PWH&lt;/ns3:source></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="f4e17f85-ad60-4d45-9c3e-7ffe464c8d74" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_9';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_9';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_9">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -488,7 +667,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="ef684500-667c-43be-a66d-bfc32725390a"/>
         <con:assertion type="XPath Match" name="XPath Match" id="3a20769e-8af2-4e04-96d6-e320e7f5ca4a">
           <con:configuration>
             <path>//*:ErrorCode</path>
@@ -513,6 +691,21 @@ declare namespace ns7='urn:srv.pays.payment.fs.evry.com:ws:paymentread:v1_3';
 declare namespace ns2='http://control.ws.payment.edb.com';
 &lt;ns3:source>PWH&lt;/ns3:source></path>
             <content>&lt;ns3:source xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">PWH&lt;/ns3:source></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="b544ab67-0de7-49db-bcc6-38f5a9571a46" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_8';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_8';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_8">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -622,7 +815,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="173c6baa-6bba-4a73-9bb4-ae2f7a4e5d74"/>
         <con:assertion type="XPath Match" name="XPath Match" id="ca4dc3de-3670-4e88-93fa-667acecc1a1f">
           <con:configuration>
             <path>//*:ErrorCode</path>
@@ -647,6 +839,21 @@ declare namespace ns7='urn:srv.pays.payment.fs.evry.com:ws:paymentread:v1_3';
 declare namespace ns2='http://control.ws.payment.edb.com';
 &lt;ns3:source>PWH&lt;/ns3:source></path>
             <content>&lt;ns3:source xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">PWH&lt;/ns3:source></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="74d9e3ab-784a-4f4c-bd38-f36f786c9f2e" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_7';
+declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_7';
+declare namespace ns4='urn:pays.payment.evry.com:domain:sepa-complex-types:v6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_7">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -755,7 +962,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="76a9e3db-ef45-4f80-b9b0-de5b5393f2ca"/>
         <con:assertion type="XPath Match" name="XPath Match" id="4d3d3afe-c923-46d0-be55-f1fe797983a8">
           <con:configuration>
             <path>//*:ErrorCode</path>
@@ -780,6 +986,24 @@ declare namespace ns7='urn:srv.pays.payment.fs.evry.com:ws:paymentread:v1_3';
 declare namespace ns2='http://control.ws.payment.edb.com';
 &lt;ns3:source>PWH&lt;/ns3:source></path>
             <content>&lt;ns3:source xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">PWH&lt;/ns3:source></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="6f67fa04-4ad5-46b7-b2b2-82c0e3fd0863" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v5';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_6';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_6">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -886,7 +1110,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="4c3ae025-8d01-48f6-b93a-bdcd0cec2c7a"/>
         <con:assertion type="XPath Match" name="XPath Match" id="04a6d373-ec43-44e8-b933-500796b6ede1">
           <con:configuration>
             <path>//*:ErrorCode</path>
@@ -911,6 +1134,25 @@ declare namespace ns7='urn:srv.pays.payment.fs.evry.com:ws:paymentread:v1_3';
 declare namespace ns2='http://control.ws.payment.edb.com';
 &lt;ns3:source>PWH&lt;/ns3:source></path>
             <content>&lt;ns3:source xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">PWH&lt;/ns3:source></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="cc48d8a0-d238-49e3-8720-2400b1b54eb6" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_5';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_5';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns9='urn:pays.payment.edb.com:domain:sepa-complex-types:v3';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -970,6 +1212,147 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="a2fd08ae-35a5-428f-8eb8-b940e1815ce4" name="BookingSearch_V2_0_COMP">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentBookingSearch</con:operation>
+      <con:request name="BookingSearch_V2_0_COMP" id="b5b8df47-8fc2-4967-be7a-5aed87e07e2a">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentBookingSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+               <!--Optional:-->
+               
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentBookingSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XQuery Match" id="3a094ab7-8166-41cf-bb1f-0fc0f8796672" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns6='urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns4='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns7='urn:pins.payment.evry.com:domain:paymentutil:v2_0';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_0';
+declare namespace ns8='urn:pins.payment.evry.com:ws:paymentutil:v2_0';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v2_0">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentBookingSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" name="BookingSearch_V1_9_COMP" id="118bf615-8cdc-4c0f-9a9a-6ad14c6e3b7d">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1019,11 +1402,25 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="78f85dc4-a556-4cde-a978-634ca7943ec0"/>
         <con:assertion type="Valid HTTP Status Codes" id="f9d78c64-7228-443a-b78c-7a0702165dc9" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="3f0dc32e-c81d-46ea-b8ee-e374f16a2093" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_9';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_9';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_9">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1124,18 +1521,32 @@ declare namespace ns2='http://control.ws.payment.edb.com';
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:transactionCriteria>
-               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
                
-            </urn1:transactionCriteria>
+               
+            <urn1:paymentStatus>COMPLETED</urn1:paymentStatus></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="bb531155-65c4-4732-b8d6-577aec80601a"/>
         <con:assertion type="Valid HTTP Status Codes" id="99afe620-6c6e-4980-9bae-5dffbf599bf6" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="2cbe0413-b5a4-4bb4-a498-28d19a517430" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_8';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_8';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_8">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1234,16 +1645,30 @@ declare namespace ns2='http://control.ws.payment.edb.com';
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria/>
+            <urn1:transactionCriteria><urn1:paymentStatus>COMPLETED</urn1:paymentStatus></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="5fd6acdd-ccc7-4795-967a-74ea915c7f8c"/>
         <con:assertion type="Valid HTTP Status Codes" id="e3d98b9a-1439-48f0-8331-2341a78931ac" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="99a1a1b9-a244-4290-99f7-911991a2a748" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_7';
+declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_7';
+declare namespace ns4='urn:pays.payment.evry.com:domain:sepa-complex-types:v6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_7">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1350,11 +1775,28 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="29c67518-5dab-4f67-b7bd-144896824ad7"/>
         <con:assertion type="Valid HTTP Status Codes" id="4ddfeeaf-d03e-4861-969a-b088575130a5" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="551b4983-c8f1-460c-9fe2-5de6de87794e" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v5';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_6';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_6">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1406,131 +1848,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           </con:entry>
           <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
             <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="a2fd08ae-35a5-428f-8eb8-b940e1815ce4" name="BookingSearch_v2_0_COMP">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentBookingSearch</con:operation>
-      <con:request name="BookingSearch_v2_0_COMP" id="b5b8df47-8fc2-4967-be7a-5aed87e07e2a">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentBookingSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentBookingSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Fault Assertion" id="1994cb3e-f679-4032-8b1a-e5ef44330757" name="Not SOAP Fault"/>
-        <con:assertion type="SOAP Response" id="136868c3-4036-4853-82cb-6de255bdf7be" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentBookingSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
           </con:entry>
         </con:environmentSpec>
       </con:request>
@@ -1586,11 +1903,29 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="054787e9-ec39-4f77-980b-21e65823ba76"/>
         <con:assertion type="Valid HTTP Status Codes" id="7b40d889-994c-42cd-8488-16711a74b0be" name="Valid HTTP Status Codes">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="64f0af08-cbb2-49c6-a7c8-7cafcda555c2" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_5';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_5';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns9='urn:pays.payment.edb.com:domain:sepa-complex-types:v3';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1642,6 +1977,127 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           </con:entry>
           <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
             <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="e4a5541e-39a9-4750-b190-5709a87c1384" name="PaymentTransactionHistoricSearch_V2_0_COMP">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionHistoricSearch</con:operation>
+      <con:request name="PaymentTransactionHistoricSearch_V2_0_COMP" id="435fc080-a9ff-460d-af0f-2368293e5443">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <!--Zero or more repetitions:-->
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:showHidden>false</urn1:showHidden>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="XQuery Match" id="8877b31f-f97b-43de-9756-654da3a13d22" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+declare namespace ns6='urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns4='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns7='urn:pins.payment.evry.com:domain:paymentutil:v2_0';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_0';
+declare namespace ns8='urn:pins.payment.evry.com:ws:paymentutil:v2_0';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v2_0">COMPLETED&lt;/ns3:paymentStatus></content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentTransactionHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>No Authorization</con:authProfile>
           </con:entry>
         </con:environmentSpec>
       </con:request>
@@ -1698,7 +2154,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="2fbbe218-391f-44c8-ba0e-d34c7647ec02"/>
         <con:assertion type="XQuery Match" name="PWH Database" id="727d6789-919f-47fa-8432-8553cae6a829">
           <con:configuration>
             <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
@@ -1723,6 +2178,21 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="ec78a9f1-61b7-4f8a-bda4-f6fad9356874" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_9';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_9';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_9">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -1831,7 +2301,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="276a54d2-91cb-4672-9190-8bc92bc497df"/>
         <con:assertion type="XQuery Match" name="PWH Database" id="85532204-eb3b-495a-84a1-72f3a4454355">
           <con:configuration>
             <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
@@ -1856,6 +2325,21 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="9ed3e996-236e-4b38-a028-1e7f343fc3da" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_8';
+declare namespace ns4='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_8';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_8">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -1965,7 +2449,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="4847f2cb-f68d-4655-9a6a-1517a25c0046"/>
         <con:assertion type="XQuery Match" name="PWH Database" id="be412ba2-2874-4644-8c18-2c855ab085dc">
           <con:configuration>
             <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
@@ -1990,6 +2473,21 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="38846e4d-70cb-4ba2-b9d2-01ec15856305" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v1_7';
+declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.evry.com:domain:search:v1_7';
+declare namespace ns4='urn:pays.payment.evry.com:domain:sepa-complex-types:v6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.evry.com:domain:search:v1_7">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -2100,7 +2598,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="30a25004-ed17-4fa1-ba27-825a3a8c195a"/>
         <con:assertion type="XQuery Match" name="PWH Database" id="74308047-4c0c-4456-96c6-f8e82d65fd1e">
           <con:configuration>
             <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
@@ -2125,6 +2622,24 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="66688cf7-fab8-4494-b2b4-b4d17002d3a8" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v5';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_6';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_6';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_6">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -2235,7 +2750,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="b093e986-bbef-4963-807d-f41ba203397e"/>
         <con:assertion type="XQuery Match" name="PWH Database" id="359c05b5-3e54-4a1f-9c78-5e17ef671d45">
           <con:configuration>
             <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
@@ -2260,6 +2774,25 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XQuery Match" id="0c9f4be4-ffa4-4208-9da0-8be5d9d6c4b1" name="XQuery Match">
+          <con:configuration>
+            <path>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns4='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns7='urn:srv.stord.fs.evry.com:domain:common:v1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns6='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns5='urn:pins.payment.edb.com:ws:paymentsearch:v1_5';
+declare namespace ns3='urn:pins.payment.edb.com:domain:search:v1_5';
+declare namespace ns8='urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0';
+declare namespace ns9='urn:pays.payment.edb.com:domain:sepa-complex-types:v3';
+declare namespace ns2='http://control.ws.payment.edb.com';
+&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></path>
+            <content>&lt;ns3:paymentStatus xmlns:ns3="urn:pins.payment.edb.com:domain:search:v1_5">COMPLETED&lt;/ns3:paymentStatus></content>
             <allowWildcards>false</allowWildcards>
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
@@ -2315,234 +2848,6 @@ declare namespace ns2='http://control.ws.payment.edb.com';
           </con:entry>
           <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
             <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="e4a5541e-39a9-4750-b190-5709a87c1384" name="TransactionHistoricSearch_V2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentTransactionHistoricSearch</con:operation>
-      <con:request name="TransactionHistoricSearch_V2_0" id="435fc080-a9ff-460d-af0f-2368293e5443">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentTransactionHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentTransactionHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="11842d88-dcb0-4f1c-89e4-9b673f6897df" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentTransactionHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="c99eba50-6943-42bb-ad05-160787f5877a" name="PaymentInfoHistoricSearch_V2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentPaymentInfoHistoricSearch</con:operation>
-      <con:request name="PaymentInfoHistoricSearch_V2_0" id="bafd2327-e6ea-4f1d-86c0-3829152ed87e">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-       <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentPaymentInfoHistoricSearchRequest>
-         <urn:searchCriteria>
-            <urn1:commonCriteria>
-               <urn1:elementControl>
-                  <urn2:StartIndex>0</urn2:StartIndex>
-                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-               </urn1:elementControl>
-               <!--Zero or more repetitions:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:commonCriteria>
-            <urn1:transactionCriteria>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-               <!--Optional:-->
-               
-            </urn1:transactionCriteria>
-         </urn:searchCriteria>
-      </urn:PaymentPaymentInfoHistoricSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="b2094a6f-77fd-441a-af73-598a171cec4f" name="SOAP Response"/>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentPaymentInfoHistoricSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="e79375e0-4086-40f6-b590-4affea04b964">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="6c79fb3b-5fd9-49ae-a3fe-d0e197e3b97f">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="efc02ce8-af92-4dd8-a27a-0db76c1cd7b2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="57f83bad-f6b7-4018-9f8b-2640c0e811e5">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="1f0288b0-e1f8-4591-9e20-e9eb6697b2d2">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>No Authorization</con:authProfile>
           </con:entry>
         </con:environmentSpec>
       </con:request>
@@ -2947,6 +3252,31 @@ declare namespace ns2='http://control.ws.payment.edb.com';
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>840d627d-4a6c-4a33-ad0b-8e984e8499c4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>0a9c9d9d-a265-44a5-8797-9ef707ce91f1</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dd74b9f9-a90e-4c28-9eed-811893376039</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c99eba50-6943-42bb-ad05-160787f5877a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e4a5541e-39a9-4750-b190-5709a87c1384</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a2fd08ae-35a5-428f-8eb8-b940e1815ce4</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

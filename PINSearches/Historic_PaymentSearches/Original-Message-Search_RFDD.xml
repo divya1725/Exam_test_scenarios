@@ -11,7 +11,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT M.INITIATORID,M.INITIATORBANKID,M.CUSTOMERID,TRANSACTIONSID,M.AGREEMENTID,PAYMENTINFOID,HT.DEBETACCOUNTNO,PAYMENTSTATUS,INSTRUCTEDAMOUNT,M.MESSAGEIDENTIFICATION
@@ -155,15 +155,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       <con:properties>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>921095899</con:value>
+          <con:value>00865785313</con:value>
         </con:property>
         <con:property>
           <con:name>userID</con:name>
-          <con:value>921095899</con:value>
+          <con:value>00865785313</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccount</con:name>
-          <con:value>42125748338</con:value>
+          <con:value>42010010804</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccountCurrency</con:name>
@@ -171,23 +171,23 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>571343</con:value>
+          <con:value>409431</con:value>
         </con:property>
         <con:property>
           <con:name>transactionid</con:name>
-          <con:value>260314599</con:value>
+          <con:value>438922</con:value>
         </con:property>
         <con:property>
           <con:name>instamt</con:name>
-          <con:value>10</con:value>
+          <con:value>106</con:value>
         </con:property>
         <con:property>
           <con:name>MessageIdentification</con:name>
-          <con:value>P002_141020060334</con:value>
+          <con:value>INPU.05121010501.008.M3</con:value>
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
-          <con:value>600685</con:value>
+          <con:value>00865785313</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -262,7 +262,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentAuthorizationCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="74ab129a-6510-4943-911c-930ea74e373e"/>
         <con:assertion type="Simple Contains" id="d3409d42-5372-46d8-9a28-c7c4e2544c6c" name="MessageCheck">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -325,6 +324,83 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="d09f082e-4e07-4ed8-9872-44d683183148" name="OriginalMessageSearchV2_0">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentOriginalMessageSearch</con:operation>
+      <con:request name="OriginalMessageSearchV2_0" id="71cb1b08-6e48-4ba8-bb43-5a292062bd60">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#AgreementId}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentOriginalMessageSearchRequest>
+         <urn:searchCriteria>
+            <urn1:elementControl>
+               <urn2:StartIndex>0</urn2:StartIndex>
+               <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+            </urn1:elementControl>
+            <!--1 or more repetitions:-->
+            
+            <urn1:originalMessageIds>${Properties#MessageIdentification}</urn1:originalMessageIds><urn1:agreementId>${Properties#AgreementId}</urn1:agreementId>
+            <!--Optional:-->
+            
+            <!--Optional:-->
+            
+         </urn:searchCriteria>
+      </urn:PaymentOriginalMessageSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="d031bf20-8288-4595-a497-e088a10e5c1a" name="Not SOAP Fault"/>
+        <con:assertion type="Simple Contains" name="MessageCheck" id="1f26f649-31e8-4266-951a-d4ea657928c3">
+          <con:configuration>
+            <token>&lt;Message>OK&lt;/Message></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentOriginalMessageSearchRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" name="OrginalMessageSearchV1_9" id="3b8d0f5d-dd8d-4f56-8e45-a611ace3fa09">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -372,7 +448,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentOriginalMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="b94bbad2-ccad-4b92-8ddb-c0fae0fa00eb"/>
         <con:assertion type="Simple Contains" name="MessageCheck" id="2952e486-6795-4ac0-80f6-ca1e3660f8ef">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -463,7 +538,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentOriginalMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="ffe7a151-e962-4d76-8be4-4313f7422753"/>
         <con:assertion type="Simple Contains" name="MessageCheck" id="a685fdca-168d-4a50-bbdd-b2a2ba928d38">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -554,7 +628,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentOriginalMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="56a7cc40-6235-4673-a2d6-fd0782ae7b47"/>
         <con:assertion type="Simple Contains" name="MessageCheck" id="000b1e73-88ae-41c6-acd8-742f0ff3905a">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -645,7 +718,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentOriginalMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="fa39b7c3-c2b4-49cf-b634-c085c0667133"/>
         <con:assertion type="Simple Contains" name="MessageCheck" id="66549777-da5f-4105-a603-14c2ff88af04">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -736,7 +808,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
       </urn:PaymentOriginalMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Response" id="4f02a784-15c0-41b3-a334-907cddf95895"/>
         <con:assertion type="Simple Contains" name="MessageCheck" id="c1eb7470-77ea-492f-b7e4-8a02d73e82a2">
           <con:configuration>
             <token>&lt;Message>OK&lt;/Message></token>
@@ -775,83 +846,6 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
           </con:entry>
           <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
             <con:authProfile>No Authorization</con:authProfile>
-          </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="d09f082e-4e07-4ed8-9872-44d683183148" name="OriginalMessageSearchV2_0">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentOriginalMessageSearch</con:operation>
-      <con:request name="OriginalMessageSearchV2_0" id="71cb1b08-6e48-4ba8-bb43-5a292062bd60">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentsearch:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:search:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#customerid}</wsc:userid>
-            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
-            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>en</wsc:locale>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
-            <wsc:item value="${Properties#AgreementId}" key="${#TestCase#item2}"/>
-            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentOriginalMessageSearchRequest>
-         <urn:searchCriteria>
-            <urn1:elementControl>
-               <urn2:StartIndex>0</urn2:StartIndex>
-               <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
-            </urn1:elementControl>
-            <!--1 or more repetitions:-->
-            
-            <urn1:originalMessageIds>${Properties#MessageIdentification}</urn1:originalMessageIds><urn1:agreementId>${Properties#AgreementId}</urn1:agreementId>
-            <!--Optional:-->
-            
-            <!--Optional:-->
-            
-         </urn:searchCriteria>
-      </urn:PaymentOriginalMessageSearchRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="SOAP Fault Assertion" id="d031bf20-8288-4595-a497-e088a10e5c1a" name="Not SOAP Fault"/>
-        <con:assertion type="Simple Contains" name="MessageCheck" id="1f26f649-31e8-4266-951a-d4ea657928c3">
-          <con:configuration>
-            <token>&lt;Message>OK&lt;/Message></token>
-            <ignoreCase>false</ignoreCase>
-            <useRegEx>false</useRegEx>
-          </con:configuration>
-        </con:assertion>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentsearch:v2_0/PINSPaymentSearch_V2_0PortType/PaymentOriginalMessageSearchRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="22f3b64b-e33c-40f0-ae56-1e697bb95c45">
-            <con:authProfile>Inherit From Parent</con:authProfile>
-          </con:entry>
-          <con:entry environmentId="eebaa2ea-c2ee-4670-ac97-5c3996cc37a1">
-            <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
       </con:request>
@@ -1264,6 +1258,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementI
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>c3bd0eb1-48f9-4692-a8b3-5d578df3529e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d09f082e-4e07-4ed8-9872-44d683183148</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

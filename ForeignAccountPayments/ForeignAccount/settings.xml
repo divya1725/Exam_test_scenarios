@@ -11,11 +11,13 @@
       <con:value>C:\Ullasa\Projects\JenkinsRegression\V9_Master\V4\pr-regression-valuechain\ForeignAccountPayments\data\ForeignAccountScenarios.xlsx</con:value>
     </con:property>
   </con:properties>
-  <con:setupScript>String dir = new File(testSuite.getProject().getPath()+"${File.separator}data${File.separator}ForeignAccountScenarios.xlsx") 
-log.info "dir---$dir"
-testSuite.setPropertyValue("DataSourcePath",dir)
+  <con:setupScript>def objProject = context.getTestSuite().getProject();
+def projPath = objProject.getPath()
+testSuite.setPropertyValue("DataSourcePath", "${projPath}${File.separator}data${File.separator}ForeignAccountScenarios.xlsx")
+log.info "DataSourcePath path is -->${projPath}${File.separator}data${File.separator}ForeignAccountScenarios.xlsx"
 
 import java.io.File
+def dir = testSuite.getPropertyValue("DataSourcePath")
 File f1 = new File(dir);
 if(f1.exists()) log.info "file exists - $dir"
 

@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="8ef824ba-b6fe-42e6-b0d9-69e7c030a6f0" created="3.3.2" activeEnvironment="G-D4" name="ForeignAccountPayments" resourceRoot="" compositeProjectFormat="1.3" updated="3.5.1" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="8ef824ba-b6fe-42e6-b0d9-69e7c030a6f0fileName">ForeignAccountPayments</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>G-D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>PWHDATA</con:name>
+      <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+      <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
+    <con:script>import com.eviware.soapui.impl.wsdl.submit.transports.http.BaseHttpRequestTransport 
+ 
+String request = (String) context.getProperty( BaseHttpRequestTransport.REQUEST_CONTENT )
+
+request = request.replaceAll('&lt;wsc:item key=""/>','')
+
+//// Create groovyUtils and XmlHolder for the request of the Sample Request test step.
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context )
+def holder = groovyUtils.getXmlHolder(request )
+
+ 
+for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
+     if( item.nodeName != "wsc:item")
+            item.removeXobj()
+}
+
+ 
+for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
+     if( item.nodeName != "wsc:item")
+            item.removeXobj()
+}
+holder.updateProperty()
+context.requestContent = holder.xml</con:script>
+  </con:eventHandlers>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+def time =  java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmssSSS'))
+def date1 = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd')).toString()
+def objProject = testRunner.getTestCase().getProject()
+def projPath = objProject.getPath()
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	testStepResult.writeTo(pw)
+}
+ pw.close()
+ fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="72fe4249-4ea9-440c-946f-bd4c87dc93de" name="G-D4" index="0">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D4}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="341aae2f-3a2a-4371-ab1f-3cde49e15e6f" name="G-D2" index="1">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D2}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value>10.246.89.106:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="f97d066f-1911-4142-9cbd-8693b11bc3cb" name="G-D6" index="2">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value>10.246.89.108:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="56cf1e37-41f8-4574-9056-275dda9c079b" name="G-S1" index="3">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-S1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@10.246.89.97:1530/pwh_g_st</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="6129fd9d-8925-4ade-a253-fa15aa3d48db" name="G-D7" index="4">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G-D7}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d7)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="d7195c7e-bb5c-474c-8900-d18dd2bfc44c" name="R-S6" index="5">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-S6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value>139.114.216.245:11730</con:value>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_s6)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="3f101c8a-67a9-4d3c-b310-1c25a525dc94" name="R-A1" index="6">
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R-A1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value>139.114.216.245:11460</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>sun.jdbc.odbc.JdbcOdbcDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa851-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_r_a1)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:tags/>
+</con:soapui-project>

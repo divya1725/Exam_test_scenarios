@@ -1,0 +1,904 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="1139e8f3-a2a1-4590-ad49-2f00f46a5d68" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="PORCompleteBatchExecution_BM" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="1139e8f3-a2a1-4590-ad49-2f00f46a5d68fileName">PORCompleteBatchExecution_BM</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="properties" name="Properties" id="68ef34e0-df1c-4c81-8651-e05fd9789b7f">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>POR1OutputFile</con:name>
+          <con:value>por-reservation_4201_20210108093002656.xml</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTSLastModifiedDate</con:name>
+          <con:value>1610094628</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTSResponseFile</con:name>
+          <con:value>pen_FILE_OF_RESERVATIONS_210108093042576.xml</con:value>
+        </con:property>
+        <con:property>
+          <con:name>FTS_Destination_Masked</con:name>
+          <con:value>FTS_V</con:value>
+        </con:property>
+        <con:property>
+          <con:name>POR1LastModifiedTime</con:name>
+          <con:value>1610094607</con:value>
+        </con:property>
+        <con:property>
+          <con:name>marketType</con:name>
+          <con:value>BM</con:value>
+        </con:property>
+        <con:property>
+          <con:name>jobRunType</con:name>
+          <con:value>NORMAL</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="setPORSchemaFree" id="83590915-873a-4705-b90a-187b2e68b3c2">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>update CTL_BATCH_RUN_SCHEMA set STATUS = 'FREE' where SCHEMA_NAME in (select SCHEMA_NAME from CTL_BATCH_RUN_SCHEMA  order by START_TIMESTAMP asc fetch first 1 rows only)</con:query>
+      <con:assertion type="JDBC Status" id="5a4aec68-6ce1-4ea9-a6c5-9c6aba3cfedd" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PORBatchJobRun" id="6437e103-6756-4afd-801e-1a174803eae4">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def marketType = context.expand( '${Properties#marketType}' )
+marketType = marketType.toUpperCase()
+def jobRunType = context.expand( '${Properties#jobRunType}' )
+jobRunType = jobRunType.toUpperCase()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+log.info ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort))
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Running the batch...."
+
+def nextDate =  new Date() ;
+nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd'))
+//nextDate = nextDate.format("yyyy/MM/dd")
+def runId = new Date()
+//runId = runId.format("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS")
+runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))
+
+//String shParameter = "pwhFraudRevalidationProcess.sh classpath:spring/pwh-fraud-revalidation-job-batch-context.xml pwhFraudRevalidationProcess paymentStatuses=\"RFDD,LAFU,TERE\" releaseDate=${nextDate} banksInProcess=\"4201\" 2>&amp;1"
+String shParameter = "porCommonReservationLauncher.sh processLine=DOM_PAYMENT_RTS paymentStatuses=RFDD,LAFU releaseDate=${nextDate} jobRunType=$jobRunType porType=CompletePOR banksInProcess=4201 marketType=$marketType runId=$runId"
+String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
+
+
+log.info "shParameter : "+shParameter
+log.info "CommandOutput returned-->" + CommandOutPut
+ServerConnect.closeConnection()
+def porSuccessMessage1 = 'POR reservation job completed'
+def porSuccessMessage2 ='POR reservation job went OK'
+
+assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+
+String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime")</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay0" id="2b2ad4a1-6b35-4b02-b940-3d07533b069f">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="DownloadPOR1OutputFile" id="89275d2e-eda2-4dc3-93f1-bc5697a4507c">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+def marketType = context.expand( '${Properties#marketType}' )
+marketType = marketType.toLowerCase()
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+//String str = testRunner.testCase.getTestStepByName("Properties").getPropertyValue("POR1LastModifiedTime")
+//int POR1LastModifiedTime = Integer.parseInt(str)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Downloading...."
+
+String source = "/ebs/$env/pin/data/fts/reservation/out/$marketType"
+String destination = projectPath + File.separator + "data"
+
+String POR1OutputFile = ""
+try{
+	POR1OutputFile = ServerConnect.getLatestFile(source,destination,0,log)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Uploading success!!  POR1OutputFile is $POR1OutputFile "
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1OutputFile", POR1OutputFile)
+
+ServerConnect.closeConnection()
+
+assert POR1OutputFile != "", "FTS POR1OutputFile not created"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="UploadToFTS" id="3c161067-d115-4621-8e4e-980f31f8d217">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#FTSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Uploading to FTS server...."
+
+String sourceFolder = projectPath + File.separator + "data"
+String destination = "/tn/t2/fts/data/in/pe/earmarking/pen"
+File Localfolder = new File(sourceFolder)
+def latestFile = ""
+
+//Get latestModified file from "ProjectPath//data// "folder
+
+//long lastModified = 0
+//Localfolder.listFiles().each{ file ->
+//if (file.lastModified() > lastModified )
+//	{
+//		lastModified = file.lastModified()
+//		latestFile = file.absolutePath
+//	}
+//}
+//
+//log.info "latestFile:" + latestFile
+latestFile = sourceFolder + File.separator  + testRunner.testCase.getTestStepByName("Properties").getPropertyValue("POR1OutputFile")
+
+try{
+	ServerConnect.uploadFile(latestFile,destination)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+String FTSLastModifiedDate = System.currentTimeMillis().toString().substring(0,10)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate","$FTSLastModifiedDate")
+
+log.info "Uploading success!!"
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="489fb074-213e-4f10-8f0e-939a99d51158">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="afddf123-6f76-46b1-b299-70f77e4defd9" name="CAUCStartJob - RECEIVE_RESERVATION">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>CAUCJobSoapBinding</con:interface>
+      <con:operation>CAUCStartJob</con:operation>
+      <con:request name="CAUCStartJob - RECEIVE_RESERVATION" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" id="837df0b1-bb1c-4bb3-b011-975f26c8c97d" defaultOutgoingWss="" defaultIncomingWss="">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#FTS_Masked_Batch_V}/fts/services/CAUCJobService</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v10">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>CAUC_TEST</wsc:SourceApplication>
+         <wsc:DestinationApplication>${Properties#FTS_Destination_Masked}</wsc:DestinationApplication>
+         <wsc:Function>RECEIVE_RESERVATION</wsc:Function>
+         <wsc:ClientContext>
+            <wsc:userid>CAUC</wsc:userid>
+            <wsc:credentials>CAUC</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>1802</wsc:orgid>
+            <wsc:orgunit>1802</wsc:orgunit>
+            <wsc:customerid>CAUC</wsc:customerid>
+            <wsc:ip>192.168.1.1</wsc:ip>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <CAUCStartJob xmlns="http://edb.com/ws/cauc">
+         <Command>RECEIVE_RESERVATION</Command>
+         <CommandLine>-JobId 1234 -Destination pen/ -ReturnUrl NO_REPLY</CommandLine>
+      </CAUCStartJob>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Response" id="0b9c26bf-0756-4346-9574-dae202b2ae34" name="SOAP Response"/>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay2" id="87c4e865-e9d5-468c-a783-4a44363d963f">
+    <con:settings/>
+    <con:config>
+      <delay>61000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="DownloadFTSResponseFile" id="897e833b-2622-49bb-ab0a-053783f3af98">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#FTSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+String str = testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSLastModifiedDate")
+int FTSLastModifiedDate = Integer.parseInt(str)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Downloading from FTS!!...."
+
+String source = "/tn/t2/fts/data/out/pe/earmarking/pen"
+String destination = projectPath + File.separator + "data"
+
+String FTSResponseFile = ""
+try{
+	FTSResponseFile = ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Downloading success!!  FTSResponseFile is $FTSResponseFile "
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSResponseFile", FTSResponseFile)
+
+ServerConnect.closeConnection()
+
+assert FTSResponseFile != "", "FTS ResponseFile not created"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="CopyFTSResponseToEBS" id="d7c79047-68a5-4f61-b80c-aabef7bfe60e">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+strUsername = strUsername.toLowerCase()
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def projectPath = testRunner.getTestCase().testSuite.project.getPath()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Uploading to EBS  server...."
+
+String sourceFolder = projectPath + File.separator + "data"
+String destination = "/home/$strUsername"
+File Localfolder = new File(sourceFolder)
+def latestFile = ""
+
+//Get latestModified file from "ProjectPath//data// "folder
+
+//long lastModified = 0
+//Localfolder.listFiles().each{ file ->
+//if (file.lastModified() > lastModified )
+//	{
+//		lastModified = file.lastModified()
+//		latestFile = file.absolutePath
+//	}
+//}
+//
+//log.info "latestFile:" + latestFile
+latestFile = sourceFolder + File.separator  + testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSResponseFile")
+log.info "latestFile-->" + latestFile
+try{
+	log.info "upload to pOR2 is " + ServerConnect.uploadFile(latestFile,destination)
+}catch(Exception ex){
+	log.info "Error:" + ex
+}
+
+log.info "Uploading FTS res for POR2 success!!"
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="CopyFileForPOR2" id="992f7206-3fda-41ce-9c5a-540a10564f97">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+log.info "Copying file to POR2 folder...."
+
+def por2FileName =  testRunner.testCase.getTestStepByName("Properties").getPropertyValue("FTSResponseFile")
+
+String shParameter = "echo $strPassword | sudo -S su - pin$env -c \"cp /home/$strPassword/$por2FileName /ebs/$env/pin/pin-daemon/i1/target/fts/reservation/in/por2\""
+String CommandOutPut = ServerConnect.execCommand(shParameter)		
+
+log.info "shParameter : "+shParameter
+log.info "CommandOutput returned-->" + CommandOutPut
+ServerConnect.closeConnection()</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay3" id="02f232e1-1115-431e-8f5e-4a132ff38652">
+    <con:settings/>
+    <con:config>
+      <delay>50000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="HST_Transactions" id="c6e677db-a07b-41ca-b389-62ee215c4cd5">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select unique(A.MESSAGEID),C.SKKOTYPE,A.ORIGINALCHANNEL,A.MARKETTYPE,A.CUSTOMERID,A.INITIATORID,A.INITIATORBANKID,A.MESSAGEIDENTIFICATION,C.ENDTOENDID,C.DEBITCOUNTERVALUEAMT,
+ A.AGREEMENTID,A.ORIGINALFORMAT, A.NUMBEROFTRANSACTIONS,
+A.SOURCEAPPLICATION,C.TRANSACTIONSID,C.RISKSTATUS,C.FK_PAYMENTINFOID,C.CHARGEBEARER,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.MARKETPRODUCTNAME,C.ISPC,
+C.FK_PROCESSINGLINEID,C.BOOKINGLEVEL,C.PRIORITIZED,C.DEBETACCOUNTNO,C.RELEASEDATE,C.REQUESTEDEXECUTIONDATE,
+C.PAYMENT_REF,C.PROCESSINGBANKORGID,C.PEPROCESSINGLINE,
+C.DEBIT_BOOKING_ID,C.TRANSFER_IN_SAME_BANK,C.DEBITTEXTCODE,C.CREDITTEXTCODE
+from HST_MESSAGE A,HST_PAYMENTINFO B, HST_TRANSACTIONS C, ADVICETRANSACTION D where
+A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.TRANSACTIONSID in (${#TestSuite#transactionIdsBM}) order by C.ENDTOENDID asc</con:query>
+      <con:assertion type="MessageContentAssertion" id="d423776e-2861-4c97-978a-1712e67b75c1" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>392194</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SKKOTYPE[1]</con:xpath>
+            <con:element>SKKOTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORIGINALCHANNEL[1]</con:xpath>
+            <con:element>ORIGINALCHANNEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BES</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
+            <con:element>CUSTOMERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>12065219962</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORID[1]</con:xpath>
+            <con:element>INITIATORID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>12065219962</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEIDENTIFICATION[1]</con:xpath>
+            <con:element>MESSAGEIDENTIFICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>3946103</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>skko06121054934</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBITCOUNTERVALUEAMT[1]</con:xpath>
+            <con:element>DEBITCOUNTERVALUEAMT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:xpath>
+            <con:element>AGREEMENTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>12065219962</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORIGINALFORMAT[1]</con:xpath>
+            <con:element>ORIGINALFORMAT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>CLGE</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCEAPPLICATION[1]</con:xpath>
+            <con:element>SOURCEAPPLICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>EVRYCPS</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>439425</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:xpath>
+            <con:element>RISKSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:xpath>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>409714</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHARGEBEARER[1]</con:xpath>
+            <con:element>CHARGEBEARER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DEBT</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DOMM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>COMP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETPRODUCTNAME[1]</con:xpath>
+            <con:element>MARKETPRODUCTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PI Domestic</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTDOMOUPME</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>50</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BOOKINGLEVEL[1]</con:xpath>
+            <con:element>BOOKINGLEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>D</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRIORITIZED[1]</con:xpath>
+            <con:element>PRIORITIZED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42024997914</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:xpath>
+            <con:element>RELEASEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-01-06 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-01-06 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_REF[1]</con:xpath>
+            <con:element>PAYMENT_REF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>439425</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PROCESSINGBANKORGID[1]</con:xpath>
+            <con:element>PROCESSINGBANKORGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PEPROCESSINGLINE[1]</con:xpath>
+            <con:element>PEPROCESSINGLINE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>PE_DOM_OUT</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBIT_BOOKING_ID[1]</con:xpath>
+            <con:element>DEBIT_BOOKING_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10169120000</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSFER_IN_SAME_BANK[1]</con:xpath>
+            <con:element>TRANSFER_IN_SAME_BANK</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Y</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBITTEXTCODE[1]</con:xpath>
+            <con:element>DEBITTEXTCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>520</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITTEXTCODE[1]</con:xpath>
+            <con:element>CREDITTEXTCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>521</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>392194</MESSAGEID>
+         <SKKOTYPE>N</SKKOTYPE>
+         <ORIGINALCHANNEL>BES</ORIGINALCHANNEL>
+         <MARKETTYPE>BM</MARKETTYPE>
+         <CUSTOMERID>12065219962</CUSTOMERID>
+         <INITIATORID>12065219962</INITIATORID>
+         <INITIATORBANKID>4201</INITIATORBANKID>
+         <MESSAGEIDENTIFICATION>3946103</MESSAGEIDENTIFICATION>
+         <ENDTOENDID>skko06121054934</ENDTOENDID>
+         <DEBITCOUNTERVALUEAMT>1000</DEBITCOUNTERVALUEAMT>
+         <AGREEMENTID>12065219962</AGREEMENTID>
+         <ORIGINALFORMAT>CLGE</ORIGINALFORMAT>
+         <NUMBEROFTRANSACTIONS>1</NUMBEROFTRANSACTIONS>
+         <SOURCEAPPLICATION>EVRYCPS</SOURCEAPPLICATION>
+         <TRANSACTIONSID>439425</TRANSACTIONSID>
+         <RISKSTATUS/>
+         <FK_PAYMENTINFOID>409714</FK_PAYMENTINFOID>
+         <CHARGEBEARER>DEBT</CHARGEBEARER>
+         <PAYMENTTYPE>DOMM</PAYMENTTYPE>
+         <PAYMENTSTATUS>COMP</PAYMENTSTATUS>
+         <MARKETPRODUCTNAME>PI Domestic</MARKETPRODUCTNAME>
+         <ISPC>PAYCTDOMOUPME</ISPC>
+         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
+         <BOOKINGLEVEL>D</BOOKINGLEVEL>
+         <PRIORITIZED>N</PRIORITIZED>
+         <DEBETACCOUNTNO>42024997914</DEBETACCOUNTNO>
+         <RELEASEDATE>2021-01-06 00:00:00</RELEASEDATE>
+         <REQUESTEDEXECUTIONDATE>2021-01-06 00:00:00</REQUESTEDEXECUTIONDATE>
+         <PAYMENT_REF>439425</PAYMENT_REF>
+         <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
+         <PEPROCESSINGLINE>PE_DOM_OUT</PEPROCESSINGLINE>
+         <DEBIT_BOOKING_ID>10169120000</DEBIT_BOOKING_ID>
+         <TRANSFER_IN_SAME_BANK>Y</TRANSFER_IN_SAME_BANK>
+         <DEBITTEXTCODE>520</DEBITTEXTCODE>
+         <CREDITTEXTCODE>521</CREDITTEXTCODE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:setupScript>testCase.getTestStepByName("Properties").setPropertyValue("POR1OutputFile", "")
+testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate", "")
+testCase.getTestStepByName("Properties").setPropertyValue("FTSResponseFile", "")
+testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime", "")
+
+assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")</con:setupScript>
+  <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
+  testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}
+else
+{
+	  testCase.testSuite.setPropertyValue("TestSuiteResult", "OK")
+}</con:tearDownScript>
+  <con:properties>
+    <con:property>
+      <con:name>map</con:name>
+      <con:value>[a:a1, b:b2]</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>5381cf85-0f4b-4cb3-908b-fd81d738c6da</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72ba828d-d1a7-48f8-b672-71288be2ad10</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>94085c43-2faf-427c-afc8-e1f78c1d1285</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cdcb5c32-dac5-4bb7-b37e-e89f6dc868b2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f1cca34d-7c16-487f-a2bb-4a706de3531a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>54c926c4-5073-4beb-b8b2-ba4628702ae4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a539de08-b666-4fe9-9636-fb9b9eabba66</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72c9e7e6-b833-4294-abcd-6c0481b897cd</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4f6afbce-b605-4838-a5fc-8d48dde99963</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>18f7d99a-6a92-4f29-bfbf-825cc01087fe</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e4a54adb-f6f0-4532-9c90-3f755a97e3db</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ce642f55-9aab-4401-9507-7846f445c6d0</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>392ae598-956c-4426-8253-543059469364</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

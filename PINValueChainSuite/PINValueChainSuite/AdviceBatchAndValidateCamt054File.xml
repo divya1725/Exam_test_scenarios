@@ -1,0 +1,1356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="a86f9978-23c2-4489-8d9e-3ddc6ac2ebdc" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="AdviceBatchAndValidateCamt054File" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>This test suite does  fetch the latest transaction for which camt54 is sent and validates the camt054 file with respect to values from data base</con:description>
+  <con:settings>
+    <con:setting id="a86f9978-23c2-4489-8d9e-3ddc6ac2ebdcfileName">AdviceBatchAndValidateCamt054File</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="manualTestStep" name="ReadMe" id="d328fc76-2a0f-403f-a5f9-44c5659b6023" disabled="true">
+    <con:description>Perform below preconditon actions before executing this TC.
+    - Add below dependent jar file under /bin/ext soap path.
+       jsch-0.1.54
+    - Make sure the transactionID and other payment details are entered in preconditon step
+    - Make sure the camt054 schema file is avaialable under below path 
+/ProjectPath/Schema/</con:description>
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+  </con:testStep>
+  <con:testStep type="groovy" name="Camt054AdviceBatchJobRun" id="e66b0c65-e087-46b3-abd4-f23af896d66d">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def jobRunType = context.expand( '${Properties#jobRunType}' )
+jobRunType = jobRunType.toUpperCase()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	{
+		assert false," Failed to conenct to linux server!!"
+	}
+else
+	{
+
+		String shParameter = "pwhAdviceProcessing.sh classpath:spring/pwh-advice-batch-context.xml pwhAdviceProcessing adviceType='CAMT054_Debit' initiatorType='Corporate' 2>&amp;1"
+		String CommandOutPut = ServerConnect.execBatchCommand(env , "pin" ,shParameter)	
+		
+		ServerConnect.closeConnection()
+		def SuccessMessage1 = 'Spring Boot'
+
+		assert (CommandOutPut.trim() != "" &amp;&amp; CommandOutPut.contains(SuccessMessage1)), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut
+	}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay 2" id="8ece3e9f-c8ca-4959-8dc8-3fd329a83e76">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="setTransactionID" id="cbfe296e-2dcd-42cf-bb8f-cae0076b3056">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.impl.wsdl.WsdlProject
+testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("TransactionID",context.expand( '${#TestSuite#transactionIdsBM}' ))</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="fetchCamt054Schema" id="7d5a1430-1f39-4dc9-9b0e-b2dfa0439349">
+    <con:settings/>
+    <con:config>
+      <script>//In case of camt54 xsd Filename is changed, property  camt54SchemaPath must be changed accordingly
+def camt54SchemaPath =testRunner.getTestCase().getTestSuite().getProject().getPath()+ File.separator + 'data' + File.separator + 'camt.054.001.02.xsd' 
+camt54SchemaPath = camt54SchemaPath.replace("//","/")
+//log.info camt54SchemaPath
+
+testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("camt54SchemaPath", camt54SchemaPath)
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase().toString().substring(2)
+
+testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("SourcePath", "/ebs/$env/pin/data/cps/advice/c54/out/")</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="PreCondition" id="06b4fedd-f2b0-4a01-9d65-f0e61fc8892b">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>userID</con:name>
+          <con:value>TESTUSERPI28</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>NBA</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerID</con:name>
+          <con:value>13040300001</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TransactionID</con:name>
+          <con:value>440347</con:value>
+        </con:property>
+        <con:property>
+          <con:name>camt54_File</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.054.001.02">
+    <BkToCstmrDbtCdtNtfctn>
+        <GrpHdr>
+            <MsgId>13094721967.392339.11209</MsgId>
+            <CreDtTm>2021-01-08T08:37:28.222521Z</CreDtTm>
+        </GrpHdr>
+        <Ntfctn>
+            <Id>492ce6a0d90e40c8bf3c3dce013d2994</Id>
+            <CreDtTm>2021-01-08T08:37:28.222441Z</CreDtTm>
+            <Acct>
+                <Id>
+                    <Othr>
+                        <Id>42021341821</Id>
+                        <SchmeNm>
+                            <Cd>BBAN</Cd>
+                        </SchmeNm>
+                    </Othr>
+                </Id>
+                <Ccy>NOK</Ccy>
+                <Svcr>
+                    <FinInstnId>
+                        <BIC>SPTRNO22XXX</BIC>
+                        <ClrSysMmbId>
+                            <ClrSysId>
+                                <Prtry>NOBSK</Prtry>
+                            </ClrSysId>
+                            <MmbId>4201</MmbId>
+                        </ClrSysMmbId>
+                    </FinInstnId>
+                </Svcr>
+            </Acct>
+            <TxsSummry>
+                <TtlNtries>
+                    <NbOfNtries>1</NbOfNtries>
+                </TtlNtries>
+            </TxsSummry>
+            <Ntry>
+                <NtryRef>10172870000</NtryRef>
+                <Amt Ccy="NOK">1000</Amt>
+                <CdtDbtInd>DBIT</CdtDbtInd>
+                <Sts>BOOK</Sts>
+                <BookgDt>
+                    <Dt>2021-01-08</Dt>
+                </BookgDt>
+                <ValDt>
+                    <Dt>2021-01-08</Dt>
+                </ValDt>
+                <AcctSvcrRef>50420189451</AcctSvcrRef>
+                <BkTxCd>
+                    <Domn>
+                        <Cd>PMNT</Cd>
+                        <Fmly>
+                            <Cd>ICDT</Cd>
+                            <SubFmlyCd>DMCT</SubFmlyCd>
+                        </Fmly>
+                    </Domn>
+                </BkTxCd>
+                <NtryDtls>
+                    <TxDtls>
+                        <Refs>
+                            <MsgId>3627490</MsgId>
+                            <PmtInfId>3627490</PmtInfId>
+                            <InstrId>3627490</InstrId>
+                            <EndToEndId>skko08121015852</EndToEndId>
+                        </Refs>
+                        <AmtDtls>
+                            <InstdAmt>
+                                <Amt Ccy="NOK">1000</Amt>
+                            </InstdAmt>
+                            <TxAmt>
+                                <Amt Ccy="NOK">1000</Amt>
+                            </TxAmt>
+                            <PrtryAmt>
+                                <Tp>IBS</Tp>
+                                <Amt Ccy="NOK">1000</Amt>
+                            </PrtryAmt>
+                        </AmtDtls>
+                        <RltdPties>
+                            <Cdtr>
+                                <Nm>CHKCreditor</Nm>
+                                <PstlAdr>
+                                    <PstCd>1234</PstCd>
+                                    <TwnNm>CredTownName</TwnNm>
+                                    <Ctry>NO</Ctry>
+                                    <AdrLine>AddrLine</AdrLine>
+                                </PstlAdr>
+                            </Cdtr>
+                            <CdtrAcct>
+                                <Id>
+                                    <Othr>
+                                        <Id>42025067082</Id>
+                                        <SchmeNm>
+                                            <Cd>BBAN</Cd>
+                                        </SchmeNm>
+                                    </Othr>
+                                </Id>
+                            </CdtrAcct>
+                        </RltdPties>
+                        <RltdAgts>
+                            <DbtrAgt>
+                                <FinInstnId>
+                                    <BIC>SPTRNO22XXX</BIC>
+                                    <Nm>SPAREBANK 1 SMN</Nm>
+                                    <PstlAdr>
+                                        <TwnNm>TRONDHEIM</TwnNm>
+                                        <Ctry>NO</Ctry>
+                                    </PstlAdr>
+                                </FinInstnId>
+                            </DbtrAgt>
+                            <CdtrAgt>
+                                <FinInstnId>
+                                    <PstlAdr>
+                                        <Ctry>NO</Ctry>
+                                    </PstlAdr>
+                                </FinInstnId>
+                            </CdtrAgt>
+                        </RltdAgts>
+                    </TxDtls>
+                </NtryDtls>
+            </Ntry>
+        </Ntfctn>
+    </BkToCstmrDbtCdtNtfctn>
+</Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>camt54SchemaPath</con:name>
+          <con:value>C:\Ullasa\Projects\PINValueChainSuite\V1\PINValueChainSuite\data\camt.054.001.02.xsd</con:value>
+        </con:property>
+        <con:property>
+          <con:name>SourcePath</con:name>
+          <con:value>/ebs/d4/pin/data/cps/advice/c54/out/</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="fetchJobIDAdviceDate" id="05ddef73-c8e0-4379-966a-dbd45f046b4e">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+FK_JOBID,ADVICEDATE
+FROM 
+ADVICETRANSACTION 
+WHERE FK_TRANSACTIONSID in (${PreCondition#TransactionID})</con:query>
+      <con:assertion type="MessageContentAssertion" id="06bf82c4-3ddf-4332-ad3d-c70cd701b152" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_JOBID[1]</con:xpath>
+            <con:element>FK_JOBID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4194</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ADVICEDATE[1]</con:xpath>
+            <con:element>ADVICEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2020-06-26 07:03:55</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <FK_JOBID>4194</FK_JOBID>
+         <ADVICEDATE>2020-06-26 07:03:55</ADVICEDATE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="df415baa-ffb1-4e13-bb04-3dafafc02440" name="PIN_HstRead">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentHistoricRead</con:operation>
+      <con:request name="PIN_HstRead" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="107a076f-6bed-433f-b693-cd87cdf63eb3">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>${#TestCase#DestinationApplication}</wsc:DestinationApplication>
+         <wsc:Function>paymentCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>E211732</wsc:userid>
+            <wsc:credentials>${PreCondition#credentials}</wsc:credentials>
+            <wsc:channel>${PreCondition#channel}</wsc:channel>
+            <wsc:orgid>${PreCondition#orgid}</wsc:orgid>
+            <wsc:customerid>${PreCondition#customerID}</wsc:customerid>
+            <wsc:ip>${#TestCase#ip}</wsc:ip>
+            <wsc:item key="Employee" value="E211732"/>
+            <wsc:item key="SelfService" value="false"/>
+            <wsc:item key="LogRef" value="a5c64f54-a6a9-4796-8a2c-35aeb2b3871c"/>
+            <wsc:item key="PaymentChannel" value="ITR"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentHistoricReadRequest>
+         <!--You have a CHOICE of the next 2 items at this level-->
+         <urn:transactionId>${PreCondition#TransactionID}</urn:transactionId>
+      </urn:PaymentHistoricReadRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="f6c2a9dd-bc06-408f-88f6-7053c15647c9" name="Contains">
+          <con:configuration>
+            <token>&lt;Message>OK&lt;/Message></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentHistoricReadRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="0bc8f3e7-1508-45f2-8dd1-f50785d4bbe3">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="7c960665-b521-49d3-ab66-f12a3d8069b0">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="95e2c387-5acf-4f25-89ad-b0225330a1a2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c2493d4a-b232-433e-a2f9-a18c27ee4155">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="40b9c8f7-667e-4e24-8212-b9847d127ccb">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="dbecc93b-ef5f-4deb-a87d-0027f4b3c65d">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="d484fa0b-102c-4420-b5b8-de132e8d9128">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="fetchCamt54FromServer" id="7b35bb52-c5b7-4c02-b040-9183fbded7c3">
+    <con:settings/>
+    <con:config>
+      <script>import com.jcraft.jsch.*
+import org.apache.commons.io.FileUtils
+
+//Folder create in project directory for Camt054 file
+ new File(testRunner.getTestCase().getTestSuite().getProject().getPath()+ File.separator + "data").mkdir()
+ 
+// Properties
+def  ebsHost = context.expand( '${#Project#EBSHost}' )
+def  Port =  context.expand( '${#Project#Port}' );
+def  ftpUsername = context.expand( '${#Project#UserName}' )
+def  ftpPassword = context.expand( '${#Project#Password}' )
+//def SourcePath = context.expand( '${PreCondition#SourcePath}' )
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.toString().substring(2)
+def SourcePath="/ebs/$env/pin/data/cps/advice/c54/out/"
+
+//log.info ebsHost
+//log.info Port
+//log.info SourcePath
+
+def String JobID = context.expand( '${fetchJobIDAdviceDate#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_JOBID[1]}' )
+def String  MsgID = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:messageId[1]}' )
+def String JobDate = context.expand( '${fetchJobIDAdviceDate#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ADVICEDATE[1]}' )
+
+JobDate = JobDate.replaceAll("[^a-zA-Z0-9]", "");  
+
+def String FileName = "*."+MsgID+"."+JobID+"."+JobDate.take(12)+"*.xml";
+log.info 'File Name is : '+FileName;
+
+if (!(ServerConnect.Connect(ebsHost ,ftpUsername, ftpPassword, Integer.parseInt(Port)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+//Find file using partial file name
+String findName = "cd $SourcePath &amp;&amp; find . -name '$FileName'"
+log.info findName;
+
+//Remove line space in file name
+def File_Name = ServerConnect.execCommand(findName).replace("\n", "");
+
+//Verify file name
+if (File_Name.toString().isEmpty()==true)
+{
+	testRunner.fail();
+	//log.info "fetchCamt54FromServer step failed, Unable to find the file in server!"
+}
+
+else
+{
+	 //log.info 'FileName is  : '+File_Name;
+
+	//Read file from server
+	def camt54_File = ServerConnect.readFileFromServer(SourcePath,File_Name);
+	//log.info camt54_File
+
+	testRunner.testCase.getTestStepByName("PreCondition").setPropertyValue("camt54_File",camt54_File);
+}
+
+if (!(ServerConnect.closeConnection()))
+	assert false," Failed to close linux server!!"
+else
+ log.info "Connection closed successfully!!"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="271d19cb-5ae0-42d3-8363-c4f820a13c85">
+    <con:settings/>
+    <con:config>
+      <delay>4000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="ADVICETRANSACTION" id="c546f054-9b6c-4f96-9bd4-d85eeb222c90">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+ADVICETRANSACTION 
+WHERE 
+FK_TRANSACTIONSID IN (${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transactionId[1]})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="SETTLEMENT" id="9ecb35bb-b12f-4e5a-b902-41444615e1e3">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+HST_SETTLEMENT ST,HST_SETTLEMENT_AMOUNT ST_AMT 
+WHERE ST.SETTLEMENTID=ST_AMT.FK_SETTLEMENTID AND 
+ST_AMT.FK_SETTLEMENTAMOUNTTYPEID='1' AND 
+ST.FK_TRANSACTIONSID IN(${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transactionId[1]})</con:query>
+      <con:assertion type="MessageContentAssertion" id="fbda880f-b6cf-4d1a-a499-17f0342b2911" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SETTLEMENTID[1]</con:xpath>
+            <con:element>SETTLEMENTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1147028</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_SETTLEMENTMSGID[1]</con:xpath>
+            <con:element>FK_SETTLEMENTMSGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>156309</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BOOKINGDATE[1]</con:xpath>
+            <con:element>BOOKINGDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-06-24 14:50:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/VALUEDATE[1]</con:xpath>
+            <con:element>VALUEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-06-24 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REFERENCE[1]</con:xpath>
+            <con:element>REFERENCE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>156309</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INTERBANKSETTLEMENTDATE[1]</con:xpath>
+            <con:element>INTERBANKSETTLEMENTDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-06-24 00:00:00</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTSERVICEREFERENCE[1]</con:xpath>
+            <con:element>ACCOUNTSERVICEREFERENCE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANKTRANSACTIONCODE[1]</con:xpath>
+            <con:element>BANKTRANSACTIONCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PMNTIICTESCT</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>BM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SETTLEMENTRETURNEDDATE[1]</con:xpath>
+            <con:element>SETTLEMENTRETURNEDDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-06-24 14:55:46</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MSGID[1]</con:xpath>
+            <con:element>MSGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORGID[1]</con:xpath>
+            <con:element>ORGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SETTLEMENTAMOUNTID[1]</con:xpath>
+            <con:element>SETTLEMENTAMOUNTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>3345370</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_SETTLEMENTID[1]</con:xpath>
+            <con:element>FK_SETTLEMENTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1147028</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_SETTLEMENTAMOUNTTYPEID[1]</con:xpath>
+            <con:element>FK_SETTLEMENTAMOUNTTYPEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AMOUNT[1]</con:xpath>
+            <con:element>AMOUNT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10.85</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AMOUNTCCY[1]</con:xpath>
+            <con:element>AMOUNTCCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NOK</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCECCY[1]</con:xpath>
+            <con:element>SOURCECCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>EUR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TARGETCCY[1]</con:xpath>
+            <con:element>TARGETCCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NOK</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/UNITCCY[1]</con:xpath>
+            <con:element>UNITCCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>EUR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXCHANGERATE[1]</con:xpath>
+            <con:element>EXCHANGERATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10.845</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CONTRACTIDENTIFICATION[1]</con:xpath>
+            <con:element>CONTRACTIDENTIFICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/QUOTATIONDATE[1]</con:xpath>
+            <con:element>QUOTATIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-06-24 14:04:16</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <SETTLEMENTID>1147028</SETTLEMENTID>
+         <FK_SETTLEMENTMSGID/>
+         <FK_TRANSACTIONSID>156309</FK_TRANSACTIONSID>
+         <BOOKINGDATE>2020-06-24 14:50:00</BOOKINGDATE>
+         <VALUEDATE>2020-06-24 00:00:00</VALUEDATE>
+         <REFERENCE>156309</REFERENCE>
+         <INTERBANKSETTLEMENTDATE>2020-06-24 00:00:00</INTERBANKSETTLEMENTDATE>
+         <ACCOUNTSERVICEREFERENCE/>
+         <BANKTRANSACTIONCODE>PMNTIICTESCT</BANKTRANSACTIONCODE>
+         <MARKETTYPE>BM</MARKETTYPE>
+         <SETTLEMENTRETURNEDDATE>2020-06-24 14:55:46</SETTLEMENTRETURNEDDATE>
+         <MSGID/>
+         <ORGID/>
+         <SETTLEMENTAMOUNTID>3345370</SETTLEMENTAMOUNTID>
+         <FK_SETTLEMENTID>1147028</FK_SETTLEMENTID>
+         <FK_SETTLEMENTAMOUNTTYPEID>1</FK_SETTLEMENTAMOUNTTYPEID>
+         <AMOUNT>10.85</AMOUNT>
+         <AMOUNTCCY>NOK</AMOUNTCCY>
+         <SOURCECCY>EUR</SOURCECCY>
+         <TARGETCCY>NOK</TARGETCCY>
+         <UNITCCY>EUR</UNITCCY>
+         <EXCHANGERATE>10.845</EXCHANGERATE>
+         <CONTRACTIDENTIFICATION/>
+         <QUOTATIONDATE>2020-06-24 14:04:16</QUOTATIONDATE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS" id="afecee0e-e999-4ebc-a725-284878131730">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+HST_TRANSACTIONS
+WHERE 
+TRANSACTIONSID IN(${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transactionId[1]})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="PAYMENTINFO" id="32f309e4-7984-4c4d-bf32-bc7422bbec91">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+PAYMENTINFO 
+WHERE 
+PAYMENTINFOID IN (${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="MESSAGE" id="a665ff48-62fe-464c-91d1-c57aacc9e763">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+MESSAGE 
+WHERE 
+MESSAGEID IN (${PIN_HstRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:messageId[1]})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="AGENT_PAYMENTINFO" id="dda505ad-a585-428b-bffd-a74d3f7f0409">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * 
+FROM 
+AGENT_PAYMENTINFO 
+WHERE 
+FK_PAYMENTINFOID IN (${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="PAYMENT CLASSIFICATION" id="effaeaab-b86b-4012-8718-66ed401c86e0">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+PAYMENT_CLASSIFICATION 
+FROM 
+HST_TRANSACTIONS TR,
+PAYMENTTYPETOISPC PT
+WHERE 
+TR.ISPC=PT.ISPC AND
+TR.TRANSACTIONSID IN (${PreCondition#TransactionID})</con:query>
+      <con:assertion type="Simple Contains" id="5dfb33ff-7131-4127-8458-0e5f0799a2d5" name="Contains">
+        <con:configuration>
+          <token>rowNumber="1"</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Schema Validation" id="e6ac1a07-3104-47a5-95d1-211bbdaab8cf">
+    <con:settings/>
+    <con:config>
+      <script>import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
+// Specify an XSD Schema
+def xsdFilePath = context.expand( '${PreCondition#camt54SchemaPath}' )
+//log.info xsdFilePath;
+// Get the response as XML
+def XML_File = context.expand( '${PreCondition#camt54_File}' )
+// Create validation objects
+def factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+def schema = factory.newSchema(new StreamSource(xsdFilePath));
+def validator = schema.newValidator();
+// Validate the response against the schema
+assert validator.validate(new StreamSource(new StringReader(XML_File))) == null;
+//log.info 'schema validation end'</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Camt054_Validation" id="37f77b6b-d58c-42ab-80ae-03cd887d194d">
+    <con:settings/>
+    <con:config>
+      <script>def XML_File = context.expand( '${PreCondition#camt54_File}' )
+//log.info "XML File :"+XML_File;
+
+def XML = new XmlParser().parseText(XML_File);
+
+//Verification of variables in group header section
+		//GrpHdr.MsgId
+		def MsgId_Actual = XML.BkToCstmrDbtCdtNtfctn.GrpHdr.MsgId.text();
+		def MessageID = context.expand( '${PIN_PaymentRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:messageId[1]}' )
+		def JobID = context.expand( '${ADVICETRANSACTION#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_JOBID[1]}' )
+		
+		def MessageID_Exp = MessageID+JobID;
+		
+		assert MsgId_Actual.contains("."+MessageID_Exp);
+		
+		//GrpHdr.CreDtTm
+		def CreDtTm_Actual = XML.BkToCstmrDbtCdtNtfctn.GrpHdr.CreDtTm;
+		assert CreDtTm_Actual.isEmpty() == false;
+
+//Verification of fields in entry function section(Ntfctn)
+		//Ntfctn.Id
+		def EntryID_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Id;
+		assert EntryID_Actual.isEmpty() == false;
+		
+		//Ntfctn.CreDtTm
+		def EntryCreDtTm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.CreDtTm;
+		assert EntryCreDtTm_Actual.isEmpty() == false;
+		
+		//DebtAcct &amp; SchmeNm
+		def DebtAcct_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; declare namespace ns6=\'urn:pins.payment.evry.com:domain:debtor:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentInfo[1]/ns6:debtorAccount[1]/ns5:identification[1]}' )
+		def DebtAcct_SchmeNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Id.Othr.SchmeNm.Cd.text();
+		
+		if (DebtAcct_Exp.length() &lt;= 11)
+		{
+			//log.info 'BBAN account verify';
+			def DebtAcct_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Id.Othr.Id.text();
+		
+			assert DebtAcct_Actual==DebtAcct_Exp; 
+			assert DebtAcct_SchmeNm_Actual == "BBAN";
+		}
+		else
+		{
+			//log.info 'IBAN account verify';
+			def DebtAcct_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Id.IBAN.text();
+		
+			assert DebtAcct_Actual==DebtAcct_Exp; 
+		}
+		
+		//DebtAcct_CCY
+		def DebtAcctCCY_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Ccy.text();
+		def DebtAcctCCY_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; declare namespace ns6=\'urn:pins.payment.evry.com:domain:debtor:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentInfo[1]/ns6:debtorAccount[1]/ns5:currency[1]}' )
+		
+		assert DebtAcctCCY_Actual==DebtAcctCCY_Exp;
+		
+		//Svcr.BIC
+		def DebtAgentBIC_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Svcr.FinInstnId.BIC.text();
+		def DebtAgentBIC_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; declare namespace ns6=\'urn:pins.payment.evry.com:domain:debtor:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentInfo[1]/ns6:debtorAgentBIC[1]}' )
+		
+		assert DebtAgentBIC_Actual==DebtAgentBIC_Exp;
+
+		//Svcr.Prtry
+		def Prtry_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Svcr.FinInstnId.ClrSysMmbId.ClrSysId.Prtry.text();
+
+		assert Prtry_Actual=='NOBSK';
+
+		//MmbId
+		def MmbId_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Acct.Svcr.FinInstnId.ClrSysMmbId.MmbId.text();
+
+		assert MmbId_Actual=='4201';
+
+//Verification of fields inside entry section(Ntry)
+def NtryCount = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry.size();
+
+for (def i=0;i&lt;NtryCount;i++)
+{
+	def Settlement_Ref = context.expand( '${SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/REFERENCE[1]}' )
+	def Ntry = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryRef.text();
+	//log.info "Record "+i+"="+Ntry
+
+	if (Ntry==Settlement_Ref)
+	{
+		//log.info "Identified matching record at array "+NtryCount;
+		
+		//NtryRef
+		def NtryRef_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryRef.text();
+		def NtryRef_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:settlement[1]/ns5:reference[1]}' )
+		
+		assert NtryRef_Actual==NtryRef_Exp;
+		
+		//DebtAmt
+		def DebtAmt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].Amt.text();
+		def DebtAmt_Exp = context.expand( '${SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AMOUNT[1]}' )
+		
+		assert DebtAmt_Actual==DebtAmt_Exp;
+		
+		//CdtDbtInd
+		def CdtDbtInd_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].CdtDbtInd.text();
+		
+		assert CdtDbtInd_Actual=='DBIT';
+		
+		//Ntry.Sts
+		def EntrySts_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].Sts.text();
+		
+		assert EntrySts_Actual == 'BOOK';
+		
+		//Ntry.BookgDt
+		def BookgDt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].BookgDt.Dt.text();
+		def Bookgdt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:settlement[1]/ns5:bookingDate[1]}' )
+		
+		assert BookgDt_Actual==Bookgdt_Exp.take(10);
+		
+		//Ntry.ValDt
+		def ValDt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].ValDt.Dt.text();
+		def Valdt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:settlement[1]/ns5:valueDate[1]}' )
+		
+		assert ValDt_Actual==Valdt_Exp.take(10);
+		
+		//Ntry.AcctSvcrRef
+		def AcctSvcrRef_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].AcctSvcrRef.text();
+		def Ref_Exp = context.expand( '${SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/REFERENCE[1]}' )
+		def AcctSvcrRef_Exp = context.expand( '${SETTLEMENT#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTSERVICEREFERENCE[1]}' )
+		
+		if (AcctSvcrRef_Exp.toString()!='&lt;ACCOUNTSERVICEREFERENCE/>')
+			{
+				//log.info "AcctSvcrRef verify";
+				assert AcctSvcrRef_Actual==AcctSvcrRef_Exp;
+			}
+			else
+			{
+				//log.info "Ref verify";
+				assert AcctSvcrRef_Actual==Ref_Exp;
+			}
+		
+		//BkTxCd.Domn
+			//Cd
+		def DomnCd_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].BkTxCd.Domn.Cd.text();
+		def DomnCd_Exp = context.expand( '${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_DOMAIN_CODE[1]}' )
+		
+		assert DomnCd_Actual==DomnCd_Exp;
+
+		def transCatPrCD = context.expand( '${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CATEGORYPURPOSECODE[1]}' )
+		def payInfoCatPrCD = context.expand( '${PAYMENTINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CATEGORYPURPOSECODE[1]}' )
+		
+			//Fmly
+		def FmlyCd_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].BkTxCd.Domn.Fmly.Cd.text();
+		def SubFmlyCd_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].BkTxCd.Domn.Fmly.SubFmlyCd.text();
+		def paymentTP = context.expand( '${PAYMENT CLASSIFICATION#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/PAYMENT_CLASSIFICATION[1]}' )
+
+		if(transCatPrCD=='INTC' || payInfoCatPrCD=='INTC')
+		{
+			//log.info "Verified family and subFamily as ICCN and ICCT";
+			assert FmlyCd_Actual=='ICCN';
+			assert SubFmlyCd_Actual=='ICCT';
+		}
+		else
+		{
+			assert FmlyCd_Actual=='ICDT';
+			if(paymentTP=='International')
+			{
+				//log.info "Verified family and subFamily as ICDT and XBCT";
+				assert SubFmlyCd_Actual=='XBCT';
+			}
+			else if (paymentTP=='Domestic')
+			{
+				log.info "Verified family and subFamily as ICDT and DMCT";
+				assert SubFmlyCd_Actual=='DMCT';
+			}
+		}
+		
+		//NtryDtls.Refs
+		def NtryDtlsMsgId_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.Refs.MsgId.text();
+		def NtryDtlsPmtInfId_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.Refs.PmtInfId.text();
+		def NtryDtlsInstrId_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.Refs.InstrId.text();
+		def NtryDtlsEndToEndId_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.Refs.EndToEndId.text();
+		
+		def NtryDtlsMsgId_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentIdentification[1]/ns5:messageIdentification[1]}' )
+		def NtryDtlsPmtInfId_Exp = context.expand( '${PAYMENTINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/PMTINFOID[1]}' )
+		def NtryDtlsInstrId_Exp = context.expand( '${TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONID[1]}' )
+		def NtryDtlsEndToEndId_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:paymentIdentification[1]/ns5:endToEndIdentification[1]}' )
+		
+		assert NtryDtlsMsgId_Actual==NtryDtlsMsgId_Exp;
+		assert NtryDtlsPmtInfId_Actual==NtryDtlsPmtInfId_Exp;
+		assert NtryDtlsInstrId_Actual==NtryDtlsInstrId_Exp;
+		assert NtryDtlsEndToEndId_Actual==NtryDtlsEndToEndId_Exp;
+		
+		//AmtDtls
+		def NtryDtlsInstdAmt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.AmtDtls.InstdAmt.Amt.text();
+		def NtryDtlsTxAmt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.AmtDtls.TxAmt.Amt.text();
+
+		def NtryDtlsInstdAmt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:amount[1]/ns5:instructedAmount[1]/ns5:amount[1]}' )
+		def NtryDtlsTxAmt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:settlement[1]/ns5:debitAmount[1]/ns5:amount[1]/ns5:amount[1]}' )
+		
+		if (NtryDtlsInstdAmt_Exp.toString().isEmpty()==true)
+		{
+			 NtryDtlsInstdAmt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:amount[1]/ns5:equivalentAmount[1]/ns5:amount[1]/ns5:amount[1]}' )
+		}
+
+		assert NtryDtlsInstdAmt_Exp.contains(NtryDtlsInstdAmt_Actual);
+		assert NtryDtlsTxAmt_Exp.contains(NtryDtlsTxAmt_Actual);
+		
+		//PrtryAmt
+		def NtryDtlsPrtryAmt_Tp_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.AmtDtls.PrtryAmt.Tp.text();
+		def NtryDtlsPrtryAmt_Amt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.AmtDtls.PrtryAmt.Amt.text();
+		
+		def NtryDtlsPrtryAmt_Amt_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:settlement[1]/ns5:creditAmount[1]/ns5:amount[1]/ns5:amount[1]}' )
+		
+		assert NtryDtlsPrtryAmt_Tp_Actual=='IBS';
+		assert NtryDtlsPrtryAmt_Amt_Exp.contains(NtryDtlsPrtryAmt_Amt_Actual);
+		
+		//RltdPties.Cdtr
+		def RltdPties_Cdtr_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.Cdtr.Nm.text();
+		def RltdPties_Cdtr_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditor[1]/ns5:name[1]}' )
+		
+		assert RltdPties_Cdtr_Actual==RltdPties_Cdtr_Exp;
+		
+		//RltdPties.PstlAdr
+		def PstlAdr_AdrTp_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.Cdtr.PstlAdr.AdrTp.text();
+		def PstlAdr_TwnNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.Cdtr.PstlAdr.TwnNm.text();
+		def PstlAdr_CtrySubDvsn_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.Cdtr.PstlAdr.CtrySubDvsn.text();
+		def PstlAdr_Ctry_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.Cdtr.PstlAdr.Ctry.text();
+		
+		def AddrTp_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditor[1]/ns5:postalAddress[1]/ns5:addressType[1]}' )
+		def TwnNm_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditor[1]/ns5:postalAddress[1]/ns5:townName[1]}' )
+		def CtrySubDvsn_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditor[1]/ns5:postalAddress[1]/ns5:countrySubDivision[1]}' )
+		def Ctry_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditor[1]/ns5:postalAddress[1]/ns5:country[1]}' )
+		
+		if (AddrTp_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'Address verify';
+			assert PstlAdr_AdrTp_Actual==AddrTp_Exp;
+		}
+		
+		if (TwnNm_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'TownName verify';
+			assert PstlAdr_TwnNm_Actual==TwnNm_Exp;
+		}
+		
+		if (CtrySubDvsn_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'CountrySubDivision verify';
+			assert PstlAdr_CtrySubDvsn_Actual==CtrySubDvsn_Exp;
+		}
+		
+		if (Ctry_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'Creditor Country verify';
+			assert PstlAdr_Ctry_Actual==Ctry_Exp;
+		}
+/*
+		//RltdPties.CdtrAcct
+		def CdtrAcct_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.CdtrAcct.Id.Othr.Id.text();
+		def CdtrAcct_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAccount[1]/ns5:identification[1]}' )
+		
+		assert CdtrAcct_Actual==CdtrAcct_Exp;
+		
+			//SchmeNm
+		def CdtrAcct_SchmeNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdPties.CdtrAcct.Id.Othr.SchmeNm.Cd.text();
+		//log.info CdtrAcct_SchmeNm_Actual;
+		if (CdtrAcct_SchmeNm_Actual.length() &lt;= 11)
+		{
+			//log.info "Creditor account BBAN verify";
+			assert CdtrAcct_SchmeNm_Actual == "BBAN";
+		}
+		else 
+		{
+			//log.info "Creditor account IBAN verify";
+			assert CdtrAcct_SchmeNm_Actual == "IBAN";
+		}
+		
+		//RltdAgts.DbtrAgt
+		def DbtrAgt_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.DbtrAgt.FinInstnId.BIC.text();
+		
+		assert DbtrAgt_Actual==DebtAgentBIC_Exp;
+*/		
+		//RltdAgts.PstlAdr
+		def RltdAgts_TwnNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.DbtrAgt.FinInstnId.PstlAdr.TwnNm.text();
+		def RltdAgts_Ctry_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.DbtrAgt.FinInstnId.PstlAdr.Ctry.text();
+		def RltdAgtsr_TwnNm_Exp = context.expand( '${AGENT_PAYMENTINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TOWNNAME[1]}' )
+		def RltdAgts_Ctry_Exp = context.expand( '${AGENT_PAYMENTINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/COUNTRY[1]}' )
+		
+		assert RltdAgts_TwnNm_Actual==RltdAgtsr_TwnNm_Exp;
+		assert RltdAgts_Ctry_Actual==RltdAgts_Ctry_Exp;
+
+		//CdtrAgt.BIC
+		def cBIC_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.CdtrAgt.FinInstnId.BIC.text();
+		def cBIC_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAgent[1]/ns5:bic[1]}' )
+		
+		assert cBIC_Actual==cBIC_Exp;
+
+		//CdtrAgt.Nm
+		def cNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.CdtrAgt.FinInstnId.Nm.text();
+		def cNm_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAgent[1]/ns5:name[1]}' )
+		
+		assert cNm_Actual==cNm_Exp;
+
+		//RltdAgts.CdtrAgt.PstlAdr
+		def CdtrAgt_PstCd_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.CdtrAgt.FinInstnId.PstlAdr.PstCd.text();
+		def CdtrAgt_TwnNm_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.CdtrAgt.FinInstnId.PstlAdr.TwnNm.text();
+		def CdtrAgt_Ctry_Actual = XML.BkToCstmrDbtCdtNtfctn.Ntfctn.Ntry[i].NtryDtls.TxDtls.RltdAgts.CdtrAgt.FinInstnId.PstlAdr.Ctry.text();
+		
+		def CdtrAgt_PstCd_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAgent[1]/ns5:postalAddress[1]/ns5:postCode[1]}' )
+		def CdtrAgt_TwnNm_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAgent[1]/ns5:postalAddress[1]/ns5:townName[1]}' )
+		def CdtrAgt_Ctry_Exp = context.expand( '${PIN_HstRead#Response#declare namespace ns4=\'urn:pins.payment.evry.com:domain:paymentinitiation:v2_0\'; declare namespace ns7=\'urn:pins.payment.evry.com:domain:creditor:v2_0\'; declare namespace ns5=\'urn:pins.payment.evry.com:domain:complex-types:v2_0\'; declare namespace ns2=\'urn:pins.payment.evry.com:ws:paymentinitiation:v2_0\'; //ns2:PaymentHistoricReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transaction[1]/ns7:creditorAgent[1]/ns5:postalAddress[1]/ns5:country[1]}' )
+				
+		if (CdtrAgt_PstCd_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'CAgent postal code verify';
+			assert CdtrAgt_PstCd_Actual==CdtrAgt_PstCd_Exp;
+		}
+		
+		if (CdtrAgt_TwnNm_Exp.toString().isEmpty()==false)
+		{
+			//log.info 'CAgent TownName verify';
+			assert CdtrAgt_TwnNm_Actual==CdtrAgt_TwnNm_Exp;
+		}
+
+		if (CdtrAgt_Ctry_Actual.toString().isEmpty()==false)
+		{
+			//log.info 'CAgent Country verify';
+			assert CdtrAgt_Ctry_Actual==CdtrAgt_Ctry_Exp;
+		}
+		
+		break;
+	}
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:setupScript>assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")</con:setupScript>
+  <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
+  testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}
+else
+{
+	  testCase.testSuite.setPropertyValue("TestSuiteResult", "OK")
+}</con:tearDownScript>
+  <con:properties>
+    <con:property>
+      <con:name>SourceApplication</con:name>
+      <con:value>EVRYCPS</con:value>
+    </con:property>
+    <con:property>
+      <con:name>DestinationApplication</con:name>
+      <con:value>PIN</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ip</con:name>
+      <con:value>1.1.1.1.1</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>3ea94771-e0a8-4eae-9d56-73afd6b5e911</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>699a7a10-95d1-423f-b1f3-6adb48d9cb45</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4ae066e1-ea93-41df-9af5-c8c75f310a4a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e154c6e5-87e8-491f-92ea-7698b5ed3fe5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cbf99a78-32e6-4743-9a3f-e3e5f41906ed</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1ff6d0f3-5a63-4801-9906-f40f19ed2b5a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a2c17e90-71d3-4266-9e90-6e84491bfca8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d9c7fbae-6c4a-4614-a5d8-b2c041acb06b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e66b0c65-e087-46b3-abd4-f23af896d66d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>8ece3e9f-c8ca-4959-8dc8-3fd329a83e76</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

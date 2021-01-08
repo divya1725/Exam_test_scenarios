@@ -72,6 +72,7 @@ CASE
   ELSE  'BM'
 END MARKETTYPEALL
 FROM V_PAYMENT_OVERVIEW_TEST where 1=1 and MARKETTYPE = 'PM'
+and CUSTOMERID not in (01010002474,13094721967)
 order by transactionsid desc fetch first 2 rows only</query>
           <fetchSize/>
           <stored-procedure>false</stored-procedure>
@@ -130,11 +131,11 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
-          <con:value>13094721967</con:value>
+          <con:value>01010013735</con:value>
         </con:property>
         <con:property>
           <con:name>value2</con:name>
-          <con:value>13094721967</con:value>
+          <con:value>01010013735</con:value>
         </con:property>
         <con:property>
           <con:name>credentials</con:name>
@@ -146,11 +147,11 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>13094721967</con:value>
+          <con:value>01010013735</con:value>
         </con:property>
         <con:property>
           <con:name>debitAccount</con:name>
-          <con:value>42021341821</con:value>
+          <con:value>42125638982</con:value>
         </con:property>
         <con:property>
           <con:name>debitAcntccy</con:name>
@@ -158,7 +159,7 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>creditAccount</con:name>
-          <con:value>42025067082</con:value>
+          <con:value>42022558646</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -222,7 +223,7 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>agreementid</con:name>
-          <con:value>13094721967</con:value>
+          <con:value>01010013735</con:value>
         </con:property>
         <con:property>
           <con:name>parentAgreementid</con:name>
@@ -230,7 +231,7 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>endtoendID</con:name>
-          <con:value>skko08121015852</con:value>
+          <con:value>skko08121091133</con:value>
         </con:property>
         <con:property>
           <con:name>debitBankBic</con:name>
@@ -258,15 +259,15 @@ log.info "Aaaaaaaaaaaaaaaaa"</script>
         </con:property>
         <con:property>
           <con:name>addAmount</con:name>
-          <con:value>79354944</con:value>
+          <con:value>1174896677</con:value>
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>79344944.00</con:value>
+          <con:value>740.83</con:value>
         </con:property>
         <con:property>
           <con:name>amount</con:name>
-          <con:value>1000</con:value>
+          <con:value>100</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -831,12 +832,12 @@ int debitAmountInt = Double.parseDouble(debitAmount)
 int availableBalanceInt = Double.parseDouble(availableBalance)
 
 //For Insufficiant balance scenario
-//if (availableBalanceInt &lt; debitAmountInt){
-	def addAmount = availableBalanceInt + 10000
+if (availableBalanceInt &lt; debitAmountInt){
+	def addAmount = availableBalanceInt + 500
 	testRunner.getTestCase().getTestStepByName("Properties").setPropertyValue("addAmount", addAmount.toString())	
-//}else {
-//	testRunner.gotoStep(context.getCurrentStepIndex() +2)	
-//}</script>
+}else {
+	testRunner.gotoStep(context.getCurrentStepIndex() +2)	
+}</script>
     </con:config>
   </con:testStep>
   <con:testStep type="request" id="2065d25a-15ce-4cc9-9890-b4e9664a6db2" name="AddAmount">
@@ -4484,6 +4485,13 @@ if (marketTypeTemp == 'PM') {
       <discardResults>true</discardResults>
     </con:config>
   </con:testStep>
+  <con:tearDownScript>if (testRunner.getStatus().toString() == "FAIL") {
+  testCase.testSuite.setPropertyValue("TestSuiteResult", "FAIL")
+}
+else
+{
+	  testCase.testSuite.setPropertyValue("TestSuiteResult", "OK")
+}</con:tearDownScript>
   <con:properties/>
   <con:reportScript/>
   <con:reportParameters>

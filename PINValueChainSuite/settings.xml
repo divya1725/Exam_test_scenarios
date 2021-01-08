@@ -102,25 +102,30 @@
 //objProject.setScriptLibrary(projPath + File.separator + "scripts")
 //log.info "Project setUp script!!"</con:beforeRunScript>
   <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
-    <con:script>import com.eviware.soapui.impl.wsdl.submit.transports.http.BaseHttpRequestTransport 
+    <con:script disabled="true">import com.eviware.soapui.impl.wsdl.submit.transports.http.BaseHttpRequestTransport 
 String request = (String) context.getProperty( BaseHttpRequestTransport.REQUEST_CONTENT )
 request = request.replaceAll('&lt;wsc:item key=""/>','')
 //// Create groovyUtils and XmlHolder for the request of the Sample Request test step.
 def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context )
 def holder = groovyUtils.getXmlHolder(request )
 
-for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
-//    log.info "itemName-->${item.nodeName}"
-     if( item.nodeName != "wsc:item")
-            item.removeXobj()
-}
-for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
-//    log.info "itemName-->${item.nodeName}"
-     if( item.nodeName != "wsc:item")
-            item.removeXobj()
-}
-holder.updateProperty()
-context.requestContent = holder.xml</con:script>
+if(!request.contains('PCASReservationCreate')){
+		for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
+		//    log.info "itemName-->${item.nodeName}"
+		     if( item.nodeName != "wsc:item")
+		            item.removeXobj()
+		}
+		for( item in holder.getDomNodes( "//*[normalize-space(.) = '' and count(*) = 0]" )){
+		//    log.info "itemName-->${item.nodeName}"
+		     if( item.nodeName != "wsc:item")
+		            item.removeXobj()
+		}
+		holder.updateProperty()
+		context.requestContent = holder.xml
+}else
+{
+	log.info "--->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+}</con:script>
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
     <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
@@ -149,7 +154,6 @@ if ( testStep instanceof JdbcRequestTestStep )
 {
 	def lineSeperator =  "\n ****************************************************************************\n " 
 	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
-	log.info "res--->$res"
 	pw.write(res)
 }
 else{

@@ -155,15 +155,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debit_book
       <con:properties>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>26066309613</con:value>
+          <con:value>15106410000</con:value>
         </con:property>
         <con:property>
           <con:name>userID</con:name>
-          <con:value>26066309613</con:value>
+          <con:value>15106410000</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccount</con:name>
-          <con:value>40680100227</con:value>
+          <con:value>42023281230</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAccountCurrency</con:name>
@@ -171,11 +171,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debit_book
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>476693</con:value>
+          <con:value>409113</con:value>
         </con:property>
         <con:property>
           <con:name>transactionid</con:name>
-          <con:value>260219298</con:value>
+          <con:value>438573</con:value>
         </con:property>
         <con:property>
           <con:name>instamt</con:name>
@@ -183,11 +183,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debit_book
         </con:property>
         <con:property>
           <con:name>debit_booking_ID</con:name>
-          <con:value>10014080000</con:value>
+          <con:value>10167730000</con:value>
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
-          <con:value>309613</con:value>
+          <con:value>15106410000</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -374,7 +374,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debit_book
                      <urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount>
                   </urn2:amountMaxMin>
                </urn1:amount>
-               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+               <urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId>
             </urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
@@ -417,6 +417,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="b948060a-5716-4a4a-96e3-ed406ba0f75d">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="94ac5242-a5d9-4ff4-97b7-c7a3d48bbc14">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -516,7 +563,7 @@ else
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:transactionCriteria>
-               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId>
             </urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoHistoricSearchRequest>
@@ -534,6 +581,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="1c7ec29d-74e5-4112-8b90-5e9613121528">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="276d11f9-a6ba-48fd-9233-bb4f2b892594">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -632,7 +726,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
@@ -649,6 +743,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="3f52b6a0-1970-4cb8-b969-f0d343cb9a3c">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="6716e9d0-af8f-4eb3-a40b-a8770129bc8c">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -749,7 +890,7 @@ else
             </urn1:commonCriteria>
             <urn1:transactionCriteria>
                
-               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId>
             </urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
@@ -767,6 +908,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="16384d3f-f90c-4638-ba3a-06a93ccb82d0">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="5617bdfd-c1da-4ef1-9c80-7e8ebcec18a7">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -866,7 +1054,7 @@ else
                </urn1:elementControl>
             </urn1:commonCriteria>
             <urn1:transactionCriteria>
-               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+               <urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId>
             </urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
@@ -884,6 +1072,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="bc9c3582-637b-4c65-9701-25687197499c">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="5f2be0ec-23e2-4a2e-9986-1d26f9d5a7f2">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -982,7 +1217,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
@@ -999,6 +1234,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="206bbd21-eb1d-4cd5-83d3-e9ff7294fb79">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="12730486-6692-4439-b7a2-1709fff90684">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1097,7 +1379,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
@@ -1114,6 +1396,28 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="f5542efb-9ff0-4938-8020-9b1514e9b950">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1212,7 +1516,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
@@ -1229,6 +1533,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="c722838e-c27f-4edb-894e-f24b42c93c0b">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="897cee2b-e3a4-42ab-a15f-c75e35681e02">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1327,7 +1678,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
@@ -1344,6 +1695,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="a21854e6-aaa7-460a-a42e-2b1f9af0bde1">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="aac451ab-7da9-475a-821b-552a3e9a1ea5">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1442,7 +1840,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
@@ -1459,6 +1857,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="5457a4b5-9bad-4ff4-804c-50000696649c">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="4f5e1b75-4180-4069-84ba-b1da689adf06">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1557,7 +2002,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoHistoricSearchRequest>
    </soapenv:Body>
@@ -1574,6 +2019,28 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="73f1db47-2c3d-4845-a5ec-3b25287a79fb">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1672,7 +2139,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v7"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
@@ -1689,6 +2156,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="93f80779-9cd5-4ea0-bdbc-66797548fd85">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="8a241641-8d5d-40ed-a9aa-b66186383877">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1787,7 +2301,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.evry.com:domain:sepa-complex-types:v6"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
@@ -1804,6 +2318,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="6469293a-a7cf-49d1-ae33-f472a8d76857">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="27c381a7-718e-4c54-968f-4c6d5a15b42a">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -1902,7 +2463,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
@@ -1919,6 +2480,53 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="1b32a805-dfb6-4d4a-85c6-855eb5eedd04">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="700acbf8-1539-428f-9a08-ea9e2d14320a">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -2017,7 +2625,7 @@ else
                   <con:MaximumNumberOfElements>100</con:MaximumNumberOfElements>
                </urn1:elementControl>
             </urn1:commonCriteria>
-            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId></urn1:transactionCriteria>
+            <urn1:transactionCriteria><urn1:amount><urn2:amountMaxMin xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v4"><urn2:minAmount>${#TestCase#AccurateMinAmount}</urn2:minAmount><urn2:maxAmount>${#TestCase#AccurateMaxAmount}</urn2:maxAmount></urn2:amountMaxMin></urn1:amount><urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId><urn1:debitReservationId>${Properties#debit_booking_ID}</urn1:debitReservationId></urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionHistoricSearchRequest>
    </soapenv:Body>
@@ -2034,6 +2642,28 @@ else
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="71d5384d-4ca2-4f9a-ba7f-6574d2b37c02">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -2152,7 +2782,7 @@ else
                <!--Optional:-->
                
                <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:amount><urn3:amountMaxMin><urn3:minAmount>${#TestCase#AccurateMinAmount}</urn3:minAmount><urn3:maxAmount>${#TestCase#AccurateMaxAmount}</urn3:maxAmount></urn3:amountMaxMin></urn1:amount><urn1:showHidden>false</urn1:showHidden>
                <!--Optional:-->
                
                <!--Optional:-->
@@ -2206,6 +2836,53 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="220f014b-45ea-4396-ae5c-d7739546abe5">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="7da5bb6e-6df9-44b1-9909-6906bf6a0589">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -2292,7 +2969,7 @@ declare namespace ns2='http://control.ws.payment.edb.com';
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:amount><urn3:amountMaxMin><urn3:minAmount>${#TestCase#AccurateMinAmount}</urn3:minAmount><urn3:maxAmount>${#TestCase#AccurateMaxAmount}</urn3:maxAmount></urn3:amountMaxMin></urn1:amount><urn1:showHidden>false</urn1:showHidden>
                <!--Optional:-->
                <!--Optional:-->
                <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
@@ -2336,6 +3013,53 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <token>&lt;Message>OK&lt;/Message></token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="48e23a60-acd3-4ce3-9821-96834f4fa770">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="143c3934-291f-451d-aff5-490676156547">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -2433,7 +3157,7 @@ declare namespace ns2='http://control.ws.payment.edb.com';
                <!--Optional:-->
                
                <!--Optional:-->
-               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:amount><urn3:amountMaxMin><urn3:minAmount>${#TestCase#AccurateMinAmount}</urn3:minAmount><urn3:maxAmount>${#TestCase#AccurateMaxAmount}</urn3:maxAmount></urn3:amountMaxMin></urn1:amount><urn1:showHidden>false</urn1:showHidden>
                <!--Optional:-->
                
                <!--Optional:-->
@@ -2488,6 +3212,53 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <useRegEx>false</useRegEx>
           </con:configuration>
         </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Debit booking id" id="746d34a6-366d-4e7e-96cc-149f9f757613">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def debitbookingid = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitReservationId[1]}' ) as long
+def debit_booking_ID = context.expand( '${Properties#debit_booking_ID}' ) as long
+
+	if (debitbookingid.equals(debit_booking_ID))
+	{
+		assert true;
+	}
+	else{
+	assert false,"debit booking id in search is incorrect";
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="Script Assertion Amount" id="331f6186-f5f0-4e00-a00f-069471c17207">
+          <con:configuration>
+            <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
+
+
+def Count = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
+def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
+Count = Count+1;
+for ( int i=1;i&lt;Count;i++)
+
+{
+def Amount = context.expand( '${'+testcaseName+'#Response#//*//*/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
+	{
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
+		
+	}
+	else
+	{
+		assert true;
+	}
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
@@ -2528,7 +3299,7 @@ declare namespace ns2='http://control.ws.payment.edb.com';
     </con:property>
     <con:property>
       <con:name>SourceApplication</con:name>
-      <con:value>EVRYINT</con:value>
+      <con:value>EVRYCPS</con:value>
     </con:property>
     <con:property>
       <con:name>userid</con:name>

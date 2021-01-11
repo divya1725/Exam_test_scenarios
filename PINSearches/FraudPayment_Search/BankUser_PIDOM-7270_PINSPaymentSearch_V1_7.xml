@@ -24,7 +24,7 @@
          <wsc:Version>1.9</wsc:Version>
          <wsc:ClientContext>
             <wsc:userid>${#TestSuite#UserID}</wsc:userid>
-            <wsc:credentials>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</wsc:credentials>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
             <wsc:orgid>${#TestSuite#BankID}</wsc:orgid>
             <!--Optional:-->
@@ -49,10 +49,10 @@
                <urn1:elementControl>
                   <con:StartIndex xmlns:con="http://control.ws.payment.edb.com">0</con:StartIndex>
                   <con:MaximumNumberOfElements xmlns:con="http://control.ws.payment.edb.com">100</con:MaximumNumberOfElements>
-               </urn1:elementControl><urn1:debtorAccount>44760170973</urn1:debtorAccount>
+               </urn1:elementControl><urn1:debtorAccount>${#TestSuite#accountNumber}</urn1:debtorAccount>
             </urn1:commonCriteria>
             <urn1:accountCriteria xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7">
-               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:showHidden>false</urn1:showHidden><urn1:messageId>${#[FraudPayment_Search#DB_Properties#Fraud Paymentcreate with IP]#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId>
             </urn1:accountCriteria>
          </urn:searchCriteria>
       </urn:PaymentAccountSearchRequest>
@@ -73,62 +73,14 @@
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="cf8c434b-3c1b-4451-8127-c816e870a716">
+        <con:assertion type="GroovyScriptAssertion" name="OperationalArrayValidation" id="49e098c7-fbde-44c9-9932-e3f5d123ba5d">
           <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+            <scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
+def OperationArray = [] //Array list
+def XMLContainer = groovyUtils.getXmlHolder(context.getCurrentStep().getLabel() + "#Response")
+ 
+OperationArrayViewPayment = XMLContainer.getNodeValues("//*:operationsArray")
+assert OperationArrayViewPayment.contains("REMOVE_FRAUD_FLAG"),"Operation array REMOVE_FRAUD_FLAG not found"</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -166,7 +118,7 @@ fout.append("===================================================================
          <wsc:Version>1.9</wsc:Version>
          <wsc:ClientContext>
             <wsc:userid>${#TestSuite#UserID}</wsc:userid>
-            <wsc:credentials>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</wsc:credentials>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
             <wsc:orgid>${#TestSuite#BankID}</wsc:orgid>
             <!--Optional:-->
@@ -191,10 +143,10 @@ fout.append("===================================================================
                <urn1:elementControl>
                   <con:StartIndex xmlns:con="http://control.ws.payment.edb.com">0</con:StartIndex>
                   <con:MaximumNumberOfElements xmlns:con="http://control.ws.payment.edb.com">100</con:MaximumNumberOfElements>
-               </urn1:elementControl><urn1:debtorAccount>44760170973</urn1:debtorAccount>
+               </urn1:elementControl><urn1:debtorAccount>${#TestSuite#accountNumber}</urn1:debtorAccount>
             </urn1:commonCriteria>
             <urn1:messageCriteria xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7">
-               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:showHidden>false</urn1:showHidden><urn1:messageId>${#[FraudPayment_Search#DB_Properties#Fraud Paymentcreate with IP]#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId>
             </urn1:messageCriteria>
          </urn:searchCriteria>
       </urn:PaymentMessageSearchRequest>
@@ -215,62 +167,14 @@ fout.append("===================================================================
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="eadefdaa-1830-44c3-b5d6-0c7327929235">
+        <con:assertion type="GroovyScriptAssertion" name="OperationalArrayValidation" id="5190a12f-7588-488e-8f9e-d625ee7ea07a">
           <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+            <scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
+def OperationArray = [] //Array list
+def XMLContainer = groovyUtils.getXmlHolder(context.getCurrentStep().getLabel() + "#Response")
+ 
+OperationArrayViewPayment = XMLContainer.getNodeValues("//*:operationsArray")
+assert OperationArrayViewPayment.contains("REMOVE_FRAUD_FLAG"),"Operation array REMOVE_FRAUD_FLAG not found"</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -302,13 +206,13 @@ fout.append("===================================================================
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
    <soapenv:Header>
       <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v21">
-          <wsc:SourceApplication>${#TestSuite#SorceApplication}</wsc:SourceApplication>
+         <wsc:SourceApplication>${#TestSuite#SorceApplication}</wsc:SourceApplication>
          <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>PaymentCreate</wsc:Function>
          <wsc:Version>1.9</wsc:Version>
          <wsc:ClientContext>
             <wsc:userid>${#TestSuite#UserID}</wsc:userid>
-            <wsc:credentials>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</wsc:credentials>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
             <wsc:orgid>${#TestSuite#BankID}</wsc:orgid>
             <!--Optional:-->
@@ -333,10 +237,13 @@ fout.append("===================================================================
                <urn1:elementControl>
                   <con:StartIndex xmlns:con="http://control.ws.payment.edb.com">0</con:StartIndex>
                   <con:MaximumNumberOfElements xmlns:con="http://control.ws.payment.edb.com">100</con:MaximumNumberOfElements>
-               </urn1:elementControl><urn1:debtorAccount>44760170973</urn1:debtorAccount>
+               </urn1:elementControl>
+               <urn1:debtorAccount>${#TestSuite#accountNumber}</urn1:debtorAccount>
+               
             </urn1:commonCriteria>
             <urn1:paymentInfoCriteria xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7">
                <urn1:showHidden>false</urn1:showHidden>
+               <urn1:messageId>${#[FraudPayment_Search#DB_Properties#Fraud Paymentcreate with IP]#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId>
             </urn1:paymentInfoCriteria>
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoSearchRequest>
@@ -357,62 +264,14 @@ fout.append("===================================================================
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="c7a33d83-ad3b-4056-8cfa-87e569101e44">
+        <con:assertion type="GroovyScriptAssertion" name="OperationalArrayValidation" id="859cd8bc-f506-4003-8f38-d2e362a914d6">
           <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+            <scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
+def OperationArray = [] //Array list
+def XMLContainer = groovyUtils.getXmlHolder(context.getCurrentStep().getLabel() + "#Response")
+ 
+OperationArrayViewPayment = XMLContainer.getNodeValues("//*:operationsArray")
+assert OperationArrayViewPayment.contains("REMOVE_FRAUD_FLAG"),"Operation array REMOVE_FRAUD_FLAG not found"</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>
@@ -450,7 +309,7 @@ fout.append("===================================================================
          <wsc:Version>1.9</wsc:Version>
          <wsc:ClientContext>
             <wsc:userid>${#TestSuite#UserID}</wsc:userid>
-            <wsc:credentials>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</wsc:credentials>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
             <wsc:orgid>${#TestSuite#BankID}</wsc:orgid>
             <!--Optional:-->
@@ -475,13 +334,13 @@ fout.append("===================================================================
                <urn1:elementControl>
                   <con:StartIndex xmlns:con="http://control.ws.payment.edb.com">0</con:StartIndex>
                   <con:MaximumNumberOfElements xmlns:con="http://control.ws.payment.edb.com">100</con:MaximumNumberOfElements>
-               </urn1:elementControl><urn1:debtorAccount>44760170973</urn1:debtorAccount>
+               </urn1:elementControl><urn1:debtorAccount>${#TestSuite#accountNumber}</urn1:debtorAccount>
             </urn1:commonCriteria>
             <urn1:transactionCriteria xmlns:urn1="urn:pins.payment.evry.com:domain:search:v1_7">
                <urn1:showHidden>false</urn1:showHidden>
                <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
                <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
-               <urn1:sourceRegister>PWH_AND_RBS</urn1:sourceRegister>
+               <urn1:messageId>${#[FraudPayment_Search#DB_Properties#Fraud Paymentcreate with IP]#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:messageId[1]}</urn1:messageId><urn1:sourceRegister>PWH_AND_RBS</urn1:sourceRegister>
             </urn1:transactionCriteria>
          </urn:searchCriteria>
       </urn:PaymentTransactionSearchRequest>
@@ -502,62 +361,14 @@ fout.append("===================================================================
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" name="Script Assertion" id="243d31df-08fe-44a1-a47d-1542f1fe4327">
+        <con:assertion type="GroovyScriptAssertion" name="OperationalArrayValidation" id="ed41b187-1138-46f2-9ea1-24e8084fe833">
           <con:configuration>
-            <scriptText>import com.eviware.soapui.support.XmlHolder
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-def path=context.expand( '${projectDir}')
-String curStepName = (String)context.getCurrentStep().getLabel()
-
-def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-def response = groovyUtils.getXmlHolder(curStepName + "#Response")
-def errorCode=response.getNodeValue("//*:ErrorCode");
-def testCase = context.getCurrentStep().getTestCase().getLabel()
-def endPoint = messageExchange.getEndpoint()
-
-path=path+"\\results"
-File dir = new File(path);
-if (!dir.exists())
-{
-                log.info 'Creating Directory'
-                dir.mkdir();
-}
-
-Date date = new Date();
-SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
-df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
-
-def datetime = df.format(date)
-
-SimpleDateFormat fn = new SimpleDateFormat("dd-M-yyyy hh_mm_ss a zz");    
-def fileName = fn.format(date)
-
-//log.info path 
-def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
-
-
-fout.write("Time Submitted		:	"+datetime+"\r\n")
-fout.append("End Point Used		:	"+endPoint+"\r\n")
-fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
-fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
-fout.append(messageExchange.getRequestHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")
-fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
-fout.append(messageExchange.getResponseHeaders())
-fout.append("\n\n")
-fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
-fout.append("\r\n\r\n","UTF-8")
-fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+            <scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
+def OperationArray = [] //Array list
+def XMLContainer = groovyUtils.getXmlHolder(context.getCurrentStep().getLabel() + "#Response")
+ 
+OperationArrayViewPayment = XMLContainer.getNodeValues("//*:operationsArray")
+assert OperationArrayViewPayment.contains("REMOVE_FRAUD_FLAG"),"Operation array REMOVE_FRAUD_FLAG not found"</scriptText>
           </con:configuration>
         </con:assertion>
         <con:credentials>

@@ -69,10 +69,10 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNum
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
+
 
 def EndtoEndID = "Err_"+datetime;
-log.info EndtoEndID
+
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );</script>
     </con:config>
   </con:testStep>
@@ -197,11 +197,11 @@ import java.io.Reader
 
 //MsgID
 def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
-log.info MsgID;
+
 
 //Initial Message to send
 def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
-log.info(messageToSend)
+
 
 //Parmeters needed in message
 def Account = context.expand( '${Properties#accountNumber}' )
@@ -216,7 +216,7 @@ messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
 messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
 messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
 messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
-log.info messageToSend
+
 
 //Set 'messagetoSend_currentTC  property value with updated message
 def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
@@ -229,7 +229,7 @@ def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValu
 import MQMessageUtils;
 
 def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
-log.info(filecontent)
+
 
 //def filecontent = context.expand( '${TestCase#messagetoSend}' )
 
@@ -246,7 +246,7 @@ def msgId = context.expand( '${Properties#MsgId}' )
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)
 
 System.sleep(3000)
 testRunner.runTestStepByName("fetchPain002FromMqPayload")
@@ -262,8 +262,6 @@ if (!(("No messsage").equals(receiveMessage))){
 	ArrayList&lt;String> txsStatus= response.getNodeValues("//*:TxSts");
 	ArrayList&lt;String> status= response.getNodeValues("//*:Cd");
 	ArrayList&lt;String> statusreason= response.getNodeValues("//*:AddtlInf");
-	log.info status;
-	log.info statusreason;
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("txsActualStatus",txsStatus[0]);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatus",status[2]);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReason",statusreason[0]);
@@ -505,18 +503,17 @@ def txsActualStatus = context.expand( '${Properties#txsActualStatus}' )
 if (!actualStatus.equals(expectedStatus)) 
 {
 	assert false,"Status is invalid";
-	log.info "Status is invalid"
+	
 }
 if (!actualStatusReason.equals(expectedStatusReason)) 
 {
 	assert false,"Status Reason is invalid";
-	log.info "Status Reason is invalid"
+	
 }
 
 if (!txsActualStatus.equals(txsExpectedStatus)) 
 {
-	assert false, "Group Status is invalid";
-	log.info "Group Status is invalid"
+	assert false, "RJCT Status is invalid";
 }</script>
     </con:config>
   </con:testStep>

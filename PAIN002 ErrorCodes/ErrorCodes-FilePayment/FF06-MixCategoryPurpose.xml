@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <con:testCase id="2d660c53-e9da-47db-adb9-6beb53ae3c81" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="FF06-MixCategoryPurpose" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
-  <con:description>TC will create Error Codes for AM20-InvalidPaymentInfoNumberOfTransactions</con:description>
+  <con:description>TC will create Error Codes for FF06-MixCategoryPurpose</con:description>
   <con:settings>
     <con:setting id="2d660c53-e9da-47db-adb9-6beb53ae3c81fileName">FF06-MixCategoryPurpose</con:setting>
   </con:settings>
@@ -73,10 +73,10 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNum
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
+
 
 def EndtoEndID = "Err_"+datetime;
-log.info EndtoEndID
+
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );
 
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("txsActualStatus","");
@@ -230,11 +230,11 @@ import java.io.Reader
 
 //MsgID
 def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
-log.info MsgID;
+
 
 //Initial Message to send
 def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
-log.info(messageToSend)
+
 
 //Parmeters needed in message
 def Account = context.expand( '${Properties#accountNumber}' )
@@ -250,7 +250,7 @@ messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
 messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
 messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
 messageToSend = messageToSend.replaceAll("CREDITORACCOUNTNUMBER",creditorAccountNumber) ;
-log.info messageToSend
+
 
 //Set 'messagetoSend_currentTC  property value with updated message
 def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
@@ -263,7 +263,7 @@ def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValu
 import MQMessageUtils;
 
 def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
-log.info(filecontent)
+
 
 //def filecontent = context.expand( '${TestCase#messagetoSend}' )
 
@@ -280,14 +280,14 @@ def msgId = context.expand( '${Properties#MsgId}' )
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)
 
 System.sleep(3000)
 testRunner.runTestStepByName("fetchPain002FromMqPayload")
 def receiveMessage = context.expand( '${fetchPain002FromMqPayload#result}' )
 receiveMessage = receiveMessage.trim()
 def receivepain001 = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessagePain002",receiveMessage);
-log.info "msgId -->$msgId"
+
 
 if (!(("No messsage").equals(receiveMessage))){
 	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
@@ -296,8 +296,7 @@ if (!(("No messsage").equals(receiveMessage))){
 	ArrayList&lt;String> txsStatus= response.getNodeValues("//*:TxSts");
 	ArrayList&lt;String> status= response.getNodeValues("//*:Cd");
 	ArrayList&lt;String> statusreason= response.getNodeValues("//*:AddtlInf");
-	log.info status;
-	log.info statusreason;
+
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("txsActualStatus",txsStatus[0]);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatus",status[2]);
 	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReason",statusreason[0]);

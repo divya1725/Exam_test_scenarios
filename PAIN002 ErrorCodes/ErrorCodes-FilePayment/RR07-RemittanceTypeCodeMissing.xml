@@ -69,10 +69,10 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNum
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
+
 
 def EndtoEndID = "Err_"+datetime;
-log.info EndtoEndID
+
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );
 
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReason","")
@@ -204,11 +204,11 @@ import java.io.Reader
 
 //MsgID
 def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
-log.info MsgID;
+
 
 //Initial Message to send
 def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
-log.info(messageToSend)
+
 
 //Parmeters needed in message
 def Account = context.expand( '${Properties#accountNumber}' )
@@ -223,7 +223,7 @@ messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
 messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
 messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
 messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
-log.info messageToSend
+
 
 //Set 'messagetoSend_currentTC  property value with updated message
 def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
@@ -253,7 +253,7 @@ def msgId = context.expand( '${Properties#MsgId}' )
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)
 // Receive message from MQ
 System.sleep(3000)
 //String receiveMessage = mqMessageUtils.browseMessage(mQMessageQueueRecieve,msgId);
@@ -263,7 +263,7 @@ testRunner.runTestStepByName("fetchPain002FromMqPayload")
 def receiveMessage = context.expand( '${fetchPain002FromMqPayload#result}' )
 receiveMessage = receiveMessage.trim()
 def receivepain001 = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessagePain002",receiveMessage);
-log.info "msgId -->$msgId"
+
 
 if (!(("No messsage").equals(receiveMessage))){
 	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
@@ -578,32 +578,32 @@ def txsActualStatus = context.expand( '${Properties#txsActualStatus}' )
 if (actualStatus.equals(expectedStatus)) 
 {
 	assert true;
-	log.info "Status is valid"
+	
 }
 else 
 {
-	assert false;
-	log.info "Status is invalid"
+	assert false,"Status is invalid";
+	
 }
 if (actualStatusReason.equals(expectedStatusReason)) 
 {
 	assert true;
-	log.info "Status Reason is valid"
+	
 }
 else 
 {
 	assert false,"actualStatusReason:$actualStatusReason and expectedStatusReason:$expectedStatusReason"
-	log.info "Status Reason is invalid"
+	
 }
 if (txsActualStatus.equals(txsExpectedStatus)) 
 {
 	assert true;
-	log.info "Group Status is valid"
+	
 }
 else 
 {
 	assert false;
-	log.info "Group Status is invalid"
+	
 }</script>
     </con:config>
   </con:testStep>

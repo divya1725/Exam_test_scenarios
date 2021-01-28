@@ -69,10 +69,10 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNum
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
+
 
 def EndtoEndID = "Err_"+datetime;
-log.info EndtoEndID
+
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",EndtoEndID );</script>
     </con:config>
   </con:testStep>
@@ -152,11 +152,11 @@ import java.io.Reader
 
 //MsgID
 def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgID');
-log.info MsgID;
+
 
 //Initial Message to send
 def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
-log.info(messageToSend)
+
 
 //Parmeters needed in message
 def Account = context.expand( '${Properties#accountNumber}' )
@@ -171,7 +171,7 @@ messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
 messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
 messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
 messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
-log.info messageToSend
+
 
 //Set 'messagetoSend_currentTC  property value with updated message
 def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);</script>
@@ -184,7 +184,7 @@ def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValu
 import MQMessageUtils;
 
 def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
-log.info(filecontent)
+
 
 //def filecontent = context.expand( '${TestCase#messagetoSend}' )
 
@@ -201,21 +201,7 @@ def msgId = context.expand( '${Properties#MsgId}' )
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
-// Receive message from MQ
-String receiveMessage = mqMessageUtils.receiveMessage(mQMessageQueueRecieve);
-//Check results only if received message
-log.info msgId
-if (!(("No messsage").equals(receiveMessage))){
-	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-	def response = groovyUtils.getXmlHolder(receiveMessage)
-	log.info  response.getNodeValue("//*:OrgnlMsgId");
-	ArrayList&lt;String> list= response.getNodeValues("//*:AddtlInf");
-	log.info list;
-// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
-}
-// No message
-else log.info "No message received"</script>
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)</script>
     </con:config>
   </con:testStep>
   <con:testStep type="delay" name="Delay" id="7529beee-7071-4aed-ac54-569d965d980b">

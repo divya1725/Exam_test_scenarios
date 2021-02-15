@@ -1,0 +1,1268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="62fedc83-7cff-4d99-8336-9f2a50327fc1" created="3.0.0" activeEnvironment="G-D4" name="PaymentStatusUpdateAsync" resourceRoot="" updated="3.5.2" encryptionMode="Not encrypted" scriptLibrary="C:\Ullasa\projects\legacySoapUI\pin-legacy-soapui\Payment Renewal Releases\PaymentStatusUpdateAsyncApprove\scripts" defaultScriptLanguage="Groovy" disableCarriageReturnEscaping="false" compositeProjectFormat="1.3" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="62fedc83-7cff-4d99-8336-9f2a50327fc1fileName">PaymentStatusUpdateAsync</con:setting>
+    <con:setting id="IncludeOverview">true</con:setting>
+    <con:setting id="IncludeResults">true</con:setting>
+    <con:setting id="FlowLayout">true</con:setting>
+    <con:setting id="ErrorDetails">true</con:setting>
+    <con:setting id="IncludeCoverage">true</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>G_D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer>
+    <con:databaseConnection>
+      <con:name>PWHDATA</con:name>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+    <con:databaseConnection>
+      <con:name>Journal_DB</con:name>
+      <con:driver xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+      <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+      <con:password/>
+      <con:connectionProperties/>
+    </con:databaseConnection>
+  </con:databaseConnectionContainer>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>//def objProject = context.getProject()
+//def projPath = objProject.getPath()
+//objProject.setScriptLibrary(projPath + File.separator + "scripts")
+//log.info "TestSuite setUp script!!"</con:beforeRunScript>
+  <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
+    <con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+// This code is often used for adding custom authentication to SoapUI Pro tests
+
+// If hardcoding the token, uncomment and change line 5
+// def token = '4567'
+
+// If your token is parameterized in Project level custom property, uncomment line 8
+// def token = request.parent.testCase.testSuite.project.getProperty('auth_token').getValue()
+
+// To modify all outgoing calls, remove comments from lines 11 to 16
+// def headers = request.requestHeaders
+// if (headers.containsKey('auth_token2') == false) {
+//   headers.put('auth_token2', token)
+//   request.requestHeaders = headers
+// }</con:script>
+  </con:eventHandlers>
+  <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
+    <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+def now = new Date()
+def time =  now.format("yyyyMMddHHmmssSSS", TimeZone.getTimeZone('UTC'))
+def date1 = now.format("yyyyMMdd", TimeZone.getTimeZone('UTC')).toString()
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+log.info "Before-->"
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+else{
+	log.info CurrentStep
+	testStepResult.writeTo(pw)
+}
+ pw.close()
+ fos.close()</con:script>
+  </con:eventHandlers>
+  <con:environment id="84e0c1d5-f739-4d5e-ab88-b993a10648d3" name="G-D4" index="0">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value>ald-eos-g-app02.man.cosng.net:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value>ald-eos-g-app04.man.cosng.net:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="4ad0d562-d339-4747-b5ce-545f936c7da7" name="G-D2" index="1">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value>ald-eos-g-app02.man.cosng.net:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value>ald-eos-g-app04.man.cosng.net:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdata/pwh@//10.246.89.97:1530/pwh_g_functional</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="68803a2d-1992-4416-a149-eb6db0c6ac55" name="G-D6" index="2">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value>ald-eos-g-app02.man.cosng.net:22411</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value>ald-eos-g-app04.man.cosng.net:22641</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d6</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="b147d711-512e-48b0-b4ff-bed29fa49e50" name="G-S1" index="3">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value>10.246.89.245:10810</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value>QT0PPI</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value>10.246.89.48</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value>1430</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value>QT0PPI.SEPA.CL</con:value>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value>PAIN001.PRSYS.CPS.PIN</con:value>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value>PAIN002.PRSYS.PIN.CPS</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value/>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString>jdbc:oracle:thin:journal/journalt@//dlt-exa853-scan.unix.cosng.net:1530/JRN_G_S2</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="c9c301af-8ea8-4f2c-acfb-070c94825ab7" name="G-D7" index="4">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D7}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pendata/pen@10.246.89.97:1530/pen_g_sprint</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:journal/journalt@//dlt-exa853-scan.unix.cosng.net:1530/JRN_G_S2</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:environment id="71f026b6-3930-403d-acdc-077409928c0c" name="G-D5" index="5">
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentAuthorization_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentAuthorization_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentAuthorization_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentAuthorization_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentPredefinedCreditor_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentSearch_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentSearch_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentStatusUpdate_V1_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPaymentStatusUpdate_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPaymentStatusUpdate_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PAYSPayment_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PAYSPayment_V1_4</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentAccountForecastSearch_V1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAccountForecastSearch_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentAccountForecastSearch_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentPredefinedCreditor_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V1_8</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentSearch_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentSearch_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentStatusUpdate_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_3PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentStatusUpdate_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_4PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentStatusUpdate_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V1_5PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_1PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentUtil_V1_1</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V1_2PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentUtil_V1_2</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPaymentUtil_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPaymentUtil_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_10PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V1_10</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_6PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V1_6</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_7PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V1_7Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_8PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V1_8Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V1_9PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V1_9</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSPayment_V2_0</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_1ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V1_1Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_2ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V1_2Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_3ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V1_3Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_4ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V1_4Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V1_5ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V1_5Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="PINSStandingOrder_V2_0ServicePortTypeSoap11">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D5}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+    </con:service>
+    <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>G_D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqManager</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqHostname</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqPort</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannel</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>mqChannelAuth</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>sendQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>receiveQueue</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G_D7</con:name>
+      <con:value>10.246.89.106:24901</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G_D5</con:name>
+      <con:value>10.246.89.107:22561</con:value>
+    </con:property>
+    <con:databaseConnectionContainer>
+      <con:databaseConnection>
+        <con:name>PWHDATA</con:name>
+        <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+        <con:connectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:connectionString>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+      <con:databaseConnection>
+        <con:name>Journal_DB</con:name>
+        <con:driver xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:connectionString xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <con:password/>
+        <con:connectionProperties/>
+      </con:databaseConnection>
+    </con:databaseConnectionContainer>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:environmentSpec>
+    <con:entry environmentId="73e7090b-feec-4449-97ed-5b6826381c56">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="8ffdc736-c8b5-4437-98df-a7dd6e6f2610">
+      <con:authProfile>No Authorization</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tags/>
+</con:soapui-project>

@@ -38,7 +38,7 @@ pipeline {
         )
 	   choice(
             name: 'SuiteName',
-            choices: ['', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','OnlineReservation','PAIN002 ErrorCodes','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','STOLBatchExecution','TransferSettlementBatch','VIP'],          
+            choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','OnlineReservation','PAIN002 ErrorCodes','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP'],          
             description: 'Select a project to run'
         )
 		

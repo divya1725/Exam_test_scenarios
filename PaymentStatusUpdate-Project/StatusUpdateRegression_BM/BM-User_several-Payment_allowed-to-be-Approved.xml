@@ -1,0 +1,1239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="d4972b76-ea7f-4b61-9464-3addf4efe24e" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BM User_several Payment_allowed to be Approved" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>BM User creates Several Payments with filePayment status with-TBAP.
+Verify Payment status In Transactions.
+Process the Auth Request
+Process the Payment Apporove and verify, it should be in RFDD.</con:description>
+  <con:settings>
+    <con:setting id="d4972b76-ea7f-4b61-9464-3addf4efe24efileName">BM-User_several-Payment_allowed-to-be-Approved</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="Fetch Account" id="05a28750-b49b-4a45-b00d-97755f8d87d9">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select CUSTOMERID,ACCOUNTNUMBER  from V_authorisation
+where CUSTBANKID='4201'
+and length(customerID)='11'
+and ROWNUM = 1</con:query>
+      <con:assertion type="MessageContentAssertion" id="92f7cf92-0dcd-4115-af04-077753aeb526" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
+            <con:element>CUSTOMERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>01010077571</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]</con:xpath>
+            <con:element>ACCOUNTNUMBER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>42125748338</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount" id="d67db569-b826-459f-a990-1d3f20ca430d">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+ 
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debtorAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="6fc6d1f9-4bdf-4abc-9964-ebb043b20374">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>SourceApplication</con:name>
+          <con:value>EVRYCPS</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DestinationApplication</con:name>
+          <con:value>PINS</con:value>
+        </con:property>
+        <con:property>
+          <con:name>UserID</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>channel</con:name>
+          <con:value>NBA</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>AgreementId</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>debitAccount</con:name>
+          <con:value>42125748338</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountOwnerIdentifier</con:name>
+          <con:value>00956027993</con:value>
+        </con:property>
+        <con:property>
+          <con:name>currencyCode</con:name>
+          <con:value>NOK</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountType</con:name>
+          <con:value>CoreAccount</con:value>
+        </con:property>
+        <con:property>
+          <con:name>approvalLimit</con:name>
+          <con:value>500000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>registerLimit</con:name>
+          <con:value>500000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>numberOfVerifiers</con:name>
+          <con:value>0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>numberOfApprovers</con:name>
+          <con:value>1</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bookingLevel</con:name>
+          <con:value>T</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel_BM</con:name>
+          <con:value>BES</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>9ddab84f-82d6-491e-a887-5e1863310c92</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSend</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>CUSTOMERID</agreementId><bankId>4201</bankId><userId>CUSTOMERID</userId><userFirstName>Ram</userFirstName><userLastName>Sharma</userLastName><userIdType>USAG</userIdType><productID>11</productID><organizationId>CUSTOMERID</organizationId><preapproved>false</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>NDR</origin><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>debitAccount</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>0</approvalLimit><registerLimit>0</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>DATET14:24:06</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest> ]]]]>><![CDATA[</auth><content><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>MSG_TIMESTAMP</MsgId><CreDtTm>DATET16:00:00.053+02:00</CreDtTm><NbOfTxs>2</NbOfTxs><CtrlSum>25.00</CtrlSum><InitgPty><Nm>Mentor Medier AS</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>CUSTOMERID</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>1502</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>2</NbOfTxs><CtrlSum>25.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>DATE</ReqdExctnDt><Dbtr><Nm>filepay AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>Postboks 1337</AdrLine><AdrLine>0107 OSLO</AdrLine></PstlAdr><Id><OrgId><Othr><Id>CUSTOMERID</Id><SchmeNm><Cd>USAG</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>debitAccount</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>filepay01</InstrId><EndToEndId>TIMESTAMP</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>COBADEFFXXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>CREDITOR</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry><AdrLine>STREET</AdrLine><AdrLine>STREET2</AdrLine></PstlAdr><CtryOfRes>DE</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>DE89370400440532013000</Id></Othr></Id></CdtrAcct></CdtTrfTxInf><CdtTrfTxInf><PmtId><InstrId>filepay02</InstrId><EndToEndId>TIMESTAMP</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">15.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>COBADEFFXXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>CREDITOR</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry><AdrLine>STREET</AdrLine><AdrLine>STREET2</AdrLine></PstlAdr><CtryOfRes>DE</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>DE89370400440532013000</Id></Othr></Id></CdtrAcct></CdtTrfTxInf>	</PmtInf></CstmrCdtTrfInitn></Document> ]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend_Updated</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>01010077571</agreementId><bankId>4201</bankId><userId>01010077571</userId><userFirstName>Ram</userFirstName><userLastName>Sharma</userLastName><userIdType>USAG</userIdType><productID>11</productID><organizationId>01010077571</organizationId><preapproved>false</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>NDR</origin><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>42125748338</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>0</approvalLimit><registerLimit>0</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2020-09-25T14:24:06</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest> ]]]]>><![CDATA[</auth><content><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>MSG_25920063143</MsgId><CreDtTm>2020-09-25T16:00:00.053+02:00</CreDtTm><NbOfTxs>2</NbOfTxs><CtrlSum>25.00</CtrlSum><InitgPty><Nm>Mentor Medier AS</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>01010077571</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>1502</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>2</NbOfTxs><CtrlSum>25.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2020-09-25</ReqdExctnDt><Dbtr><Nm>filepay AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>Postboks 1337</AdrLine><AdrLine>0107 OSLO</AdrLine></PstlAdr><Id><OrgId><Othr><Id>01010077571</Id><SchmeNm><Cd>USAG</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>42125748338</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>filepay01</InstrId><EndToEndId>25920063143</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>COBADEFFXXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>CREDITOR</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry><AdrLine>STREET</AdrLine><AdrLine>STREET2</AdrLine></PstlAdr><CtryOfRes>DE</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>DE89370400440532013000</Id></Othr></Id></CdtrAcct></CdtTrfTxInf><CdtTrfTxInf><PmtId><InstrId>filepay02</InstrId><EndToEndId>25920063143</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="NOK">15.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>COBADEFFXXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>CREDITOR</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>DE</Ctry><AdrLine>STREET</AdrLine><AdrLine>STREET2</AdrLine></PstlAdr><CtryOfRes>DE</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>DE89370400440532013000</Id></Othr></Id></CdtrAcct></CdtTrfTxInf>	</PmtInf></CstmrCdtTrfInitn></Document> ]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>receiveQueue</con:name>
+          <con:value>QT0PPI.PAIN001.PRSYS.CPS.PIN.ONLINE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>EndtoEndID</con:name>
+          <con:value>25920063143</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MsgID</con:name>
+          <con:value>StatusUpdate_25920063143</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Key1</con:name>
+          <con:value>PaymentChannel</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Value1</con:name>
+          <con:value>BES</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Key2</con:name>
+          <con:value>AgreementId</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Value2</con:name>
+          <con:value>01010077571</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Key3</con:name>
+          <con:value>LogRef</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Value3</con:name>
+          <con:value>${=java.util.UUID.randomUUID().toString()}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Set_Queue_Details_And_File" id="857644fd-d474-460e-b4ea-e70b5b9d92ab">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+log.info datetime
+
+def EndtoEndID = datetime;
+log.info EndtoEndID
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndtoEndID",EndtoEndID );
+
+def MsgID = "StatusUpdate_"+datetime;
+log.info MsgID
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgID",MsgID );
+
+
+def messageToSend = context.expand('${Properties#MessageToSend}')
+log.info(messageToSend)
+
+def Account = context.expand( '${Properties#debitAccount}')
+def customerid = context.expand('${Properties#customerid}')
+def dueDate = context.expand( '${Properties#DueDate}')
+
+
+messageToSend = messageToSend.replaceAll("TIMESTAMP",datetime) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("debitAccount",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+
+log.info messageToSend
+
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend_Updated",messageToSend );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushAndReceiveFilePayment" id="0d5a9026-739d-4779-803f-ae2c2a957b97">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+def filecontent = context.expand('${Properties#messagetoSend_Updated#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\';//ns1:Wrapper[1]}')
+
+
+// Set MQ properties
+def mQHostName = context.expand('${#Project#mqHostname}')
+def int mQPort = context.expand('${#Project#mqPort}') as Integer
+def mQQueuemanager = context.expand('${#Project#mqManager}')
+def mQChannelAuth = context.expand('${#Project#mqChannelAuth}')
+def mQMessageQueueSend = context.expand('${#Project#sendQueue}')
+def mQMessageQueueRecieve = context.expand('${#Project#receiveQueue}')
+def msgId = context.expand('${#Properties#MsgId}')
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="74cba66a-1b79-4615-8fb7-9559d59a2288">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Verify Paymentstatus-DB" id="d220dd63-1f00-417c-b874-2ea7173f1fb1">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select unique(A.MESSAGEID),A.MARKETTYPE,A.MESSAGEIDENTIFICATION,C.ENDTOENDID,C.DEBITCOUNTERVALUEAMT,
+ A.NUMBEROFTRANSACTIONS,C.TRANSACTIONSID,C.FK_PAYMENTINFOID,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.MARKETPRODUCTNAME,C.ISPC,
+C.FK_PROCESSINGLINEID,C.DEBETACCOUNTNO from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where
+A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.ENDTOENDID = '${Properties#EndtoEndID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" name="Message Content Assertion" id="0592efba-4145-4f86-ac7d-505bd1f5e9ef">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>479138</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEIDENTIFICATION[1]</con:xpath>
+            <con:element>MESSAGEIDENTIFICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>MSG_25920040551</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>25920040551</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBITCOUNTERVALUEAMT[1]</con:xpath>
+            <con:element>DEBITCOUNTERVALUEAMT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>260270424</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:xpath>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>527348</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INTP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TBAP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETPRODUCTNAME[1]</con:xpath>
+            <con:element>MARKETPRODUCTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>IntOutCode</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42125748338</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>479138</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MARKETTYPE[1]</con:xpath>
+            <con:element>MARKETTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MESSAGEIDENTIFICATION[1]</con:xpath>
+            <con:element>MESSAGEIDENTIFICATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>MSG_25920040551</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>25920040551</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/DEBITCOUNTERVALUEAMT[1]</con:xpath>
+            <con:element>DEBITCOUNTERVALUEAMT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>15</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/NUMBEROFTRANSACTIONS[1]</con:xpath>
+            <con:element>NUMBEROFTRANSACTIONS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>260270425</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_PAYMENTINFOID[1]</con:xpath>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>527348</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INTP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TBAP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MARKETPRODUCTNAME[1]</con:xpath>
+            <con:element>MARKETPRODUCTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>IntOutCode</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42125748338</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>479138</MESSAGEID>
+         <MARKETTYPE>BM</MARKETTYPE>
+         <MESSAGEIDENTIFICATION>MSG_25920040551</MESSAGEIDENTIFICATION>
+         <ENDTOENDID>25920040551</ENDTOENDID>
+         <DEBITCOUNTERVALUEAMT>10</DEBITCOUNTERVALUEAMT>
+         <NUMBEROFTRANSACTIONS>2</NUMBEROFTRANSACTIONS>
+         <TRANSACTIONSID>260270424</TRANSACTIONSID>
+         <FK_PAYMENTINFOID>527348</FK_PAYMENTINFOID>
+         <PAYMENTTYPE>INTP</PAYMENTTYPE>
+         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
+         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
+         <ISPC>PAYCTINTOUPNP</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+         <DEBETACCOUNTNO>42125748338</DEBETACCOUNTNO>
+      </Row>
+      <Row rowNumber="2">
+         <MESSAGEID>479138</MESSAGEID>
+         <MARKETTYPE>BM</MARKETTYPE>
+         <MESSAGEIDENTIFICATION>MSG_25920040551</MESSAGEIDENTIFICATION>
+         <ENDTOENDID>25920040551</ENDTOENDID>
+         <DEBITCOUNTERVALUEAMT>15</DEBITCOUNTERVALUEAMT>
+         <NUMBEROFTRANSACTIONS>2</NUMBEROFTRANSACTIONS>
+         <TRANSACTIONSID>260270425</TRANSACTIONSID>
+         <FK_PAYMENTINFOID>527348</FK_PAYMENTINFOID>
+         <PAYMENTTYPE>INTP</PAYMENTTYPE>
+         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
+         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
+         <ISPC>PAYCTINTOUPNP</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+         <DEBETACCOUNTNO>42125748338</DEBETACCOUNTNO>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="Authorization_v1_2" id="4d3f9810-0e2e-4a6f-9f31-5e6a8c885e79">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
+      <con:operation>PaymentAuthorizationCreate</con:operation>
+      <con:request name="Authorization_v1_2" id="3817dd58-eead-4601-ba33-8dd13cbcbe55">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.110:20811/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>${Properties#DestinationApplication}</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.2</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${Properties#Key1}" value="${Properties#Value1}"/>
+            <wsc:item key="${Properties#Key2}" value="${Properties#Value2}"/>
+            <wsc:item key="${Properties#Key3}" value="${Properties#Value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest>
+         <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData>
+               <urn2:agreementData>
+                  <urn3:agreementId>${Properties#AgreementId}</urn3:agreementId>
+                  <urn3:bankId>${Properties#orgid}</urn3:bankId>
+                  <urn3:customerID>${Properties#customerid}</urn3:customerID>
+                  <urn3:productID>123433</urn3:productID>
+               </urn2:agreementData>
+               <urn2:userId>${Properties#UserID}</urn2:userId>
+               <urn2:sessionID>qw24213</urn2:sessionID>
+               <urn2:firstName>Fname</urn2:firstName>
+               <urn2:lastName>Lname</urn2:lastName>
+               <urn2:socialSecurityNumber>12341235</urn2:socialSecurityNumber>
+               <urn2:userAccount>
+                  <urn2:accountNumber>${Properties#debitAccount}</urn2:accountNumber>
+                  <urn2:accountOwnerIdentifier>1234123423</urn2:accountOwnerIdentifier>
+                  <urn2:currencyCode>NOK</urn2:currencyCode>
+                  <urn2:accountType>CoreAccount</urn2:accountType>
+                  <urn2:role>View</urn2:role>
+                  <urn2:role>Register</urn2:role>
+                  <urn2:role>Appprove</urn2:role>
+                  <urn2:role>Salary</urn2:role>
+                  <urn2:role>Transfer</urn2:role>
+                  <urn2:approvalLimit>${Properties#approvalLimit}</urn2:approvalLimit>
+                  <urn2:registerLimit>${Properties#registerLimit}</urn2:registerLimit>
+                  <urn2:numberOfVerifiers>${Properties#numberOfVerifiers}</urn2:numberOfVerifiers>
+                  <urn2:numberOfApprovers>${Properties#numberOfApprovers}</urn2:numberOfApprovers>
+                  <urn2:bookingLevel>${Properties#bookingLevel}</urn2:bookingLevel>
+               </urn2:userAccount>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="MessageContentAssertion" id="75bdb7e9-3736-4272-ac81-fa17450f75b8" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:StrErrorCode[1]</con:xpath>
+              <con:element>StrErrorCode</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:StrErrorCode[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:NativeError[1]</con:xpath>
+              <con:element>NativeError</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:NativeError[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns5:PaymentAuthorizationCreateResponse xmlns:ns10="urn:pays.payment.edb.com:domain:sepa-complex-types:v1" xmlns:ns9="urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0" xmlns:ns8="urn:srv.stord.fs.evry.com:domain:common:v1" xmlns:ns7="urn:pays.payment.edb.com:domain:edb-types:v1" xmlns:ns6="urn:pays.payment.edb.com:domain:paymentauthorization:v1_1" xmlns:ns5="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:ns4="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:ns3="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:ns2="urn:pays.payment.edb.com:domain:authorization:v1_1" xmlns="http://edb.com/ws/WSCommon_v21">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <StrErrorCode xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <Message>OK</Message>
+            <NativeError xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+      </ns5:PaymentAuthorizationCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="57457c60-f9eb-4af0-bf09-f6d3663c473c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="2d812155-bfd1-4955-8875-610a193c8dc5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="1bd48134-3d6c-4ce3-ba40-d4ac5ea32bdd">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="27d024bc-c35a-47fb-a79d-28ec4c6e2825">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6e11cb5c-758d-4c00-89af-1f2288cd5bf9">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="14374682-6094-41a7-94b9-4b94c30a1bb8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="55061bf7-1602-4e75-893a-32c7a1ae2bbf">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c9c301af-8ea8-4f2c-acfb-070c94825ab7">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71f026b6-3930-403d-acdc-077409928c0c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay 1" id="cfac947b-5d48-4a92-bf0f-3cad69850782">
+    <con:settings/>
+    <con:config>
+      <delay>1000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="ff565dd9-b2ca-4414-9606-10e68306a5f0" name="PaymentApprove">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentApprove</con:operation>
+      <con:request name="PaymentApprove" id="f5b53e2e-611f-4263-8fe9-7adca79b0ce0">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.106:24901/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>${Properties#DestinationApplication}</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <!--Optional:-->\r
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>\r
+            <!--Optional:-->\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <!--Optional:-->\r
+            <wsc:locale>en</wsc:locale>\r
+            <wsc:ip>1.1.1.2</wsc:ip>\r
+            <!--Zero or more repetitions:-->\r
+            <wsc:item key="${Properties#Key1}" value="${Properties#Value1}"/>\r
+            <wsc:item key="${Properties#Key2}" value="${Properties#Value2}"/>\r
+            <wsc:item key="${Properties#Key3}" value="${Properties#Value3}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentApproveRequest>\r
+         <!--You have a CHOICE of the next 4 items at this level-->\r
+         <urn:transactionInput>\r
+            <urn1:transactionId>${Verify Paymentstatus-DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn1:transactionId>\r
+            <urn1:transactionId>${Verify Paymentstatus-DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]}</urn1:transactionId>\r
+         </urn:transactionInput>\r
+      </urn:PaymentApproveRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="MessageContentAssertion" id="0f90ce97-1633-4716-82d5-f63f60229383" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentApproveResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentApproveResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentApproveResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentApproveResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentApproveResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns4='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:PaymentApproveResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentApproveResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:paymentStatus[1]</con:xpath>
+              <con:element>ns2:paymentStatus</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>READY_FOR_DUE_DATE</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentApproveResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:errorCode[1]</con:xpath>
+              <con:element>ns2:errorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentApproveResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:severity[1]</con:xpath>
+              <con:element>ns2:severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentApproveResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:message[1]</con:xpath>
+              <con:element>ns2:message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2_0';
+//ns2:PaymentApproveResponse[1]/ns2:paymentStatusUpdateSummary[1]/ns1:numberOfTransactions[1]</con:xpath>
+              <con:element>ns2:numberOfTransactions</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>2</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns3:PaymentApproveResponse xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns3="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0" xmlns:ns2="urn:pins.payment.evry.com:domain:payment-status-update:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns4:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns4:ResponseState>
+         <ns3:paymentStatusUpdateSummary>
+            <ns2:paymentStatus>READY_FOR_DUE_DATE</ns2:paymentStatus>
+            <ns2:errorCode>0</ns2:errorCode>
+            <ns2:severity>0</ns2:severity>
+            <ns2:message>OK</ns2:message>
+            <ns2:numberOfTransactions>2</ns2:numberOfTransactions>
+         </ns3:paymentStatusUpdateSummary>
+         <ns3:paymentStatusUpdateResult>
+            <ns2:messageId>479138</ns2:messageId>
+            <ns2:paymentInfoId>527348</ns2:paymentInfoId>
+            <ns2:transactionId>260270424</ns2:transactionId>
+            <ns2:paymentStatus>READY_FOR_DUE_DATE</ns2:paymentStatus>
+            <ns2:errorCode>0</ns2:errorCode>
+            <ns2:severity>0</ns2:severity>
+            <ns2:message>OK</ns2:message>
+         </ns3:paymentStatusUpdateResult>
+         <ns3:paymentStatusUpdateResult>
+            <ns2:messageId>479138</ns2:messageId>
+            <ns2:paymentInfoId>527348</ns2:paymentInfoId>
+            <ns2:transactionId>260270425</ns2:transactionId>
+            <ns2:paymentStatus>READY_FOR_DUE_DATE</ns2:paymentStatus>
+            <ns2:errorCode>0</ns2:errorCode>
+            <ns2:severity>0</ns2:severity>
+            <ns2:message>OK</ns2:message>
+         </ns3:paymentStatusUpdateResult>
+         <ns3:approvalInformation>
+            <ns2:controlSum>25</ns2:controlSum>
+            <ns2:accumulatedAmountBaseCurrency>
+               <ns6:accumulatedAmount currency="NOK">
+                  <ns6:amount>25.00</ns6:amount>
+               </ns6:accumulatedAmount>
+            </ns2:accumulatedAmountBaseCurrency>
+            <ns2:accumulatedInstructedAmounts>
+               <ns6:accumulatedAmount currency="NOK">
+                  <ns6:amount>25.00</ns6:amount>
+               </ns6:accumulatedAmount>
+            </ns2:accumulatedInstructedAmounts>
+            <ns2:accumulatedAccountAmounts>
+               <ns2:accountIdentification>42125748338</ns2:accountIdentification>
+               <ns2:accumulatedAmountAccountCurrency>
+                  <ns6:accumulatedAmount currency="NOK">
+                     <ns6:amount>25.00</ns6:amount>
+                  </ns6:accumulatedAmount>
+               </ns2:accumulatedAmountAccountCurrency>
+            </ns2:accumulatedAccountAmounts>
+            <ns2:numberOfTransactionsPerPaymentType>
+               <ns2:numberOfTransactions>2</ns2:numberOfTransactions>
+               <ns2:internalProductCode>PAYCTINTOUPNP</ns2:internalProductCode>
+            </ns2:numberOfTransactionsPerPaymentType>
+         </ns3:approvalInformation>
+      </ns3:PaymentApproveResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0/PINSPaymentStatusUpdate_V2_0PortType/PaymentApproveRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="e6186885-7ea9-497d-b690-b9c4913c1b50">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="23ba8fa7-1fd3-4d31-8289-0e9847131d1d">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4e20529f-ae47-42cb-939f-532093009b8c">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="d23e321a-df5b-417f-9720-3bce6934f600">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ce299460-9bff-4608-8de2-4e7184a8cb31">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>d67db569-b826-459f-a990-1d3f20ca430d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>74cba66a-1b79-4615-8fb7-9559d59a2288</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cfac947b-5d48-4a92-bf0f-3cad69850782</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

@@ -91,7 +91,7 @@ class ServerConnect {
 		return lineReader.getLineNumber()
 
 	}
-			public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
+				public static String getLatestFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
 		
 		String latestFile = ""
 		try {
@@ -133,6 +133,53 @@ class ServerConnect {
 		}
 		
 		return latestFile
+
+	}
+			public static def getLatestMultipleFile(String sourceFolder, String DestinationFolder,int lastModifiedTime,log) {
+		
+		def latestMultipleFile = new ArrayList<String>()
+		try {
+
+			objChan = objSession.openChannel("sftp");
+			objChan.connect();
+			println "objChan.connect--"
+
+			objSFTPChannel = (ChannelSftp) objChan;
+
+			println "objSFTPChannel.connect--"
+
+			ServerConnect.objSFTPChannel.cd(sourceFolder);
+
+			int modifiedTime = lastModifiedTime
+			SftpATTRS att = objSFTPChannel.ls(sourceFolder, new LsEntrySelector() {
+						@Override
+						public int select(LsEntry entry) {
+							String fileName = entry.getFilename();
+							if(!entry.getAttrs().isDir()) {
+								if(entry.getAttrs().getMTime() >= modifiedTime )	{
+									modifiedTime = entry.getAttrs().getMTime()
+									latestMultipleFile.add(entry.getFilename());
+									log.info "lastModifiedTime:$lastModifiedTime -- modifiedTime:$modifiedTime and file is ${entry.getFilename()} "
+								}
+							}
+							return com.jcraft.jsch.ChannelSftp.LsEntrySelector.CONTINUE;
+						}
+					})
+
+		//	println "latestMultipleFile->" + latestMultipleFile
+		
+		for (file in latestMultipleFile){
+		log.info "file is $file"	
+			objSFTPChannel.get(sourceFolder + "/" + file,DestinationFolder );
+			}
+			println "Success!!"			
+
+		}catch(Exception ex) {
+			println ex.printStackTrace()
+			//latestMultipleFile = ""
+		}
+		
+		return latestMultipleFile
 
 	}
 

@@ -100,14 +100,14 @@ import java.util.Date;
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
+//log.info datetime
 
 def EndtoEndID = "StatusUpdateAsync_"+datetime;
-log.info EndtoEndID
+//log.info EndtoEndID
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndtoEndID",EndtoEndID );
 
 def messageToSend = context.expand( '${Properties#MessageToSend}' )
-log.info(messageToSend)
+//log.info(messageToSend)
 
 def Account = context.expand( '${#TestSuite#accountNumber}' )
 def customerid = context.expand( '${#TestSuite#customerid}' )
@@ -120,42 +120,7 @@ messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
 messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
 log.info messageToSend
 
-def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend_Updated",messageToSend );
-
-
-/* Setting Queue Details */
-def ActiveEnvName= testRunner.getTestCase().getTestSuite().getProject().getActiveEnvironmentName()
-log.info(ActiveEnvName)
-if (ActiveEnvName== "G-D4")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PAIN001.PRFUNC.CPS.PIN.ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","QT0PPI.PAIN001.PRFUNC.CPS.PIN.ONLINE")
-}
-if (ActiveEnvName=="G-S1")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PAIN001.PRSYS.CPS.PIN.ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","QT0PPI.PAIN001.PRSYS.CPS.PIN.ONLINE")
-}
-if (ActiveEnvName=="G-D6")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PAIN001.D6.CPS.PIN.ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","")
-}
-if (ActiveEnvName=="G-D2")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PAIN001.SPRINT.CPS.PIN.ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","PAIN001.SPRINTREL.CPS.PIN.ONLINE.QL")
-}
-if (ActiveEnvName=="G-D7")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PIN.D7.CPS.PAIN001ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","PIN.D7.CPS.PAIN001ONLINE.QL")
-}
-if (ActiveEnvName=="G-D5")
-{
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("sendQueue","PAIN001.SPRINTREL.CPS.PIN.ONLINE")
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveQueue","PAIN001.SPRINTREL.CPS.PIN.ONLINE.QL")
-}</script>
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend_Updated",messageToSend );</script>
     </con:config>
   </con:testStep>
   <con:testStep type="groovy" name="PushAndReceiveFilePayment" id="9f6ab468-2588-4e24-b52c-247c5638cc5c">
@@ -178,21 +143,7 @@ def msgId = context.expand( '${Properties#MsgId}' )
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
-// Receive message from MQ
-String receiveMessage = mqMessageUtils.receiveMessage(mQMessageQueueRecieve);
-//Check results only if received message
-log.info msgId
-if (!(("No messsage").equals(receiveMessage))){
-	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
-	def response = groovyUtils.getXmlHolder(receiveMessage)
-	log.info  response.getNodeValue("//*:OrgnlMsgId");
-	ArrayList&lt;String> list= response.getNodeValues("//*:AddtlInf");
-	log.info list;
-// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
-}
-// No message
-else log.info "No message received"</script>
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));</script>
     </con:config>
   </con:testStep>
   <con:testStep type="delay" name="Delay" id="7684ae15-7234-458d-853f-eb47efe38421">

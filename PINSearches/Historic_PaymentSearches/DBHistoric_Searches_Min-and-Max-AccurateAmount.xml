@@ -167,15 +167,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>406378</con:value>
+          <con:value>431062</con:value>
         </con:property>
         <con:property>
           <con:name>transactionid</con:name>
-          <con:value>435809</con:value>
+          <con:value>465064</con:value>
         </con:property>
         <con:property>
           <con:name>instamt</con:name>
-          <con:value>20</con:value>
+          <con:value>50</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -400,7 +400,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
           <con:configuration>
             <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
 
-def Count = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentBookingSearchResponse[1]/ns5:result[1]/ns3:numberOfSelected[1]}' ) as int
+def Count = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentBookingSearchResponse[1]/ns5:result[1]/ns3:numberOfListed[1]}' ) as int
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
 def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
 Count = Count+1;
@@ -1216,23 +1216,29 @@ def Amount = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentBookin
             <scriptText>def testcaseName =  context.getCurrentStep().getTestStep().getLabel()
 
 
-def Count = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentPaymentInfoHistoricSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as int
+def Count = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentPaymentInfoHistoricSearchResponse[1]/ns5:result[1]/ns3:numberOfListed[1]}' ) as int
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as int
 def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as int
-Count = Count+1;
+//Count = Count+1;
+log.info "Count-->$Count"
 for ( int i=1;i&lt;Count;i++)
 
 {
-def Amount = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentPaymentInfoHistoricSearchResponse[1]/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	def Amount
+	try{
+		Amount = context.expand( '${'+testcaseName+'#Response#//*//ns5:PaymentPaymentInfoHistoricSearchResponse[1]/ns5:result[1]/ns3:result['+i+']/ns3:debitAmount[1]/ns4:amount[1]}' ) as float
+	}catch(Exception ex){}
+
+
+if((Amount != null) &amp; (Amount != "")){
 	if (Amount&lt;accurateMinAmount || Amount>accurateMaxAmount)
 	{
-		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";
-		
+		assert false,"Amount is incorrect for one of the search result as "+Amount+"( not in min and max range)";		
 	}
-	else
-	{
-		assert true;
-	}
+	
+	
+}
+	
 }</scriptText>
           </con:configuration>
         </con:assertion>

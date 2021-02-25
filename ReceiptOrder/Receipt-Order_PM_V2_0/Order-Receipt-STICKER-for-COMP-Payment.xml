@@ -1923,9 +1923,15 @@ switch(versionCheck){ //Verify Operational Array
 				case 'COMP':
 					if (receiptOrder == 'NONE' )  {
 						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')
 					}
 					else if ( receiptOrder == 'STICKER'){
-						tempList.add ('RECEIPT_ORDER_STICKER')					
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
+					}
+					else if ( receiptOrder == 'PRINT'){
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
 					}		
 					break
 				case [ 'RFDD', 'LAFU']:
@@ -3516,9 +3522,15 @@ switch(versionCheck){ //Verify Operational Array
 				case 'COMP':
 					if (receiptOrder == 'NONE' )  {
 						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')
 					}
 					else if ( receiptOrder == 'STICKER'){
-						tempList.add ('RECEIPT_ORDER_STICKER')					
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
+					}
+					else if ( receiptOrder == 'PRINT'){
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
 					}		
 					break
 				case [ 'RFDD', 'LAFU','STOP']:
@@ -5037,9 +5049,15 @@ switch(versionCheck){ //Verify Operational Array
 				case 'COMP':
 					if (receiptOrder == 'NONE' )  {
 						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')
 					}
 					else if ( receiptOrder == 'STICKER'){
-						tempList.add ('RECEIPT_ORDER_STICKER')					
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
+					}
+					else if ( receiptOrder == 'PRINT'){
+						tempList.add ('RECEIPT_ORDER_STICKER')
+						tempList.add ('RECEIPT_ORDER_PRINT')					
 					}		
 					break
 				case [ 'RFDD', 'LAFU']:
@@ -5067,184 +5085,6 @@ switch(versionCheck){ //Verify Operational Array
 	
 	}
 
-assert operationalArrayList.containsAll(tempList)</scriptText>
-          </con:configuration>
-        </con:assertion>
-        <con:assertion type="GroovyScriptAssertion" id="29779f10-b6ec-4070-b09b-eb3146993af7" name="Script Assertion">
-          <con:configuration>
-            <scriptText>def testStepName
-def xmlHold
-//def testStepName
-//def xmlHold
-def receiptOrder
-def slurperResponse
-def receiptOrderRes
-def paymentStatus
-def OpeArrayRes
-def ReadOrSearchFlag
-def PaymentHistoricReadFlag = false
-def PaymentReadFlag = false
-
-def PaymentMessageSearchFlag = false
-def PaymentAccountSearchFlag = false
-def PaymentPaymentInfoSearchFlag = false
-def PaymentTransactionSearchFlag = false
-def PaymentTransactionHistoricSearchFlag = false
-def PaymentPaymentInfoHistoricSearchFlag = false
-
-
-
-	 receiptOrder = context.expand( '${Properties#ReceiptOrder}' )
-      paymentStatus = context.expand( '${Properties#PaymentStatus}' )
-      
-	testStepName = messageExchange.modelItem.testStep.name   //to get the Test Step Name
-	xmlHold = messageExchange.responseContentAsXml.toString()  //to store the response as Xml string
-	
-	slurperResponse = new XmlSlurper().parseText(xmlHold)
-	
-	if (xmlHold.contains("PaymentHistoricReadResponse")){
-	 	log.info "PaymentHistoricReadResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentHistoricReadResponse.paymentResult.result.transaction.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentHistoricReadResponse.paymentResult.operationsArray
-	 	ReadOrSearchFlag = 'READ'
-	 	PaymentHistoricReadFlag = true
-	 }
-
-    if (xmlHold.contains("PaymentReadResponse")){
-	 	log.info "PaymentReadResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentReadResponse.paymentResult.result.transaction.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentReadResponse.paymentResult.operationsArray
-	 	ReadOrSearchFlag = 'READ'
-	 	PaymentReadFlag = true
-	 }
-
-	 if (xmlHold.contains("PaymentMessageSearchResponse")){
-	 	log.info "PaymentMessageSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentMessageSearchResponse.result.transactionResult.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentMessageSearchResponse.result.transactionResult.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	 	PaymentMessageSearchFlag = true
-	 }
-
-	  if (xmlHold.contains("PaymentAccountSearchResponse")){
-	 	log.info "PaymentAccountSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentAccountSearchResponse.result.result.transaction.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentAccountSearchResponse.result.result.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	 	PaymentAccountSearchFlag = true
-	 }
-
-	  if (xmlHold.contains("PaymentPaymentInfoSearchResponse")){
-	 	log.info "PaymentPaymentInfoSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentPaymentInfoSearchResponse.result.result.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentPaymentInfoSearchResponse.result.result.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	 	PaymentPaymentInfoSearchFlag = true
-	 }
-
-	  if (xmlHold.contains("PaymentTransactionSearchResponse")){
-	 	log.info "PaymentTransactionSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentTransactionSearchResponse.result.result.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentTransactionSearchResponse.result.result.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	    PaymentTransactionSearchFlag = true
-	 }
-	  if (xmlHold.contains("PaymentTransactionHistoricSearchResponse")){
-	 	log.info "PaymentTransactionHistoricSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentTransactionHistoricSearchResponse.result.result.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentTransactionHistoricSearchResponse.result.result.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	    PaymentTransactionHistoricSearchFlag = true
-	 }
-  if (xmlHold.contains("PaymentPaymentInfoHistoricSearchResponse")){
-	 	log.info "PaymentPaymentInfoHistoricSearchResponse-->"
-	 	receiptOrderRes =  slurperResponse.Body.PaymentPaymentInfoHistoricSearchResponse.result.result.nationalSpecificPaymentInformation.receiptOrder.toString()
-	 	OpeArrayRes = slurperResponse.Body.PaymentPaymentInfoHistoricSearchResponse.result.result.operationsArray
-	 	ReadOrSearchFlag = 'SEARCH'
-	    PaymentPaymentInfoHistoricSearchFlag = true
-	 }
-
-	 
-def versionCheck = testStepName.substring(( testStepName.split('_')[0]).length() +1) 	 	
-log.info "versionCheck-->" +  versionCheck
-
-
- switch(versionCheck){
- 	case ['V2_0' , 'V1_6', 'V1_7' , 'V1_8' , 'V1_9','V1_10']:
- 		if (ReadOrSearchFlag.equalsIgnoreCase('READ') ){
- 			log.info "receiptOrderRes--" + receiptOrderRes + "\\n" + "ReadOrSearchFlag -" + ReadOrSearchFlag + "******" + versionCheck
-			assert receiptOrder.toString().toUpperCase()  == receiptOrderRes.toUpperCase()
- 		}else if (ReadOrSearchFlag.equalsIgnoreCase('SEARCH') &amp;&amp; versionCheck.equalsIgnoreCase('V2_0') &amp;&amp;   (PaymentMessageSearchFlag || PaymentTransactionSearchFlag ||
- 			PaymentPaymentInfoHistoricSearchFlag || PaymentTransactionHistoricSearchFlag) ){
- 			 
- 			log.info "receiptOrderRes--" + receiptOrderRes + "\\n" + "ReadOrSearchFlag -" + ReadOrSearchFlag + "******" + versionCheck
-			assert receiptOrder.toString().toUpperCase()  == receiptOrderRes.toUpperCase()  
- 		}
- 		else{
-			log.info "Receipt Order tag not required"
- 			log.info "receiptOrderRes--" + receiptOrderRes + "\\n" + "ReadOrSearchFlag -" + ReadOrSearchFlag + "******" + versionCheck
- 			assert receiptOrderRes.toUpperCase()  == ""
- 		}
-	break;
-//	case ['V1_5']:
-//	
-// 	break;
-
- 	default :
- 	assert false , "Version not available for ReadOrSearchFlag check"
- }
-//log.info "receiptOrderRes--" + receiptOrderRes
-//assert receiptOrder.toString().toUpperCase()  == receiptOrderRes.toUpperCase()  
-
-
-def  operationalArrayList = [ ]
-
-//def x = slurperResponse.Body.PaymentHistoricReadResponse.paymentResult.operationsArray.'**'.findAll {	
-OpeArrayRes.'**'.findAll {	
-	operationalArrayList.add(it.text()	)	
-}
-
-log.info "operationalArrayList-->" + operationalArrayList
-def tempList = [ ]
-switch(versionCheck){ //Verify Operational Array
-	case 'V2_0':			
-				log.info "versionCheck -->" + versionCheck + "paymentStatus-->" + paymentStatus
-				switch (paymentStatus){
-				case 'COMP':
-					if (receiptOrder == 'NONE' )  {
-						tempList.add ('RECEIPT_ORDER_STICKER')
-					}
-					else if ( receiptOrder == 'STICKER'){
-						tempList.add ('RECEIPT_ORDER_STICKER')					
-					}		
-					break
-				case [ 'RFDD', 'LAFU','STOP']:
-					if (receiptOrder == 'NONE' )  {
-						tempList.add ('RECEIPT_ORDER_STICKER')
-						tempList.add ('RECEIPT_ORDER_PRINT')
-					}
-					else if ( receiptOrder == 'STICKER'){
-						tempList.add ('RECEIPT_ORDER_PRINT')		
-						tempList.add ('RECEIPT_ORDER_REMOVE')						
-					}		
-					else if ( receiptOrder == 'PRINT'){
-						tempList.add ('RECEIPT_ORDER_STICKER')		
-						tempList.add ('RECEIPT_ORDER_REMOVE')			
-					}
-					break
-				default:
-				assert false,'No case found for operationalArrayList'
-//					log.info "No case found"	
-				}
-	
-	break;
-	default:
-	tempList.add ('REORDER_STICKER')
-	
-	}
-
-log.info "operationalArray found in response-->" + operationalArrayList
-log.info "operationalArray expected-->" + tempList
 assert operationalArrayList.containsAll(tempList)</scriptText>
           </con:configuration>
         </con:assertion>

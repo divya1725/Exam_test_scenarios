@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="8fc5adbe-0a2f-4c5b-94de-4d74073b0a81" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="Order Receipt PRINT for COMP Payment" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="c7da75df-817e-4ab7-8453-533c864a9b97" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="Order Receipt PRINT for COMP Payment" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
   <con:description>This testcase validates that PM user can order receipt(PRINT) when status is COMP only once. Reorder PRINT for COMP payments not allowed.
 Verifies tag in DB Hist &amp; RBS BK12 tables and operational array in all the Historic searches.</con:description>
   <con:settings>
     <con:setting id="c7da75df-817e-4ab7-8453-533c864a9b97fileName">Order-Receipt-PRINT-for-COMP-Payment</con:setting>
-    <con:setting id="8fc5adbe-0a2f-4c5b-94de-4d74073b0a81fileName">Order-Receipt-PRINT-for-COMP-Payment</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="properties" name="Properties" id="6586e842-3647-45a1-9918-4e9a4a56c33d">
+  <con:testStep type="properties" name="Properties" id="2db50275-8ed7-4591-9906-479f6023350a">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
@@ -62,7 +61,7 @@ Verifies tag in DB Hist &amp; RBS BK12 tables and operational array in all the H
       </con:properties>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="Fetch COMP Data" id="4a81097e-863a-454d-96db-763cfef75241">
+  <con:testStep type="jdbc" name="Fetch COMP Data" id="ba44546c-c51e-449e-bc23-51189ce006b4">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -76,7 +75,6 @@ Verifies tag in DB Hist &amp; RBS BK12 tables and operational array in all the H
 from HST_MESSAGE A,HST_PAYMENTINFO B, HST_TRANSACTIONS C where A.MARKETTYPE = 'PM' and
  A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and C.PAYMENTSTATUS = 'COMP'
 and  C.PAYMENTTYPE = 'DOMM'
-and A.CUSTOMERID not in('01010002474')
  and C.INITIATORBANKID = '4201' order by A.MESSAGEID desc fetch first row only</con:query>
       <con:assertion type="MessageContentAssertion" id="68103f0c-135c-449d-8964-d5e2304e7268" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
@@ -188,7 +186,7 @@ and A.CUSTOMERID not in('01010002474')
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="Fetch Account Data" id="e78b976e-a679-42a3-af05-f8d9da73d5d3">
+  <con:testStep type="jdbc" name="Fetch Account Data" id="c4f1de2f-875b-4cc5-99c1-668d56eb5ce7">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1172,7 +1170,7 @@ and A.CUSTOMERID not in('01010002474')
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="DeleteReceiptOrder_DB" id="06d0dcd1-a960-43e8-8f77-695b75f10879">
+  <con:testStep type="jdbc" name="DeleteReceiptOrder_DB" id="b0448c91-fc9e-4d51-a4a5-f512c0387c25">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1187,7 +1185,7 @@ and A.CUSTOMERID not in('01010002474')
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="Receipt Order" id="29f4262c-22fe-4827-8712-9a95cfbe18de">
+  <con:testStep type="request" name="Receipt Order" id="0192c79c-4ead-4c18-a1dc-b597874d0c85">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentUtil_V1_2PortTypeSoap11</con:interface>
@@ -1513,7 +1511,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="Receipt ReOrderPrint" id="39fba270-92ee-4239-9aa2-8e5c09948934">
+  <con:testStep type="request" name="Receipt ReOrderPrint" id="c5243309-b822-4239-aa6e-a4f7bab753a5">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentUtil_V1_2PortTypeSoap11</con:interface>
@@ -1720,7 +1718,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="Verify ReceiptOrder" id="6b0aa7ba-99df-49ed-9eb0-abc82c240ceb">
+  <con:testStep type="jdbc" name="Verify ReceiptOrder" id="fc7cf6f9-cdac-4c47-b6ae-a42701aed079">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1808,7 +1806,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="Verify RBS table" id="7b898917-f8a0-4793-97c1-1fb3eca358fe">
+  <con:testStep type="jdbc" name="Verify RBS table" id="f9a2eaf3-c90b-4a7c-9461-cb5193793dd4">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1829,7 +1827,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="8dc5a1f9-0fd3-4a7b-9bff-eb4959b12820" name="PaymentHistoricRead_V2_0">
+  <con:testStep type="request" id="2ddd31db-4ee7-4282-8c03-241399e77b32" name="PaymentHistoricRead_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
@@ -2090,7 +2088,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="5ba5c983-45b8-4240-bf23-12fa328c6797" name="PaymentHistoricRead_V1_9">
+  <con:testStep type="request" id="08edbaad-275b-4cdb-8b84-b8d2a1a29193" name="PaymentHistoricRead_V1_9">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V1_9PortTypeSoap11</con:interface>
@@ -2348,7 +2346,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="8bbdb1f2-0fa1-4b73-9d0c-2733b6e6ed3b" name="PaymentHistoricRead_V1_10">
+  <con:testStep type="request" id="c10427ed-0110-40c3-a901-bf1e04d9ba52" name="PaymentHistoricRead_V1_10">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V1_10PortTypeSoap11</con:interface>
@@ -2606,7 +2604,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="7b5f5db4-0a4f-4cd7-a794-2c3e4a4b0425" name="PaymentHistoricRead_V1_8">
+  <con:testStep type="request" id="fde145a7-e237-4942-a954-daf662b2f49a" name="PaymentHistoricRead_V1_8">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V1_8PortTypeSoap11</con:interface>
@@ -2864,7 +2862,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="e0abdad5-b988-4db7-98c3-41311309f982" name="PaymentHistoricRead_V1_7">
+  <con:testStep type="request" id="e9173404-feac-4c83-87b6-ec60151fd034" name="PaymentHistoricRead_V1_7">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V1_7PortTypeSoap11</con:interface>
@@ -3122,7 +3120,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="b0a3c418-3813-4f70-96be-04957d92791e" name="PaymentHistoricRead_V1_6" disabled="true">
+  <con:testStep type="request" id="5c31058b-7bb8-43ad-9bbf-5af6c5da4343" name="PaymentHistoricRead_V1_6" disabled="true">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V1_6PortTypeSoap11</con:interface>
@@ -3380,7 +3378,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="0a594b3b-85ab-472d-92bf-a8cbdffe6911" name="PaymentPaymentInfoHistoricSearch_V2_0">
+  <con:testStep type="request" id="e762654e-34fd-4102-8e89-f5f63c618b9b" name="PaymentPaymentInfoHistoricSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -3692,7 +3690,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="e84705c1-e159-4526-ba0b-271289f080b6" name="PaymentPaymentInfoHistoricSearch_V1_9">
+  <con:testStep type="request" id="da934c0d-fbc4-455e-a272-0723e18f2212" name="PaymentPaymentInfoHistoricSearch_V1_9">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
@@ -3958,7 +3956,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="c2ba4f78-bffe-48e7-a180-6938de30f256" name="PaymentPaymentInfoHistoricSearch_V1_8">
+  <con:testStep type="request" id="4f61c865-d495-48dd-b2ad-37a4cc423ecc" name="PaymentPaymentInfoHistoricSearch_V1_8">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
@@ -4266,7 +4264,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="398bc67b-531b-4842-aba5-c451b1811f5a" name="PaymentPaymentInfoHistoricSearch_V1_7">
+  <con:testStep type="request" id="fa00cb50-284b-4ac0-b942-2119c673020c" name="PaymentPaymentInfoHistoricSearch_V1_7">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
@@ -4600,7 +4598,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="2f341d04-04b9-40a2-b330-bb0e4de3e331" name="PaymentPaymentInfoHistoricSearch_V1_6">
+  <con:testStep type="request" id="a0fddfc5-eed3-4498-ae51-c5c4b9bb4caa" name="PaymentPaymentInfoHistoricSearch_V1_6">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
@@ -4911,7 +4909,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="003a8484-4bb3-4aaf-9a39-e61dff46e7b9" name="PaymentTransactionHistoricSearch_V2_0">
+  <con:testStep type="request" id="9b2fcf90-2838-4351-9033-df8c7f0293e7" name="PaymentTransactionHistoricSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -5401,7 +5399,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="ababca1b-1704-44ed-9eb2-75248e08cb49" name="PaymentTransactionHistoricSearch_V1_9">
+  <con:testStep type="request" id="cd748b9f-3f8b-48c9-b223-33328d7c3964" name="PaymentTransactionHistoricSearch_V1_9">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
@@ -5715,7 +5713,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="58b52fbe-8d31-4ebd-b1b0-99d09d969b1d" name="PaymentTransactionHistoricSearch_V1_8">
+  <con:testStep type="request" id="15b1a2b9-c30c-4785-861e-0a5ba9b5d4d6" name="PaymentTransactionHistoricSearch_V1_8">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
@@ -6018,7 +6016,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="a608e6ed-a783-4dc3-befe-bb222b62fdfa" name="PaymentTransactionHistoricSearch_V1_7">
+  <con:testStep type="request" id="3a75af85-2511-4bc8-b5d8-fb54be35c207" name="PaymentTransactionHistoricSearch_V1_7">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
@@ -6352,7 +6350,7 @@ assert operationalArrayList.containsAll(tempList)</scriptText>
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="abf2b17c-fc88-4c03-9f58-1ac70340c39f" name="PaymentTransactionHistoricSearch_V1_6">
+  <con:testStep type="request" id="169e0847-0b38-438f-9e41-f79bc974581b" name="PaymentTransactionHistoricSearch_V1_6">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>

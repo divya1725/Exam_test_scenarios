@@ -18,7 +18,7 @@ class ProjectEnvironments {
         def allEnvList = project.getEnvironmentList();
         def constantEnv = "G-D4"
         def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
-		//actualEnv = "G-S1"
+		actualEnv = "G-D6"
         log.info "Actual envirnment from user input is -- $actualEnv"
 
         if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
@@ -38,6 +38,8 @@ class ProjectEnvironments {
 		updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
         updateAllServices(project,actualEnv,constantEnv)
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
+		
+		log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
 
     }
 

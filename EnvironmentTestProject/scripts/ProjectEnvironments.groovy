@@ -32,15 +32,11 @@ class ProjectEnvironments {
         }
 
         def currectEnvironmentServices = getCurrentEnvExistingSoapServices(project,actualEnv)
-        log.info "currectEnvironmentServices--$currectEnvironmentServices"
         addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
 
 		updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
         updateAllServices(project,actualEnv,constantEnv)
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
-
-		log.info "getCurrentEnvExistingSoapServicesDefinition-->" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
-		log.info printProjectProperties(project,actualEnv)
 
     }
 
@@ -224,24 +220,5 @@ class ProjectEnvironments {
         return serviceList
     }
 	
-	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp){
-        def flag = false;
-        try{
-            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
-            def jsonSlurper = new groovy.json.JsonSlurper()
-            def object = jsonSlurper.parse(new FileReader(new File(file)))
-
-            object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
-                it -> log.info it.key +"|"+ it.value 
-            }
-
-            flag = true
-        }catch(Exception ex){
-            flag = false
-        }
-
-        return flag;
-
-    }
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="b380fbdc-2691-4161-8db9-2fddeca93bb6" created="3.6.0" activeEnvironment="Default environment" name="REST Project 1" updated="3.6.0" encryptionMode="Not encrypted" resourceRoot="" compositeProjectFormat="1.3" scriptLibrary="C:\Ullasa\projects\JenkinsValueChainRegression\envTest\pr-regression-valuechain\EnvironmentTestProject\scripts" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="b380fbdc-2691-4161-8db9-2fddeca93bb6" created="3.6.0" activeEnvironment="G-D4" name="REST Project 1" updated="3.6.0" encryptionMode="Not encrypted" resourceRoot="" compositeProjectFormat="1.3" scriptLibrary="C:\Ullasa\projects\JenkinsValueChainRegression\envTest\pr-regression-valuechain\EnvironmentTestProject\scripts" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
     <con:setting id="b380fbdc-2691-4161-8db9-2fddeca93bb6fileName">REST-Project-1</con:setting>
     <con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerUIAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
@@ -30,7 +30,7 @@
   <con:entry key="Project Password" value=""/>
   <con:entry key="Username" value=""/>
   <con:entry key="TestRunner Path" value="C:\Program Files\SmartBear\ReadyAPI-3.6.0\bin"/>
-  <con:entry key="Environment" value="G-D4"/>
+  <con:entry key="Environment" value="No Environment"/>
   <con:entry key="Coverage Report" value="false"/>
   <con:entry key="Enable UI" value="false"/>
   <con:entry key="Root Folder" value="${WORKSPACE}"/>
@@ -133,13 +133,37 @@
     <con:property>
       <con:name>JDBCDriver</con:name>
     </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+    </con:property>
+    <con:property>
+      <con:name>G-D10</con:name>
+    </con:property>
   </con:properties>
   <con:wssContainer/>
   <con:databaseConnectionContainer>
     <con:databaseConnection>
       <con:name>PWH</con:name>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
     </con:databaseConnection>
@@ -147,13 +171,13 @@
   <con:jmsConnectionContainer/>
   <con:oAuth2ProfileContainer/>
   <con:oAuth1ProfileContainer/>
-  <con:beforeRunScript>def objProject = runner.getProject()
-def projPath = objProject.getPath()
-objProject.setScriptLibrary(projPath + File.separator + "scripts")
-log.info "TestSuite setUp script!!"
-//try{System.sleep(15000)}catch(Exception e){}</con:beforeRunScript>
+  <con:beforeRunScript>//def objProject = runner.getProject()
+//def projPath = objProject.getPath()
+//objProject.setScriptLibrary(projPath + File.separator + "scripts")
+//log.info "TestSuite setUp script!!"
+////try{System.sleep(15000)}catch(Exception e){}</con:beforeRunScript>
   <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
-    <con:script disabled="true">// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+    <con:script disabled="false">// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
 // This code is often used for adding custom authentication to ReadyAPI functional tests
 
 // If hardcoding the token, uncomment and change line 5
@@ -170,16 +194,35 @@ log.info "TestSuite setUp script!!"
 // }</con:script>
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
-    <con:script disabled="true">// Save all test step results into files
-// Change the directory path in line 5 to a location where you want to store details
-// then uncomment lines 5 to 10
-
-// filePath = 'C:\\tempOutputDirectory\\'
-// fos = new java.io.FileOutputStream(filePath + testStepResult.testStep.label + '.txt', true)
-// pw = new java.io.PrintWriter(fos)
-// testStepResult.writeTo(pw)
-// pw.close()
-// fos.close()</con:script>
+    <con:script disabled="false">import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
+def now = new Date()
+def time =  java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmssSSS'))
+def date1 = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd')).toString()
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator + date1 + File.separator + suiteName + File.separator
+new File(filePathSuite).mkdir()
+ fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+ pw = new PrintWriter(fos)
+ def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def res = new String(testStep.testRequest.response.getRawRequestData()) + lineSeperator +  testStep.testRequest.response.responseContent
+	log.info res
+	pw.write(res)
+}
+else{
+	testStepResult.writeTo(pw)
+}
+ pw.close()
+ fos.close()</con:script>
   </con:eventHandlers>
   <con:eventHandlers type="ProjectRunListener.beforeRun" name="ProjectRunListener.beforeRun">
     <con:script>ProjectEnvironments.load(projectRunner,context,log)</con:script>
@@ -308,6 +351,38 @@ log.info "TestSuite setUp script!!"
       <con:name>JDBCDriver</con:name>
       <con:value/>
     </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D10</con:name>
+      <con:value/>
+    </con:property>
     <con:databaseConnectionContainer>
       <con:databaseConnection>
         <con:name>PWH</con:name>
@@ -321,22 +396,22 @@ log.info "TestSuite setUp script!!"
   </con:environment>
   <con:environment id="8986f7fe-2c19-420e-90e5-442e2963b1db" name="G-D4" index="1">
     <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPayment_V2_0</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.107:23621/pin/services/PINSPayment_V2_0</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.107:23621/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://ilt-lbx-g-c01.man.cosng.net:13610/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.107:23621/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
     </con:service>
     <con:service type="REST" name="http://10.246.89.212:29191">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/api/v7/validateAccounts</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.107:23621/pin/api/v7/validateAccounts</con:endpoint>
     </con:service>
     <con:property>
       <con:name>NAME</con:name>
@@ -458,6 +533,38 @@ log.info "TestSuite setUp script!!"
       <con:name>JDBCDriver</con:name>
       <con:value>oracle.jdbc.driver.OracleDriver</con:value>
     </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value>10.246.89.107:23621</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D10</con:name>
+      <con:value/>
+    </con:property>
     <con:databaseConnectionContainer>
       <con:databaseConnection>
         <con:name>PWH</con:name>
@@ -469,24 +576,24 @@ log.info "TestSuite setUp script!!"
     </con:databaseConnectionContainer>
     <con:jmsConnectionContainer/>
   </con:environment>
-  <con:environment id="4040d6be-01e4-4211-a212-c7331340b35a" name="G-S1" index="2">
+  <con:environment id="cbe0a06b-d312-40dc-a0cf-7ba25022adf4" name="G-S1" index="2">
     <con:service type="SOAP" name="PINSPayment_V2_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.109:20811/pin/services/PINSPayment_V2_0</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.109:20811/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PCASReservationCreate_V1_1ServiceSoapBinding">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://ilt-lbx-g-c01.man.cosng.net:13610/fts/services/PCASReservationCreate_V1_1Service</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="PINSPaymentStatusUpdate_V2_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.109:20811/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
     </con:service>
     <con:service type="SOAP" name="DEPSAccountService_V15_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.245:10710/corewsdpgensrv/services/DEPSAccountService_V15_3</con:endpoint>
     </con:service>
     <con:service type="REST" name="http://10.246.89.212:29191">
-      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_S1}/pin/api/v7/validateAccounts</con:endpoint>
+      <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://10.246.89.109:20811/pin/api/v7/validateAccounts</con:endpoint>
     </con:service>
     <con:property>
       <con:name>NAME</con:name>
@@ -562,7 +669,7 @@ log.info "TestSuite setUp script!!"
     </con:property>
     <con:property>
       <con:name>G_S1</con:name>
-      <con:value>10.246.89.109:20811</con:value>
+      <con:value/>
     </con:property>
     <con:property>
       <con:name>G_D6</con:name>
@@ -608,6 +715,38 @@ log.info "TestSuite setUp script!!"
       <con:name>JDBCDriver</con:name>
       <con:value>oracle.jdbc.driver.OracleDriver</con:value>
     </con:property>
+    <con:property>
+      <con:name>G-D4</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D2</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D7</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-S1</con:name>
+      <con:value>10.246.89.109:20811</con:value>
+    </con:property>
+    <con:property>
+      <con:name>G-D6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-S6</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>R-A1</con:name>
+      <con:value/>
+    </con:property>
+    <con:property>
+      <con:name>G-D10</con:name>
+      <con:value/>
+    </con:property>
     <con:databaseConnectionContainer>
       <con:databaseConnection>
         <con:name>PWH</con:name>
@@ -627,7 +766,7 @@ log.info "TestSuite setUp script!!"
     <con:entry environmentId="8986f7fe-2c19-420e-90e5-442e2963b1db">
       <con:authProfile>No Authorization</con:authProfile>
     </con:entry>
-    <con:entry environmentId="4040d6be-01e4-4211-a212-c7331340b35a">
+    <con:entry environmentId="cbe0a06b-d312-40dc-a0cf-7ba25022adf4">
       <con:authProfile>No Authorization</con:authProfile>
     </con:entry>
   </con:environmentSpec>

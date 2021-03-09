@@ -18,6 +18,7 @@ class ProjectEnvironments {
         def allEnvList = project.getEnvironmentList();
         def constantEnv = "G-D4"
         def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
+		//actualEnv = "G-S1"
         log.info "Actual envirnment from user input is -- $actualEnv"
 
         if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
@@ -115,16 +116,18 @@ class ProjectEnvironments {
             log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
             log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
-            if(!isProjectStringPresent){
+            //if(!isProjectStringPresent){
 				if(endpointConf.getStringValue().contains("/pin/")){
+					def ipddress = projectTemp.getPropertyValue(actualEnvTemp)
+					log.info "env --$actualEnvTemp && IPAddress -- $ipddress"
 					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-					def endPointStringValue = "http://" + context.expand( '${#Project#'+constantEnvTemp+'}' )+ "/pin/" + endPointStringValuePart2
+					def endPointStringValue = "http://$ipddress/pin/$endPointStringValuePart2"
 					log.info "endPointStringValue_SOAP-->$endPointStringValue"
 					endpointConf.setStringValue(endPointStringValue)
 				}
                 
 
-            }
+            //}
 
         }
 
@@ -136,17 +139,19 @@ class ProjectEnvironments {
             log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
             log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
-            if(!isProjectStringPresent){
+           // if(!isProjectStringPresent){
 				if(endpointConf.getStringValue().contains("/pin/")){
+					def ipddress = projectTemp.getPropertyValue(actualEnvTemp)
+					log.info "env --$actualEnvTemp && IPAddress -- $ipddress"
 					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
 					//def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
-					def endPointStringValue = "http://" + context.expand( '${#Project#'+constantEnvTemp+'}' )+ "/pin/" + endPointStringValuePart2
+					def endPointStringValue = "http://$ipddress/pin/$endPointStringValuePart2"
 					log.info "endPointStringValue_REST-->$endPointStringValue"
 					endpointConf.setStringValue(endPointStringValue)
 				}
                 
 
-            }
+            //}
         }
     }
 

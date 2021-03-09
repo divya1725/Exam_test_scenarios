@@ -6,9 +6,11 @@ import com.eviware.soapui.model.environment.EndpointImpl
 class ProjectEnvironments {
 
     public static def log = null
+	public static def context = null
 
-    public static void load(def testRunner, def log){
+    public static void load(def testRunner,def context,  def log){
         this.log=log;
+		this.context = context;
         def project = testRunner.getProject();
 		log.info "Scripts started"
         def envActive = project.getActiveEnvironment()
@@ -38,6 +40,7 @@ class ProjectEnvironments {
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
 		log.info "getCurrentEnvExistingSoapServicesDefinition-->" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
+		log.info printProjectProperties(project,actualEnv)
 
     }
 
@@ -87,6 +90,7 @@ class ProjectEnvironments {
             def endPointStringValue = endpointConf.getStringValue()
                     .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
                     .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
             endpointConf.setStringValue(endPointStringValue)
         }
 
@@ -98,6 +102,7 @@ class ProjectEnvironments {
             def endPointStringValue = endpointConf.getStringValue()
                     .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
                     .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
             endpointConf.setStringValue(endPointStringValue)
         }
 
@@ -117,7 +122,7 @@ class ProjectEnvironments {
             if(!isProjectStringPresent){
 				if(endpointConf.getStringValue().contains("/pin/")){
 					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-					def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+					def endPointStringValue = "http://" + context.expand( '${#Project#'+constantEnvTemp+'}' )+ "/pin/" + endPointStringValuePart2
 					log.info "endPointStringValue_SOAP-->$endPointStringValue"
 					endpointConf.setStringValue(endPointStringValue)
 				}
@@ -138,7 +143,8 @@ class ProjectEnvironments {
             if(!isProjectStringPresent){
 				if(endpointConf.getStringValue().contains("/pin/")){
 					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-					def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+					//def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+					def endPointStringValue = "http://" + context.expand( '${#Project#'+constantEnvTemp+'}' )+ "/pin/" + endPointStringValuePart2
 					log.info "endPointStringValue_REST-->$endPointStringValue"
 					endpointConf.setStringValue(endPointStringValue)
 				}
@@ -216,6 +222,26 @@ class ProjectEnvironments {
             serviceList.add(endpointConf.getStringValue())
         }
         return serviceList
+    }
+	
+	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp){
+        def flag = false;
+        try{
+            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            def jsonSlurper = new groovy.json.JsonSlurper()
+            def object = jsonSlurper.parse(new FileReader(new File(file)))
+
+            object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
+                it -> log.info it.key +"|"+ it.value 
+            }
+
+            flag = true
+        }catch(Exception ex){
+            flag = false
+        }
+
+        return flag;
+
     }
 
 }

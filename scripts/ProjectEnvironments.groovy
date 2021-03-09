@@ -33,6 +33,8 @@ class ProjectEnvironments {
         log.info "currectEnvironmentServices--$currectEnvironmentServices"
         addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
 
+		updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+        updateAllServices(project,actualEnv,constantEnv)
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
 
@@ -104,6 +106,7 @@ class ProjectEnvironments {
 
         def env = projectTemp.getEnvironmentByName(actualEnvTemp);
         def soapServCount = env.getSoapServiceCount()
+		log.info "soapServCount--$soapServCount"
         for(int i = 0;i<soapServCount;i++){
             def soapServ = env.getSoapServiceAt(i)
             def endpointConf = soapServ.getEndpoint().getConfig()
@@ -111,15 +114,20 @@ class ProjectEnvironments {
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
             log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
             if(!isProjectStringPresent){
-                def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-                def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
-                endpointConf.setStringValue(endPointStringValue)
+				if(endpointConf.getStringValue().contains("/pin/")){
+					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+					def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+					log.info "endPointStringValue_SOAP-->$endPointStringValue"
+					endpointConf.setStringValue(endPointStringValue)
+				}
+                
 
             }
 
         }
 
         def restServCount = env.getRestServiceCount()
+		log.info "restServCount--$restServCount"
         for(int i = 0;i<restServCount;i++){
             def restServ = env.getRestServiceAt(i)
             def endpointConf = restServ.getEndpoint().getConfig()
@@ -127,9 +135,13 @@ class ProjectEnvironments {
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
             log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
             if(!isProjectStringPresent){
-                def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-                def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
-                endpointConf.setStringValue(endPointStringValue)
+				if(endpointConf.getStringValue().contains("/pin/")){
+					def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+					def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+					log.info "endPointStringValue_REST-->$endPointStringValue"
+					endpointConf.setStringValue(endPointStringValue)
+				}
+                
 
             }
         }

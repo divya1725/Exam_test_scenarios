@@ -49,7 +49,7 @@ class ProjectEnvironments {
     public static boolean loadProjectProperties(def projectTemp, def actualEnvTemp){
         def flag = false;
         try{
-            def file = projectTemp.getPath() + File.separator + "env" +  File.separator + "env.json"
+            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))
 

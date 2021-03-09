@@ -37,6 +37,7 @@ class ProjectEnvironments {
         updateAllServices(project,actualEnv,constantEnv)
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
+		log.info "getCurrentEnvExistingSoapServicesDefinition-->" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
 
     }
 
@@ -49,7 +50,7 @@ class ProjectEnvironments {
     public static boolean loadProjectProperties(def projectTemp, def actualEnvTemp){
         def flag = false;
         try{
-            def file = projectTemp.getPath() + File.separator + "env" +  File.separator + "env.json"
+            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))
 
@@ -195,6 +196,26 @@ class ProjectEnvironments {
             }
         }
 
+    }
+	
+	public static def getCurrentEnvExistingSoapServicesDefinition(def projectTemp, def actualEnvTemp){
+        def serviceList = []
+        def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+        //for SOap services
+        def soapServCount = env.getSoapServiceCount()
+        for(int i = 0;i<soapServCount;i++){
+            def soapServ = env.getSoapServiceAt(i)
+			def endpointConf = soapServ.getEndpoint().getConfig()
+            serviceList.add(endpointConf.getStringValue())
+        }
+        //For REST services
+        def restServCount = env.getRestServiceCount()
+        for(int i = 0;i<restServCount;i++){
+            def restServ = env.getRestServiceAt(i)
+			def endpointConf = restServ.getEndpoint().getConfig()
+            serviceList.add(endpointConf.getStringValue())
+        }
+        return serviceList
     }
 
 }

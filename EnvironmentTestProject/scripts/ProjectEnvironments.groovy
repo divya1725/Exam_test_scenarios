@@ -57,9 +57,9 @@ class ProjectEnvironments {
         try{
             def file
             if (File.separator.equals("\\"))
-                file= new File(projectTemp.getPath()).getParent().toString() + File.separator + actualEnvTemp +  File.separator + "env.json"
+                file= new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "$actualEnvTemp.json"
             else
-                file= "/usr/local/SmartBear/project" + File.separator + actualEnvTemp +  File.separator + "env.json"
+                file= "/usr/local/SmartBear/project" + File.separator + "env" +  File.separator + "$actualEnvTemp.json"
 
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))
@@ -247,9 +247,9 @@ class ProjectEnvironments {
         try{
             def file
             if (File.separator.equals("\\"))
-                file= new File(projectTemp.getPath()).getParent().toString() + File.separator + actualEnvTemp +  File.separator + "env.json"
+                file= new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "$actualEnvTemp.json"
             else
-                file= "/usr/local/SmartBear/project" + File.separator + actualEnvTemp +  File.separator + "env.json"
+                file= "/usr/local/SmartBear/project" + File.separator + "env" +  File.separator + "$actualEnvTemp.json"
 
             log.info "Path --$file"
             def jsonSlurper = new groovy.json.JsonSlurper()

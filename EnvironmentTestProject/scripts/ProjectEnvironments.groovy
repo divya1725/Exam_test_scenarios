@@ -42,7 +42,7 @@ class ProjectEnvironments {
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 		
 		log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
-		log.info printProjectProperties(project,actualEnv,log);
+		log.info printProjectProperties(project,actualEnv);
 
     }
 

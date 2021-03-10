@@ -18,7 +18,7 @@ class ProjectEnvironments {
         def allEnvList = project.getEnvironmentList();
         def constantEnv = "G-D4"
         def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
-		actualEnv = "G-D6"
+		//actualEnv = "G-D6"
         log.info "Actual envirnment from user input is -- $actualEnv"
 
         if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
@@ -40,6 +40,7 @@ class ProjectEnvironments {
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 		
 		log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
+		log.info printProjectProperties(project,actualEnv);
 
     }
 
@@ -225,6 +226,26 @@ class ProjectEnvironments {
             serviceList.add(endpointConf.getStringValue())
         }
         return serviceList
+    }
+	
+	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp){
+        def flag = false;
+        try{
+            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            def jsonSlurper = new groovy.json.JsonSlurper()
+            def object = jsonSlurper.parse(new FileReader(new File(file)))
+
+            object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
+                it -> log.info it.key + "|" + it.value 
+            }
+
+            flag = true
+        }catch(Exception ex){
+            flag = false
+        }
+
+        return flag;
+
     }
 	
 

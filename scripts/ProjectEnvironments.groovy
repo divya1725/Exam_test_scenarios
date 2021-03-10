@@ -17,7 +17,7 @@ class ProjectEnvironments {
         def allEnvList = project.getEnvironmentList();
         def constantEnv = "G-D4"
         def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
-        //actualEnv = "G-D6"
+        //actualEnv = "G-D7"
         log.info "Actual envirnment from user input is -- $actualEnv"
 
         if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
@@ -37,6 +37,7 @@ class ProjectEnvironments {
         addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
 
         updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+		setEnvironmentDataBaseDetails(project,actualEnv,constantEnv)
         //updateAllServices(project,actualEnv,constantEnv)
         //log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
@@ -245,6 +246,70 @@ class ProjectEnvironments {
         return flag;
 
     }
+	
+	public static boolean setEnvironmentDataBaseDetails(def projectTemp,def actualEnv,def constantEnv	){
+	//There are many names given to PWH in different project suites, hence keep ll names in this list
+		def PWHDBTempList = ["Database","PWH","PWHDB","PWHDATA"]
+			for(dbItem in PWHDBTempList){
+				log.info "dbItem--$dbItem"
+				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
+				log.info "dbConnection-" + dbConnection
+				if(dbConnection != null){
+					log.info "set DB for $dbItem"
+					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
+					dbConnection.setConnectionString(projectTemp.getPropertyValue('PWHDbString'))	
+					Thread.sleep(500)		
+					
+				}	
+			}
+			
+	//Same for RBS Bank
+		def RBSBankTempList = ["RBS_BANK"]
+			for(dbItem in RBSBankTempList){
+				log.info "dbItem--$dbItem"
+				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
+				log.info "dbConnection-" + dbConnection
+				if(dbConnection != null){
+					log.info "set DB for $dbItem"
+					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
+					dbConnection.setConnectionString(projectTemp.getPropertyValue('RBSBank'))	
+					Thread.sleep(500)		
+					
+				}	
+			}
+	//Same for RBS Forfall
+		def RBSForfallTempList = ["RBS_FORFALL"]
+			for(dbItem in RBSForfallTempList){
+				log.info "dbItem--$dbItem"
+				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
+				log.info "dbConnection-" + dbConnection
+				if(dbConnection != null){
+					log.info "set DB for $dbItem"
+					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
+					dbConnection.setConnectionString(projectTemp.getPropertyValue('RBSForfall'))	
+					Thread.sleep(500)		
+					
+				}	
+			}
+	//Same for RBS PAY
+		def RBSPayTempList = ["RBS_PAY"]
+			for(dbItem in RBSPayTempList){
+				log.info "dbItem--$dbItem"
+				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
+				log.info "dbConnection-" + dbConnection
+				if(dbConnection != null){
+					log.info "set DB for $dbItem"
+					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
+					dbConnection.setConnectionString(projectTemp.getPropertyValue('RBSPay'))	
+					Thread.sleep(500)		
+					
+				}	
+			}
+		projectTemp.setActiveEnvironment(constantEnv)
+		Thread.sleep(500)					
+		projectTemp.setActiveEnvironment(actualEnv)
+	
+	}
 
 
 }

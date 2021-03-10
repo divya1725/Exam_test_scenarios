@@ -12,7 +12,6 @@ class ProjectEnvironments {
         this.log=log;
         this.context = context;
         def project = testRunner.getProject();
-        log.info "Scripts started"
         def envActive = project.getActiveEnvironment()
         def envActiveName = envActive.getName();
         def allEnvList = project.getEnvironmentList();
@@ -39,10 +38,10 @@ class ProjectEnvironments {
 
         updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
         //updateAllServices(project,actualEnv,constantEnv)
-        log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
+        //log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
-        log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
-        log.info printProjectProperties(project,actualEnv);
+        //log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
+        //log.info printProjectProperties(project,actualEnv);
 
     }
 
@@ -87,9 +86,6 @@ class ProjectEnvironments {
         project.setActiveEnvironment(actualEnv)
         Thread.sleep(1000)
         loadProjectProperties(project,actualEnv);
-        Thread.sleep(1000)
-        printProjectProperties(project,actualEnv);
-
         log.info "New environment $actualEnv creted"
     }
 
@@ -126,49 +122,30 @@ class ProjectEnvironments {
 
         def env = projectTemp.getEnvironmentByName(actualEnvTemp);
         def soapServCount = env.getSoapServiceCount()
-        log.info "soapServCount--$soapServCount"
         for(int i = 0;i<soapServCount;i++){
             def soapServ = env.getSoapServiceAt(i)
             def endpointConf = soapServ.getEndpoint().getConfig()
-            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
-            log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
-            //if(!isProjectStringPresent){
             if(endpointConf.getStringValue().contains("/pin/")){
                 def ipddress = projectTemp.getPropertyValue(actualEnvTemp)
-                log.info "env --$actualEnvTemp && IPAddress -- $ipddress"
                 def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
                 def endPointStringValue = "http://$ipddress/pin/$endPointStringValuePart2"
-                log.info "endPointStringValue_SOAP-->$endPointStringValue"
                 endpointConf.setStringValue(endPointStringValue)
             }
-
-
-            //}
 
         }
 
         def restServCount = env.getRestServiceCount()
-        log.info "restServCount--$restServCount"
         for(int i = 0;i<restServCount;i++){
             def restServ = env.getRestServiceAt(i)
             def endpointConf = restServ.getEndpoint().getConfig()
-            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
             def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
-            log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
-            // if(!isProjectStringPresent){
             if(endpointConf.getStringValue().contains("/pin/")){
                 def ipddress = projectTemp.getPropertyValue(actualEnvTemp)
-                log.info "env --$actualEnvTemp && IPAddress -- $ipddress"
                 def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
-                //def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
                 def endPointStringValue = "http://$ipddress/pin/$endPointStringValuePart2"
-                log.info "endPointStringValue_REST-->$endPointStringValue"
                 endpointConf.setStringValue(endPointStringValue)
             }
-
-
-            //}
         }
     }
 
@@ -198,13 +175,10 @@ class ProjectEnvironments {
         for(item in interfaceList ) {
             def enumType = (item.getType().equalsIgnoreCase("rest"))?"REST":"SOAP"
             def nameofService = item.name
-            log.info "enumType--$enumType"
             def serviceDefnition = item.getEndpoints()[0].toString()
             def indexNum = serviceDefnition.indexOf('/pin/')
 
             if(!currectEnvironmentServices.contains(nameofService)){
-                log.info "nameofService $nameofService - Not exists exists"
-                // NewUrl = serviceDefnition
                 ServiceImpl soapService = null
                 if(enumType.equals("REST"))
                     soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.REST)

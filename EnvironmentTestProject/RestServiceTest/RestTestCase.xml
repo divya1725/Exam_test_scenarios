@@ -1114,14 +1114,22 @@ public boolean addSeviceNameIfNotPresentInEnv(def projectTemp, def currectEnviro
     <con:settings/>
     <con:config>
       <script>def projectTemp = testRunner.testCase.testSuite.getProject()
-
+log.info File.separator
+if (File.separator.equals("\\"))  log.info "Windows"
 log.info "Testing!!!!!!!!!!"
-printProjectProperties(projectTemp,"G-D4" , log)
-
+//printProjectProperties(projectTemp,"G-D4" , log)
+//
 public static boolean printProjectProperties(def projectTemp, def actualEnvTemp , def log){
         def flag = false;
+        log.info "projectTemp path is " + projectTemp.getPath()
+        def f = new File(projectTemp.getPath())
+        log.info "Parent path is " + f.getParent().toString()
         try{
-            def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            def file
+            if (File.separator.equals("\\"))
+            	file= new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            else
+            	file= "/usr/local/SmartBear/project" + File.separator + "env" +  File.separator + "env.json"
             log.info "Path --$file"
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))

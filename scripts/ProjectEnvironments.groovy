@@ -22,12 +22,14 @@ class ProjectEnvironments {
         log.info "Actual envirnment from user input is -- $actualEnv"
 
         if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
+			log.info "Environemnt $actualEnv alredy exists"
             project.setActiveEnvironment(actualEnv)
             loadProjectProperties(project,actualEnv);
 
         }
         else  // If env is not present, create new environment and update the project properties
         {
+			log.info "Environemnt $actualEnv NOT exists"
             cloneExistingEnvironment( project,  actualEnv ,  constantEnv)
 
         }
@@ -36,11 +38,11 @@ class ProjectEnvironments {
         addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
 
 		updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
-        updateAllServices(project,actualEnv,constantEnv)
+        //updateAllServices(project,actualEnv,constantEnv)
         log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 		
 		log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
-		log.info printProjectProperties(project,actualEnv);
+		log.info printProjectProperties(project,actualEnv,log);
 
     }
 
@@ -74,9 +76,14 @@ class ProjectEnvironments {
     public static boolean cloneExistingEnvironment(def project, def actualEnv , def constantEnv){
 
         project.setActiveEnvironment(constantEnv)
+		Thread.sleep(1000)
         project.getActiveEnvironment().clone(actualEnv)
+		Thread.sleep(1000)
         project.setActiveEnvironment(actualEnv)
+		Thread.sleep(1000)
         loadProjectProperties(project,actualEnv);
+		Thread.sleep(1000)
+		printProjectProperties(project,actualEnv,this.log);
     }
 
     public static boolean updateAllServices(def projectTemp,def actualEnvTemp,def constantEnvTemp){
@@ -88,7 +95,7 @@ class ProjectEnvironments {
             def endpointConf = soapServ.getEndpoint().getConfig()
             log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
             def endPointStringValue = endpointConf.getStringValue()
-                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('_','-'))
                     .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
 			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
             endpointConf.setStringValue(endPointStringValue)
@@ -228,15 +235,19 @@ class ProjectEnvironments {
         return serviceList
     }
 	
-	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp){
+	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp , def log){
         def flag = false;
         try{
             def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))
-
+		 //log.info object.environment
             object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
                 it -> log.info it.key + "|" + it.value 
+            }
+
+             object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
+                it -> log.info "Proj prop--> ${it.key}-->"+ projectTemp.getPropertyValue(it.key)
             }
 
             flag = true

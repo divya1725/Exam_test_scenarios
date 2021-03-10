@@ -249,7 +249,7 @@ class ProjectEnvironments {
 	
 	public static boolean setEnvironmentDataBaseDetails(def projectTemp,def actualEnv,def constantEnv	){
 	//There are many names given to PWH in different project suites, hence keep ll names in this list
-		def PWHDBTempList = ["Database","PWH","PWHDB","PWHDATA"]
+		def PWHDBTempList = ["Database","PWH","PWHDB","PWHDATA","PWHDatabase","DB"]
 			for(dbItem in PWHDBTempList){
 				log.info "dbItem--$dbItem"
 				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
@@ -264,7 +264,7 @@ class ProjectEnvironments {
 			}
 			
 	//Same for RBS Bank
-		def RBSBankTempList = ["RBS_BANK"]
+		def RBSBankTempList = ["RBS_BANK","RBS"]
 			for(dbItem in RBSBankTempList){
 				log.info "dbItem--$dbItem"
 				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
@@ -278,7 +278,7 @@ class ProjectEnvironments {
 				}	
 			}
 	//Same for RBS Forfall
-		def RBSForfallTempList = ["RBS_FORFALL"]
+		def RBSForfallTempList = ["RBS_FORFALL","RBS_Forfall","RBSForFall"]
 			for(dbItem in RBSForfallTempList){
 				log.info "dbItem--$dbItem"
 				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
@@ -301,6 +301,20 @@ class ProjectEnvironments {
 					log.info "set DB for $dbItem"
 					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
 					dbConnection.setConnectionString(projectTemp.getPropertyValue('RBSPay'))	
+					Thread.sleep(500)		
+					
+				}	
+			}
+	//Same for Journl DB
+		def RBSPayTempList = ["Journal_DB"]
+			for(dbItem in RBSPayTempList){
+				log.info "dbItem--$dbItem"
+				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
+				log.info "dbConnection-" + dbConnection
+				if(dbConnection != null){
+					log.info "set DB for $dbItem"
+					dbConnection.setDriver(projectTemp.getPropertyValue('JDBCDriver'))
+					dbConnection.setConnectionString(projectTemp.getPropertyValue('Journal_DB'))	
 					Thread.sleep(500)		
 					
 				}	

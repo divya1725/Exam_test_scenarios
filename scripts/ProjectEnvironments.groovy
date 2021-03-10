@@ -83,37 +83,39 @@ class ProjectEnvironments {
 		Thread.sleep(1000)
         loadProjectProperties(project,actualEnv);
 		Thread.sleep(1000)
-		printProjectProperties(project,actualEnv,this.log);
+		printProjectProperties(project,actualEnv);
+		
+		log.info "New environment $actualEnv creted"
     }
 
-    public static boolean updateAllServices(def projectTemp,def actualEnvTemp,def constantEnvTemp){
-
-        def env = projectTemp.getEnvironmentByName(actualEnvTemp);
-        def soapServCount = env.getSoapServiceCount()
-        for(int i = 0;i<soapServCount;i++){
-            def soapServ = env.getSoapServiceAt(i)
-            def endpointConf = soapServ.getEndpoint().getConfig()
-            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
-            def endPointStringValue = endpointConf.getStringValue()
-                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('_','-'))
-                    .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
-			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
-            endpointConf.setStringValue(endPointStringValue)
-        }
-
-        def restServCount = env.getRestServiceCount()
-        for(int i = 0;i<restServCount;i++){
-            def restServ = env.getRestServiceAt(i)
-            def endpointConf = restServ.getEndpoint().getConfig()
-            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
-            def endPointStringValue = endpointConf.getStringValue()
-                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
-                    .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
-			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
-            endpointConf.setStringValue(endPointStringValue)
-        }
-
-    }
+//    public static boolean updateAllServices(def projectTemp,def actualEnvTemp,def constantEnvTemp){
+//
+//        def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+//        def soapServCount = env.getSoapServiceCount()
+//        for(int i = 0;i<soapServCount;i++){
+//            def soapServ = env.getSoapServiceAt(i)
+//            def endpointConf = soapServ.getEndpoint().getConfig()
+//            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+//            def endPointStringValue = endpointConf.getStringValue()
+//                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('_','-'))
+//                    .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+//			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
+//            endpointConf.setStringValue(endPointStringValue)
+//        }
+//
+//        def restServCount = env.getRestServiceCount()
+//        for(int i = 0;i<restServCount;i++){
+//            def restServ = env.getRestServiceAt(i)
+//            def endpointConf = restServ.getEndpoint().getConfig()
+//            log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+//            def endPointStringValue = endpointConf.getStringValue()
+//                    .replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+//                    .replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+//			log.info "After Replace 0--endPointStringValue -- $endPointStringValue"
+//            endpointConf.setStringValue(endPointStringValue)
+//        }
+//
+//    }
 
     public static boolean updateAllServicesIfIPAddressPresent(projectTemp,actualEnvTemp,constantEnvTemp){
 
@@ -235,13 +237,14 @@ class ProjectEnvironments {
         return serviceList
     }
 	
-	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp , def log){
+	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp ){
         def flag = false;
         try{
             def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            log.info "Path --$file"
             def jsonSlurper = new groovy.json.JsonSlurper()
             def object = jsonSlurper.parse(new FileReader(new File(file)))
-		 //log.info object.environment
+			log.info object.environment
             object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
                 it -> log.info it.key + "|" + it.value 
             }

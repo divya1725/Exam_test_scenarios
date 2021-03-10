@@ -239,6 +239,9 @@ class ProjectEnvironments {
 	
 	public static boolean printProjectProperties(def projectTemp, def actualEnvTemp ){
         def flag = false;
+        log.info "projectTemp path is " + projectTemp.getPath()
+        def f = new File(projectTemp.getPath())
+        log.info "Parent path is " + f.getParent().toString()
         try{
             def file = new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
             log.info "Path --$file"

@@ -19,30 +19,34 @@ class ProjectEnvironments {
         def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
         //actualEnv = "G-D7"
         log.info "Actual envirnment from user input is -- $actualEnv"
+		if(actualEnv != null){
+				if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
+					log.info "Environemnt $actualEnv alredy exists"
+					project.setActiveEnvironment(actualEnv)
+					loadProjectProperties(project,actualEnv);
 
-        if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
-            log.info "Environemnt $actualEnv alredy exists"
-            project.setActiveEnvironment(actualEnv)
-            loadProjectProperties(project,actualEnv);
+				}
+				else  // If env is not present, create new environment and update the project properties
+				{
+					log.info "Environemnt $actualEnv NOT exists"
+					cloneExistingEnvironment( project,  actualEnv ,  constantEnv)
 
-        }
-        else  // If env is not present, create new environment and update the project properties
-        {
-            log.info "Environemnt $actualEnv NOT exists"
-            cloneExistingEnvironment( project,  actualEnv ,  constantEnv)
+				}
 
-        }
+				def currectEnvironmentServices = getCurrentEnvExistingSoapServices(project,actualEnv)
+				addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
 
-        def currectEnvironmentServices = getCurrentEnvExistingSoapServices(project,actualEnv)
-        addSeviceNameIfNotPresentInEnv(project,currectEnvironmentServices )
+				updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+				setEnvironmentDataBaseDetails(project,actualEnv,constantEnv)
+				//updateAllServices(project,actualEnv,constantEnv)
+				//log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
 
-        updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
-		setEnvironmentDataBaseDetails(project,actualEnv,constantEnv)
-        //updateAllServices(project,actualEnv,constantEnv)
-        //log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
+				//log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
+				//log.info printProjectProperties(project,actualEnv);
+		
+		}
 
-        //log.info "getCurrentEnvExistingSoapServicesDefinition--" + getCurrentEnvExistingSoapServicesDefinition(project,actualEnv)
-        //log.info printProjectProperties(project,actualEnv);
+        
 
     }
 
@@ -306,8 +310,8 @@ class ProjectEnvironments {
 				}	
 			}
 	//Same for Journl DB
-		def RBSPayTempList = ["Journal_DB"]
-			for(dbItem in RBSPayTempList){
+		def JournlDBTempList = ["Journal_DB"]
+			for(dbItem in JournlDBTempList){
 				log.info "dbItem--$dbItem"
 				def dbConnection = projectTemp.activeEnvironment.databaseConnectionContainer.getResourceByName(dbItem)
 				log.info "dbConnection-" + dbConnection

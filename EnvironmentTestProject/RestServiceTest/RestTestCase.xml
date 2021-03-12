@@ -1,0 +1,1165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="8805881d-13be-42b2-9928-66baa46f54d2" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="RestTestCase" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="8805881d-13be-42b2-9928-66baa46f54d2fileName">RestTestCase</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="restrequest" name="Request 1" id="73bbdf4c-4cec-4eb9-b6ae-34eae98d7f29" disabled="true">
+    <con:settings/>
+    <con:config service="http://10.246.89.212:29191" resourcePath="/pin/api/v7/validateAccounts" methodName="ValidateAccounts" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:restRequest name="Request 1" id="2a828c11-47ed-46cf-a42b-a1ed8e4232c0" mediaType="application/json" postQueryString="false">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:endpoint>http://10.246.89.212:29191</con:endpoint>
+        <con:request/>
+        <con:originalUri>http://10.246.89.212/pin/api/v7/validateAccounts</con:originalUri>
+        <con:assertion type="Valid HTTP Status Codes" id="d672fb10-b986-4f36-b357-6a1c9341b761" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Response SLA Assertion" id="71b3fdf9-7c77-4e9b-ae75-de108f443005" name="Response SLA">
+          <con:configuration>
+            <SLA>200</SLA>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:parameters/>
+        <con:environmentSpec>
+          <con:entry environmentId="eb560c2b-2a2a-4ead-9d00-5b73b67d272e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="8986f7fe-2c19-420e-90e5-442e2963b1db">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:restRequest>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script" id="e81eb115-a1cd-4532-9363-1667c7e9bdb7" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script><![CDATA[import com.eviware.soapui.model.environment.ServiceImpl
+import com.eviware.soapui.model.environment.EndpointImpl
+
+def projectTemp = testRunner.testCase.testSuite.getProject();
+def actualEnvTemp = "G-S1"
+
+projectTemp.setActiveEnvironment(actualEnvTemp)
+def actualEnvTempObj = projectTemp.getActiveEnvironment()
+
+		
+def currectEnvironmentServices = getCurrentEnvExistingSoapServices(projectTemp,actualEnvTemp)
+log.info "currectEnvironmentServices--$currectEnvironmentServices"
+addSeviceNameIfNotPresentInEnv(projectTemp,currectEnvironmentServices )
+//log.info getCurrentEnvExistingServices(projectTemp,actualEnvTemp)
+//************************************
+//def envIPAddress = "10.246.89.109:20811"
+//def interfaceList =  projectTemp.getInterfaceList()
+//				for(item in interfaceList ) {
+//					def nameofService = item.name
+//					log.info item.getConfig()
+////					log.info "item.getEndpoints() -- ${item.getEndpoints()}"
+//					def serviceDefnition = item.getEndpoints()[0].toString()
+//					log.info "nameofService - $nameofService   &&& serviceDefnition - $serviceDefnition"
+//					def indexNum = serviceDefnition.indexOf('/pin/')
+//					def NewUrl
+//					if (serviceDefnition.toString().contains('/pin/'))
+//						 NewUrl = 'http://' + envIPAddress + serviceDefnition.substring(indexNum)
+//						
+////					log.info "NewUrl--$NewUrl"
+//				}
+
+
+//***********************************
+
+public def getCurrentEnvExistingSoapServices(def projectTemp, def actualEnvTemp){
+	def serviceList = []
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	//for SOap services
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i<soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			serviceList.add(soapServ.getName())		
+		}
+		//For REST services
+		def restServCount = env.getRestServiceCount()
+		for(int i = 0;i<restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			serviceList.add(restServ.getName())		
+		}
+	return serviceList	
+}
+
+public boolean addSeviceNameIfNotPresentInEnv(def projectTemp, def currectEnvironmentServices){
+	
+	def newEnvObject= projectTemp.getActiveEnvironment()
+	def interfaceList =  projectTemp.getInterfaceList()
+				for(item in interfaceList ) {
+					def enumType = (item.getType().equalsIgnoreCase("rest"))?"REST":"SOAP"
+					def nameofService = item.name
+					log.info "enumType--$enumType"
+					def serviceDefnition = item.getEndpoints()[0].toString()
+					def indexNum = serviceDefnition.indexOf('/pin/')
+//					def NewUrl
+//					if (serviceDefnition.toString().contains('/pin/'))
+//						 NewUrl = 'http://' + envIPAddress + serviceDefnition.substring(indexNum)
+
+					if(!currectEnvironmentServices.contains(nameofService)){
+						log.info "nameofService $nameofService - Not exists exists"
+						NewUrl = serviceDefnition
+						ServiceImpl soapService = null
+						if(enumType.equals("REST"))
+							soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.REST)
+						else
+							soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.SOAP)
+							
+						
+						def str = '<xml-fragment authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="" xmlns:con="http://eviware.com/soapui/config">' + serviceDefnition+ '</xml-fragment>'
+						com.eviware.soapui.config.EnvironmentEndpointConfig epConfig = com.eviware.soapui.config.EnvironmentEndpointConfig.Factory.parse(str);
+						EndpointImpl epImpl = new EndpointImpl(epConfig, soapService);
+						soapService.setEndpoint(epImpl);
+						
+					}
+				}
+	
+}]]></script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script 2" id="227e82c3-394b-4b05-9dd4-a587cfa68ab7" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>def project = testRunner.testCase.testSuite.getProject();
+
+def envActive = project.getActiveEnvironment()
+def envActiveName = envActive.getName();
+def allEnvList = project.getEnvironmentList();
+def constantEnv = "G-D4"
+def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
+//actualEnv = "G-S1" // hardcoded remove it immediatly
+log.info "Actual envirnment from user input is -- $actualEnv"
+
+if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
+	project.setActiveEnvironment(actualEnv)
+	loadProjectProperties(project,actualEnv);
+	updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+	updateAllServices(project,actualEnv,constantEnv)	
+}
+else  // If env is not present, create new environment and update the project properties
+{
+	cloneExistingEnvironment( project,  actualEnv ,  constantEnv)
+	updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+	updateAllServices(project,actualEnv,constantEnv)	
+}
+
+log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
+
+
+//Check if suite has this environment already created
+public boolean isEnvironmentExists(def allEnvListTemp,def envNameTemp){
+	return allEnvListTemp.name.contains(envNameTemp)
+}
+
+public boolean loadProjectProperties(def projectTemp, def actualEnvTemp){
+	def flag = false;
+	try{
+		def file = projectTemp.getPath() + File.separator + "env" +  File.separator + "env.json"
+		def jsonSlurper = new groovy.json.JsonSlurper()
+		def object = jsonSlurper.parse(new FileReader(new File(file)))
+		
+		object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each { 
+		         it -> projectTemp.setPropertyValue( it.key , it.value );	
+	      }
+
+		flag = true
+	}catch(Exception ex){
+		flag = false
+	}
+
+	return flag;
+	
+}
+
+
+public boolean cloneExistingEnvironment(def project, def actualEnv , def constantEnv){
+
+	project.setActiveEnvironment(constantEnv)
+	project.getActiveEnvironment().clone(actualEnv)
+	project.setActiveEnvironment(actualEnv)
+	loadProjectProperties(project,actualEnv);
+}
+
+public boolean updateAllServices(projectTemp,actualEnvTemp,constantEnvTemp){
+
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i&lt;soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			def endpointConf = soapServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def endPointStringValue = endpointConf.getStringValue()
+								.replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+								.replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			endpointConf.setStringValue(endPointStringValue)	
+		}
+
+	def restServCount = env.getRestServiceCount()
+		for(int i = 0;i&lt;restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			def endpointConf = restServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def endPointStringValue = endpointConf.getStringValue()
+								.replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+								.replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			endpointConf.setStringValue(endPointStringValue)	
+		}
+	
+}
+
+public boolean updateAllServicesIfIPAddressPresent(projectTemp,actualEnvTemp,constantEnvTemp){
+
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i&lt;soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			def endpointConf = soapServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
+			log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
+			if(!isProjectStringPresent){
+				def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+				def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+ 				endpointConf.setStringValue(endPointStringValue)
+				
+			}
+
+	
+		}
+
+	def restServCount = env.getRestServiceCount()
+		for(int i = 0;i&lt;restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			def endpointConf = restServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
+			log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
+			if(!isProjectStringPresent){
+				def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+				def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+ 				endpointConf.setStringValue(endPointStringValue)
+				
+			}
+		}	
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="e6b5acb7-81c4-45f8-bd08-22fe703cbe58" name="SOAP Request" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="SOAP Request" id="0173b855-cf5f-4248-a6f8-44d19c64f1db">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>?</wsc:SourceApplication>
+         <wsc:DestinationApplication>?</wsc:DestinationApplication>
+         <wsc:Function>?</wsc:Function>
+         <wsc:Version>?</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>?</wsc:userid>
+            <wsc:credentials>?</wsc:credentials>
+            <wsc:channel>?</wsc:channel>
+            <wsc:orgid>?</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>?</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>?</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>?</wsc:locale>
+            <wsc:ip>?</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="?" value="?"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest>
+         <urn:paymentMessage>
+            <urn1:paymentIdentification>
+               <urn2:messageIdentification>?</urn2:messageIdentification>
+               <!--Optional:-->
+               <urn2:endToEndIdentification>?</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo>
+               <urn3:paymentMethod>?</urn3:paymentMethod>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>?</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <urn3:serviceLevel>?</urn3:serviceLevel>
+                  <!--Optional:-->
+                  <urn3:localInstrument>?</urn3:localInstrument>
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>?</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <urn3:requestedExecutionDate>?</urn3:requestedExecutionDate>
+               <urn3:requestedCreditValueDate>?</urn3:requestedCreditValueDate>
+               <urn3:debtorAccount>
+                  <urn2:identification>?</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>?</urn2:currency>
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <urn3:debtorAgentBIC>?</urn3:debtorAgentBIC>
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <urn2:faxNumber>?</urn2:faxNumber>
+                  <!--Optional:-->
+                  <urn2:emailAddress>?</urn2:emailAddress>
+                  <!--Optional:-->
+                  <urn2:contactDetailsName>?</urn2:contactDetailsName>
+               </urn3:debtor>
+               <!--Optional:-->
+               <urn3:ultimateDebtor>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <urn2:faxNumber>?</urn2:faxNumber>
+                  <!--Optional:-->
+                  <urn2:emailAddress>?</urn2:emailAddress>
+                  <!--Optional:-->
+                  <urn2:contactDetailsName>?</urn2:contactDetailsName>
+               </urn3:ultimateDebtor>
+               <!--Optional:-->
+               <urn3:instructionForDebtorAgent>?</urn3:instructionForDebtorAgent>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="?">
+                     <urn2:amount>?</urn2:amount>
+                  </urn2:instructedAmount>
+                  <urn2:equivalentAmount>
+                     <urn2:amount currency="?">
+                        <urn2:amount>?</urn2:amount>
+                     </urn2:amount>
+                     <urn2:currencyOfTransfer>?</urn2:currencyOfTransfer>
+                  </urn2:equivalentAmount>
+               </urn4:amount>
+               <!--Optional:-->
+               <urn4:exchangeRateInformation>
+                  <urn2:exchangeRate>?</urn2:exchangeRate>
+                  <!--Optional:-->
+                  <urn2:rateType>SPOT</urn2:rateType>
+                  <!--Optional:-->
+                  <urn2:contractIdentification>?</urn2:contractIdentification>
+               </urn4:exchangeRateInformation>
+               <!--Optional:-->
+               <urn4:chargeBearer>?</urn4:chargeBearer>
+               <!--Optional:-->
+               <urn4:intermediaryAgent1>
+                  <!--Optional:-->
+                  <urn2:bic>?</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:nationalId>?</urn2:nationalId>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:intermediaryAgent1>
+               <!--Optional:-->
+               <urn4:intermediaryAgent2>
+                  <!--Optional:-->
+                  <urn2:bic>?</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:nationalId>?</urn2:nationalId>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:intermediaryAgent2>
+               <!--Optional:-->
+               <urn4:intermediaryAgent3>
+                  <!--Optional:-->
+                  <urn2:bic>?</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:nationalId>?</urn2:nationalId>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:intermediaryAgent3>
+               <!--Optional:-->
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>?</urn2:bic>
+                  <!--Optional:-->
+                  <urn2:nationalId>?</urn2:nationalId>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <!--Optional:-->
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <urn2:faxNumber>?</urn2:faxNumber>
+                  <!--Optional:-->
+                  <urn2:emailAddress>?</urn2:emailAddress>
+                  <!--Optional:-->
+                  <urn2:contactDetailsName>?</urn2:contactDetailsName>
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>?</urn2:identification>
+                  <!--Optional:-->
+                  <urn2:currency>?</urn2:currency>
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               <urn4:ultimateCreditor>
+                  <!--Optional:-->
+                  <urn2:name>?</urn2:name>
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>?</urn2:addressType>
+                     <!--Optional:-->
+                     <urn2:department>?</urn2:department>
+                     <!--Optional:-->
+                     <urn2:subDepartment>?</urn2:subDepartment>
+                     <!--Optional:-->
+                     <urn2:streetName>?</urn2:streetName>
+                     <!--Optional:-->
+                     <urn2:buildingNumber>?</urn2:buildingNumber>
+                     <!--Optional:-->
+                     <urn2:postCode>?</urn2:postCode>
+                     <!--Optional:-->
+                     <urn2:townName>?</urn2:townName>
+                     <!--Optional:-->
+                     <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                     <!--Optional:-->
+                     <urn2:country>?</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                     <urn2:addressLine>?</urn2:addressLine>
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <urn2:faxNumber>?</urn2:faxNumber>
+                  <!--Optional:-->
+                  <urn2:emailAddress>?</urn2:emailAddress>
+                  <!--Optional:-->
+                  <urn2:contactDetailsName>?</urn2:contactDetailsName>
+               </urn4:ultimateCreditor>
+               <!--Zero or more repetitions:-->
+               <urn4:instructionForCreditorAgent>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:code>?</urn2:code>
+                  <urn2:proprietaryCode>?</urn2:proprietaryCode>
+                  <!--Optional:-->
+                  <urn2:instructionInformation>?</urn2:instructionInformation>
+               </urn4:instructionForCreditorAgent>
+               <!--Optional:-->
+               <urn4:regulatoryReporting>
+                  <urn2:code>?</urn2:code>
+                  <!--Optional:-->
+                  <urn2:information>?</urn2:information>
+               </urn4:regulatoryReporting>
+               <!--Optional:-->
+               <urn4:internalNote>?</urn4:internalNote>
+               <!--Optional:-->
+               <urn4:confidential>?</urn4:confidential>
+               <!--Optional:-->
+               <urn4:chequeInstruction>
+                  <!--Optional:-->
+                  <urn2:chequeType>?</urn2:chequeType>
+                  <!--Optional:-->
+                  <urn2:deliveryMethod>?</urn2:deliveryMethod>
+                  <!--Optional:-->
+                  <urn2:chequeFrom>
+                     <urn2:name>?</urn2:name>
+                     <urn2:postalAddress>
+                        <!--Optional:-->
+                        <urn2:addressType>?</urn2:addressType>
+                        <!--Optional:-->
+                        <urn2:department>?</urn2:department>
+                        <!--Optional:-->
+                        <urn2:subDepartment>?</urn2:subDepartment>
+                        <!--Optional:-->
+                        <urn2:streetName>?</urn2:streetName>
+                        <!--Optional:-->
+                        <urn2:buildingNumber>?</urn2:buildingNumber>
+                        <!--Optional:-->
+                        <urn2:postCode>?</urn2:postCode>
+                        <!--Optional:-->
+                        <urn2:townName>?</urn2:townName>
+                        <!--Optional:-->
+                        <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                        <!--Optional:-->
+                        <urn2:country>?</urn2:country>
+                        <!--0 to 7 repetitions:-->
+                        <urn2:addressLine>?</urn2:addressLine>
+                     </urn2:postalAddress>
+                  </urn2:chequeFrom>
+                  <!--Optional:-->
+                  <urn2:deliverTo>
+                     <urn2:name>?</urn2:name>
+                     <urn2:postalAddress>
+                        <!--Optional:-->
+                        <urn2:addressType>?</urn2:addressType>
+                        <!--Optional:-->
+                        <urn2:department>?</urn2:department>
+                        <!--Optional:-->
+                        <urn2:subDepartment>?</urn2:subDepartment>
+                        <!--Optional:-->
+                        <urn2:streetName>?</urn2:streetName>
+                        <!--Optional:-->
+                        <urn2:buildingNumber>?</urn2:buildingNumber>
+                        <!--Optional:-->
+                        <urn2:postCode>?</urn2:postCode>
+                        <!--Optional:-->
+                        <urn2:townName>?</urn2:townName>
+                        <!--Optional:-->
+                        <urn2:countrySubDivision>?</urn2:countrySubDivision>
+                        <!--Optional:-->
+                        <urn2:country>?</urn2:country>
+                        <!--0 to 7 repetitions:-->
+                        <urn2:addressLine>?</urn2:addressLine>
+                     </urn2:postalAddress>
+                  </urn2:deliverTo>
+               </urn4:chequeInstruction>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <urn4:purposeCode>?</urn4:purposeCode>
+               <urn4:purposeProprietary>?</urn4:purposeProprietary>
+               <!--Optional:-->
+               <urn4:uetrId>?</urn4:uetrId>
+               <!--Zero or more repetitions:-->
+               <urn1:remittanceInformationUnstructured>?</urn1:remittanceInformationUnstructured>
+               <!--Optional:-->
+               <urn1:creditorScorReference>?</urn1:creditorScorReference>
+               <!--Optional:-->
+               
+            </urn1:transaction>
+            <!--Optional:-->
+            <urn1:referredDocumentInformation>
+               <!--Optional:-->
+               <urn2:type>?</urn2:type>
+               <!--Optional:-->
+               <urn2:issuer>?</urn2:issuer>
+               <!--Optional:-->
+               <urn2:number>?</urn2:number>
+               <!--Optional:-->
+               <urn2:relatedDate>?</urn2:relatedDate>
+               <!--Optional:-->
+               <urn2:invoiceeOtherId>?</urn2:invoiceeOtherId>
+            </urn1:referredDocumentInformation>
+            <!--Optional:-->
+            <urn1:autoConfirm>?</urn1:autoConfirm>
+            <!--Optional:-->
+            <urn1:retailPaymentApprovalNeeded>?</urn1:retailPaymentApprovalNeeded>
+            <!--Optional:-->
+            <urn1:fundsCheckRetryDays>?</urn1:fundsCheckRetryDays>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="de605cd9-1998-44ef-92aa-805b62d0f9e5" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Response SLA Assertion" id="a5b6042f-a9d9-4cd8-92e3-de5db41c8c1b" name="Response SLA">
+          <con:configuration>
+            <SLA>200</SLA>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="a486119a-7f11-47eb-a61a-b570011faa3d" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="2d3b34cb-2e78-4cdf-ae12-9ecbcf33b267" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="8986f7fe-2c19-420e-90e5-442e2963b1db">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="4491f2c6-85d5-489b-a514-6dc1f617f91f" name="SOAP Request 2" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentAuthorization_V1_3PortTypeSoap11</con:interface>
+      <con:operation>PaymentAuthorizationCreate</con:operation>
+      <con:request name="SOAP Request 2" id="836d3a47-4155-4961-a8c4-e5bbd71f5950">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.108:22641/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentauthorization:v1_3" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentauthorization:v1_3" xmlns:urn2="urn:pins.payment.evry.com:domain:authorization:v1_3">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>?</wsc:SourceApplication>
+         <wsc:DestinationApplication>?</wsc:DestinationApplication>
+         <wsc:Function>?</wsc:Function>
+         <wsc:Version>?</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>?</wsc:userid>
+            <wsc:credentials>?</wsc:credentials>
+            <wsc:channel>?</wsc:channel>
+            <wsc:orgid>?</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>?</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>?</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>?</wsc:locale>
+            <wsc:ip>?</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="?" value="?"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest>
+         <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData>
+               <urn2:agreementData>
+                  <urn2:agreementId>?</urn2:agreementId>
+                  <!--Optional:-->
+                  <urn2:parentAgreementId>?</urn2:parentAgreementId>
+                  <urn2:bankId>?</urn2:bankId>
+                  <urn2:customerID>?</urn2:customerID>
+                  <urn2:productID>?</urn2:productID>
+                  <!--Optional:-->
+                  <urn2:migrationDate>?</urn2:migrationDate>
+                  <!--1 or more repetitions:-->
+                  <urn2:corporateGrouping>
+                     <urn2:customerId>?</urn2:customerId>
+                     <urn2:agreementId>?</urn2:agreementId>
+                     <!--Optional:-->
+                     <urn2:parentAgreementId>?</urn2:parentAgreementId>
+                     <urn2:b2bPollingEnabled>?</urn2:b2bPollingEnabled>
+                  </urn2:corporateGrouping>
+                  <!--Zero or more repetitions:-->
+                  <urn2:agreementAccount>
+                     <urn2:accountNumber>?</urn2:accountNumber>
+                     <urn2:accountOwnerIdentifier>?</urn2:accountOwnerIdentifier>
+                     <!--Optional:-->
+                     <urn2:bic>?</urn2:bic>
+                     <urn2:currencyCode>?</urn2:currencyCode>
+                     <urn2:accountType>?</urn2:accountType>
+                     <urn2:numberOfVerifiers>?</urn2:numberOfVerifiers>
+                     <urn2:numberOfApprovers>?</urn2:numberOfApprovers>
+                     <!--Optional:-->
+                     <urn2:psd2Configuration>?</urn2:psd2Configuration>
+                     <urn2:access>?</urn2:access>
+                  </urn2:agreementAccount>
+               </urn2:agreementData>
+               <urn2:userData>
+                  <urn2:userId>?</urn2:userId>
+                  <!--Optional:-->
+                  <urn2:userCheckSum>?</urn2:userCheckSum>
+                  <urn2:sessionID>?</urn2:sessionID>
+                  <urn2:firstName>?</urn2:firstName>
+                  <urn2:lastName>?</urn2:lastName>
+                  <!--Optional:-->
+                  <urn2:socialSecurityNumber>?</urn2:socialSecurityNumber>
+                  <!--Zero or more repetitions:-->
+                  <urn2:userAccount>
+                     <urn2:accountNumber>?</urn2:accountNumber>
+                     <!--Optional:-->
+                     <urn2:bic>?</urn2:bic>
+                     <!--Zero or more repetitions:-->
+                     <urn2:role>?</urn2:role>
+                     <!--Optional:-->
+                     <urn2:bookingLevel>?</urn2:bookingLevel>
+                     <urn2:approvalLimit>?</urn2:approvalLimit>
+                     <urn2:registerLimit>?</urn2:registerLimit>
+                  </urn2:userAccount>
+                  <!--Zero or more repetitions:-->
+                  <urn2:userRole>?</urn2:userRole>
+               </urn2:userData>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="4976c63c-cdf5-4524-8a63-c4315b055fe6" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Response SLA Assertion" id="b8582ffd-4449-452d-9220-6218af13525e" name="Response SLA">
+          <con:configuration>
+            <SLA>200</SLA>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="6e66cf3f-5ffe-4f64-a42b-ea00e4617fda" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="608408f6-17cd-4c7f-a82c-9224c81465d4" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentauthorization:v1_3/PINSPaymentAuthorization_V1_3PortType/PaymentAuthorizationCreateRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="8986f7fe-2c19-420e-90e5-442e2963b1db">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Interface" id="a1ebbde5-c506-4e30-8573-69b7e3190ed6" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.model.environment.ServiceImpl
+import com.eviware.soapui.model.environment.EndpointImpl
+
+def proj = testRunner.testCase.testSuite.getProject();
+def envIPAddress = "10.246.89.109:20811"
+
+def constantEnv  = "G-D4"
+def actualEnv = "G-S1"
+	proj.setActiveEnvironment(constantEnv)
+	proj.getActiveEnvironment().clone(actualEnv)
+	proj.setActiveEnvironment(actualEnv)
+
+def newEnvObject = proj.getActiveEnvironment()
+			
+def interfaceList =  proj.getInterfaceList()
+				for(item in interfaceList ) {
+					def nameofService = item.name
+					log.info "item.getEndpoints() -- ${item.getEndpoints()}"
+					def serviceDefnition = item.getEndpoints()[0].toString()
+					log.info "nameofService - $nameofService   &amp;&amp;&amp; serviceDefnition - $serviceDefnition"
+					def indexNum = serviceDefnition.indexOf('/pin/')
+					def NewUrl
+					if (serviceDefnition.toString().contains('/pin/'))
+						 NewUrl = 'http://' + envIPAddress + serviceDefnition.substring(indexNum)
+						
+					log.info "NewUrl--$NewUrl"
+					NewUrl = serviceDefnition
+					ServiceImpl soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.SOAP)
+					
+					def str = '&lt;xml-fragment authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="" xmlns:con="http://eviware.com/soapui/config">' + NewUrl+ '&lt;/xml-fragment>'
+					com.eviware.soapui.config.EnvironmentEndpointConfig epConfig = com.eviware.soapui.config.EnvironmentEndpointConfig.Factory.parse(str);
+					EndpointImpl epImpl = new EndpointImpl(epConfig, soapService);
+					soapService.setEndpoint(epImpl);
+				}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script 3" id="22d765cf-ee3e-477b-a59b-d69c8b1fad72" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script><![CDATA[import com.eviware.soapui.model.environment.ServiceImpl
+import com.eviware.soapui.model.environment.EndpointImpl
+def project = testRunner.testCase.testSuite.getProject();
+
+def envActive = project.getActiveEnvironment()
+def envActiveName = envActive.getName();
+def allEnvList = project.getEnvironmentList();
+def constantEnv = "G-D4"
+def actualEnv = System.getenv().get("COMMAND_LINE"); // get actual environment from user input
+//actualEnv = "G-S1" // hardcoded remove it immediatly
+log.info "Actual envirnment from user input is -- $actualEnv"
+
+if (isEnvironmentExists(allEnvList,actualEnv)){ // If env is already present just update the project prperies
+	project.setActiveEnvironment(actualEnv)
+	loadProjectProperties(project,actualEnv);
+}
+else  // If env is not present, create new environment and update the project properties
+{
+	cloneExistingEnvironment( project,  actualEnv ,  constantEnv)
+}
+
+		
+	def currectEnvironmentServices = getCurrentEnvExistingSoapServices(projectTemp,actualEnvTemp)
+	log.info "currectEnvironmentServices--$currectEnvironmentServices"
+	addSeviceNameIfNotPresentInEnv(projectTemp,currectEnvironmentServices )
+
+	updateAllServicesIfIPAddressPresent(project,actualEnv,constantEnv)
+	updateAllServices(project,actualEnv,constantEnv)	
+log.info "---->>>>>>>>>>>>>>>>END>>>>>>>>>>>>>>>>>>>>>"
+
+//Check if suite has this environment already created
+public boolean isEnvironmentExists(def allEnvListTemp,def envNameTemp){
+	return allEnvListTemp.name.contains(envNameTemp)
+}
+
+public boolean loadProjectProperties(def projectTemp, def actualEnvTemp){
+	def flag = false;
+	try{
+		def file = projectTemp.getPath() + File.separator + "env" +  File.separator + "env.json"
+		def jsonSlurper = new groovy.json.JsonSlurper()
+		def object = jsonSlurper.parse(new FileReader(new File(file)))
+		
+		object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each { 
+		         it -> projectTemp.setPropertyValue( it.key , it.value );	
+	      }
+
+		flag = true
+	}catch(Exception ex){
+		flag = false
+	}
+
+	return flag;
+	
+}
+
+
+public boolean cloneExistingEnvironment(def project, def actualEnv , def constantEnv){
+
+	project.setActiveEnvironment(constantEnv)
+	project.getActiveEnvironment().clone(actualEnv)
+	project.setActiveEnvironment(actualEnv)
+	loadProjectProperties(project,actualEnv);
+}
+
+public boolean updateAllServices(projectTemp,actualEnvTemp,constantEnvTemp){
+
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i<soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			def endpointConf = soapServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def endPointStringValue = endpointConf.getStringValue()
+								.replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+								.replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			endpointConf.setStringValue(endPointStringValue)	
+		}
+
+	def restServCount = env.getRestServiceCount()
+		for(int i = 0;i<restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			def endpointConf = restServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def endPointStringValue = endpointConf.getStringValue()
+								.replaceAll(constantEnvTemp,actualEnvTemp.replaceAll('-','_'))
+								.replaceAll(constantEnvTemp.replaceAll('-','_'),actualEnvTemp.replaceAll('-','_'))
+			endpointConf.setStringValue(endPointStringValue)	
+		}
+	
+}
+
+public boolean updateAllServicesIfIPAddressPresent(projectTemp,actualEnvTemp,constantEnvTemp){
+
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i<soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			def endpointConf = soapServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
+			log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
+			if(!isProjectStringPresent){
+				def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+				def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+ 				endpointConf.setStringValue(endPointStringValue)
+				
+			}
+
+	
+		}
+
+	def restServCount = env.getRestServiceCount()
+		for(int i = 0;i<restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			def endpointConf = restServ.getEndpoint().getConfig()
+			log.info "endpointConf.getStringValue()-" + endpointConf.getStringValue()
+			def isProjectStringPresent = endpointConf.getStringValue().contains("Project")
+			log.info "isProjectStringPresent contains /Project/ " + isProjectStringPresent
+			if(!isProjectStringPresent){
+				def endPointStringValuePart2 = endpointConf.getStringValue().split('/pin/')[1]
+				def endPointStringValue = "http://\${#Project#${constantEnvTemp}}/pin/" + endPointStringValuePart2
+ 				endpointConf.setStringValue(endPointStringValue)				
+			}
+		}	
+}
+
+public def getCurrentEnvExistingSoapServices(def projectTemp, def actualEnvTemp){
+	def serviceList = []
+	def env = projectTemp.getEnvironmentByName(actualEnvTemp);
+	//for SOap services
+	def soapServCount = env.getSoapServiceCount()
+		for(int i = 0;i<soapServCount;i++){
+			def soapServ = env.getSoapServiceAt(i)
+			serviceList.add(soapServ.getName())		
+		}
+		//For REST services
+		def restServCount = env.getRestServiceCount()
+		for(int i = 0;i<restServCount;i++){
+			def restServ = env.getRestServiceAt(i)
+			serviceList.add(restServ.getName())		
+		}
+	return serviceList	
+}
+
+public boolean addSeviceNameIfNotPresentInEnv(def projectTemp, def currectEnvironmentServices){
+	
+	def newEnvObject= projectTemp.getActiveEnvironment()
+	def interfaceList =  projectTemp.getInterfaceList()
+				for(item in interfaceList ) {
+					def enumType = (item.getType().equalsIgnoreCase("rest"))?"REST":"SOAP"
+					def nameofService = item.name
+					log.info "enumType--$enumType"
+					def serviceDefnition = item.getEndpoints()[0].toString()
+					def indexNum = serviceDefnition.indexOf('/pin/')
+//					def NewUrl
+//					if (serviceDefnition.toString().contains('/pin/'))
+//						 NewUrl = 'http://' + envIPAddress + serviceDefnition.substring(indexNum)
+
+					if(!currectEnvironmentServices.contains(nameofService)){
+						log.info "nameofService $nameofService - Not exists exists"
+						NewUrl = serviceDefnition
+						ServiceImpl soapService = null
+						if(enumType.equals("REST"))
+							soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.REST)
+						else
+							soapService = newEnvObject.addNewService(nameofService, com.eviware.soapui.config.ServiceConfig.Type.SOAP)
+							
+						
+						def str = '<xml-fragment authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="" xmlns:con="http://eviware.com/soapui/config">' + serviceDefnition+ '</xml-fragment>'
+						com.eviware.soapui.config.EnvironmentEndpointConfig epConfig = com.eviware.soapui.config.EnvironmentEndpointConfig.Factory.parse(str);
+						EndpointImpl epImpl = new EndpointImpl(epConfig, soapService);
+						soapService.setEndpoint(epImpl);
+						
+					}
+				}
+	
+}]]></script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script 4" id="b233ae3c-7430-4d39-83ca-48078a68a09b">
+    <con:settings/>
+    <con:config>
+      <script>def projectTemp = testRunner.testCase.testSuite.getProject()
+log.info File.separator
+if (File.separator.equals("\\"))  log.info "Windows"
+log.info "Testing!!!!!!!!!!"
+//printProjectProperties(projectTemp,"G-D4" , log)
+//
+public static boolean printProjectProperties(def projectTemp, def actualEnvTemp , def log){
+        def flag = false;
+        log.info "projectTemp path is " + projectTemp.getPath()
+        def f = new File(projectTemp.getPath())
+        log.info "Parent path is " + f.getParent().toString()
+        try{
+            def file
+            if (File.separator.equals("\\"))
+            	file= new File(projectTemp.getPath()).getParent().toString() + File.separator + "env" +  File.separator + "env.json"
+            else
+            	file= "/usr/local/SmartBear/project" + File.separator + "env" +  File.separator + "env.json"
+            log.info "Path --$file"
+            def jsonSlurper = new groovy.json.JsonSlurper()
+            def object = jsonSlurper.parse(new FileReader(new File(file)))
+			log.info object.environment
+            object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
+                it -> log.info it.key + "|" + it.value 
+            }
+
+             object.environment.findAll{ it.'NAME' == "$actualEnvTemp" }[0].each {
+                it -> log.info "Proj prop--> ${it.key}-->"+ projectTemp.getPropertyValue(it.key)
+            }
+
+            flag = true
+        }catch(Exception ex){
+            flag = false
+        }
+
+        return flag;
+
+    }</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="eb560c2b-2a2a-4ead-9d00-5b73b67d272e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="8986f7fe-2c19-420e-90e5-442e2963b1db">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

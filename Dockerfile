@@ -1,4 +1,4 @@
-FROM fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.6.0
+FROM fsnexus.evry.com:8085/smartbear/ready-api-soapui-testrunner:3.8.0
 RUN mkdir -p $PROJECT_FOLDER && \
    echo "$PROJECT_FOLDER"
 COPY ./ $PROJECT_FOLDER

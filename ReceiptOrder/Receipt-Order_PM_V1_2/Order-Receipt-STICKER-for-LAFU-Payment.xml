@@ -100,15 +100,15 @@ Verifies tag in DB tables and operational array in all the searches.</con:descri
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>282769</con:value>
+          <con:value>260753654</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>241959</con:value>
+          <con:value>911132</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>258108</con:value>
+          <con:value>980649</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -120,7 +120,7 @@ Verifies tag in DB tables and operational array in all the searches.</con:descri
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select V.USERID as CUSTOMERID,V.ACCOUNTNUMBER as DEBETACCOUNTNO, V.CURRENCYCODE as CURRENCY , V.MARKETTYPE,V.CHANNEL
@@ -205,132 +205,131 @@ from V_AUTH_USERINFO V where  V.MARKETTYPE = 'PM' and V.CHANNEL = 'INT'  and  BA
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPayment_V1_7Service</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentinitiation:v1_7" xmlns:urn1="urn:pins.payment.edb.com:domain:paymentinitiation:v1_7" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:urn3="urn:pays.payment.edb.com:domain:debtor:v1_5" xmlns:urn4="urn:pays.payment.edb.com:domain:creditor:v1_5">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PINS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${#TestSuite#customerid}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
-            <wsc:channel>${Properties#channel}</wsc:channel>
-            <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentCreateRequest>
-         <urn:paymentMessage>
-            <urn1:paymentIdentification>
-               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
-               <!--Optional:-->
-               <urn2:endToEndIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
-            </urn1:paymentIdentification>
-            <urn1:paymentInfo>
-               <urn3:paymentMethod>TRF</urn3:paymentMethod>
-               <!--Optional:-->
-               <urn3:paymentTypeInformation>
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
-               </urn3:paymentTypeInformation>
-               <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>
-               <urn3:debtorAccount>
-                  <urn2:identification>${#TestSuite#accountNumber}</urn2:identification>
-                  <!--Optional:-->
-                  <urn2:currency>${#TestSuite#currencyCode}</urn2:currency>
-               </urn3:debtorAccount>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-            </urn1:paymentInfo>
-            <urn1:transaction>
-               <urn4:amount>
-                  <!--You have a CHOICE of the next 2 items at this level-->
-                  <urn2:instructedAmount currency="NOK">
-                     <urn2:amount>${Properties#Amount}</urn2:amount>
-                  </urn2:instructedAmount>
-               </urn4:amount>
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn4:chargeBearer>SHAR</urn4:chargeBearer>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <urn4:creditorAgent>
-                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>
-                  <urn2:postalAddress>
-                     <urn2:country>${Properties#CreditorCountry}</urn2:country>
-                  </urn2:postalAddress>
-               </urn4:creditorAgent>
-               <urn4:creditor>
-                  <!--Optional:-->
-                  <urn2:name>Test Cred</urn2:name>
-                  <!--Optional:-->
-                  <urn2:postalAddress>
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <!--Optional:-->
-                     <urn2:postCode>1597</urn2:postCode>
-                     <urn2:townName>MOSS</urn2:townName>
-                     <urn2:country>NO</urn2:country>
-                     <urn2:addressLine>VLERVEIEN 75</urn2:addressLine>
-                     <!--0 to 7 repetitions:-->
-                  </urn2:postalAddress>
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-               </urn4:creditor>
-               <urn4:creditorAccount>
-                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
-                  <urn2:currency>${Properties#CreditorCurrency}</urn2:currency>
-               </urn4:creditorAccount>
-               <urn4:confidential>false</urn4:confidential>
-               <urn1:nationalSpecificPaymentRequestInformation xsi:type="ns851:NorwegianPaymentRequestInformation" xmlns:ns851="urn:pays.payment.edb.com:domain:nationalinformation-nor:v1_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <ns851:receiptOrder>${Properties#ReceiptOrder}</ns851:receiptOrder>
-                  <!--Optional:-->
-                  
-               </urn1:nationalSpecificPaymentRequestInformation>
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Zero or more repetitions:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--Optional:-->
-               <!--You have a CHOICE of the nxt 2 items at this level-->
-               <!--Zero or more repetitions:-->
-               <!--Optional:-->
-               <!--Optional:-->
-            </urn1:transaction>
-            <urn1:autoConfirm>true</urn1:autoConfirm>
-            <urn1:retailPaymentApprovalNeeded>false</urn1:retailPaymentApprovalNeeded>
-            <!--Optional:-->
-            <!--Optional:-->
-            <!--Optional:-->
-         </urn:paymentMessage>
-      </urn:PaymentCreateRequest>
-   </soapenv:Body>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.edb.com:ws:paymentinitiation:v1_7" xmlns:urn1="urn:pins.payment.edb.com:domain:paymentinitiation:v1_7" xmlns:urn2="urn:pays.payment.edb.com:domain:sepa-complex-types:v5" xmlns:urn3="urn:pays.payment.edb.com:domain:debtor:v1_5" xmlns:urn4="urn:pays.payment.edb.com:domain:creditor:v1_5">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PINS</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>\r
+            <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentCreateRequest>\r
+         <urn:paymentMessage>\r
+            <urn1:paymentIdentification>\r
+               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>\r
+               <!--Optional:-->\r
+               <urn2:endToEndIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>\r
+            </urn1:paymentIdentification>\r
+            <urn1:paymentInfo>\r
+               <urn3:paymentMethod>TRF</urn3:paymentMethod>\r
+               <!--Optional:-->\r
+               <urn3:paymentTypeInformation>\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>\r
+               </urn3:paymentTypeInformation>\r
+               <!--You have a CHOICE of the next 2 items at this level-->\r
+               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>\r
+               <urn3:debtorAccount>\r
+                  <urn2:identification>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}</urn2:identification>\r
+                  <!--Optional:-->\r
+                  <urn2:currency>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}</urn2:currency>\r
+               </urn3:debtorAccount>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn2:instructedAmount currency="NOK">\r
+                     <urn2:amount>${Properties#Amount}</urn2:amount>\r
+                  </urn2:instructedAmount>\r
+               </urn4:amount>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <urn4:chargeBearer>SHAR</urn4:chargeBearer>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <urn4:creditorAgent>\r
+                  <urn2:bic>${Properties#CreditorAgent}</urn2:bic>\r
+                  <urn2:postalAddress>\r
+                     <urn2:country>${Properties#CreditorCountry}</urn2:country>\r
+                  </urn2:postalAddress>\r
+               </urn4:creditorAgent>\r
+               <urn4:creditor>\r
+                  <!--Optional:-->\r
+                  <urn2:name>Test Cred</urn2:name>\r
+                  <!--Optional:-->\r
+                  <urn2:postalAddress>\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <!--Optional:-->\r
+                     <urn2:postCode>1597</urn2:postCode>\r
+                     <urn2:townName>MOSS</urn2:townName>\r
+                     <urn2:country>NO</urn2:country>\r
+                     <urn2:addressLine>VLERVEIEN 75</urn2:addressLine>\r
+                     <!--0 to 7 repetitions:-->\r
+                  </urn2:postalAddress>\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>\r
+                  <urn2:currency>${Properties#CreditorCurrency}</urn2:currency>\r
+               </urn4:creditorAccount>\r
+               <urn4:confidential>false</urn4:confidential>\r
+               <urn1:nationalSpecificPaymentRequestInformation xsi:type="ns851:NorwegianPaymentRequestInformation" xmlns:ns851="urn:pays.payment.edb.com:domain:nationalinformation-nor:v1_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\r
+                  <!--Optional:-->\r
+                  <!--Optional:-->\r
+                  <ns851:receiptOrder>${Properties#ReceiptOrder}</ns851:receiptOrder>\r
+                  <!--Optional:-->\r
+               </urn1:nationalSpecificPaymentRequestInformation>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Zero or more repetitions:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--You have a CHOICE of the nxt 2 items at this level-->\r
+               <!--Zero or more repetitions:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+            </urn1:transaction>\r
+            <urn1:autoConfirm>true</urn1:autoConfirm>\r
+            <urn1:retailPaymentApprovalNeeded>false</urn1:retailPaymentApprovalNeeded>\r
+            <!--Optional:-->\r
+            <!--Optional:-->\r
+            <!--Optional:-->\r
+         </urn:paymentMessage>\r
+      </urn:PaymentCreateRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="SOAP Response" id="8679ce6d-5034-44cb-bde3-51473670a4e3"/>
         <con:assertion type="MessageContentAssertion" id="886556d9-3298-44ab-88c8-4d5fddc5961a" name="Message Content Assertion">
@@ -1151,7 +1150,7 @@ declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_7';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>Update TRANSACTIONS set PAYMENTSTATUS = 'LAFU' where PAYMENT_REF in (${Properties#transactionId})</con:query>
@@ -1407,9 +1406,9 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
 //ns2:ReceiptOrderUpdateResponse[1]/ns2:receiptOrder[1]/ns1:debitAccount[1]</con:xpath>
               <con:element>ns3:debitAccount</con:element>
               <con:type xsi:nil="true"/>
-              <con:operator>=</con:operator>
+              <con:operator>exists</con:operator>
               <con:enabled>true</con:enabled>
-              <con:expectedValue>${Fetch LAFU Data#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]}</con:expectedValue>
+              <con:expectedValue>42123393613</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1421,7 +1420,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>68719</con:expectedValue>
+              <con:expectedValue>260753648</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1450,8 +1449,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
             <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
          </ns5:ResponseState>
          <ns4:receiptOrder>
-            <ns3:debitAccount>42023281230</ns3:debitAccount>
-            <ns3:transactionId>68719</ns3:transactionId>
+            <ns3:debitAccount>42123393613</ns3:debitAccount>
+            <ns3:transactionId>260753648</ns3:transactionId>
             <ns3:receiptType>STICKER</ns3:receiptType>
          </ns4:receiptOrder>
       </ns4:ReceiptOrderUpdateResponse>
@@ -1499,7 +1498,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentutil:v1_2';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select TRANSACTIONSID,PAYMENTTYPE,PAYMENTSTATUS,RECEIPTORDER from TRANSACTIONS where TRANSACTIONSID = '${Properties#transactionId}'</con:query>

@@ -1,6 +1,6 @@
 #!groovy
-//def failed_email_to ='ullasa.srinivasa@evry.com'
-//def success_email_to ='ullasa.srinivasa@evry.com'
+def failed_email_to ='ullasa.srinivasa@evry.com'
+def success_email_to ='ullasa.srinivasa@evry.com'
 
 def emailNotification( email) {
 	emailext to: email,
@@ -15,7 +15,7 @@ def emailNotification( email) {
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
-//def slackChannelName = "#regressiontestresults"
+def slackChannelName = "#regressiontestresults"
 pipeline {
     agent {
         label 'docker'

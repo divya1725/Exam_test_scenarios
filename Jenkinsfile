@@ -1,6 +1,6 @@
 #!groovy
-//def failed_email_to ='ullasa.srinivasa@evry.com'
-//def success_email_to ='ullasa.srinivasa@evry.com'
+def failed_email_to ='ullasa.srinivasa@evry.com'
+def success_email_to ='ullasa.srinivasa@evry.com'
 
 def emailNotification( email) {
 	emailext to: email,

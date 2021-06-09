@@ -15,7 +15,7 @@ def emailNotification( email) {
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
-//def slackChannelName = "#regressiontestresults"
+def slackChannelName = "#regressiontestresults"
 pipeline {
     agent {
         label 'docker'

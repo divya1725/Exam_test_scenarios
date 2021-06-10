@@ -38,7 +38,7 @@
         </con:property>
         <con:property>
           <con:name>CapitalOutputFile</con:name>
-          <con:value>por-capital_4701_20210205124229383.xml</con:value>
+          <con:value>por-capital_4701_20210609143023563.xml</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -403,8 +403,8 @@ log.info "shParameter : "+shParameter
 log.info "CommandOutput returned-->" + CommandOutPut
 ServerConnect.closeConnection()
 
-
 String FTSLastModifiedDate = System.currentTimeMillis().toString().substring(0,10)
+log.info FTSLastModifiedDate
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate","$FTSLastModifiedDate")</script></con:config>
   </con:testStep>
   <con:testStep type="delay" name="Delay 3 2" id="f26023fe-0b93-433c-a04e-e675452a4e36">
@@ -434,8 +434,7 @@ T.TRANSACTIONSID in
     </con:config>
   </con:testStep><con:testStep type="groovy" name="CopyCapitalResponseFile" id="9680de58-4a50-4174-9fc7-d65a418c3939">
     <con:settings/>
-    <con:config>
-      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+    <con:config><script>def strHost = context.expand( '${#Project#EBSHost}' )
 def strUsername = context.expand( '${#Project#UserName}' )
 def strPassword = context.expand( '${#Project#Password}' )
 def  intPort = context.expand( '${#Project#Port}' )
@@ -461,6 +460,7 @@ String destination = projectPath + File.separator + "data"
 String capitalOutputFile = ""
 try{
 	capitalOutputFile = ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
+	log.info capitalOutputFile
 }catch(Exception ex){
 	log.info "Error:" + ex
 }
@@ -470,8 +470,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("CapitalOut
 
 ServerConnect.closeConnection()
 
-assert capitalOutputFile != "", "FTS capitalOutputFile not created"</script>
-    </con:config>
+assert capitalOutputFile != "", "FTS capitalOutputFile not created"</script></con:config>
   </con:testStep><con:setupScript>testCase.getTestStepByName("Properties").setPropertyValue("POR1OutputFile", "")
 testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate", "")
 testCase.getTestStepByName("Properties").setPropertyValue("FTSResponseFile", "")

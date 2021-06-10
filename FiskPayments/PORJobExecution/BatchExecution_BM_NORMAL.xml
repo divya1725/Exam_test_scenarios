@@ -10,15 +10,15 @@
       <con:properties>
         <con:property>
           <con:name>POR1OutputFile</con:name>
-          <con:value>por-reservation_4701_20210609142706432.xml</con:value>
+          <con:value/>
         </con:property>
         <con:property>
           <con:name>FTSLastModifiedDate</con:name>
-          <con:value>1623241697</con:value>
+          <con:value/>
         </con:property>
         <con:property>
           <con:name>FTSResponseFile</con:name>
-          <con:value>pen_FILE_OF_RESERVATIONS_210609142748498.xml</con:value>
+          <con:value/>
         </con:property>
         <con:property>
           <con:name>FTS_Destination_Masked</con:name>
@@ -26,7 +26,7 @@
         </con:property>
         <con:property>
           <con:name>POR1LastModifiedTime</con:name>
-          <con:value>1623241585</con:value>
+          <con:value/>
         </con:property>
         <con:property>
           <con:name>marketType</con:name>
@@ -38,7 +38,7 @@
         </con:property>
         <con:property>
           <con:name>CapitalOutputFile</con:name>
-          <con:value>por-capital_4701_20210609143023563.xml</con:value>
+          <con:value/>
         </con:property>
       </con:properties>
     </con:config>
@@ -307,7 +307,7 @@ log.info destination
 log.info source
 String FTSResponseFile = ""
 try{
-	FTSResponseFile = ServerConnect.getLatestFile(source,destination,0,log)
+	FTSResponseFile = ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
 	}
 catch(Exception ex){
 log.info "Error:" + ex
@@ -407,7 +407,7 @@ String FTSLastModifiedDate = System.currentTimeMillis().toString().substring(0,1
 log.info FTSLastModifiedDate
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate","$FTSLastModifiedDate")</script></con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay 3 2" id="f26023fe-0b93-433c-a04e-e675452a4e36">
+  <con:testStep type="delay" name="Delay 2" id="f26023fe-0b93-433c-a04e-e675452a4e36">
     <con:settings/>
     <con:config><delay>10000</delay></con:config>
   </con:testStep>
@@ -432,6 +432,9 @@ T.TRANSACTIONSID in
       
       <con:properties/>
     </con:config>
+  </con:testStep><con:testStep type="delay" name="Delay 3" id="2a64015a-789c-4e7a-bfc1-2c154805f752">
+    <con:settings/>
+    <con:config><delay>20000</delay></con:config>
   </con:testStep><con:testStep type="groovy" name="CopyCapitalResponseFile" id="9680de58-4a50-4174-9fc7-d65a418c3939">
     <con:settings/>
     <con:config><script>def strHost = context.expand( '${#Project#EBSHost}' )
@@ -441,6 +444,7 @@ def  intPort = context.expand( '${#Project#Port}' )
 def projectPath = testRunner.getTestCase().testSuite.project.getPath()
 def marketType = context.expand( '${Properties#marketType}' )
 marketType = marketType.toLowerCase()
+
 String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
 env = env.toString().substring(2)
 
@@ -458,6 +462,10 @@ String source = "/ebs/$env/pin/data/fts/capital/out/$marketType"
 String destination = projectPath + File.separator + "data"
 
 String capitalOutputFile = ""
+log.info source
+log.info destination
+log.info "without zero"+ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
+log.info "with zero" +ServerConnect.getLatestFile(source,destination,0,log)
 try{
 	capitalOutputFile = ServerConnect.getLatestFile(source,destination,FTSLastModifiedDate,log)
 	log.info capitalOutputFile
@@ -552,4 +560,4 @@ testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime"
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-<con:breakPoints><con:testStepId>53869884-c063-49a3-977f-33d5c945f754</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>f26023fe-0b93-433c-a04e-e675452a4e36</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>
+<con:breakPoints><con:testStepId>53869884-c063-49a3-977f-33d5c945f754</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>f26023fe-0b93-433c-a04e-e675452a4e36</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>2a64015a-789c-4e7a-bfc1-2c154805f752</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>

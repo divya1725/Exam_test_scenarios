@@ -144,10 +144,10 @@ class ServerConnect {
 
 			objSFTPChannel = (ChannelSftp) objChan;
 
-			println "objSFTPChannel.connect--"
+			println "objSFTPChannel.connect--"+objSFTPChannel
 
 			ServerConnect.objSFTPChannel.cd(DestinationFolder);
-
+			println "uploadFile Success!!" +DestinationFolder
 			File file = new File(fileFullPath);
 			FileInputStream fileInputStream = new FileInputStream(file);
 			objSFTPChannel.put(fileInputStream, file.getName());

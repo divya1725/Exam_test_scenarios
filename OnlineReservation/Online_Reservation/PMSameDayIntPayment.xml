@@ -11,7 +11,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  and  length(RBSUSERID) > 0 and ROWNUM=1</con:query>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>88418.17</con:value>
+          <con:value>69355.76</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>
@@ -135,7 +135,7 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260351237</con:value>
+          <con:value>260762029</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -2128,7 +2128,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select A.TRANSACTIONSID, A.PAYMENTTYPE, A.PAYMENTSTATUS, A.PRIORITIZED, A.RELEASEDATE, A.FK_PROCESSINGLINEID, A.CHARGEBEARER,
@@ -2136,6 +2136,15 @@ A. BOOKINGLEVEL, C.INITIATORBANKID, C.MARKETTYPE, D.* from TRANSACTIONS A, PAYME
 A.TRANSACTIONSID = '${Properties#transactionId}' and
 A.FK_PAYMENTINFOID = B.PAYMENTINFOID and B.FK_MESSAGEID = C.MESSAGEID and A.TRANSACTIONSID = D.FK_TRANSACTIONSID</con:query>
       <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="XPath Match" id="9ebd5d0d-78dd-4297-8f44-28d52ff6f685" name="Check for existence of [RESERVATIONREFERENCE]">
+        <con:configuration>
+          <path>exists( //Results/ResultSet/Row/RESERVATIONREFERENCE)</path>
+          <content>true</content>
+          <allowWildcards>false</allowWildcards>
+          <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+          <ignoreComments>false</ignoreComments>
+        </con:configuration>
+      </con:assertion>
       <con:assertion type="MessageContentAssertion" id="7bd24a25-7112-4587-ad9e-a754a2d5ce8f" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -2182,9 +2191,9 @@ A.FK_PAYMENTINFOID = B.PAYMENTINFOID and B.FK_MESSAGEID = C.MESSAGEID and A.TRAN
             <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
             <con:element>PAYMENTSTATUS</con:element>
             <con:type xsi:nil="true"/>
-            <con:operator>regex</con:operator>
+            <con:operator>=</con:operator>
             <con:enabled>true</con:enabled>
-            <con:expectedValue>(RFPE|RFCA)</con:expectedValue>
+            <con:expectedValue>RFPE</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -2213,7 +2222,7 @@ A.FK_PAYMENTINFOID = B.PAYMENTINFOID and B.FK_MESSAGEID = C.MESSAGEID and A.TRAN
             <con:element>FK_PROCESSINGLINEID</con:element>
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
+            <con:enabled>true</con:enabled>
             <con:expectedValue>8</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
@@ -2322,8 +2331,8 @@ A.FK_PAYMENTINFOID = B.PAYMENTINFOID and B.FK_MESSAGEID = C.MESSAGEID and A.TRAN
             <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVATIONREFERENCE[1]</con:xpath>
             <con:element>RESERVATIONREFERENCE</con:element>
             <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
             <con:expectedValue>166370</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
@@ -2363,7 +2372,7 @@ A.FK_PAYMENTINFOID = B.PAYMENTINFOID and B.FK_MESSAGEID = C.MESSAGEID and A.TRAN
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>SELECT BUSINESSKEY, LOG_ID,BANK_ORG_ID, FK_EVENT_TYPE_ID, ACCOUNT_NUMBER, EVENT_TYPE.SUBCATEGORY, EVENT_STATUS 

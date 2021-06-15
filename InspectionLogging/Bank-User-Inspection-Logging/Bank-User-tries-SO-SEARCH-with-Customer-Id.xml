@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>32338717708</con:value>
+          <con:value>01010077571</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,11 +79,11 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>42010305386</con:value>
+          <con:value>42125748338</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
-          <con:value>USD</con:value>
+          <con:value>NOK</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorAgent</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>408817</con:value>
+          <con:value>909469</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260198274</con:value>
+          <con:value>260733677</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>455890</con:value>
+          <con:value>960860</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>260198274</con:value>
+          <con:value>260733677</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1145</con:value>
+          <con:value>1005</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,12 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*32338717708.*42010305386.*EVRY.*PCL.*e212927.*standingOrderSearch.*(1317|1318|1319|1320).*list/read standing order' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*01010077571.*.*EVRY.*PCL.*e212927.*standingOrderSearch...*list/read standing order' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>32338717708</CustomerID><AccountID>42010305386</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20200907131826</DateTime><Description>list/read standing order</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>01010077571</CustomerID><AccountID></AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>standingOrderSearch</Function><DateTime>20210615100558</DateTime><Description>list/read standing order</Description></AccessLogRecord>
+]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -155,7 +156,7 @@
         </con:property>
         <con:property>
           <con:name>SOAgreementID</con:name>
-          <con:value>37744</con:value>
+          <con:value>38886</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -167,7 +168,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY, C.AGREEMENTID
@@ -514,8 +515,7 @@ and C.INITIATORBANKID = '4201'  order by C.TRANSACTIONSID  desc fetch first row 
   </con:testStep>
   <con:testStep type="groovy" name="CreateGrepString" id="c1bedd13-550e-465d-b5d4-5c5da827dcff">
     <con:settings/>
-    <con:config>
-      <script>def orgid = context.expand( '${Properties#orgid}' )
+    <con:config><script>def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
 def firstZeros = customerid.substring(0,2)
 if (firstZeros=="00") customerid = Integer.parseInt(customerid)
@@ -537,10 +537,9 @@ def accountNumberTemp = context.expand( '${StandingOrderSearch_V_2_0#Response#de
 accountNumber = accountNumberTemp
 if (accountNumberTemp == "") accountNumber =""
 
-def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
+def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}...*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script>
-    </con:config>
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script></con:config>
   </con:testStep>
   <con:testStep type="groovy" name="Fetch Inspection Log" id="35d6bd05-403d-47db-92d7-310f2ee98b3e">
     <con:settings/>

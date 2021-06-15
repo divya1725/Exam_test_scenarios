@@ -31,7 +31,7 @@
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>00873340002</con:value>
+          <con:value>934304101</con:value>
         </con:property>
         <con:property>
           <con:name>item1</con:name>
@@ -79,7 +79,7 @@
         </con:property>
         <con:property>
           <con:name>accountNumber</con:name>
-          <con:value>50000000088908200000</con:value>
+          <con:value>42010101284</con:value>
         </con:property>
         <con:property>
           <con:name>currencyCode</con:name>
@@ -111,23 +111,23 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>407076</con:value>
+          <con:value>916698</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260196530</con:value>
+          <con:value>260760256</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>454149</con:value>
+          <con:value>986686</con:value>
         </con:property>
         <con:property>
           <con:name>paymentReference</con:name>
-          <con:value>260196530</con:value>
+          <con:value>260760256</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1143</con:value>
+          <con:value>1002</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,12 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '4201.*873340002.*50000000088908200000.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference.*(1142|1143|1144|1145).*read historic payment with reference' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '4201.*934304101.*42010101284.*EVRY.*PCL.*e212927.*paymentHistoricReadWithReference...*read historic payment with reference' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>873340002</CustomerID><AccountID>50000000088908200000</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20200911114331</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>4201</InstitutionID><CustomerID>934304101</CustomerID><AccountID>42010101284</AccountID><Source>EVRY</Source><System>PCL</System><UserID>e212927</UserID><Function>paymentHistoricReadWithReference</Function><DateTime>20210615074805</DateTime><Description>read historic payment with reference</Description></AccessLogRecord>
+]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -163,7 +164,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY
@@ -419,8 +420,8 @@ and C.INITIATORBANKID = '4201'  order by A.MESSAGEID desc fetch first 25 row onl
    </soapenv:Header>
    <soapenv:Body>
       <urn:PaymentHistoricReadRequest>
-         <urn:paymentReference>${Properties#paymentReference}</urn:paymentReference>
-      </urn:PaymentHistoricReadRequest>
+         
+      <urn:transactionId>${Fetch COMP Payments#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}</urn:transactionId></urn:PaymentHistoricReadRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Valid HTTP Status Codes" id="b20d69fd-652b-40b6-83e6-33feaffa8061" name="Valid HTTP Status Codes">
@@ -433,7 +434,7 @@ and C.INITIATORBANKID = '4201'  order by A.MESSAGEID desc fetch first 25 row onl
         <con:assertion type="Schema Compliance" id="937343e4-cd48-4ea6-889d-777fa2692515" name="Schema Compliance">
           <con:configuration/>
         </con:assertion>
-        <con:assertion type="XPath Match" id="a02fef06-2941-4683-9ff8-8a03f25126ad" name="Match content of [ErrorCode]">
+        <con:assertion type="XPath Match" id="a02fef06-2941-4683-9ff8-8a03f25126ad" name="Match content of [ErrorCode]" disabled="true">
           <con:configuration>
             <path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
 declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
@@ -445,7 +446,7 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
             <ignoreComments>false</ignoreComments>
           </con:configuration>
         </con:assertion>
-        <con:assertion type="XPath Match" id="0b98070b-9797-464f-8ecf-0f3118dfc8dc" name="Match content of [Message]">
+        <con:assertion type="XPath Match" id="0b98070b-9797-464f-8ecf-0f3118dfc8dc" name="Match content of [Message]" disabled="true">
           <con:configuration>
             <path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
 declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
@@ -499,8 +500,7 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
   </con:testStep>
   <con:testStep type="groovy" name="CreateGrepString" id="367a09f7-5ca2-4453-982f-0222345a48b3">
     <con:settings/>
-    <con:config>
-      <script>def orgid = context.expand( '${Properties#orgid}' )
+    <con:config><script>def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
 def firstZeros = customerid.substring(0,2)
 if (firstZeros=="00") customerid = Integer.parseInt(customerid)
@@ -516,11 +516,10 @@ def logRef = context.expand( '${Properties#LogRef}' )
 try{System.sleep(200)}catch(Exception ex){}
 def nextTime = CommonLibrary.getNextTime(logRef)
 try{System.sleep(200)}catch(Exception ex){}
-
-def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
+//*(${nextTime})
+def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}...*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script>
-    </con:config>
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script></con:config>
   </con:testStep>
   <con:testStep type="groovy" name="Fetch Inspection Log" id="4e60b765-e354-4024-8628-595a0baf9e63">
     <con:settings/>

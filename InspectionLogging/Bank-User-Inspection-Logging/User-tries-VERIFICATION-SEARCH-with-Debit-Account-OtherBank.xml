@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>1144</con:value>
+          <con:value>1004</con:value>
         </con:property>
         <con:property>
           <con:name>serviceFunction</con:name>
@@ -139,11 +139,12 @@
         </con:property>
         <con:property>
           <con:name>GrepString</con:name>
-          <con:value>grep -i -E '2544.*09010306350.*24803883129.*EVRY.*PCL.*E212777.*paymentverificationList.*(1317|1318|1319|1320).*list payment verification' inspection.log | tail -1</con:value>
+          <con:value>grep -i -E '2544.*09010306350.*24803883129.*EVRY.*PCL.*E212777.*paymentverificationList...*list payment verification' inspection.log | tail -1</con:value>
         </con:property>
         <con:property>
           <con:name>InspectionLog</con:name>
-          <con:value><![CDATA[<AccessLogRecord><InstitutionID>2544</InstitutionID><CustomerID>09010306350</CustomerID><AccountID>24803883129</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentverificationList</Function><DateTime>20200907131816</DateTime><Description>list payment verification</Description></AccessLogRecord>]]></con:value>
+          <con:value><![CDATA[<AccessLogRecord><InstitutionID>2544</InstitutionID><CustomerID>09010306350</CustomerID><AccountID>24803883129</AccountID><Source>EVRY</Source><System>PCL</System><UserID>E212777</UserID><Function>paymentverificationList</Function><DateTime>20210615100543</DateTime><Description>list payment verification</Description></AccessLogRecord>
+]]></con:value>
         </con:property>
         <con:property>
           <con:name>InspectionSource</con:name>
@@ -163,7 +164,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@//10.246.89.97:1530/pwh_g_st</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select C.TRANSACTIONSID,C.PAYMENT_REF,B.PAYMENTINFOID,A.MESSAGEID,A.CUSTOMERID,C.DEBETACCOUNTNO,C.PAYMENTTYPE,C.PAYMENTSTATUS,C.INITIATORBANKID, C.DEBITAMOUNTCCY,AC.OTHER_ID,AC.IBAN,A.INITIATORID
@@ -516,8 +517,7 @@ declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_0';
   </con:testStep>
   <con:testStep type="groovy" name="CreateGrepString" id="96e65a95-d5f7-475c-8e73-bada6ab9fb16">
     <con:settings/>
-    <con:config>
-      <script>def orgid = context.expand( '${Properties#orgid}' )
+    <con:config><script>def orgid = context.expand( '${Properties#orgid}' )
 def customerid = context.expand( '${Properties#customerid}' )
 def firstZeros = customerid.substring(0,2)
 if (firstZeros=="00") customerid = Integer.parseInt(customerid)
@@ -533,10 +533,9 @@ try{System.sleep(200)}catch(Exception ex){}
 def nextTime = CommonLibrary.getNextTime(logRef)
 try{System.sleep(200)}catch(Exception ex){}
 
-def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}.*(${nextTime}).*${serviceDescription}' inspection.log | tail -1"
+def grepString = "grep -i -E '${orgid}.*${customerid}.*${accountNumber}.*${inspectionSource}.*${inspectionSystem}.*${userID}.*${serviceFunction}...*${serviceDescription}' inspection.log | tail -1"
 log.info "Grep String:" + grepString
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script>
-    </con:config>
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("GrepString", grepString)</script></con:config>
   </con:testStep>
   <con:testStep type="groovy" name="Fetch Inspection Log" id="cb9e316f-a9b6-4fe2-b362-f2e608058248">
     <con:settings/>

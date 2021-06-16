@@ -87,7 +87,7 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260190844</con:value>
+          <con:value>481539</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
@@ -99,7 +99,7 @@
         </con:property>
         <con:property>
           <con:name>endToEndId</con:name>
-          <con:value>2007860</con:value>
+          <con:value>5831080</con:value>
         </con:property>
         <con:property>
           <con:name>kriterieType</con:name>
@@ -143,8 +143,7 @@ assert CommandOutPut.trim() != "", "CommandLine OutPut is empty!!, Executed comm
   </con:testStep>
   <con:testStep type="groovy" name="BatchExecutionStep" id="7e4a642c-e112-4df7-8d3d-880cac6c362c">
     <con:settings/>
-    <con:config>
-      <script>def project = testRunner.testCase.testSuite.getProject()
+    <con:config><script>def project = testRunner.testCase.testSuite.getProject()
 def currentSuite = testRunner.getTestCase().getTestSuite().name
 def currentTestCase= testRunner.getTestCase().name
 def currentTestStepName = context.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
@@ -160,11 +159,14 @@ def a = testSuite.testCaseList.each{ eachTestCase ->
 	if( eachTestCase.hasProperty("postTestCaseValidation") &amp;&amp; eachTestCase.getPropertyValue('status').equals("PASS") &amp;&amp; !eachTestCase.isDisabled() ){		
 		def testCasetemp  = eachTestCase
 		def transactionId = testCasetemp.getPropertyValue("transactionId")
+		log.info transactionId
 		def endToEndId = testCasetemp.getPropertyValue("endToEndId")
+		log.info endToEndId
 		def kriterieType = testCasetemp.getPropertyValue("kriterieType")
-		
+		log.info kriterieType
 		//def transactionId = testCasetemp.getPropertyValue("transactionsIds")
 		def ExpectedStatus = testCasetemp.getPropertyValue("expectedPmtStatus")
+		
 		//def transactionIds = transactionId.replaceAll("\\[|\\]",'')
 		
 		testRunner.getTestCase().getTestStepByName("Properties").setPropertyValue("transactionId",transactionId)
@@ -173,17 +175,26 @@ def a = testSuite.testCaseList.each{ eachTestCase ->
 					
 			def testStepInclusionList = ['TRANSACTIONS_PostBatch','RBS_HistoricCheck','RemoveFraudFlag','TRANSACTIONS_PostRemoveFlag']
 			// run post batch run validation for each disbled testcase
+			
+
+			
 			testRunner.getTestCase().getTestStepList().each{ testStep ->					
 					def testStepTemp = testStep.name
+					log.info testStepTemp
 					def resultStep = ""
 					if(testStepInclusionList.contains(testStepTemp)){							
 							def stepRunner = testRunner.runTestStepByName(testStepTemp)								
-							try{System.sleep(1000)}catch(Exception e){}					
+							log.info stepRunner
+							try{System.sleep(1000)}catch(Exception e){}				
+							log.info stepRunner.status.toString()	
 							if((stepRunner == null) || (stepRunner.status.toString() != 'PASS')){									
 								def StepErrorMessage = "failed to run step $testStepTemp"	
+								log.info '$testStepTemp'
 								if (stepRunner != null) StepErrorMessage = stepRunner.getMessages().toString() 
 								resultStep = resultStep +" : Failed testStep = " + testStepTemp + " : Failed Reason" + StepErrorMessage + "\n "
 								resultCase = resultCase  + resultStep								
+								log.info resultCase
+								sleep(2000)
 							}
 					}					
 			}
@@ -199,8 +210,7 @@ def a = testSuite.testCaseList.each{ eachTestCase ->
 
 log.info "resultSuite error log-->" + resultSuite
 if(resultSuite.trim() != "")
-	assert false, resultSuite</script>
-    </con:config>
+	assert false, resultSuite</script></con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="TRANSACTIONS_PostBatch" id="34563255-e027-45f6-9847-ba275561256d" disabled="true">
     <con:settings>

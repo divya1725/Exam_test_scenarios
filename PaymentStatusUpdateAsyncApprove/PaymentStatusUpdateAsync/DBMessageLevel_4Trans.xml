@@ -4,12 +4,6 @@
     <con:setting id="ddb49f5c-9d73-4f32-b60e-fce0c05cdff9fileName">DBMessageLevel_4Trans</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="delay" name="Delay1" id="6e8e1c4d-d0d4-463f-b4d3-3438e328c9a8">
-    <con:settings/>
-    <con:config>
-      <delay>180000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="datasource" name="DataSource" id="49e495a6-b55c-4335-95b3-af276f84034c">
     <con:settings/>
     <con:config xsi:type="con:DataSourceStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -37,7 +31,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from ASYNC_STUPBATCH_MESSAGES 
@@ -98,6 +92,12 @@ where MESSAGEID = '${DataSource#MessageID}'</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
+  <con:testStep type="delay" name="Delay" id="f7f80b28-d444-4a3a-8491-d48be1645818">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_BATCH_DB" id="72f70fc6-8b69-44a0-b59d-fb689ff04bed">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -105,285 +105,26 @@ where MESSAGEID = '${DataSource#MessageID}'</con:query>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from ASYNC_STATUSUPDATE_BATCH where BATCHID = 
 '${ASYNC_STUPBATCH_MESSAGES_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]}'</con:query>
       <con:storedProcedure>false</con:storedProcedure>
-      <con:assertion type="MessageContentAssertion" id="7ceb03b4-ebf8-4b8e-8d82-4d36a356461a" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BATCHID[1]</con:xpath>
-            <con:element>BATCHID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>263</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSUPDATEOPERATION[1]</con:xpath>
-            <con:element>STATUSUPDATEOPERATION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>APPROVE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATIONDATETIME[1]</con:xpath>
-            <con:element>INITIATIONDATETIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-01-06 06:45:32.395029</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PMRESERVATION[1]</con:xpath>
-            <con:element>PMRESERVATION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>Y</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:xpath>
-            <con:element>AGREEMENTID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>${Properties#customerid}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/USERID[1]</con:xpath>
-            <con:element>USERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>${Properties#customerid}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORGID[1]</con:xpath>
-            <con:element>ORGID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>regex</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>4201|2544</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
-            <con:element>CUSTOMERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>${Properties#customerid}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AUTHIDTYPE[1]</con:xpath>
-            <con:element>AUTHIDTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>SELF</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHANNEL[1]</con:xpath>
-            <con:element>CHANNEL</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BES</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/USERTYPE[1]</con:xpath>
-            <con:element>USERTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>BM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORGUNIT[1]</con:xpath>
-            <con:element>ORGUNIT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>regex</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>4201|2544</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]</con:xpath>
-            <con:element>APPROVERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>${Properties#customerid}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FIRSTNAME[1]</con:xpath>
-            <con:element>FIRSTNAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTNAME[1]</con:xpath>
-            <con:element>LASTNAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVALDATE[1]</con:xpath>
-            <con:element>APPROVALDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-01-06 06:45:32</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONID[1]</con:xpath>
-            <con:element>FK_TRANSACTIONID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PREAPPROVED[1]</con:xpath>
-            <con:element>PREAPPROVED</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STARTTIME[1]</con:xpath>
-            <con:element>STARTTIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-01-06 06:46:23.608087</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTIME[1]</con:xpath>
-            <con:element>ENDTIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-01-06 06:46:24.474674</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:xpath>
-            <con:element>STATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>COMPLETED</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REMARKS[1]</con:xpath>
-            <con:element>REMARKS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <BATCHID>263</BATCHID>
-         <STATUSUPDATEOPERATION>APPROVE</STATUSUPDATEOPERATION>
-         <INITIATIONDATETIME>2020-01-06 06:45:32.395029</INITIATIONDATETIME>
-         <PMRESERVATION>Y</PMRESERVATION>
-         <AGREEMENTID>01010077571</AGREEMENTID>
-         <USERID>01010077571</USERID>
-         <ORGID>4201</ORGID>
-         <CUSTOMERID>01010077571</CUSTOMERID>
-         <AUTHIDTYPE>SELF</AUTHIDTYPE>
-         <CHANNEL>BES</CHANNEL>
-         <USERTYPE>BM</USERTYPE>
-         <ORGUNIT>4201</ORGUNIT>
-         <APPROVERID>01010077571</APPROVERID>
-         <FIRSTNAME/>
-         <LASTNAME/>
-         <APPROVALDATE>2020-01-06 06:45:32</APPROVALDATE>
-         <FK_TRANSACTIONID/>
-         <PREAPPROVED/>
-         <STARTTIME>2020-01-06 06:46:23.608087</STARTTIME>
-         <ENDTIME>2020-01-06 06:46:24.474674</ENDTIME>
-         <STATUS>COMPLETED</STATUS>
-         <REMARKS/>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
+      <con:assertion type="Simple Contains" id="6be61fac-c62c-455f-ad4b-d477c53a17f3" name="Contains">
+        <con:configuration>
+          <token>COMPLETED</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
         </con:configuration>
       </con:assertion>
       <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay 2" id="dae263f3-411a-48f7-b95c-73ea2fc463a9">
+    <con:settings/>
+    <con:config>
+      <delay>90000</delay>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_LOG_DB" id="f854c77a-6994-4843-ba9e-232b69aa42d1">
@@ -393,7 +134,7 @@ where MESSAGEID = '${DataSource#MessageID}'</con:query>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from ASYNC_STATUSUPDATE_LOG where 
@@ -483,7 +224,7 @@ FK_BATCHID = '${ASYNC_STUPBATCH_MESSAGES_DB#ResponseAsXml#//Results[1]/ResultSet
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select unique(A.MESSAGEID),C.TRANSACTIONSID,C.PAYMENTSTATUS
@@ -699,7 +440,7 @@ from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from APPROVER where 
@@ -1087,6 +828,16 @@ FK_TRANSACTIONSID in ('${TRANSACTIONS_DB#ResponseAsXml#//Results[1]/ResultSet[1]
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>7ddc9f04-68ee-407a-8ae3-4749f1c190a8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f7f80b28-d444-4a3a-8491-d48be1645818</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dae263f3-411a-48f7-b95c-73ea2fc463a9</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

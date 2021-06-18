@@ -97,6 +97,12 @@ where TRANSACTIONSID = '${DataSource#TransactionID}'</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
+  <con:testStep type="delay" name="Delay1" id="a3421823-da9d-4594-af2d-e65baca616a6">
+    <con:settings/>
+    <con:config>
+      <delay>15000</delay>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_BATCH_DB" id="04b25fdd-648d-4f56-8c8c-52f382135daa">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -385,6 +391,87 @@ where TRANSACTIONSID = '${DataSource#TransactionID}'</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_DB" id="8289237e-6813-4a43-bc1f-82f8425d4ec7">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select unique(A.MESSAGEID),C.TRANSACTIONSID,C.PAYMENTSTATUS
+from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where 
+ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and 
+ C.TRANSACTIONSID = '${DataSource#TransactionID}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="1a2499e5-4808-4bea-a805-70d08a0f17b1" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>410711</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>463772</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>regex</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD|RFCA|TBAP</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>410711</MESSAGEID>
+         <TRANSACTIONSID>463772</TRANSACTIONSID>
+         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_LOG_DB" id="af5dbc08-fca0-45ab-a9d7-a7bce014f8dc">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -467,87 +554,6 @@ FK_BATCHID = '${ASYNC_STUPBATCH_TRANSACTIONS#ResponseAsXml#//Results[1]/ResultSe
          <FK_BATCHID>1967</FK_BATCHID>
          <RESULTCODE>SUCC</RESULTCODE>
          <TRANSCOUNT>5</TRANSCOUNT>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="TRANSACTIONS_DB" id="8289237e-6813-4a43-bc1f-82f8425d4ec7">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select unique(A.MESSAGEID),C.TRANSACTIONSID,C.PAYMENTSTATUS
-from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where 
- A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and 
- C.TRANSACTIONSID = '${DataSource#TransactionID}'</con:query>
-      <con:storedProcedure>false</con:storedProcedure>
-      <con:assertion type="MessageContentAssertion" id="1a2499e5-4808-4bea-a805-70d08a0f17b1" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
-            <con:element>MESSAGEID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>410711</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>463772</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
-            <con:element>PAYMENTSTATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>regex</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>RFDD|RFCA</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <MESSAGEID>410711</MESSAGEID>
-         <TRANSACTIONSID>463772</TRANSACTIONSID>
-         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
       </Row>
    </ResultSet>
 </Results>]]></con:originalMessage>
@@ -713,6 +719,11 @@ FK_TRANSACTIONSID in ('${TRANSACTIONS_DB#ResponseAsXml#//Results[1]/ResultSet[1]
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>f3b0d0bb-0fd9-4435-b2d4-9f23d0dfeea6</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>af5dbc08-fca0-45ab-a9d7-a7bce014f8dc</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

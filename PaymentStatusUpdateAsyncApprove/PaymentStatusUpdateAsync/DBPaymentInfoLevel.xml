@@ -24,6 +24,12 @@
       <con:restartOnRun>true</con:restartOnRun>
     </con:config>
   </con:testStep>
+  <con:testStep type="delay" name="Delay" id="90b7df5a-bc31-46e8-b70b-48dfdeecadd1">
+    <con:settings/>
+    <con:config>
+      <delay>15000</delay>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STUPBATCH_PAYMENTINFOS" id="05266f0f-0d25-4a08-be82-f4321c4041eb">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -90,6 +96,12 @@ where PAYMENTINFOID = '${DataSource#PaymentInfoID}'</con:query>
         </con:configuration>
       </con:assertion>
       <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay1" id="264dd60f-e29f-485d-9c13-48fae1215828">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_BATCH_DB" id="1b79088d-ea3e-4eb4-bffd-fa6842edfbef">
@@ -331,9 +343,9 @@ where PAYMENTINFOID = '${DataSource#PaymentInfoID}'</con:query>
             <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:xpath>
             <con:element>STATUS</con:element>
             <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>COMPLETED</con:expectedValue>
+            <con:operator>regex</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>COMPLETED|WAITING</con:expectedValue>
             <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
@@ -393,78 +405,11 @@ where PAYMENTINFOID = '${DataSource#PaymentInfoID}'</con:query>
       <con:query>select * from ASYNC_STATUSUPDATE_LOG where 
 FK_BATCHID = '${ASYNC_STUPBATCH_PAYMENTINFOS#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]}'</con:query>
       <con:storedProcedure>false</con:storedProcedure>
-      <con:assertion type="MessageContentAssertion" id="66d8c940-6505-475b-90c5-a217cabd335f" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSUPDATE_LOGID[1]</con:xpath>
-            <con:element>STATUSUPDATE_LOGID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2062</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]</con:xpath>
-            <con:element>FK_BATCHID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1973</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESULTCODE[1]</con:xpath>
-            <con:element>RESULTCODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>SUCC</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSCOUNT[1]</con:xpath>
-            <con:element>TRANSCOUNT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>4</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <STATUSUPDATE_LOGID>2062</STATUSUPDATE_LOGID>
-         <FK_BATCHID>1973</FK_BATCHID>
-         <RESULTCODE>SUCC</RESULTCODE>
-         <TRANSCOUNT>4</TRANSCOUNT>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
+      <con:assertion type="Simple Contains" id="29cba023-5285-462a-a992-2556d6315527" name="Contains">
+        <con:configuration>
+          <token>SUCC</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
         </con:configuration>
       </con:assertion>
       <con:properties/>
@@ -685,7 +630,7 @@ FK_TRANSACTIONSID in ('${TRANSACTIONS_DB#ResponseAsXml#//Results[1]/ResultSet[1]
     <con:settings/>
     <con:config>
       <dataSourceStep>DataSource</dataSourceStep>
-      <targetStep>ASYNC_STUPBATCH_MESSAGES_DB</targetStep>
+      <targetStep>ASYNC_STUPBATCH_PAYMENTINFOS</targetStep>
       <discardResults>true</discardResults>
     </con:config>
   </con:testStep>
@@ -718,6 +663,16 @@ FK_TRANSACTIONSID in ('${TRANSACTIONS_DB#ResponseAsXml#//Results[1]/ResultSet[1]
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>7ddc9f04-68ee-407a-8ae3-4749f1c190a8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>90b7df5a-bc31-46e8-b70b-48dfdeecadd1</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>264dd60f-e29f-485d-9c13-48fae1215828</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

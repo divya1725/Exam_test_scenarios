@@ -1,0 +1,1113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="97a1e32e-e855-4c12-913e-a8fa6b69e8b2" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="OK Response-KYC Validation" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config"><con:description>create SO for crossBorder to  validate KYC with success response</con:description><con:settings><con:setting id="97a1e32e-e855-4c12-913e-a8fa6b69e8b2fileName">OK-Response-KYC-Validation</con:setting></con:settings><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="RBS_Fetch Customer" id="8d2c990c-d028-4d1c-88e4-80ac253e3fb1"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select * from RISK.RISK_CUSTOMER_COUNTRY where length(CUSTOMERID)='9' and COUNTRY_CODE='SE' and ROWNUM=1</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Fetch Account" id="68430e2e-cf72-4edf-ad27-7d3efb550cd0"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>PWH</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString><con:password/><con:connectionProperties/><con:query>select A.CUSTOMERID,A.ACCOUNTNUMBER,A.CUSTOMERTYPE,A.CUSTBANKID,A.CURRENCY
+from V_AUTHORISATION A where A.ROLETYPE = 'EIER'and CUSTOMERTYPE='N' and CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} and
+A.ACCOUNTNUMBER IN (SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where ROLETYPE = 'DISP' and  CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} )
+fetch first 1 rows only</con:query><con:assertion type="JDBC Status" id="266efb75-b6f0-4041-abb8-b71379cf3d0a" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="groovy" name="Set Properties" id="db718e71-66fc-4bbf-9944-120b2a5674f2"><con:settings/><con:config><script>def customerid = context.expand( '${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debitAccount = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def debitAcntccy = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+def Amount = context.expand( '${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MAX_AMOUNT_TRX[1]}' )
+
+
+
+customerid= customerid.toString().replaceAll("[^a-zA-Z0-9]+","")
+debitAccount= debitAccount.toString().replaceAll("[^a-zA-Z0-9]+","")
+debitAcntccy= debitAcntccy.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+Double instrAmount1 = Double.parseDouble(Amount)
+instrAmount1= instrAmount1-1
+instrAmount2 = instrAmount1
+int instrAmount = (int) Math.round(instrAmount2);
+
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("value2",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("agreementid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debitAccount)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAcntccy",debitAcntccy)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instrAmount",instrAmount.toString())
+</script></con:config></con:testStep><con:testStep type="properties" name="Properties" id="6dc66853-483c-4b68-9b17-0e4fc77279d6"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>SourceApplication</con:name><con:value>EVRYCPS</con:value></con:property><con:property><con:name>userid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>value2</con:name><con:value>997059085</con:value></con:property><con:property><con:name>credentials</con:name><con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value></con:property><con:property><con:name>orgid</con:name><con:value>4201</con:value></con:property><con:property><con:name>customerid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>debitAccount</con:name><con:value>96550146549</con:value></con:property><con:property><con:name>debitAcntccy</con:name><con:value>NOK</con:value></con:property><con:property><con:name>debitAgentBic</con:name><con:value>asdfsa</con:value></con:property><con:property><con:name>item1</con:name><con:value>PaymentChannel</con:value></con:property><con:property><con:name>value1</con:name><con:value>BES</con:value></con:property><con:property><con:name>item2</con:name><con:value>AgreementId</con:value></con:property><con:property><con:name>item3</con:name><con:value>SelfService</con:value></con:property><con:property><con:name>value3</con:name><con:value>true</con:value></con:property><con:property><con:name>item4</con:name><con:value>LogRef</con:value></con:property><con:property><con:name>value4</con:name><con:value>${=java.util.UUID.randomUUID()}</con:value></con:property><con:property><con:name>ReqExnDate</con:name><con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value></con:property><con:property><con:name>intCredAgentBic</con:name><con:value>ESSESESSXXX</con:value></con:property><con:property><con:name>intCreditAccount</con:name><con:value>SE4550000000058398257466</con:value></con:property><con:property><con:name>ReqExnDateTmrw</con:name><con:value>${=new Date().format("yyyy-MM-dd")}</con:value></con:property><con:property><con:name>intCredAgentCountry</con:name><con:value>SE</con:value></con:property><con:property><con:name>agreementid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>instrAmount</con:name><con:value>1199</con:value></con:property><con:property><con:name>PFCRequestLog</con:name><con:value>{"Verify":["VERIFY_CUSTOMERLIMITS_COUNTRY"],"CountryCode":"SE","Amount":{"Amount":1199,"Currency":"NOK"},"Immediate":"NON_IMMEDIATE","Domestic":"CROSSBORDER","AccountOwner":"997059085","Market":"BM"}</con:value></con:property><con:property><con:name>PFCResponseLog</con:name><con:value>{"Code":0,"Description":"OK"}</con:value></con:property></con:properties></con:config></con:testStep><con:testStep type="request" name="Authorization_v1_2" id="abdfab7c-9e32-4b31-a8dd-d1e4b977f36c">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
+          <con:operation>PaymentAuthorizationCreate</con:operation>
+          <con:request name="Authorization_v1_2" id="3817dd58-eead-4601-ba33-8dd13cbcbe55" timeout="">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>http://ald-eos-g-app03.man.cosng.net:22561/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v21">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2">
+         <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2">
+               <urn2:agreementData xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">
+                  <urn3:agreementId xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">${Properties#agreementid}</urn3:agreementId>
+                  <urn3:bankId xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">4201</urn3:bankId>
+                  <urn3:customerID xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">${Properties#customerid}</urn3:customerID>
+                  <urn3:productID xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">1234</urn3:productID>
+               </urn2:agreementData>
+               <urn2:userId xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">${Properties#userid}</urn2:userId>
+               <urn2:sessionID xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">qw24213</urn2:sessionID>
+               <urn2:firstName xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">Fname</urn2:firstName>
+               <urn2:lastName xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">Lname</urn2:lastName>
+               <urn2:socialSecurityNumber xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">${Properties#customerid}</urn2:socialSecurityNumber>
+               <urn2:userAccount xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2">
+                  <urn2:accountNumber>${Properties#debitAccount}</urn2:accountNumber>
+                  <urn2:accountOwnerIdentifier>${Properties#customerid}</urn2:accountOwnerIdentifier>
+                  <urn2:currencyCode>NOK</urn2:currencyCode>
+                  <urn2:accountType>CoreAccount</urn2:accountType>
+                  <urn2:role>View</urn2:role>
+                  <urn2:role>Register</urn2:role>
+                  <urn2:role>Appprove</urn2:role>
+                  <urn2:role>Salary</urn2:role>
+                  <urn2:role>Transfer</urn2:role>
+                  <urn2:approvalLimit>9999</urn2:approvalLimit>
+                  <urn2:registerLimit>99999</urn2:registerLimit>
+                  <urn2:numberOfVerifiers>0</urn2:numberOfVerifiers>
+                  <urn2:numberOfApprovers>0</urn2:numberOfApprovers>
+                  <urn2:bookingLevel>T</urn2:bookingLevel>
+               </urn2:userAccount>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+            <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="bb4f31a6-1a42-4292-abd2-0e190b310277">
+              <con:settings/>
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            
+            
+            
+            
+            
+            
+            <con:assertion type="MessageContentAssertion" id="986e6696-f868-4c01-b7e8-36aebb6b97cd" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:StrErrorCode[1]</con:xpath><con:element>StrErrorCode</con:element><con:type>XmlString</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:StrErrorCode[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:NativeError[1]</con:xpath><con:element>NativeError</con:element><con:type>XmlString</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:NativeError[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns3:PaymentAuthorizationCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
+//ns4:PaymentAuthorizationCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns5:PaymentAuthorizationCreateResponse xmlns:ns10="urn:pays.payment.edb.com:domain:sepa-complex-types:v1" xmlns:ns9="urn:srv.pays.payment.fs.evry.com:ws:agreementcapture:v1_0" xmlns:ns8="urn:srv.stord.fs.evry.com:domain:common:v1" xmlns:ns7="urn:pays.payment.edb.com:domain:edb-types:v1" xmlns:ns6="urn:pays.payment.edb.com:domain:paymentauthorization:v1_1" xmlns:ns5="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:ns4="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:ns3="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:ns2="urn:pays.payment.edb.com:domain:authorization:v1_1" xmlns="http://edb.com/ws/WSCommon_v21">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <StrErrorCode xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <Message>OK</Message>
+            <NativeError xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+      </ns5:PaymentAuthorizationCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+              <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+            <con:wsrmConfig version="1.2"/>
+          <con:environmentSpec><con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry></con:environmentSpec></con:request>
+        </con:config>
+      </con:testStep><con:testStep type="request" id="7bcfca32-a9b8-4865-b02d-e789d8356984" name="Create SO"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface><con:operation>standingOrderCreate</con:operation><con:request name="Create SO" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="cebf7dc4-76d4-4aad-bc33-1f38fd7ee3e4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G_D5}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <urn1:dueDate>${Properties#ReqExnDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <urn1:paymentInfo>
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency>${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>${Properties#instrAmount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#intCredAgentBic}</urn2:bic>
+                  <urn2:postalAddress>
+                     <urn2:postCode>520312312314</urn2:postCode>
+                     <urn2:townName>Test</urn2:townName>
+                     <urn2:countrySubDivision>Oslo</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <urn2:name>SO Cred</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:postCode>45022</urn2:postCode>
+                     <urn2:townName>test</urn2:townName>
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#intCreditAccount}</urn2:identification>
+                  <!--Optional:-->
+               </urn4:creditorAccount>
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <urn1:chargesRequired>false</urn1:chargesRequired>
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="280d28e7-c914-455d-b06f-0c0cf05e3c66" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="MessageContentAssertion" id="22d23f36-419c-42fc-8ab6-dccc5c9674ff" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:standingOrderKey[1]/ns1:agreementId[1]</con:xpath><con:element>ns2:agreementId</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>1788</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:standingOrderKey[1]/ns1:agreementVersion[1]</con:xpath><con:element>ns2:agreementVersion</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>1</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[1]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-12+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[1]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[2]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-19+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[2]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[3]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-26+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[3]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[4]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-02+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[4]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[5]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-09+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[5]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[6]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-16+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderCreateResponse[1]/ns2:futureTransactions[6]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderCreateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrderKey>
+            <ns2:agreementId>1788</ns2:agreementId>
+            <ns2:agreementVersion>1</ns2:agreementVersion>
+         </ns6:standingOrderKey>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-01-12+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-01-19+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-01-26+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-02+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-09+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-16+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+      </ns6:standingOrderCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderCreateRequest"/><con:wsrmConfig version="1.2"/><con:environmentSpec><con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>No Authorization</con:authProfile></con:entry></con:environmentSpec></con:request></con:config></con:testStep><con:testStep type="request" name="SO_Confirm" id="f762ad0e-77bf-4742-993d-067870955090">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderStatusUpdate</con:operation>
+      <con:request name="SO_Confirm" id="bf05e061-1891-4888-80ff-ae16c808be39">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.108:29221/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderStatusUpdateRequest xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0">
+         <urn:standingOrderKey>
+            <urn1:agreementId xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0">${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>
+            <urn1:agreementVersion xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0">${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>
+         </urn:standingOrderKey>
+         <urn:standingOrderAction>CONFIRM</urn:standingOrderAction>
+      </urn:standingOrderStatusUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="29a560c6-9de8-4453-93a2-b637149ce5b0">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        
+        <con:assertion type="MessageContentAssertion" id="d754121e-c116-4e8c-b556-0eb1ec2254a7" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderStatusUpdateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+//ns1:standingOrderStatusUpdateResponse[1]/ns1:standingOrderStatus[1]</con:xpath><con:element>ns6:standingOrderStatus</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>ACTIVE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderStatusUpdateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrderStatus>ACTIVE</ns6:standingOrderStatus>
+      </ns6:standingOrderStatusUpdateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6f14c36d-a5ca-4b42-824d-faf4a974241a">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f17c3c7b-97d1-475e-8fd3-edb989665099">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        <con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry></con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep><con:testStep type="request" id="b04cf987-da44-43d1-85d0-e9dc551dc1c2" name="SO search"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface><con:operation>standingOrderSearch</con:operation><con:request name="SO search" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="507b2740-db74-46f4-b50c-74c23eca28ea"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G_D5}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:common:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderSearchRequest>
+         <urn:standingOrderSearch>
+            <urn:searchCriteria>
+               <urn1:customerId>${Properties#customerid}</urn1:customerId>
+               <urn1:standingOrderKey>
+                  <urn1:agreementId>${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>
+                  <urn1:agreementVersion>${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>
+               </urn1:standingOrderKey>
+            </urn:searchCriteria>
+            <urn:pagingElement>
+               <urn2:startIndex>0</urn2:startIndex>
+               <urn2:pageSize>10</urn2:pageSize>
+            </urn:pagingElement>
+         </urn:standingOrderSearch>
+      </urn:standingOrderSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="b68ac323-af11-402a-9154-fedc14c48194" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="MessageContentAssertion" id="2c5910f3-23ed-4724-babf-2bf966472bf7" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:recurrence[1]</con:xpath><con:element>ns2:recurrence</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>WEEKLY</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:dueDates[1]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-05+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:bankHolidayAdjustment[1]</con:xpath><con:element>ns2:bankHolidayAdjustment</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>BEFORE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:paymentInfo[1]/ns1:paymentTypeInformation[1]/ns1:instructionPriority[1]</con:xpath><con:element>ns4:instructionPriority</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>NORM</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtorAccount[1]/ns1:identification[1]</con:xpath><con:element>ns3:identification</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>42025275688</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtorAccount[1]/ns1:currency[1]</con:xpath><con:element>ns3:currency</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>NOK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:paymentInfo[1]/ns1:debtorAgentBIC[1]</con:xpath><con:element>ns4:debtorAgentBIC</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SPTRNO22XXX</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:name[1]</con:xpath><con:element>ns3:name</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Avis snitting AB.</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:postCode[1]</con:xpath><con:element>ns3:postCode</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>8266</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:townName[1]</con:xpath><con:element>ns3:townName</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>MØRSVIKBOTN</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath><con:element>ns3:country</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>NO</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:domain:debtor:v2_0';
+declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:addressLine[1]</con:xpath><con:element>ns3:addressLine</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Hauketo Veien 18f</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:amount[1]/ns1:instructedAmount[1]/@currency</con:xpath><con:element>@currency</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>NOK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:amount[1]/ns1:instructedAmount[1]/ns1:amount[1]</con:xpath><con:element>ns3:amount</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>999.00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:transaction[1]/ns1:chargeBearer[1]</con:xpath><con:element>ns5:chargeBearer</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>DEBT</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:bic[1]</con:xpath><con:element>ns3:bic</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>ESSESESSXXX</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:name[1]</con:xpath><con:element>ns3:name</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SKANDINAVISKA ENSKILDA BANKEN AB</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:postCode[1]</con:xpath><con:element>ns3:postCode</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>106 40</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:townName[1]</con:xpath><con:element>ns3:townName</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>STOCKHOLM</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath><con:element>ns3:country</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:addressLine[1]</con:xpath><con:element>ns3:addressLine</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>RISSNELEDEN 110</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:addressLine[2]</con:xpath><con:element>ns3:addressLine</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SWEDEN</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:name[1]</con:xpath><con:element>ns3:name</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SO Cred</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:postCode[1]</con:xpath><con:element>ns3:postCode</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>45022</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:townName[1]</con:xpath><con:element>ns3:townName</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>test</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:countrySubDivision[1]</con:xpath><con:element>ns3:countrySubDivision</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>test</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath><con:element>ns3:country</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditor[1]/ns1:postalAddress[1]/ns1:addressLine[1]</con:xpath><con:element>ns3:addressLine</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>asdfasdfs</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns4:standingOrderSearchResponse[1]/ns4:standingOrders[1]/ns3:transaction[1]/ns2:creditorAccount[1]/ns1:identification[1]</con:xpath><con:element>ns3:identification</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>SE4550000000058398257466</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:transaction[1]/ns1:confidential[1]</con:xpath><con:element>ns5:confidential</con:element><con:type>XmlBoolean</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>false</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:transaction[1]/ns1:internalProductCode[1]</con:xpath><con:element>ns5:internalProductCode</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>PAYCTINTOUPNP</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:creditor:v2_0';
+//ns3:standingOrderSearchResponse[1]/ns3:standingOrders[1]/ns2:transaction[1]/ns1:marketProductName[1]</con:xpath><con:element>ns5:marketProductName</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>InternaltionalOut</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:standingOrderKey[1]/ns1:agreementId[1]</con:xpath><con:element>ns2:agreementId</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:standingOrderKey[1]/ns1:agreementVersion[1]</con:xpath><con:element>ns2:agreementVersion</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>1</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:standingOrderType[1]</con:xpath><con:element>ns2:standingOrderType</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>PERIODIC</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:standingOrderStatus[1]</con:xpath><con:element>ns2:standingOrderStatus</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>ACTIVE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:createdDate[1]</con:xpath><con:element>ns2:createdDate</con:element><con:type>XmlDateTime</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-05T12:59:06.000+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:initiatedBy[1]</con:xpath><con:element>ns2:initiatedBy</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>CUSTOMER</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:initiatorIdentifier[1]</con:xpath><con:element>ns2:initiatorIdentifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>873340002</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:operationsArray[1]</con:xpath><con:element>ns2:operationsArray</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>UPDATE_STANDING_ORDER</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:operationsArray[2]</con:xpath><con:element>ns2:operationsArray</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>CLOSE_STANDING_ORDER</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:operationsArray[3]</con:xpath><con:element>ns2:operationsArray</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>VIEW_STANDING_ORDER</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[1]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-12+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[1]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90450</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[2]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-19+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[2]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90449</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[3]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-26+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[3]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90454</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[4]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-02+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[4]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90451</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[5]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-09+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[5]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90452</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[6]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-16+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:standingOrders[1]/ns1:futureTransactions[6]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>90453</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:StartIndex[1]</con:xpath><con:element>ns7:StartIndex</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:NumberOfElements[1]</con:xpath><con:element>ns7:NumberOfElements</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>1</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns2:standingOrderSearchResponse[1]/ns2:elementControl[1]/ns1:MoreElementsAvailable[1]</con:xpath><con:element>ns7:MoreElementsAvailable</con:element><con:type>XmlBoolean</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>false</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderSearchResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrders>
+            <ns2:recurrence>WEEKLY</ns2:recurrence>
+            <ns2:dueDates>
+               <ns2:dueDate>2021-01-05+01:00</ns2:dueDate>
+            </ns2:dueDates>
+            <ns2:bankHolidayAdjustment>BEFORE</ns2:bankHolidayAdjustment>
+            <ns2:paymentInfo>
+               <ns4:paymentTypeInformation>
+                  <ns4:instructionPriority>NORM</ns4:instructionPriority>
+               </ns4:paymentTypeInformation>
+               <ns4:debtorAccount>
+                  <ns3:identification>42025275688</ns3:identification>
+                  <ns3:currency>NOK</ns3:currency>
+               </ns4:debtorAccount>
+               <ns4:debtorAgentBIC>SPTRNO22XXX</ns4:debtorAgentBIC>
+               <ns4:debtor>
+                  <ns3:name>Avis snitting AB.</ns3:name>
+                  <ns3:postalAddress>
+                     <ns3:postCode>8266</ns3:postCode>
+                     <ns3:townName>MØRSVIKBOTN</ns3:townName>
+                     <ns3:country>NO</ns3:country>
+                     <ns3:addressLine>Hauketo Veien 18f</ns3:addressLine>
+                  </ns3:postalAddress>
+               </ns4:debtor>
+            </ns2:paymentInfo>
+            <ns2:transaction>
+               <ns5:amount>
+                  <ns3:instructedAmount currency="NOK">
+                     <ns3:amount>999.00</ns3:amount>
+                  </ns3:instructedAmount>
+               </ns5:amount>
+               <ns5:chargeBearer>DEBT</ns5:chargeBearer>
+               <ns5:creditorAgent>
+                  <ns3:bic>ESSESESSXXX</ns3:bic>
+                  <ns3:name>SKANDINAVISKA ENSKILDA BANKEN AB</ns3:name>
+                  <ns3:postalAddress>
+                     <ns3:postCode>106 40</ns3:postCode>
+                     <ns3:townName>STOCKHOLM</ns3:townName>
+                     <ns3:country>SE</ns3:country>
+                     <ns3:addressLine>RISSNELEDEN 110</ns3:addressLine>
+                     <ns3:addressLine>SWEDEN</ns3:addressLine>
+                  </ns3:postalAddress>
+               </ns5:creditorAgent>
+               <ns5:creditor>
+                  <ns3:name>SO Cred</ns3:name>
+                  <ns3:postalAddress>
+                     <ns3:postCode>45022</ns3:postCode>
+                     <ns3:townName>test</ns3:townName>
+                     <ns3:countrySubDivision>test</ns3:countrySubDivision>
+                     <ns3:country>SE</ns3:country>
+                     <ns3:addressLine>asdfasdfs</ns3:addressLine>
+                  </ns3:postalAddress>
+               </ns5:creditor>
+               <ns5:creditorAccount>
+                  <ns3:identification>SE4550000000058398257466</ns3:identification>
+               </ns5:creditorAccount>
+               <ns5:confidential>false</ns5:confidential>
+               <ns5:internalProductCode>PAYCTINTOUPNP</ns5:internalProductCode>
+               <ns5:marketProductName>InternaltionalOut</ns5:marketProductName>
+            </ns2:transaction>
+            <ns2:standingOrderKey>
+               <ns2:agreementId>1788</ns2:agreementId>
+               <ns2:agreementVersion>1</ns2:agreementVersion>
+            </ns2:standingOrderKey>
+            <ns2:standingOrderType>PERIODIC</ns2:standingOrderType>
+            <ns2:standingOrderStatus>ACTIVE</ns2:standingOrderStatus>
+            <ns2:createdDate>2021-01-05T12:59:06.000+01:00</ns2:createdDate>
+            <ns2:initiatedBy>CUSTOMER</ns2:initiatedBy>
+            <ns2:initiatorIdentifier>873340002</ns2:initiatorIdentifier>
+            <ns2:operationsArray>UPDATE_STANDING_ORDER</ns2:operationsArray>
+            <ns2:operationsArray>CLOSE_STANDING_ORDER</ns2:operationsArray>
+            <ns2:operationsArray>VIEW_STANDING_ORDER</ns2:operationsArray>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-01-12+01:00</ns2:dueDate>
+               <ns2:identifier>90450</ns2:identifier>
+            </ns2:futureTransactions>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-01-19+01:00</ns2:dueDate>
+               <ns2:identifier>90449</ns2:identifier>
+            </ns2:futureTransactions>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-01-26+01:00</ns2:dueDate>
+               <ns2:identifier>90454</ns2:identifier>
+            </ns2:futureTransactions>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-02-02+01:00</ns2:dueDate>
+               <ns2:identifier>90451</ns2:identifier>
+            </ns2:futureTransactions>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-02-09+01:00</ns2:dueDate>
+               <ns2:identifier>90452</ns2:identifier>
+            </ns2:futureTransactions>
+            <ns2:futureTransactions>
+               <ns2:dueDate>2021-02-16+01:00</ns2:dueDate>
+               <ns2:identifier>90453</ns2:identifier>
+            </ns2:futureTransactions>
+         </ns6:standingOrders>
+         <ns6:elementControl>
+            <ns7:StartIndex>0</ns7:StartIndex>
+            <ns7:NumberOfElements>1</ns7:NumberOfElements>
+            <ns7:MoreElementsAvailable>false</ns7:MoreElementsAvailable>
+         </ns6:elementControl>
+      </ns6:standingOrderSearchResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderSearchRequest"/><con:wsrmConfig version="1.2"/><con:environmentSpec><con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>No Authorization</con:authProfile></con:entry></con:environmentSpec></con:request></con:config></con:testStep><con:testStep type="request" id="e7952a27-c0ba-4431-a84e-b095992fb1a4" name="SO update"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface><con:operation>standingOrderUpdate</con:operation><con:request name="SO update" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="27730baf-990d-45e6-a0c3-2b814328a142"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G_D5}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderUpdateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <urn1:dueDate>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:dueDate>
+            </urn1:dueDates>
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <urn1:exemptions>
+               <urn1:exemption>
+                  <urn1:startDate>${= java.time.LocalDateTime.now().plusDays(10).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:startDate>
+                  <urn1:endDate>${= java.time.LocalDateTime.now().plusDays(15).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:endDate>
+                  <urn1:recurring>false</urn1:recurring>
+               </urn1:exemption>
+            </urn1:exemptions>
+            <urn1:paymentInfo>
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency>${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>2</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#intCredAgentBic}</urn2:bic>
+                  <urn2:postalAddress>
+                     <urn2:postCode>520312312314</urn2:postCode>
+                     <urn2:townName>Test</urn2:townName>
+                     <urn2:countrySubDivision>Oslo</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <urn2:name>SO Cred</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:postCode>45022</urn2:postCode>
+                     <urn2:townName>test</urn2:townName>
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#intCreditAccount}</urn2:identification>
+                  <!--Optional:-->
+               </urn4:creditorAccount>
+            </urn1:transaction>
+            <urn1:standingOrderKey>
+               <urn1:agreementId>${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>
+               <!--Optional:-->
+               <urn1:agreementVersion>${Create SO#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>
+            </urn1:standingOrderKey>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+            <urn1:chargesRequired>false</urn1:chargesRequired>
+         </urn:standingOrder>
+      </urn:standingOrderUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="2fbb28b9-77d1-4b8b-b059-c26628a6a048" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="MessageContentAssertion" id="d62fcf16-4ed2-4ed7-b479-1dc025e8ae76" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderUpdateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderUpdateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderUpdateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderUpdateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderUpdateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderUpdateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:standingOrderKey[1]/ns1:agreementId[1]</con:xpath><con:element>ns2:agreementId</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>1788</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:standingOrderKey[1]/ns1:agreementVersion[1]</con:xpath><con:element>ns2:agreementVersion</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>2</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[1]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-12+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[1]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[2]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-01-26+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[2]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[3]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-02+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[3]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[4]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-09+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[4]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[5]/ns1:dueDate[1]</con:xpath><con:element>ns2:dueDate</con:element><con:type>XmlDate</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2021-02-16+01:00</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
+//ns2:standingOrderUpdateResponse[1]/ns2:futureTransactions[5]/ns1:identifier[1]</con:xpath><con:element>ns2:identifier</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Payment Identifier not generated</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderUpdateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrderKey>
+            <ns2:agreementId>1788</ns2:agreementId>
+            <ns2:agreementVersion>2</ns2:agreementVersion>
+         </ns6:standingOrderKey>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-01-12+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-01-26+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-02+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-09+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+         <ns6:futureTransactions>
+            <ns2:dueDate>2021-02-16+01:00</ns2:dueDate>
+            <ns2:identifier>Payment Identifier not generated</ns2:identifier>
+         </ns6:futureTransactions>
+      </ns6:standingOrderUpdateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderUpdateRequest"/><con:wsrmConfig version="1.2"/><con:environmentSpec><con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>No Authorization</con:authProfile></con:entry></con:environmentSpec></con:request></con:config></con:testStep><con:testStep type="request" name="SO_update-Confirm" id="2e17094e-593e-4d37-a7ee-60d4362e1ef2">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
+      <con:operation>standingOrderStatusUpdate</con:operation>
+      <con:request name="SO_update-Confirm" id="bf05e061-1891-4888-80ff-ae16c808be39">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.108:29221/pin/services/PINSStandingOrder_V2_0Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderStatusUpdateRequest xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0">
+         <urn:standingOrderKey>
+            <urn1:agreementId xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0">${SO update#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderUpdateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>
+            <urn1:agreementVersion xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0">${SO update#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderUpdateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>
+         </urn:standingOrderKey>
+         <urn:standingOrderAction>CONFIRM</urn:standingOrderAction>
+      </urn:standingOrderStatusUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="29a560c6-9de8-4453-93a2-b637149ce5b0">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        
+        <con:assertion type="MessageContentAssertion" id="cf030063-f42c-4851-8faf-96ff6b85a61f" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>0</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>OK</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderStatusUpdateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderStatusUpdateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns1='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+//ns1:standingOrderStatusUpdateResponse[1]/ns1:standingOrderStatus[1]</con:xpath><con:element>ns6:standingOrderStatus</con:element><con:type xsi:nil="true"/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>ACTIVE</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderStatusUpdateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns7:ResponseState>
+         <ns6:standingOrderStatus>ACTIVE</ns6:standingOrderStatus>
+      </ns6:standingOrderStatusUpdateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6f14c36d-a5ca-4b42-824d-faf4a974241a">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f17c3c7b-97d1-475e-8fd3-edb989665099">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        <con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>Inherit From Parent</con:authProfile></con:entry></con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep><con:testStep type="groovy" name="PFC_JaxrspayloadLog" id="f6de0852-9c28-47d8-845e-7aa7e35385eb"><con:settings/><con:config><script>import com.jcraft.jsch.*
+import org.apache.commons.io.FileUtils
+
+// Properties
+def  eosHost = context.expand( '${#Project#EOSHost}' )
+def  Port =  context.expand( '${#Project#Port}' );
+def  ftpUsername = context.expand( '${#Project#UserName}' )
+def  ftpPassword = context.expand( '${#Project#Password}' )
+def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env=env.substring(2)
+
+def  SourcePath = "/eos/$env/pin/i1/logs/pin"
+
+def logRef = context.expand( '${Create SO#RawRequest#declare namespace wsc=\'http://edb.com/ws/WSCommon_v22\'; //wsc:AutHeader[1]/wsc:ClientContext[1]/wsc:item[3]/@value}' )
+
+if (!(ServerConnect.Connect(eosHost ,ftpUsername, ftpPassword, Integer.parseInt(Port)) == "PASS"))
+	assert false,"Failed to conenct to linux server!!"
+else
+	assert true
+	
+String commandToExecute = "cd $SourcePath;  grep  -A 6 $logRef  jaxrspayload.log"
+def CommandOutput = ServerConnect.execCommand(commandToExecute)
+
+if (!(ServerConnect.closeConnection()))
+	assert false," Failed to close linux server!!"
+else
+ 	assert true
+ 	
+def splitOutput = CommandOutput.split('\\n\\n')
+def requestTemp = splitOutput[0].split('Payload: ')[1]
+def responseTemp =  splitOutput[1].split('Payload: ')[1]
+
+
+testRunner.testCase.testSteps['Properties'].setPropertyValue('PFCRequestLog',requestTemp)
+testRunner.testCase.testSteps['Properties'].setPropertyValue('PFCResponseLog',responseTemp)</script></con:config></con:testStep><con:testStep type="groovy" name="ValidatePFClogs" id="15c1a011-02f5-4caa-8101-c13e8bd34531"><con:settings/><con:config><script>import org.apache.commons.io.FileUtils
+
+// PFC Request Validation
+def FeatureName = context.expand( '${Properties#PFCRequestLog#$[\'Verify\'][0]}' )
+def CountryCode = context.expand( '${Properties#PFCRequestLog#$[\'CountryCode\']}' )
+def TransferCurrency = context.expand( '${Properties#PFCRequestLog#$[\'Amount\'][\'Currency\']}' )
+def ImmediateTransfer = context.expand( '${Properties#PFCRequestLog#$[\'Immediate\']}' )
+def PaymentType = context.expand( '${Properties#PFCRequestLog#$[\'Domestic\']}' )
+def CustId = context.expand( '${Properties#PFCRequestLog#$[\'AccountOwner\']}' )
+def MarketType = context.expand( '${Properties#PFCRequestLog#$[\'Market\']}' )
+
+def CredAgentCountry = context.expand( '${Properties#intCredAgentCountry}' )
+def customerid = context.expand( '${Properties#customerid}' )
+
+
+assert FeatureName == "VERIFY_CUSTOMERLIMITS_COUNTRY","feature name not valid"
+assert CountryCode == CredAgentCountry,"CountryCode not valid"
+assert TransferCurrency == "NOK","TransferCurrency not valid"
+assert ImmediateTransfer == "NON_IMMEDIATE","ImmediateTransfer not valid"
+assert PaymentType == "CROSSBORDER","PaymentType is not valid"
+assert CustId == customerid,"CustId not valid"
+assert MarketType == "BM","MarketType is not valid"
+
+
+// ==========================================
+
+// PFC Response Validation
+def ResponseCode = context.expand( '${Properties#PFCResponseLog#$[\'Code\']}' )
+def Description = context.expand( '${Properties#PFCResponseLog#$[\'Description\']}' )
+
+assert ResponseCode == "0","ResponseCode is not valid"
+assert Description == "OK","Description is not valid"
+</script></con:config></con:testStep><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>5439e721-c2e4-450f-8bda-e70b90ea425d</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>9459374c-f6a8-44ce-a1d5-61039687516b</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>8d2c990c-d028-4d1c-88e4-80ac253e3fb1</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>68430e2e-cf72-4edf-ad27-7d3efb550cd0</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>db718e71-66fc-4bbf-9944-120b2a5674f2</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>

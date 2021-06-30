@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="71b33e81-782c-43a9-a71a-edf3e9597c44" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="NOT OK Response_7553-KYC Validation" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config"><con:description>create PM SO  for crossBorder to  validate KYC with error response -7553</con:description><con:settings><con:setting id="71b33e81-782c-43a9-a71a-edf3e9597c44fileName">NOT-OK-Response_7553-KYC-Validation</con:setting></con:settings><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="RBS_Fetch Customer" id="d8440a9e-8254-45e2-bbd5-0ba59370fb66"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select * from RISK.RISK_CUSTOMER_COUNTRY where length(CUSTOMERID)='11' and COUNTRY_CODE='SE' and ROWNUM=1</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="RBS_Fetch Amount" id="ea5bb996-2d00-4cc2-87d2-e8a0c2ed2f9d"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select ORGID, BASE_CURRENCY, MIN_AMOUNT_TRX_BM, MIN_AMOUNT_TRX_PM from RISK.RISK_BANK where ORGID='4201'</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Fetch Account" id="a8919a98-d011-4404-804c-46155c88d6a8"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>PWH</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString><con:password/><con:connectionProperties/><con:query>select A.CUSTOMERID,A.ACCOUNTNUMBER,A.CUSTOMERTYPE,A.CUSTBANKID,A.CURRENCY
+from V_AUTHORISATION A where A.ROLETYPE = 'EIER'and CUSTOMERTYPE='P' and CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} and
+A.ACCOUNTNUMBER IN (SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where ROLETYPE = 'DISP' and  CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} )
+fetch first 1 rows only</con:query><con:assertion type="JDBC Status" id="266efb75-b6f0-4041-abb8-b71379cf3d0a" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="groovy" name="Set Properties" id="265ff9c5-4b79-4c9f-a3ef-16c4038a8346"><con:settings/><con:config><script>def customerid = context.expand( '${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debitAccount = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def debitAcntccy = context.expand( '${Fetch Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+def Amount = context.expand( '${RBS_Fetch Amount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MIN_AMOUNT_TRX_PM[1]}' )
+
+
+
+customerid= customerid.toString().replaceAll("[^a-zA-Z0-9]+","")
+debitAccount= debitAccount.toString().replaceAll("[^a-zA-Z0-9]+","")
+debitAcntccy= debitAcntccy.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+Double instrAmount1 = Double.parseDouble(Amount)
+instrAmount1= instrAmount1+100
+instrAmount2 = instrAmount1
+
+int instrAmount = (int) Math.round(instrAmount2);
+
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("value2",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("agreementid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debitAccount)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAcntccy",debitAcntccy)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instrAmount",instrAmount.toString())
+</script></con:config></con:testStep><con:testStep type="properties" name="Properties" id="72c7fd0f-a3c5-48b7-b51b-00aa9e50cada"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>SourceApplication</con:name><con:value>EVRYINT</con:value></con:property><con:property><con:name>userid</con:name><con:value>05015904188</con:value></con:property><con:property><con:name>value2</con:name><con:value>05015904188</con:value></con:property><con:property><con:name>credentials</con:name><con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value></con:property><con:property><con:name>orgid</con:name><con:value>4201</con:value></con:property><con:property><con:name>customerid</con:name><con:value>05015904188</con:value></con:property><con:property><con:name>debitAccount</con:name><con:value>96620118203</con:value></con:property><con:property><con:name>debitAcntccy</con:name><con:value>NOK</con:value></con:property><con:property><con:name>debitAgentBic</con:name><con:value>asdfsa</con:value></con:property><con:property><con:name>item1</con:name><con:value>PaymentChannel</con:value></con:property><con:property><con:name>value1</con:name><con:value>INT</con:value></con:property><con:property><con:name>item2</con:name><con:value>agreement111</con:value></con:property><con:property><con:name>item3</con:name><con:value>SelfService</con:value></con:property><con:property><con:name>value3</con:name><con:value>true</con:value></con:property><con:property><con:name>item4</con:name><con:value>LogRef</con:value></con:property><con:property><con:name>value4</con:name><con:value>${=java.util.UUID.randomUUID()}</con:value></con:property><con:property><con:name>ReqExnDate</con:name><con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value></con:property><con:property><con:name>intCredAgentBic</con:name><con:value>NWBKGB2LXXX</con:value></con:property><con:property><con:name>intCreditAccount</con:name><con:value>GB02CITI18500811042076</con:value></con:property><con:property><con:name>ReqExnDateTmrw</con:name><con:value>${=new Date().format("yyyy-MM-dd")}</con:value></con:property><con:property><con:name>intCredAgentCountry</con:name><con:value>GB</con:value></con:property><con:property><con:name>agreementid</con:name><con:value>05015904188</con:value></con:property><con:property><con:name>instrAmount</con:name><con:value>10100</con:value></con:property><con:property><con:name>PFCRequestLog</con:name><con:value>{"Verify":["VERIFY_CUSTOMERLIMITS_COUNTRY"],"CountryCode":"GB","Amount":{"Amount":101555.50,"Currency":"NOK"},"Immediate":"NON_IMMEDIATE","Domestic":"CROSSBORDER","AccountOwner":"05015904188","Market":"PM"}</con:value></con:property><con:property><con:name>PFCResponseLog</con:name><con:value>{"Code":10002,"Description":"Customer is not allowed to pay to this country."}</con:value></con:property></con:properties></con:config></con:testStep><con:testStep type="request" id="390aac76-88b7-4b0a-8039-9d83a1a9cd76" name="Create SO"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface><con:operation>standingOrderCreate</con:operation><con:request name="Create SO" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="cebf7dc4-76d4-4aad-bc33-1f38fd7ee3e4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G_D5}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>MONTHLY</urn1:recurrence>
+            <urn1:dueDates>
+               <urn1:dueDate>${Properties#ReqExnDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <urn1:paymentInfo>
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency>${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="USD">
+                     <urn2:amount>${Properties#instrAmount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <urn4:creditorAgent>
+                  <!--Optional:-->
+                  <urn2:bic>${Properties#intCredAgentBic}</urn2:bic>
+                  <urn2:postalAddress>
+                     <urn2:postCode>520312314</urn2:postCode>
+                     <urn2:townName>Test</urn2:townName>
+                     <urn2:countrySubDivision>Oslo</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <urn2:name>SO Cred</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:postCode>45022</urn2:postCode>
+                     <urn2:townName>test</urn2:townName>
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#intCreditAccount}</urn2:identification>
+                  <!--Optional:-->
+               </urn4:creditorAccount>
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <urn1:chargesRequired>false</urn1:chargesRequired>
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="280d28e7-c914-455d-b06f-0c0cf05e3c66" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="MessageContentAssertion" id="288119d1-8229-4c61-872c-207fa94a9bc3" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>6000</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>Validation error</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:standingOrderCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]</con:xpath><con:element>errorItem</con:element><con:type xsi:nil="true"/><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@key</con:xpath><con:element>@key</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>7553</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:standingOrderCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@value</con:xpath><con:element>@value</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>Customer is not allowed to transfer funds to this creditor agent</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns6:standingOrderCreateResponse xmlns:ns10="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns9="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns6="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:ns5="urn:srv.stord.fs.evry.com:domain:creditor:v2_0" xmlns:ns4="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns2="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns7:ResponseState>
+            <ErrorCode>6000</ErrorCode>
+            <Severity>2</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>Validation error</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <errorItem key="7553" value="Customer is not allowed to transfer funds to this creditor agent"/>
+         </ns7:ResponseState>
+      </ns6:standingOrderCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderCreateRequest"/><con:wsrmConfig version="1.2"/><con:environmentSpec><con:entry environmentId="bea9dfac-4336-4511-919b-c1077cf3341b"><con:authProfile>Inherit From Parent</con:authProfile></con:entry><con:entry environmentId="19c095a6-5221-4f8f-8c89-15dd3a84437f"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="7bb21693-0f5a-4ff2-914b-038016c05b6b"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="1ea86b4c-0692-4dda-b897-6f3c93da8c59"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="c521ccc6-967a-4b88-84c4-aed2f81eb1b6"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="ddf02c5e-10c0-4950-8698-02d6f300ed37"><con:authProfile>No Authorization</con:authProfile></con:entry><con:entry environmentId="5dc74fda-b4b0-47c0-ab22-d941e38392b6"><con:authProfile>No Authorization</con:authProfile></con:entry></con:environmentSpec></con:request></con:config></con:testStep><con:testStep type="groovy" name="PFC_JaxrspayloadLog" id="4a5e857c-478e-4c0d-b880-f2815179813d"><con:settings/><con:config><script>import com.jcraft.jsch.*
+import org.apache.commons.io.FileUtils
+
+// Properties
+def  eosHost = context.expand( '${#Project#EOSHost}' )
+def  Port =  context.expand( '${#Project#Port}' );
+def  ftpUsername = context.expand( '${#Project#UserName}' )
+def  ftpPassword = context.expand( '${#Project#Password}' )
+def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env=env.substring(2)
+
+def  SourcePath = "/eos/$env/pin/i1/logs/pin"
+
+def logRef = context.expand( '${Create SO#RawRequest#declare namespace wsc=\'http://edb.com/ws/WSCommon_v22\'; //wsc:AutHeader[1]/wsc:ClientContext[1]/wsc:item[2]/@value}' )
+
+if (!(ServerConnect.Connect(eosHost ,ftpUsername, ftpPassword, Integer.parseInt(Port)) == "PASS"))
+	assert false,"Failed to conenct to linux server!!"
+else
+	assert true
+	
+String commandToExecute = "cd $SourcePath;  grep  -A 6 $logRef  jaxrspayload.log"
+def CommandOutput = ServerConnect.execCommand(commandToExecute)
+
+if (!(ServerConnect.closeConnection()))
+	assert false," Failed to close linux server!!"
+else
+ 	assert true
+ 	
+def splitOutput = CommandOutput.split('\\n\\n')
+def requestTemp = splitOutput[0].split('Payload: ')[1]
+def responseTemp =  splitOutput[1].split('Payload: ')[1]
+
+
+testRunner.testCase.testSteps['Properties'].setPropertyValue('PFCRequestLog',requestTemp)
+testRunner.testCase.testSteps['Properties'].setPropertyValue('PFCResponseLog',responseTemp)</script></con:config></con:testStep><con:testStep type="groovy" name="ValidatePFClogs" id="3a314c1e-7a6b-4eac-99ac-860ccf9ed047"><con:settings/><con:config><script>import org.apache.commons.io.FileUtils
+
+// PFC Request Validation
+def FeatureName = context.expand( '${Properties#PFCRequestLog#$[\'Verify\'][0]}' )
+def CountryCode = context.expand( '${Properties#PFCRequestLog#$[\'CountryCode\']}' )
+def TransferCurrency = context.expand( '${Properties#PFCRequestLog#$[\'Amount\'][\'Currency\']}' )
+def ImmediateTransfer = context.expand( '${Properties#PFCRequestLog#$[\'Immediate\']}' )
+def PaymentType = context.expand( '${Properties#PFCRequestLog#$[\'Domestic\']}' )
+def CustId = context.expand( '${Properties#PFCRequestLog#$[\'AccountOwner\']}' )
+def MarketType = context.expand( '${Properties#PFCRequestLog#$[\'Market\']}' )
+
+def CredAgentCountry = context.expand( '${Properties#intCredAgentCountry}' )
+def customerid = context.expand( '${Properties#customerid}' )
+
+
+assert FeatureName == "VERIFY_CUSTOMERLIMITS_COUNTRY","feature name not valid"
+assert CountryCode == CredAgentCountry,"CountryCode not valid"
+assert TransferCurrency == "NOK","TransferCurrency not valid"
+assert ImmediateTransfer == "NON_IMMEDIATE","ImmediateTransfer not valid"
+assert PaymentType == "CROSSBORDER","PaymentType is not valid"
+assert CustId == customerid,"CustId not valid"
+assert MarketType == "PM","MarketType is not valid"
+
+
+// ==========================================
+
+// PFC Response Validation
+def ResponseCode = context.expand( '${Properties#PFCResponseLog#$[\'Code\']}' )
+def Description = context.expand( '${Properties#PFCResponseLog#$[\'Description\']}' )
+
+assert ResponseCode == "10002","ResponseCode is not valid"
+assert Description == "Customer is not allowed to pay to this country.","Description is not valid"
+</script></con:config></con:testStep><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>952e5277-f948-4261-bf89-3b4d962b7d54</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>d8440a9e-8254-45e2-bbd5-0ba59370fb66</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ea5bb996-2d00-4cc2-87d2-e8a0c2ed2f9d</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>a8919a98-d011-4404-804c-46155c88d6a8</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>265ff9c5-4b79-4c9f-a3ef-16c4038a8346</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>

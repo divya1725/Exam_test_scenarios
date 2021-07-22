@@ -14,7 +14,13 @@ ex-choice(
 d.Just build the jenkins job without selecting the project to load the newly added project into jenkins and stop it. You will be able to see the newly added project in Jenkins build parameter "SuiteName"
 
 
-2. How to run a project in Jenkins
+2. How to run a project in Jenkins.
+	Click on the Branch name https://jenkins.finods.com/job/payment/job/automation/job/pr-regression-valuechain/
+    Click on link "Build with Parameters" 
+    Select the Environments from dropdown
+    Do not select anything ExecutionTags unless Tags are confirued in ReadyAPI tool
+    Select the ProjectName from dropdown "SuiteName"
+    Click on "Build"
 
 3. How to download html report
 

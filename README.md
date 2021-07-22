@@ -23,8 +23,19 @@ d.Just build the jenkins job without selecting the project to load the newly add
     Click on "Build"
 
 3. How to download html report
+	Click on the Build number
+    Click on the link "Test Result"
+    Click on the suiteName/Testcase Name to check the status
 
 4.How to download results folder from workspace
+	Click on the Build Number link
+    Click on the Link 'Workspcases' on left side
+    Click on the link text "/data/jenkins/workspace/_pr-regression-valuechain_master".
+    Navigate to the folder subfolder "project'
+    Navigate to the respective suite folder. ex-ReceiptOrder
+    Navigate to the folder "results". ex- 	"results/20210722/ReceiptOrder"
+    download the results by clicking link " (all files in zip)" at the botton of the page
+       
 
 5. Slack channel for notification.
 #regressiontestresults

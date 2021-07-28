@@ -40,3 +40,6 @@ d.Just build the jenkins job without selecting the project to load the newly add
 5. Slack channel for notification.
 #regressiontestresults
 
+
+6. Refer wikipage for more details
+https://wiki.finods.com/display/projects/ReadyAPI+Test+Automation+Framework

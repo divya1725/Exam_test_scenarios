@@ -28,7 +28,7 @@ then
 					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"
 					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
 				else
-					export COMMAND_LINE=""
+					unset COMMAND_LINE
 					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"				
 					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
 				fi
@@ -51,7 +51,7 @@ else
 			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"
 			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
 		else
-			export COMMAND_LINE=""
+			unset COMMAND_LINE
 			echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
 			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
 		fi

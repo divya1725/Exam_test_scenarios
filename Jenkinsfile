@@ -15,7 +15,7 @@ def emailNotification( email) {
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
-def slackChannelName = "#regressiontestresults"
+def slackChannelName = "#slackmessgetest"
 def wsReportFolder = "https://fsjenkins.evry.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
 
 pipeline {
@@ -34,14 +34,14 @@ pipeline {
             description: 'Environment to run against'
         )
 	   choice(
-            name: 'ExecutionTags',
-            choices: ['','SMOKETEST'],          
-            description: 'Select a SMOKETEST tag to run pre-selected testcases, select empty to run all testcases'
-        )
-	   choice(
             name: 'SuiteName',
             choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002 ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes'],          
             description: 'Select a project to run'
+        )
+		booleanParam(
+            name: 'loadEnvFromJsonFile',
+            defaultValue: false,
+            description: 'Select if you want to override project properties with env json file'
         )
 		
     }
@@ -57,11 +57,9 @@ pipeline {
         stage('ReadyAPITest') { 
             steps {                
                script{
-                    // sh 'chmod +x ./run-tests.sh'
-                    //sh "./run-tests.sh ${params.Environments}" 
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e TAGS="${params.ExecutionTags}" -e SUITENAME="${params.SuiteName}" --name ${containername} soapui"""
+                 	sh """docker run -e ENVIRONMENT="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" --name ${containername} soapui"""
                }
             }
         }

@@ -2,15 +2,15 @@
 
 ENV=$1
 SUITENAME=$2
-TAGS=$3
+LOADFROMJSON=$3
 
 excludeProjects=('SkkoPayments' 'ext' 'CPSEventLog' 'PreDefined-CreditorSmokeTest' 'ReceiptOrderSmokeTest' 'PaymentCreateAllISPCSmokeTest' 'CAVA-PTI-readyapi-project' 'PredefinedCreditorCAVA' 'PINValueChainSuite');
 
 FOUNDFLAG=""
-echo "Env is $ENV and Tag is $TAGS and suiteName is $SUITENAME"
+echo "Env is $ENV and Tag is $LOADFROMJSON and suiteName is $SUITENAME"
 exitCode=0
 
-
+exit $exitCode
 if [ "${SUITENAME}" == "" ] 
 then
 		for subProject in */project.content ; do
@@ -23,11 +23,11 @@ then
 			then
 				FOUNDFLAG="TRUE"		
 				echo "Run Composite SoapProject $soapProject"
-				if [ "${TAGS}" == "" ]
+				if [ "${LOADFROMJSON}" == "" ]
 				then
 					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
 				else		
-					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $LOADFROMJSON"
 				fi
 				  tempCode=$?
 				  echo "tempCode is $tempCode"
@@ -43,11 +43,11 @@ else
 		soapProject="$SUITENAME";
 		FOUNDFLAG="TRUE"		
 		echo "Run Composite SoapProject $soapProject"
-		if [ "${TAGS}" == "" ]
+		if [ "${LOADFROMJSON}" == "" ]
 		then
 			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
 		else		
-			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $LOADFROMJSON"
 		fi
           tempCode=$?
           echo "tempCode is $tempCode"

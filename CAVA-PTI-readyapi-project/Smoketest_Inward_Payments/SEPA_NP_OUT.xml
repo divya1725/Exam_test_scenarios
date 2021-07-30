@@ -10,12 +10,6 @@
       <script>import java.text.SimpleDateFormat
 import java.util.UUID
 
-//def customerID = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
-//def debtorAccountNumber = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
-//def creditorAccount = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
-//
-//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
-//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debtorAccountNumber)
 
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
@@ -25,6 +19,14 @@ log.info datetime
 UUID uuid = UUID.randomUUID();
 def MsgId = uuid.toString().replace("-", "");
 
+def generateAmount(int start, int finish){
+		Random random = new Random();
+		int rndInt = random.nextInt(finish + 1 - start) + start;
+		Double rndDouble = new Double(rndInt)
+		return rndDouble
+	}
+
+def amount = generateAmount(1,30)
 
 def EndtoEndID = "SEPANP"+datetime;
 def TxId = datetime
@@ -33,11 +35,7 @@ log.info EndtoEndID
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgId",MsgId );
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndToEndId",EndtoEndID );
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxId",TxId );
-
-//Set TestSuite properties
-//testRunner.testCase.testSuite.setPropertyValue("customerID",customerID)
-//testRunner.testCase.testSuite.setPropertyValue("AccountID",debtorAccountNumber)
-//testRunner.testCase.testSuite.setPropertyValue("creditorAccount",creditorAccount)</script>
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Amount",amount.toString());</script>
     </con:config>
   </con:testStep>
   <con:testStep type="properties" name="Properties" id="703987f0-35d3-439b-bf34-b52eead3cb40">
@@ -46,7 +44,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxId",TxId
       <con:properties>
         <con:property>
           <con:name>MsgId</con:name>
-          <con:value>fe8bad75daf340c68aa08bbb1d5484a6</con:value>
+          <con:value>2451ee36bea347e3821177c0362b3c7d</con:value>
         </con:property>
         <con:property>
           <con:name>CreDtTm</con:name>
@@ -58,15 +56,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxId",TxId
         </con:property>
         <con:property>
           <con:name>EndToEndId</con:name>
-          <con:value>SEPANP29721042044</con:value>
+          <con:value>SEPANP30721014030</con:value>
         </con:property>
         <con:property>
           <con:name>TxId</con:name>
-          <con:value>29721042044</con:value>
+          <con:value>30721014030</con:value>
         </con:property>
         <con:property>
           <con:name>Amount</con:name>
-          <con:value>${=CommonLibrary.generateAmount(1, 30)}</con:value>
+          <con:value>5.0</con:value>
         </con:property>
         <con:property>
           <con:name>MessageToSendWithParam</con:name>
@@ -128,21 +126,21 @@ import MQMessageUtils;
 def filecontent = context.expand( '${Properties#MessageToSendParsed}')
 log.info(filecontent)
 
-//def filecontent = context.expand( '${TestCase#messagetoSend}' )
-
 // Set MQ properties
 def mQQueuemanager =context.expand( '${#Project#mqManager}' )
 def mQHostName = context.expand( '${#Project#mqHostname}' )
 def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
 def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
-def mQMessageQueueSend = context.expand( '${#Project#sendQueueSEPA}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueueSepa}' )
 def msgId = context.expand( '${Properties#MsgId}' )
-
+def endToEndId = context.expand('${Properties#EndToEndId}')
 
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
-log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));</script>
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+log.info "End to End ID - " +endToEndId
+log.info "Message ID - " +msgId</script>
     </con:config>
   </con:testStep>
   <con:properties/>

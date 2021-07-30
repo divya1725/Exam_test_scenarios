@@ -22,8 +22,8 @@
  - Click on the Branch name https://jenkins.finods.com/job/payment/job/automation/job/pr-regression-valuechain/
  - Click on link "Build with Parameters" 
  - Select the Environments from dropdown
- - Do not select anything ExecutionTags unless Tags are confirued in ReadyAPI tool
  - Select the ProjectName from dropdown "SuiteName"
+ - Select the checkBox only if the folder /env/<env>.json file having latest properties and this json file will override all the project properties in tool and also Creates new env if its not present in ReadyAPI.
  - Click on "Build"
 
 ### 3. How to download html report

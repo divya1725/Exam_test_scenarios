@@ -4,7 +4,7 @@ RUN mkdir -p $PROJECT_FOLDER && \
 COPY ./ $PROJECT_FOLDER
 
 RUN export LICENSE_SERVER=fslicense.evry.com:8443
-ARG ENVIRONMENT
+ARG COMMAND_LINE
 ENV LICENSE_SERVER="fslicense.evry.com:8443"
 ARG SUITENAME
 ARG LOADFROMJSON
@@ -18,4 +18,4 @@ RUN chmod 755 $READYAPI_FOLDER/bin/ext/ready-api-license-manager-1.3.2.jar && \
 
 RUN chmod 755 multiProject.sh
 
-ENTRYPOINT sh multiProject.sh $ENVIRONMENT "$SUITENAME" $LOADFROMJSON
+ENTRYPOINT sh multiProject.sh $COMMAND_LINE "$SUITENAME" $LOADFROMJSON

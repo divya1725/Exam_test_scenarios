@@ -59,7 +59,7 @@ pipeline {
                script{
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e ENVIRONMENT="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" --name ${containername} soapui"""
+                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" --name ${containername} soapui"""
                }
             }
         }

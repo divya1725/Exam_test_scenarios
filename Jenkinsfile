@@ -91,7 +91,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'good',
-                    message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) :jenkins_success:".stripIndent()
+                    message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :jenkins_success:".stripIndent()
 
                 )
               
@@ -103,7 +103,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'danger',
-                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) ðŸ™ˆ".stripIndent()
+                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :fire:".stripIndent()
 
                 )
               
@@ -116,7 +116,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'warning',
-                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} unstable in ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) ðŸ™ˆ".stripIndent()
+                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} unstable in ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :fire:".stripIndent()
 
                 )
               

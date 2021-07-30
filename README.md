@@ -23,7 +23,7 @@
  - Click on link "Build with Parameters" 
  - Select the Environments from dropdown
  - Select the ProjectName from dropdown "SuiteName"
- - Select the checkBox only if the folder /env/<env>.json file having latest properties and this json file will override all the project properties in tool and also Creates new env if its not present in ReadyAPI.
+ - Select the checkBox loadEnvFromJsonFile only if the folder /env/<env>.json file having latest properties and this json file will override all the project properties in tool and also Creates new env if its not present in ReadyAPI.
  - Click on "Build"
 
 ### 3. How to download html report

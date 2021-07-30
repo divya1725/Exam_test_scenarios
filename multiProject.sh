@@ -25,10 +25,11 @@ then
 				echo "Run Composite SoapProject $soapProject"
 				if [ "${LOADFROMJSON}" == "true" ]
 				then					
-					export COMMAND_LINE=""
 					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"
 					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
-				else		
+				else
+					unset COMMAND_LINE
+					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"				
 					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
 				fi
 				  tempCode=$?
@@ -47,10 +48,11 @@ else
 		echo "Run Composite SoapProject $soapProject"
 		if [ "${LOADFROMJSON}" == "true" ]
 		then			
-			export COMMAND_LINE=""
 			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"
 			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
-		else		
+		else
+			unset COMMAND_LINE
+			echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
 			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
 		fi
           tempCode=$?

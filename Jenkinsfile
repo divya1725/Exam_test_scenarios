@@ -15,7 +15,7 @@ def emailNotification( email) {
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
-def slackChannelName = "#slackmessgetest"
+def slackChannelName = "#regressiontestresults"
 def wsReportFolder = "https://fsjenkins.evry.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
 
 pipeline {
@@ -91,7 +91,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'good',
-                    message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check <${BUILD_URL} for details and download (<${wsReportFolder}|Artifacts>) âœ…".stripIndent()
+                    message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) :jenkins_success:".stripIndent()
 
                 )
               
@@ -103,7 +103,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'danger',
-                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check ${BUILD_URL} for details and download (<${wsReportFolder}|Artifacts>) ðŸ™ˆ".stripIndent()
+                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) ðŸ™ˆ".stripIndent()
 
                 )
               
@@ -116,7 +116,7 @@ pipeline {
                 slackSend(
                     channel: "${slackChannelName}",
                     color: 'warning',
-                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} unstable in ${params.Environments}. Check ${BUILD_URL} for details and download (<${wsReportFolder}|Artifacts>) ðŸ™ˆ".stripIndent()
+                    message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} unstable in ${params.Environments}. Check (<${BUILD_URL}|run Details>) and download (<${wsReportFolder}|artifacts>) ðŸ™ˆ".stripIndent()
 
                 )
               

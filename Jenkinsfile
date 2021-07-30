@@ -28,7 +28,7 @@ pipeline {
     parameters {
 	   choice(
             name: 'Environments',
-            choices: ['G-D4','G-S1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8', 'G-D17','G-D10','G-D14','R-S6','test','test2'],          
+            choices: ['G-D4','G-S1','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D17','G-D10','G-D14','R-S6'],          
             description: 'Environment to run against'
         )
 	   choice(

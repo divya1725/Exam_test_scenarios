@@ -13,7 +13,6 @@ import java.util.UUID
 Date date = new Date();
 SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
 def datetime = fn.format(date)
-log.info datetime
 
 UUID uuid = UUID.randomUUID();
 def MsgId = uuid.toString().replace("-", "");
@@ -28,7 +27,7 @@ def generateAmount(int start, int finish){
 def amount = generateAmount(1,30)
 
 def EndtoEndID = "INTTRFNP"+datetime;
-def TxId = datetime
+def TxId = datetime+amount.toInteger()
 
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgId",MsgId );
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndToEndId",EndtoEndID );
@@ -42,7 +41,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Amount",am
       <con:properties>
         <con:property>
           <con:name>MsgId</con:name>
-          <con:value>3866327771cd4d1798cd1110ce2fd35d</con:value>
+          <con:value>00c489b780fa471b8e799735efa13080</con:value>
         </con:property>
         <con:property>
           <con:name>CreDtTm</con:name>
@@ -54,15 +53,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Amount",am
         </con:property>
         <con:property>
           <con:name>EndToEndId</con:name>
-          <con:value>INTTRFNP30721015209</con:value>
+          <con:value>INTTRFNP04821102708</con:value>
         </con:property>
         <con:property>
           <con:name>TxId</con:name>
-          <con:value>30721015209</con:value>
+          <con:value>0482110270812</con:value>
         </con:property>
         <con:property>
           <con:name>Amount</con:name>
-          <con:value>26.0</con:value>
+          <con:value>12.0</con:value>
         </con:property>
         <con:property>
           <con:name>MessageToSendWithParam</con:name>
@@ -134,13 +133,15 @@ def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
 def mQMessageQueueSend = context.expand( '${#Project#sendQueueNonSepa}' )
 def msgId = context.expand( '${Properties#MsgId}' )
 def endToEndId = context.expand('${Properties#EndToEndId}')
+def txId = context.expand( '${Properties#TxId}' )
 
 // Create utility class object, Create MQ connection
 MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
 // Send Message to MQ
 log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
 log.info "End to End ID - " +endToEndId
-log.info "Message ID - " +msgId</script>
+log.info "Message ID - " +msgId
+log.info "Transaction ID  - " +txId</script>
     </con:config>
   </con:testStep>
   <con:properties/>

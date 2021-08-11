@@ -19,4 +19,4 @@ RUN chmod 755 $READYAPI_FOLDER/bin/ext/ready-api-license-manager-1.3.2.jar && \
 
 RUN chmod 755 multiProject.sh
 
-ENTRYPOINT /bin/bash multiProject.sh $COMMAND_LINE "$SUITENAME" $LOADFROMJSON $TAG
+ENTRYPOINT /bin/bash multiProject.sh $COMMAND_LINE "$SUITENAME" $LOADFROMJSON $TAGS

@@ -8,7 +8,7 @@ TAGS=$4
 excludeProjects=('SkkoPayments' 'ext' 'CPSEventLog' 'PreDefined-CreditorSmokeTest' 'ReceiptOrderSmokeTest' 'PaymentCreateAllISPCSmokeTest' 'CAVA-PTI-readyapi-project' 'PredefinedCreditorCAVA' 'PINValueChainSuite');
 
 FOUNDFLAG=""
-echo "Env is $ENV and LOADFROMJSON is $LOADFROMJSON and suiteName is $SUITENAME"
+echo "Env is $ENV and LOADFROMJSON is $LOADFROMJSON and suiteName is $SUITENAME and tag is $TAGS"
 exitCode=0
 
 
@@ -59,7 +59,7 @@ else
 		echo "Run Composite SoapProject $soapProject"
 		if [ "${LOADFROMJSON}" == "true" ]
 		then			
-			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"			
+			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON(true) and COMMAND_LINE=$COMMAND_LINE and tag is $TAGS"			
 			if [ "${TAGS}" == "" ]
 			then
 				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
@@ -68,7 +68,7 @@ else
 			fi
 		else
 			unset COMMAND_LINE
-			echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
+			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON (false) and COMMAND_LINE=$COMMAND_LINE and tag is $TAGS"					
 			if [ "${TAGS}" == "" ]
 			then
 				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"

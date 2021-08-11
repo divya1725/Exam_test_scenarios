@@ -10,7 +10,7 @@ excludeProjects=('SkkoPayments' 'ext' 'CPSEventLog' 'PreDefined-CreditorSmokeTes
 FOUNDFLAG=""
 echo "Env is $ENV and LOADFROMJSON is $LOADFROMJSON and suiteName is $SUITENAME and tag is $TAGS"
 exitCode=0
-
+# COMMAND_LINE value is same as ENV value, wil be fetched from system variable( set in dockerfile)
 
 if [ "${SUITENAME}" == "" ] 
 then
@@ -26,7 +26,7 @@ then
 				echo "Run Composite SoapProject $soapProject"
 				if [ "${LOADFROMJSON}" == "true" ]
 				then					
-					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
+					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON (true) and COMMAND_LINE=$COMMAND_LINE "					
 					if [ "${TAGS}" == "" ]
 					then	
 						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
@@ -35,7 +35,7 @@ then
 					fi
 				else
 					unset COMMAND_LINE
-					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"		
+					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON (false) and COMMAND_LINE=$COMMAND_LINE"		
 					if [ "${TAGS}" == "" ]
 					then	
 						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"

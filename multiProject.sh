@@ -2,12 +2,13 @@
 
 ENV=$1
 SUITENAME=$2
-TAGS=$3
+LOADFROMJSON=$3
+TAGS=$4
 
 excludeProjects=('SkkoPayments' 'ext' 'CPSEventLog' 'PreDefined-CreditorSmokeTest' 'ReceiptOrderSmokeTest' 'PaymentCreateAllISPCSmokeTest' 'CAVA-PTI-readyapi-project' 'PredefinedCreditorCAVA' 'PINValueChainSuite');
 
 FOUNDFLAG=""
-echo "Env is $ENV and Tag is $TAGS and suiteName is $SUITENAME"
+echo "Env is $ENV and LOADFROMJSON is $LOADFROMJSON and suiteName is $SUITENAME"
 exitCode=0
 
 
@@ -23,11 +24,24 @@ then
 			then
 				FOUNDFLAG="TRUE"		
 				echo "Run Composite SoapProject $soapProject"
-				if [ "${TAGS}" == "" ]
-				then
-					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
-				else		
-					export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+				if [ "${LOADFROMJSON}" == "true" ]
+				then					
+					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
+					if [ "${TAGS}" == "" ]
+					then	
+						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
+					else		
+						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+					fi
+				else
+					unset COMMAND_LINE
+					echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"		
+					if [ "${TAGS}" == "" ]
+					then	
+						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
+					else		
+						export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV" "-TTestCase $TAGS"
+					fi
 				fi
 				  tempCode=$?
 				  echo "tempCode is $tempCode"
@@ -43,11 +57,24 @@ else
 		soapProject="$SUITENAME";
 		FOUNDFLAG="TRUE"		
 		echo "Run Composite SoapProject $soapProject"
-		if [ "${TAGS}" == "" ]
-		then
-			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
-		else		
-			export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+		if [ "${LOADFROMJSON}" == "true" ]
+		then			
+			echo "Run One suite and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"			
+			if [ "${TAGS}" == "" ]
+			then
+				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML'
+			else		
+				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-TTestCase $TAGS"
+			fi
+		else
+			unset COMMAND_LINE
+			echo "Run All suites and LOADFROMJSON=$LOADFROMJSON and COMMAND_LINE=$COMMAND_LINE"					
+			if [ "${TAGS}" == "" ]
+			then
+				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV"
+			else		
+				export REPORTS_FOLDER="$PROJECT_FOLDER/$soapProject/reports" && cd $PROJECT_FOLDER && $READYAPI_FOLDER/bin/testrunner.sh "$soapProject" "-f/$REPORTS_FOLDER/" '-RJUnit-Style HTML Report' '-FHTML' "-E$ENV" "-TTestCase $TAGS"
+			fi
 		fi
           tempCode=$?
           echo "tempCode is $tempCode"

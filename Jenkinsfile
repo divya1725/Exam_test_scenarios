@@ -33,6 +33,11 @@ pipeline {
             choices: ['G-D4','G-S1','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D17','G-D10','G-D14','R-S6'],          
             description: 'Environment to run against'
         )
+		choice(
+            name: 'ExecutionTags',
+            choices: ['','SMOKETEST'],          
+            description: 'Select a SMOKETEST tag to run pre-selected testcases(Tag must be added to testcase in ReadyAPI tool), select empty to run all testcases'
+        )
 	   choice(
             name: 'SuiteName',
             choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002 ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes'],          
@@ -59,7 +64,7 @@ pipeline {
                script{
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" --name ${containername} soapui"""
+                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" -e TAGS="${params.ExecutionTags}" --name ${containername} soapui"""
                }
             }
         }

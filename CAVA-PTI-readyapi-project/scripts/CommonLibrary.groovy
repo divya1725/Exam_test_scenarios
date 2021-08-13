@@ -1,6 +1,7 @@
 package fileName
 
 import java.util.*;
+import java.util.Random;
 import java.text.SimpleDateFormat;
 
 class CommonLibrary {
@@ -30,6 +31,17 @@ class CommonLibrary {
 		def sdf = new SimpleDateFormat (format)
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT+2"))		
 		return sdf.format(d).toString()
+	}
+
+	public static def getDate(format) {
+	return java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern(format))
+	}
+
+	public static def generateAmount(int start, int finish){
+		Random random = new Random();
+		int rndInt = random.nextInt(finish + 1 - start) + start;
+		Double rndDouble = new Double(rndInt)
+		return rndDouble
 	}
 	
 	public static String getNextTime(String hurMin) {

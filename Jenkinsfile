@@ -30,8 +30,13 @@ pipeline {
     parameters {
 	   choice(
             name: 'Environments',
-            choices: ['G-D4','G-S1','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D17','G-D10','G-D14','R-S6'],          
+            choices: ['G-D4','G-S1','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D10','G-D14','G-D17','R-S6','G-S4'],          
             description: 'Environment to run against'
+        )
+		choice(
+            name: 'ExecutionTags',
+            choices: ['','SMOKETEST','CAVASMOKETESTDATAGEN'],          
+            description: 'Select a SMOKETEST tag to run pre-selected testcases(Tag must be added to testcase in ReadyAPI tool), select empty to run all testcases'
         )
 	   choice(
             name: 'SuiteName',
@@ -59,7 +64,7 @@ pipeline {
                script{
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" --name ${containername} soapui"""
+                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" -e TAGS="${params.ExecutionTags}" --name ${containername} soapui"""
                }
             }
         }

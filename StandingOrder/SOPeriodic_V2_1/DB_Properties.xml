@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="ccda9606-41eb-4958-b8cd-059c8e2626b1" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DB_Properties" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="fbeef120-ee26-43e2-a1c0-de69b028b416fileName">DB_Properties</con:setting>
+  <con:setting id="ccda9606-41eb-4958-b8cd-059c8e2626b1fileName">DB_Properties</con:setting></con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="FetchAccount" id="1328e90b-7a67-418b-87d3-956beae45ba7">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select AgreementID,UserID,accountnumber,currencycode from v_auth_userinfo where  currencycode='NOK' and bankorgID='4201' and Markettype='PM' and ROWNUM=1</con:query>
+      <con:assertion type="Simple Contains" id="952cf5c6-64ff-49d3-99f0-21e3165b92ac" name="Contains">
+        <con:configuration>
+          <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount" id="d9e61242-4575-411c-96d9-c39286288903">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}' )
+def debtorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+
+
+testRunner.testCase.testSuite.setPropertyValue("customerid",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID",customerID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber",debtorAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchAccount_EUR" id="47e70d58-8f48-49a3-9b2f-c9bc09dadc3e">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select unique(accountnumber),AgreementID,UserID,currencycode from v_auth_userinfo where  currencycode='EUR' and bankorgID='4201' 
+and Markettype='PM' fetch first 2 rows only</con:query>
+      <con:assertion type="Simple NotContains" id="e79715fa-52e1-427a-81da-2f8bf409cabc" name="Not Contains">
+        <con:configuration>
+          <token/>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount_EUR" id="7d7c8d09-e065-42d2-b0ad-eedb7858c1d6">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount_EUR#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}' )
+
+def debtorAccountNumber = context.expand( '${FetchAccount_EUR#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+def debtorAccountCcy = context.expand( '${FetchAccount_EUR#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' )
+def EURCredAccount = context.expand( '${FetchAccount_EUR#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
+
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountCcy=  debtorAccountCcy.toString().replaceAll("[^a-zA-Z0-9]+","")
+EURCredAccount=  EURCredAccount.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+def UserID = customerID.substring(5) as int
+UserID = UserID.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+testRunner.testCase.testSuite.setPropertyValue("customerid_EUR",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID_EUR",UserID)
+testRunner.testCase.testSuite.setPropertyValue("AgreementId_EUR",UserID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber_EUR",debtorAccountNumber)
+testRunner.testCase.testSuite.setPropertyValue("currencyCode_EUR",debtorAccountCcy)
+testRunner.testCase.testSuite.setPropertyValue("EURCredAccount",EURCredAccount)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchAccount_USD" id="1c8d897f-73df-458c-bf8f-b195599749b1">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select AgreementID,UserID,accountnumber,currencycode from v_auth_userinfo where  currencycode='USD' and bankorgID='4201' and Markettype='PM' and ROWNUM=1</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount_USD" id="703d296b-deb1-4503-a157-9db0687461be">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount_USD#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}' )
+
+def debtorAccountNumber = context.expand( '${FetchAccount_USD#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+def debtorAccountCcy = context.expand( '${FetchAccount_USD#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' )
+
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountCcy=  debtorAccountCcy.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+def UserID = customerID.substring(5) as int
+UserID = UserID.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+testRunner.testCase.testSuite.setPropertyValue("customerid_USD",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID_USD",UserID)
+testRunner.testCase.testSuite.setPropertyValue("AgreementId_USD",UserID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber_USD",debtorAccountNumber)
+testRunner.testCase.testSuite.setPropertyValue("currencyCode_USD",debtorAccountCcy)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchAccount_INHOUSE" id="f8ec0930-63c2-4d90-8c4f-e468d1e74e0a">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select distinct(AgreementID),UserID,accountnumber,currencycode from v_auth_userinfo where  currencycode='EUR' and bankorgID='4201' and Markettype='PM'  FETCH FIRST 2 ROW ONLY</con:query>
+      <con:assertion type="Simple NotContains" id="a9aeb6d3-8a06-4116-a0be-64e7a88695a2" name="Not Contains">
+        <con:configuration>
+          <token/>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount_INHOUSE" id="d2f5a40c-fae2-4499-9f47-793f22f14868">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount_INHOUSE#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}' )
+
+def debtorAccountNumber = context.expand( '${FetchAccount_INHOUSE#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def CreditAccountNumber = context.expand( '${FetchAccount_INHOUSE#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
+def debtorAccountCcy = context.expand( '${FetchAccount_INHOUSE#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' )
+
+
+customerID= customerID.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountNumber= debtorAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+debtorAccountCcy=  debtorAccountCcy.toString().replaceAll("[^a-zA-Z0-9]+","")
+CreditAccountNumber= CreditAccountNumber.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+def UserID = customerID.substring(5) as int
+UserID = UserID.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+testRunner.testCase.testSuite.setPropertyValue("customerid_INHOUSE",customerID)
+testRunner.testCase.testSuite.setPropertyValue("UserID_INHOUSE",UserID)
+testRunner.testCase.testSuite.setPropertyValue("AgreementId_INHOUSE",UserID)
+testRunner.testCase.testSuite.setPropertyValue("accountNumber_INHOUSE",debtorAccountNumber)
+testRunner.testCase.testSuite.setPropertyValue("currencyCode_INHOUSE",debtorAccountCcy)
+testRunner.testCase.testSuite.setPropertyValue("CreditAccountNumber_INHOUSE",CreditAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>91690215-af6d-4bea-b54d-20318745428f</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

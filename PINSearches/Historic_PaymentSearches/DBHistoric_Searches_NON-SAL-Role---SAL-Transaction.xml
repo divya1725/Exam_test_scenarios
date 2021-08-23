@@ -11,7 +11,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT M.INITIATORBANKID,M.CUSTOMERID,TRANSACTIONSID,M.AGREEMENTID,PAYMENTINFOID,HT.DEBETACCOUNTNO,PAYMENTSTATUS,INSTRUCTEDAMOUNT
@@ -167,11 +167,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:property>
         <con:property>
           <con:name>paymentinfoid</con:name>
-          <con:value>731737</con:value>
+          <con:value>130009</con:value>
         </con:property>
         <con:property>
           <con:name>transactionid</con:name>
-          <con:value>260481043</con:value>
+          <con:value>312829</con:value>
         </con:property>
         <con:property>
           <con:name>instamt</con:name>
@@ -303,6 +303,44 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="2a10bece-aaa5-4c6f-95c8-53215af92a74" name="PaymentBookingSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentBookingSearch</con:operation><con:request name="PaymentBookingSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="fee8349e-5ddb-439f-b005-3e40245f5a14"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentBookingSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentBookingSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Simple Contains" id="09d93183-5c9a-4e4a-ba88-40fe15cd163e" name="IPC"><con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" id="053e51b4-2429-41c5-82e9-87cc0578060b" name="PaymentStatus"><con:configuration><token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" id="6b29d2ce-417a-41f4-a10d-8a159e5dcaec" name="Source"><con:configuration><token>&lt;ns3:source>PWH&lt;/ns3:source></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentBookingSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
   <con:testStep type="request" id="b3a482d0-8d76-4fa8-9b32-a5f3831df15c" name="PaymentBookingSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -349,39 +387,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
                <!--Optional:-->\r
             </urn1:commonCriteria>\r
             <urn1:transactionCriteria>\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <urn1:showHidden>false</urn1:showHidden>\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
-               <!--Optional:-->\r
+               <urn1:paymentInfoId>${Properties#paymentinfoid}</urn1:paymentInfoId>\r
             </urn1:transactionCriteria>\r
          </urn:searchCriteria>\r
       </urn:PaymentBookingSearchRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="SOAP Fault Assertion" id="1994cb3e-f679-4032-8b1a-e5ef44330757" name="Not SOAP Fault"/>
-        <con:assertion type="Simple Contains" name="PaymentType" id="0dfbaa66-c75a-4878-8cd9-1b2d2bac074c">
-          <con:configuration>
-            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
-            <ignoreCase>false</ignoreCase>
-            <useRegEx>false</useRegEx>
-          </con:configuration>
+        <con:assertion type="Simple Contains" name="IPC" id="0dfbaa66-c75a-4878-8cd9-1b2d2bac074c">
+          <con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration>
         </con:assertion>
         <con:assertion type="Simple Contains" name="PaymentStatus" id="48150983-db7b-4c0a-8a1c-09717573f7a1">
           <con:configuration>
@@ -1077,6 +1091,46 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="c03f5404-33aa-4679-bdaa-cd1843ea57f8" name="PaymentInfoHistoricSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentPaymentInfoHistoricSearch</con:operation><con:request name="PaymentInfoHistoricSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5e36d43b-95b3-4883-be5e-40f4c4dae308"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app04.man.cosng.net:22641/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentPaymentInfoHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentPaymentInfoHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Simple Contains" id="41b86212-542d-4c7c-b069-51917765376b" name="IPC"><con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" id="e32569ba-6508-499f-841f-398b5c72226a" name="paymentStatus"><con:configuration><token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" id="07a215a7-2577-4901-9981-817bccb5df90" name="Source"><con:configuration><token>&lt;ns3:source>PWH&lt;/ns3:source></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoHistoricSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
   <con:testStep type="request" id="c686072d-0703-4b19-b232-e3566b15b3f8" name="PaymentInfoHistoricSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1168,11 +1222,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Simple Contains" name="PaymentType" id="38f1cd1a-856c-4691-807f-acc4a1a9e49a">
-          <con:configuration>
-            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
-            <ignoreCase>false</ignoreCase>
-            <useRegEx>false</useRegEx>
-          </con:configuration>
+          <con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration>
         </con:assertion>
         <con:assertion type="Simple Contains" name="PaymentStatus" id="95a30c8f-a8aa-42b8-9fb3-b770f4325c87">
           <con:configuration>
@@ -1863,6 +1913,46 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="request" id="d16e2006-eaa2-4aeb-ab06-6757a0cea135" name="PaymentTransactionHistoricSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentTransactionHistoricSearch</con:operation><con:request name="PaymentTransactionHistoricSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="669238d7-ccee-4ea7-80ca-fded9e7d7a36"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#customerid}</wsc:userid>
+            <wsc:credentials>${#TestCase#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestCase#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestCase#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestCase#value1}" key="${#TestCase#item1}"/>
+            <wsc:item value="${Properties#customerid}" key="${#TestCase#item2}"/>
+            <wsc:item value="${#TestCase#value3}" key="${#TestCase#item3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionHistoricSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionHistoricSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Simple Contains" name="IPC" id="d1213530-c259-4143-a6a5-96dd47f6e27c"><con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" name="paymentStatus" id="1ea8057d-1c1d-4fe5-a8d0-bec3b5bc748f"><con:configuration><token>&lt;ns3:paymentStatus>COMPLETED&lt;/ns3:paymentStatus></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="Simple Contains" name="Source" id="848ca30a-ac60-4e33-a241-651776c00d8d"><con:configuration><token>&lt;ns3:source>PWH&lt;/ns3:source></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionHistoricSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
   <con:testStep type="request" id="b2b2c61c-7b7a-4b78-8d1f-7ee7d842a497" name="PaymentTransactionHistoricSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1934,11 +2024,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Simple Contains" name="PaymentType" id="5eb97dc5-01d7-4152-9851-c17b19af5ff7">
-          <con:configuration>
-            <token>&lt;ns3:paymentType>DOMESTIC_SALARY&lt;/ns3:paymentType></token>
-            <ignoreCase>false</ignoreCase>
-            <useRegEx>false</useRegEx>
-          </con:configuration>
+          <con:configuration><token>&lt;ns3:internalProductCode>PAYCTDOMOUSALA&lt;/ns3:internalProductCode></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration>
         </con:assertion>
         <con:assertion type="Simple Contains" name="PaymentStatus" id="96d1f26a-6360-419e-92c7-98618f85a538">
           <con:configuration>
@@ -2370,8 +2456,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep>
-  <con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_6" id="60967c2e-b9d8-44a6-ad53-03299493afe2">
+  </con:testStep><con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_6" id="60967c2e-b9d8-44a6-ad53-03299493afe2">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
@@ -2498,8 +2583,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep>
-  <con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_5" id="0c587a22-ba3a-4344-9b97-e46686e42d16">
+  </con:testStep><con:testStep type="request" name="PaymentTransactionHistoricSearch_V1_5" id="0c587a22-ba3a-4344-9b97-e46686e42d16">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
@@ -2626,8 +2710,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep>
-  <con:properties>
+  </con:testStep><con:properties>
     <con:property>
       <con:name>PaymentId</con:name>
       <con:value>32664</con:value>
@@ -3062,7 +3145,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instamt",i
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:environmentSpec>
+  <con:breakPoints><con:testStepId>2a10bece-aaa5-4c6f-95c8-53215af92a74</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>c03f5404-33aa-4679-bdaa-cd1843ea57f8</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>d16e2006-eaa2-4aeb-ab06-6757a0cea135</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:environmentSpec>
     <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>

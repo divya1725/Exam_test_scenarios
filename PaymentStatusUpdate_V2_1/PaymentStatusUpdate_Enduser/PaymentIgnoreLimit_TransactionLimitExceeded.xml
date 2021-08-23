@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="e303d439-a88e-4687-b245-f6e2b8d03fc4" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="PaymentIgnoreLimit_TransactionLimitExceeded" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="e303d439-a88e-4687-b245-f6e2b8d03fc4fileName">PaymentIgnoreLimit_TransactionLimitExceeded</con:setting></con:settings><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="FetchAccount_BK1" id="ee0558fc-4b61-495f-b986-fd11b945c5c8"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_Forefall</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:forfall/forfall@10.246.89.97:1530/rbst5_taf</con:connectionString><con:password/><con:connectionProperties/><con:query>select INSTITUTION_CODE,BETALNR, AVTALENR, KONTONR,STATUSNR, STATUS, KUNDENR from BK1 where INSTITUTION_CODE = '4201' 
+and STATUSNR='3' and STATUS='S' and KUNDENR not like '0%' and length(KUNDENR)='11' order by BETALNR desc fetch first 1 rows only</con:query><con:properties/></con:config></con:testStep><con:testStep type="groovy" name="Set Properties" id="3ec4197e-68f9-4571-a206-3ed3693c8185"><con:settings/><con:config><script>def customerid = context.expand( '${FetchAccount_BK1#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/KUNDENR[1]}' )
+def debitAccount = context.expand( '${FetchAccount_BK1#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/KONTONR[1]}' )
+
+
+
+customerid= customerid.toString().replaceAll("[^a-zA-Z0-9]+","")
+debitAccount= debitAccount.toString().replaceAll("[^a-zA-Z0-9]+","")
+
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("value2",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("agreementid",customerid)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",debitAccount)
+</script></con:config></con:testStep><con:testStep type="properties" name="Properties" id="09f1b3b1-831e-4509-a300-9929e4e73ff3"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>SourceApplication</con:name><con:value>EVRYINT</con:value></con:property><con:property><con:name>userid</con:name><con:value>25077810237</con:value></con:property><con:property><con:name>value2</con:name><con:value>25077810237</con:value></con:property><con:property><con:name>credentials</con:name><con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value></con:property><con:property><con:name>orgid</con:name><con:value>4201</con:value></con:property><con:property><con:name>customerid</con:name><con:value>25077810237</con:value></con:property><con:property><con:name>debitAccount</con:name><con:value>96560166947</con:value></con:property><con:property><con:name>debitAcntccy</con:name><con:value>NOK</con:value></con:property><con:property><con:name>debitAgentBic</con:name><con:value/></con:property><con:property><con:name>item1</con:name><con:value>PaymentChannel</con:value></con:property><con:property><con:name>value1</con:name><con:value>INT</con:value></con:property><con:property><con:name>item2</con:name><con:value>agreement111</con:value></con:property><con:property><con:name>item3</con:name><con:value>SelfService</con:value></con:property><con:property><con:name>value3</con:name><con:value>true</con:value></con:property><con:property><con:name>item4</con:name><con:value>LogRef</con:value></con:property><con:property><con:name>value4</con:name><con:value>${=java.util.UUID.randomUUID()}</con:value></con:property><con:property><con:name>ReqExnDate</con:name><con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value></con:property><con:property><con:name>intCredAgentBic</con:name><con:value>HAUGNO21XXX</con:value></con:property><con:property><con:name>intCreditAccount</con:name><con:value>42010096504</con:value></con:property><con:property><con:name>intCredAgentCountry</con:name><con:value>NO</con:value></con:property><con:property><con:name>agreementid</con:name><con:value>25077810237</con:value></con:property></con:properties></con:config></con:testStep><con:testStep type="request" id="36850efb-f97b-4493-857d-3e8a6d5c49b9" name="TransactionSearch"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentTransactionSearch</con:operation><con:request name="TransactionSearch" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="390bc8fc-ee94-47f2-b9fe-221c3a413f7d"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>INT</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentTransactionSearchRequest>
+         <urn:searchCriteria>
+            <urn1:commonCriteria>
+               <urn1:elementControl>
+                  <urn2:StartIndex>0</urn2:StartIndex>
+                  <urn2:MaximumNumberOfElements>100</urn2:MaximumNumberOfElements>
+               </urn1:elementControl>
+               <urn1:debtorAccount>${Properties#debitAccount}</urn1:debtorAccount>
+               <!--Optional:-->
+            </urn1:commonCriteria>
+            <urn1:transactionCriteria>
+               <urn1:showHidden>false</urn1:showHidden>
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>
+               <urn1:sourceRegister>PWH_AND_RBS</urn1:sourceRegister>
+               <!--Optional:-->
+            </urn1:transactionCriteria>
+         </urn:searchCriteria>
+      </urn:PaymentTransactionSearchRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="0df32331-d17d-44dc-a6aa-d9de4a00a451" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" id="1776621c-af6c-4944-9ead-77b7515c5b61" name="PaymentIgnoreLimit"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentStatusUpdate_V2_1PortTypeSoap11</con:interface><con:operation>PaymentIgnoreLimit</con:operation><con:request name="PaymentIgnoreLimit" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="c2bd7a82-74bc-48d6-af67-bbfd9dc853de"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentStatusUpdate_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:payment-status-update:v2_1">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
+         <wsc:Function>PIN Create</wsc:Function>\r
+         <wsc:Version>V2.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#userid}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>INT</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:locale>en</wsc:locale>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>\r
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentIgnoreLimitRequest>\r
+         <urn:transactionInput>\r
+            <!--1 or more repetitions:-->\r
+            <urn1:transactionId>${TransactionSearch#Response#declare namespace ns5='urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1'; declare namespace ns3='urn:pins.payment.tietoevry.com:domain:search:v2_1'; //ns5:PaymentTransactionSearchResponse[1]/ns5:result[1]/ns3:result[1]/ns3:transactionId[1]}</urn1:transactionId>\r
+         </urn:transactionInput>\r
+      </urn:PaymentIgnoreLimitRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="4c010ee1-2bb1-440a-92c1-3667ac289285" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="MessageContentAssertion" id="772bf1d5-2f9f-4874-8b57-c108665b9d9c" name="Message Content Assertion"><con:configuration xsi:type="con:MessageContentAssertion"><con:elements><con:xpath>declare namespace ns2='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns3:PaymentIgnoreLimitResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath><con:element>ErrorCode</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>1000</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns3:PaymentIgnoreLimitResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath><con:element>Severity</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>2</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns3:PaymentIgnoreLimitResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath><con:element>ComponentId</con:element><con:type>XmlInt</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>111</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns3:PaymentIgnoreLimitResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath><con:element>Message</con:element><con:type>XmlString</con:type><con:operator>=</con:operator><con:enabled>true</con:enabled><con:expectedValue>Ignore Limit not supported for pwh payments</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns2='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns3:PaymentIgnoreLimitResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath><con:element>LogSequence</con:element><con:type>XmlLong</con:type><con:operator>exists</con:operator><con:enabled>false</con:enabled><con:expectedValue xsi:nil="true"/><con:hasValue>false</con:hasValue><con:numberType>true</con:numberType></con:elements><con:elements><con:xpath>declare namespace ns3='urn:pins.payment.tietoevry.com:domain:common:v2_1';
+declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1';
+//ns4:PaymentIgnoreLimitResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath><con:element>@xsi:nil</con:element><con:type/><con:operator>=</con:operator><con:enabled>false</con:enabled><con:expectedValue>true</con:expectedValue><con:hasValue>false</con:hasValue><con:numberType>false</con:numberType></con:elements><con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns3:PaymentIgnoreLimitResponse xmlns:ns8="urn:pins.payment.tietoevry.com:domain:nationalinformation-nor:v2_1" xmlns:ns7="urn:pins.payment.tietoevry.com:ws:paymentutil:v2_1" xmlns:ns6="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1" xmlns:ns5="urn:pins.payment.tietoevry.com:domain:paymentutil:v2_1" xmlns:ns4="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:ns3="urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1" xmlns:ns2="urn:pins.payment.tietoevry.com:domain:payment-status-update:v2_1" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns4:ResponseState>
+            <ErrorCode>1000</ErrorCode>
+            <Severity>2</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>Ignore Limit not supported for pwh payments</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns4:ResponseState>
+      </ns3:PaymentIgnoreLimitResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentstatusupdate:v2_1/PINSPaymentStatusUpdate_V2_1PortType/PaymentIgnoreLimitRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>09f1b3b1-831e-4509-a300-9929e4e73ff3</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ee0558fc-4b61-495f-b986-fd11b945c5c8</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>3ec4197e-68f9-4571-a206-3ed3693c8185</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>

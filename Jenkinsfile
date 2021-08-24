@@ -24,7 +24,7 @@ pipeline {
     }
           
   triggers {
-   	cron(env.BRANCH_NAME == 'master' ? '0 0 8 ? * MON *' : '')
+   	cron(env.BRANCH_NAME == 'master' ? '0 8 * * 1' : '')
   }
   
     parameters {

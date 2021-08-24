@@ -23,14 +23,14 @@ pipeline {
         label 'docker'
     }
           
-  //triggers {
-    //	cron(env.BRANCH_NAME == 'master' ? '30 04 * * 1-5' : '')
-    //}
+  triggers {
+   	cron(env.BRANCH_NAME == 'master' ? '0 4 * * 1' : '')
+  }
   
     parameters {
 	   choice(
             name: 'Environments',
-            choices: ['G-D4','G-S1','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D10','G-D14','G-D17','R-S6','G-S4'],          
+            choices: ['G-S1','G-D4','G-D1','G-D2', 'G-D5', 'G-D6', 'G-D7', 'G-D8','G-D9', 'G-D10','G-D14','G-D17','R-S6','G-S4'],          
             description: 'Environment to run against'
         )
 		choice(

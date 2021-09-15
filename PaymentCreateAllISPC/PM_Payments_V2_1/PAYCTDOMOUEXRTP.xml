@@ -93,22 +93,19 @@ PAYMENTTYPE: NRTP	ISPC:PAYCTDOMOUEXRTP	PAYMENT_CLASSIFICATION: Domestic	ISEDITAB
       </urn:PaymentCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="GroovyScriptAssertion" name="OperationalArray" id="201ee383-a551-42b2-a594-b9975037dad9">
-          <con:configuration>
-            <scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
+          <con:configuration><scriptText>def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) //get the context variable
 def OperationArray = [] //Array list
 def XMLContainer = groovyUtils.getXmlHolder(context.getCurrentStep().getLabel() + "#Response")
  
 OperationArrayViewPayment = XMLContainer.getNodeValues("//*:operationsArray")
 assert OperationArrayViewPayment.contains("VIEW_PAYMENT")
-assert OperationArrayViewPayment.contains("UPDATE_PAYMENT")
 assert OperationArrayViewPayment.contains("CONFIRM_PAYMENT")
 assert !OperationArrayViewPayment.contains("PRIORITIZE_PAYMENT")
 assert !OperationArrayViewPayment.contains("STOP_PAYMENT")
 
 assert !OperationArrayViewPayment.contains("DELETE_PAYMENT")
 assert !OperationArrayViewPayment.contains("HIDE_PAYMENT")
-assert !OperationArrayViewPayment.contains("APPROVE_PAYMENT")</scriptText>
-          </con:configuration>
+assert !OperationArrayViewPayment.contains("APPROVE_PAYMENT")</scriptText></con:configuration>
         </con:assertion><con:assertion type="MessageContentAssertion" name="Message Content Assertion" id="dd313ad7-17db-46bf-b373-52bf9e643f91">
           <con:configuration xsi:type="con:MessageContentAssertion">
             
@@ -707,7 +704,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>true</con:enabled>
-              <con:expectedValue>${PaymentCreate#Response#//*:transactionId}</con:expectedValue>
+              <con:expectedValue>${PaymentCreate_2.1#Response#//*:transactionId[1]}</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -817,7 +814,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="80a9ba37-f993-4292-a24e-c323142c2118" name="PaymentRead 2.1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPayment_V2_1PortTypeSoap11</con:interface><con:operation>PaymentRead</con:operation><con:request name="PaymentRead 2.1" id="804eb737-45ef-4a8d-a42d-a69e8cd7f107"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app04.man.cosng.net:22641/pin/services/PINSPayment_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentinitiation:v2_1">\r
+  </con:testStep><con:testStep type="request" id="80a9ba37-f993-4292-a24e-c323142c2118" name="PaymentRead 2.1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPayment_V2_1PortTypeSoap11</con:interface><con:operation>PaymentRead</con:operation><con:request name="PaymentRead 2.1" id="804eb737-45ef-4a8d-a42d-a69e8cd7f107"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app04.man.cosng.net:22641/pin/services/PINSPayment_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentinitiation:v2_1">
     <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
@@ -840,12 +837,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
    </soapenv:Header>
    <soapenv:Body>
 
-      <urn:PaymentReadRequest>\r
-         <!--You have a CHOICE of the next 2 items at this level-->\r
-         <urn:transactionId>${PaymentCreate_2.1#Response#//*:transactionId[1]}</urn:transactionId>\r
+      <urn:PaymentReadRequest>
+         <!--You have a CHOICE of the next 2 items at this level-->
+         <urn:transactionId>${PaymentCreate_2.1#Response#//*:transactionId[1]}</urn:transactionId>
          
-      </urn:PaymentReadRequest>\r
-   </soapenv:Body>\r
+      </urn:PaymentReadRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="8b03b94b-5933-41ae-9571-15b2d0c6388b" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="d10e8f05-8b56-4038-b9ac-07a7697aa341" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="2bc4a67f-36d6-409c-ac21-7ab6e0d0179b" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="0dd3202e-f8d7-4894-9dd8-9c5777f98948" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="urn:pins.payment.tietoevry.com:ws:paymentinitiation:v2_1/PINSPayment_V2_1PortType/PaymentReadRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/>
   <con:reportParameters/>
   <con:breakPoints>

@@ -35,7 +35,7 @@ pipeline {
         )
 		choice(
             name: 'ExecutionTags',
-            choices: ['','SMOKETEST','CAVASMOKETESTDATAGEN'],          
+            choices: ['','SMOKETEST','CAVASMOKETESTDATAGEN', 'CAVAREGRESSIONTESTDATAGEN'],          
             description: 'Select a SMOKETEST tag to run pre-selected testcases(Tag must be added to testcase in ReadyAPI tool), select empty to run all testcases'
         )
 	   choice(

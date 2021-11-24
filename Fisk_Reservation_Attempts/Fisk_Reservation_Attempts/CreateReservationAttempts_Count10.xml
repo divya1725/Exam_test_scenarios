@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="9f829a4e-3480-41cc-9c09-7a9f85b79e59" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="CreateReservationAttempts_Count10" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Need to check the RETRY_COUNT =10 in table RESERVATION_ATTEMPTS where reservation type is C</con:description>
+  <con:settings>
+    <con:setting id="IncludeOverview">true</con:setting>
+    <con:setting id="IncludeResults">true</con:setting>
+    <con:setting id="FlowLayout">true</con:setting>
+    <con:setting id="ErrorDetails">true</con:setting>
+    <con:setting id="IncludeCoverage">true</con:setting>
+    <con:setting id="9f829a4e-3480-41cc-9c09-7a9f85b79e59fileName">CreateReservationAttempts_Count10</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="manualTestStep" name="Pre-conditions" id="e62701d0-202d-42be-bea9-63894047d9f0" disabled="true">
+    <con:description>Configure Bank in application.yml file to set max-expiry-days
+
+File path : /ebs/s1/pin/pin-daemon/i1/releases/LATEST/resources
+
+Set bank and  max-expiry-days as below for advanced credit:
+
+advance-credit:
+  bank: 4201
+  max-expiry-days: 25
+  payment-statuses:
+    - "REJC"
+    - "CANC"
+    - "STOP"
+    - "TBAP"
+  create-reservation:
+    poll-rate-milliseconds: 6000
+  delete-reservation:
+    poll-rate-milliseconds: 6000
+ PBD SETUP
+Define code word "FISK" in PBD for selected bank by setting field as "instrDeb" and function should be "SEREPTA
+
+Need to update incorrectly the FTS endpoint in Application-adcm.yml (EBS)
+fts:
+  endpoint:
+    location: ${haproxy.address}:13610 -->13600  then restart the pin-daemon .
+then check the count in reservation_attempts table max count should be 10.
+and then Need to UP the FTS and check the reservation table. and reservation_attempts table details will be removed.</con:description>
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:expectedResult>Need to check the RETRY_COUNT =10 in table RESERVATION_ATTEMPTS where reservation type is C</con:expectedResult>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="055f6030-3d38-44d3-b134-37001830d657">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" createMissingOnLoad="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>866280975</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSend</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>CUSTOMERID</agreementId><bankId>BANKORGID</bankId><userId>CUSTOMERID</userId><userFirstName>Tiril Jøran Brækken</userFirstName><userLastName>Ekeli</userLastName><userIdType>USAG</userIdType><productID>11</productID><organizationId>987290986</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>NDR</origin><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>ACCOUNTID</accountNumber><swiftAdress>BANKBIC</swiftAdress><currencyCode>NOK</currencyCode><accountType>CurrencyCoreFD</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>T</bookingLevel><approvalLimit>0</approvalLimit><registerLimit>0</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2019-12-31T14:24:06</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest> ]]]]>><![CDATA[</auth><content><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>TIMESTAMP</MsgId><CreDtTm>2019-12-31T14:24:12.053+02:00</CreDtTm><Authstn><Cd>ILEV</Cd></Authstn><Authstn><Prtry>PAYMENT_TELEPAY</Prtry></Authstn><NbOfTxs>1</NbOfTxs><CtrlSum>100.00</CtrlSum><InitgPty><Nm>Mentor Medier AS</Nm><Id><OrgId><AnyBIC>BANKBIC</AnyBIC><Othr><Id>CUSTOMERID</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr><Othr><Id>CUSTOMERID</Id><SchmeNm><Cd>USAG</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>TIMESTAMP.FISK_P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>100.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><ReqdExctnDt>DATE</ReqdExctnDt><Dbtr><Nm>Dagsavisen AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>Postboks 1183 Sentrum</AdrLine><AdrLine>0107 OSLO</AdrLine></PstlAdr><Id><OrgId><Othr><Id>980454347</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>ACCOUNTID</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>BANKBIC</BICFI></FinInstnId></DbtrAgt><InstrForDbtrAgt>SRPT</InstrForDbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>TIMESTAMP.FISK_P1T1</InstrId><EndToEndId>ENDID</EndToEndId></PmtId><PmtTpInf><LclInstrm><Prtry>TLB</Prtry></LclInstrm></PmtTpInf><Amt><InstdAmt Ccy="NOK">100.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>BANKBIC</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>ROGER HERCZ</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry><AdrLine>45, HASHEMESH STREET</AdrLine><AdrLine>CAESAREAISRAEL</AdrLine></PstlAdr><CtryOfRes>NO</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>CREDITORACCOUNT</Id></Othr></Id></CdtrAcct><RmtInf><Strd><RfrdDocAmt><DuePyblAmt Ccy="NOK">100.00</DuePyblAmt></RfrdDocAmt><AddtlRmtInf>263009</AddtlRmtInf></Strd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document> ]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend_Updated</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>866280975</agreementId><bankId>4201</bankId><userId>866280975</userId><userFirstName>Tiril Jøran Brækken</userFirstName><userLastName>Ekeli</userLastName><userIdType>USAG</userIdType><productID>11</productID><organizationId>987290986</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>NDR</origin><allowPartialCancellation>false</allowPartialCancellation><allowCancellationPriorToPayment>false</allowCancellationPriorToPayment></agreementData><agreementAccount><accountNumber>42125999217</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CurrencyCoreFD</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>T</bookingLevel><approvalLimit>0</approvalLimit><registerLimit>0</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>1</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2019-12-31T14:24:06</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest> ]]]]>><![CDATA[</auth><content><![CDATA[ <?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>Exceeddays_241121114059</MsgId><CreDtTm>2019-12-31T14:24:12.053+02:00</CreDtTm><Authstn><Cd>ILEV</Cd></Authstn><Authstn><Prtry>PAYMENT_TELEPAY</Prtry></Authstn><NbOfTxs>1</NbOfTxs><CtrlSum>100.00</CtrlSum><InitgPty><Nm>Mentor Medier AS</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>866280975</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr><Othr><Id>866280975</Id><SchmeNm><Cd>USAG</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>Exceeddays_241121114059.FISK_P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>100.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>SUPP</Cd></CtgyPurp></PmtTpInf><ReqdExctnDt>2021-11-25</ReqdExctnDt><Dbtr><Nm>Dagsavisen AS</Nm><PstlAdr><AdrTp>ADDR</AdrTp><AdrLine>Postboks 1183 Sentrum</AdrLine><AdrLine>0107 OSLO</AdrLine></PstlAdr><Id><OrgId><Othr><Id>980454347</Id><SchmeNm><Cd>CUST</Cd></SchmeNm></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>42125999217</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><InstrForDbtrAgt>SRPT</InstrForDbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>Exceeddays_241121114059.FISK_P1T1</InstrId><EndToEndId>endtoend_241121114059</EndToEndId></PmtId><PmtTpInf><LclInstrm><Prtry>TLB</Prtry></LclInstrm></PmtTpInf><Amt><InstdAmt Ccy="NOK">100.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>ROGER HERCZ</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>NO</Ctry><AdrLine>45, HASHEMESH STREET</AdrLine><AdrLine>CAESAREAISRAEL</AdrLine></PstlAdr><CtryOfRes>NO</CtryOfRes></Cdtr><CdtrAcct><Id><Othr><Id>42022479312</Id></Othr></Id></CdtrAcct><RmtInf><Strd><RfrdDocAmt><DuePyblAmt Ccy="NOK">100.00</DuePyblAmt></RfrdDocAmt><AddtlRmtInf>263009</AddtlRmtInf></Strd></RmtInf></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document> ]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>EndtoEndID</con:name>
+          <con:value>endtoend_241121114059</con:value>
+        </con:property>
+        <con:property>
+          <con:name>AccountID</con:name>
+          <con:value>42125999217</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MsgId</con:name>
+          <con:value>Exceeddays_241121114059</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditorAccount</con:name>
+          <con:value>42022479312</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Messageid1</con:name>
+          <con:value>2322</con:value>
+        </con:property>
+        <con:property>
+          <con:name>paymentinfoid1</con:name>
+          <con:value>2308</con:value>
+        </con:property>
+        <con:property>
+          <con:name>transid</con:name>
+          <con:value>2468</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchAccount" id="18fcfeb6-c852-4683-8d97-d712890dba2b">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(CONNECT_TIMEOUT=10)(RETRY_COUNT=3)(RETRY_DELAY=1)(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d13)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select distinct (customerID),accountnumber,currency from v_authorisation 
+where custbankID='4201' and currency='NOK'
+fetch first 5 rows only</con:query>
+      <con:assertion type="MessageContentAssertion" id="f7dd410f-886d-4512-9a60-87170535ab15" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
+            <con:element>CUSTOMERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>01010077571</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]</con:xpath>
+            <con:element>ACCOUNTNUMBER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>42125748338</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]</con:xpath>
+            <con:element>CURRENCY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>NOK</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+         <CURRENCY>NOK</CURRENCY>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="JDBC Status" id="ee91176c-b69d-4d9a-a028-aa8cdf2ba8aa" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetAccount" id="f05e0150-1942-4ff0-bb4d-9a14f59b960b">
+    <con:settings/>
+    <con:config>
+      <script>def customerID = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def creditorAccountNumber = context.expand( '${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/ACCOUNTNUMBER[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AccountID",debtorAccountNumber)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("creditorAccount",creditorAccountNumber)</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetMessagefile" id="b71d099b-279c-49f0-9878-f671f37591f4">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+log.info datetime
+
+def endid = "endtoend_"+datetime;
+log.info endid
+def msgid = "Exceeddays_"+datetime;
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndtoEndID",endid );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgId",msgid );
+
+def messageToSend = context.expand( '${Properties#MessageToSend}' )
+log.info(messageToSend)
+
+def Account = context.expand( '${Properties#AccountID}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#DueDate}' )
+def bankId = context.expand( '${#TestSuite#bankId}' )
+def codewordFisk = context.expand( '${#TestSuite#codewordFisk}' )
+def bankBic = context.expand( '${#TestSuite#bankBic}' )
+def creditorAccount = context.expand( '${Properties#creditorAccount}' )
+
+messageToSend = messageToSend.replaceAll("TIMESTAMP",msgid) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("ENDID",endid);
+messageToSend = messageToSend.replaceAll("BANKORGID",bankId);
+messageToSend = messageToSend.replaceAll("CODEWORDFORFISK",codewordFisk);
+messageToSend = messageToSend.replaceAll("BANKBIC",bankBic);
+messageToSend = messageToSend.replaceAll("CREDITORACCOUNT",creditorAccount);
+
+log.info messageToSend
+
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend_Updated",messageToSend );</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushAndReceiveFilePayment" id="b80116e1-8cd8-4940-a477-3565a9d50e68">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+def filecontent = context.expand( '${Properties#messagetoSend_Updated#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#Sendqueue}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#Recievequeue}' )
+def msgId = context.expand( '${Properties#MsgId}' )
+
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="FTS Down _PaymentCreate" id="c1978df8-0b6b-4be9-9ceb-468e9dcc55e5">
+    <con:settings/>
+    <con:config>
+      <delay>60000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchTransaction" id="bdd30827-0b16-4ba3-8a45-153295dfcb7d">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(CONNECT_TIMEOUT=10)(RETRY_COUNT=3)(RETRY_DELAY=1)(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d13)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT T.TRANSACTIONSID,M.MESSAGEID,P.PAYMENTINFOID,T.PAYMENTSTATUS,T.FK_PROCESSINGLINEID,T.RELEASEDATE,T.ISPC, I.INSTRUCTIONID,I.ADDITIONALINFO, I.INSTRUCTIONFUNCTION, I.INSTRUCTIONTYPE, I.INSTRUCTIONFIELD
+FROM message M , paymentinfo P , TRANSACTIONS T ,INSTRUCTIONS I where 
+M.messageid = P.fk_messageid and 
+P.paymentinfoid = T.fk_paymentinfoid and
+T.TRANSACTIONSID = I.FK_TRANSACTIONSID 
+and M.messageidentification like '%${Properties#MsgId}%'</con:query>
+      <con:assertion type="MessageContentAssertion" id="07e2d12e-c6af-4cea-9ba6-f1ad67561294" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>267437</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>54</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONID[1]</con:xpath>
+            <con:element>INSTRUCTIONID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>14228</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ADDITIONALINFO[1]</con:xpath>
+            <con:element>ADDITIONALINFO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${#TestSuite#codewordFisk}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONFUNCTION[1]</con:xpath>
+            <con:element>INSTRUCTIONFUNCTION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SEREPTA</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONTYPE[1]</con:xpath>
+            <con:element>INSTRUCTIONTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DEBTOR_AGENT</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONFIELD[1]</con:xpath>
+            <con:element>INSTRUCTIONFIELD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>instrDeb</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>267437</TRANSACTIONSID>
+         <MESSAGEID>63415</MESSAGEID>
+         <PAYMENTINFOID>98260</PAYMENTINFOID>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
+         <FK_PROCESSINGLINEID/>
+         <RELEASEDATE>2020-12-20 00:00:00</RELEASEDATE>
+         <INSTRUCTIONID>14228</INSTRUCTIONID>
+         <ADDITIONALINFO>FISK</ADDITIONALINFO>
+         <INSTRUCTIONFUNCTION/>
+         <INSTRUCTIONTYPE>DEBTOR_AGENT</INSTRUCTIONTYPE>
+         <INSTRUCTIONFIELD/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:assertion type="JDBC Status" id="28644ec9-6149-4d5b-8781-5a6ed76d565b" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="No_Reservation" id="28c77f1d-c9af-4f8d-9409-616bfc39a6f4">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(CONNECT_TIMEOUT=10)(RETRY_COUNT=3)(RETRY_DELAY=1)(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d13)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from RESERVATION_DETAILS where FK_TRANSACTIONSID = '${FetchTransaction#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:assertion type="MessageContentAssertion" id="8e74b2a2-cb93-4015-a79f-c4ac6afb4b8f" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVATIONDETAILSID[1]</con:xpath>
+            <con:element>RESERVATIONDETAILSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2120</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2472</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVATIONTIME[1]</con:xpath>
+            <con:element>RESERVATIONTIME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-11-23 07:52:53</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVEDAMOUNT[1]</con:xpath>
+            <con:element>RESERVEDAMOUNT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>100</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]</con:xpath>
+            <con:element>CURRENCYCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NOK</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVATION_TYPE[1]</con:xpath>
+            <con:element>RESERVATION_TYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>C</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESERVATIONREFERENCE[1]</con:xpath>
+            <con:element>RESERVATIONREFERENCE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>102472</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <RESERVATIONDETAILSID>2120</RESERVATIONDETAILSID>
+         <FK_TRANSACTIONSID>2472</FK_TRANSACTIONSID>
+         <RESERVATIONTIME>2021-11-23 07:52:53</RESERVATIONTIME>
+         <RESERVEDAMOUNT>100</RESERVEDAMOUNT>
+         <CURRENCYCODE>NOK</CURRENCYCODE>
+         <RESERVATION_TYPE>C</RESERVATION_TYPE>
+         <RESERVATIONREFERENCE>102472</RESERVATIONREFERENCE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="FTS Down_ReservationAttempts" id="b861574d-1527-4f7f-b9a2-b9fbb9efec64">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Reservation_attempts" id="fbf8c115-7090-4d8a-b986-cbacf759dc06">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(CONNECT_TIMEOUT=10)(RETRY_COUNT=3)(RETRY_DELAY=1)(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d13)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from RESERVATION_ATTEMPTS 
+where FK_TRANSACTIONSID='${FetchTransaction#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}'</con:query>
+      <con:assertion type="JDBC Status" id="7b30c005-090e-4d95-abed-8e02a15b1740" name="JDBC Status"/>
+      <con:assertion type="MessageContentAssertion" id="59bcabab-d717-4e7c-b36c-0e8c3100d7b8" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONID[1]</con:xpath>
+            <con:element>STATUSREASONID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>169114</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CODE[1]</con:xpath>
+            <con:element>CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>CH03</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCESYSTEM[1]</con:xpath>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAIN</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_MESSAGEID[1]</con:xpath>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:xpath>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>349831</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONADDTINFID[1]</con:xpath>
+            <con:element>STATUSREASONADDTINFID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>83895</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_STATUSREASONID[1]</con:xpath>
+            <con:element>FK_STATUSREASONID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>169114</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ADDITIONALINFORMATION[1]</con:xpath>
+            <con:element>ADDITIONALINFORMATION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Requested execution date exceeds max days allowed for advance credit</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <STATUSREASONID>169114</STATUSREASONID>
+         <CODE>CH03</CODE>
+         <SOURCESYSTEM>PAIN</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>349831</FK_TRANSACTIONID>
+         <STATUSREASONADDTINFID>83895</STATUSREASONADDTINFID>
+         <FK_STATUSREASONID>169114</FK_STATUSREASONID>
+         <ADDITIONALINFORMATION>Requested execution date exceeds max days allowed for advance credit</ADDITIONALINFORMATION>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="pwh_alert" id="878b2cce-86c4-4e0a-81e2-bc828d036517">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(CONNECT_TIMEOUT=10)(RETRY_COUNT=3)(RETRY_DELAY=1)(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d13)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from pwh_alert where FAILURETYPE='RESERVATION_ATTEMPTS_EXCEEDED'
+  order by OCCURRED  desc
+  fetch first 1 rows only</con:query>
+      <con:assertion type="MessageContentAssertion" id="f0f0f428-fade-4a8e-82d5-b71fb625bdc8" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ALERTID[1]</con:xpath>
+            <con:element>ALERTID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1229</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APP[1]</con:xpath>
+            <con:element>APP</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>RESERVATION_ATTEMPTS_TRACKER</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANKID[1]</con:xpath>
+            <con:element>BANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>0000</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/USERID[1]</con:xpath>
+            <con:element>USERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>SYSTEM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FAILURETYPE[1]</con:xpath>
+            <con:element>FAILURETYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>RESERVATION_ATTEMPTS_EXCEEDED</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SEVERITY[1]</con:xpath>
+            <con:element>SEVERITY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>SYSTEM_ERROR</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LOGREF[1]</con:xpath>
+            <con:element>LOGREF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N/A</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/OCCURRED[1]</con:xpath>
+            <con:element>OCCURRED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-11-22 12:53:33</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NOTIFIED[1]</con:xpath>
+            <con:element>NOTIFIED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-11-22 12:55:33</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STACKTRACE[1]</con:xpath>
+            <con:element>STACKTRACE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGE[1]</con:xpath>
+            <con:element>MESSAGE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Reservation attempts exceeded : There are 1 Transactions exceeded the counter limit. Please look in to Reservation_Attempts table</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <ALERTID>1229</ALERTID>
+         <APP>RESERVATION_ATTEMPTS_TRACKER</APP>
+         <BANKID>0000</BANKID>
+         <USERID>SYSTEM</USERID>
+         <FAILURETYPE>RESERVATION_ATTEMPTS_EXCEEDED</FAILURETYPE>
+         <SEVERITY>SYSTEM_ERROR</SEVERITY>
+         <LOGREF>N/A</LOGREF>
+         <OCCURRED>2021-11-22 12:53:33</OCCURRED>
+         <NOTIFIED>2021-11-22 12:55:33</NOTIFIED>
+         <STACKTRACE/>
+         <MESSAGE>Reservation attempts exceeded : There are 1 Transactions exceeded the counter limit. Please look in to Reservation_Attempts table</MESSAGE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value/>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>a13779e1-8e86-48ac-afcc-4422d9270331</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>45419467-0a3c-4307-ad2d-0c4edc6098b0</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>42ba2f32-dcf1-4769-85bc-b7a80682d053</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c0649243-ec6f-49c7-8087-283d2c459cc5</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>66df4ecf-b17c-4b21-822f-96b460d0aadf</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ccd1f098-ca98-4b70-bc19-5a2bac79cfe7</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dffed03f-a79e-4c1f-be01-afb78c5590ad</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>84cd09dc-2d5a-4b43-a45c-5667924fd28d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>7c94da0c-2ef5-4723-bd60-c612e4c873f6</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ae289377-0d2d-4944-b39b-a74d82b5b5e4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>392c100e-c288-431e-b50a-da44a54aad5f</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4f0dbe51-9150-4d75-8586-b8fdb350e88e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>7a52aa83-9b05-49cb-9c04-fa10bbde522f</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>7a8990c1-1580-41af-82f1-afa8bbbf5783</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>afbe09c9-6a54-4690-86b7-845349fea5f2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cdbb57e4-80fc-4d73-b4fa-591e8aaab1f4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c9fe0671-daf1-4f83-ab16-5e950f8c2f64</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cf4efbc1-d0b0-492b-8964-27d028c2d210</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9213969b-a0fa-4257-bc78-68063526cf6a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="0555037f-f4fb-4e93-ab2c-eb4b50d7d704">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="415b8404-c1f2-43a4-a761-29c767fc7b22">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="15bc0171-07d7-440e-b08e-dd951afab8be">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="aec41ae1-9dcf-401f-b7e3-a65b6f4ffdad">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="45007c9a-adad-4b85-bf0c-0c29278543f9">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="ac7a7eed-4708-481b-9ab7-6be7c3aab34e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="f12cdac8-ed78-441c-b93a-315f75390e50">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="324d3316-6824-43fc-bc92-9ac25f095bf3">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="c359f457-01ec-4cbe-8283-2746209f9042">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="8e4f47ef-0fd8-44c4-86f7-6c3bb1794d4d">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="8f055548-1217-4da5-8caf-f02741e062e2">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="c53eb540-84b6-4697-8a38-bedd9aabdd6e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

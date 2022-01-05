@@ -3,7 +3,7 @@
       <con:description>create Online BM payment for crossBorder to  validate KYC with error response -7554</con:description>
       <con:settings><con:setting id="6f1a9826-5c7a-4aae-8757-9287b04e55c6fileName">NOT-OK-Response_7554-KYC-Validation</con:setting></con:settings>
       <con:savedRecentRuns>1</con:savedRecentRuns>
-      <con:testStep type="jdbc" name="RBS_Fetch Customer" id="887137fa-406f-465e-bbdc-1a94cb35307e"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select * from RISK.RISK_CUSTOMER_COUNTRY where length(CUSTOMERID)='9' and COUNTRY_CODE='SE' and ROWNUM=1</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="RBS_Fetch Amount" id="89443a12-5c38-481b-946d-8e64d4363f4a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select ORGID, BASE_CURRENCY, MIN_AMOUNT_TRX_BM, MIN_AMOUNT_TRX_PM from RISK.RISK_BANK where ORGID='4201'</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep>
+      <con:testStep type="jdbc" name="RBS_Fetch Customer" id="887137fa-406f-465e-bbdc-1a94cb35307e"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select * from RISK.RISK_CUSTOMER_COUNTRY where length(CUSTOMERID)='11' and COUNTRY_CODE='NO' and RISK_CUST_CNTRY_ID='2' and ROWNUM=1</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="RBS_Fetch Amount" id="89443a12-5c38-481b-946d-8e64d4363f4a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>RBS_t5</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:pay/pay@dlt-exa853-scan.unix.cosng.net:1530/rbs_g_s1</con:connectionString><con:password/><con:connectionProperties/><con:query>select ORGID, BASE_CURRENCY, MIN_AMOUNT_TRX_BM, MIN_AMOUNT_TRX_PM from RISK.RISK_BANK where ORGID='4201'</con:query><con:assertion type="JDBC Status" id="8880863f-a137-4467-85f4-ed19441b9b42" name="JDBC Status"/><con:properties/></con:config></con:testStep>
       <con:testStep type="jdbc" name="Fetch Account" id="d5bd20c5-79bf-4c52-8345-c8812586b2c3"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>PWH</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString><con:password/><con:connectionProperties/><con:query>select A.CUSTOMERID,A.ACCOUNTNUMBER,A.CUSTOMERTYPE,A.CUSTBANKID,A.CURRENCY
 from V_AUTHORISATION A where A.ROLETYPE = 'EIER'and CUSTOMERTYPE='N' and CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} and
 A.ACCOUNTNUMBER IN (SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where ROLETYPE = 'DISP' and  CUSTOMERID = ${RBS_Fetch Customer#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]} )
@@ -20,7 +20,7 @@ debitAccount= debitAccount.toString().replaceAll("[^a-zA-Z0-9]+","")
 debitAcntccy= debitAcntccy.toString().replaceAll("[^a-zA-Z0-9]+","")
 
 Double instrAmount1 = Double.parseDouble(Amount)
-instrAmount1= instrAmount1+1
+instrAmount1= instrAmount1+10000
 instrAmount2 = instrAmount1
 
 int instrAmount = (int) Math.round(instrAmount2);
@@ -37,7 +37,7 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("instrAmoun
       
       
       
-      <con:testStep type="properties" name="Properties" id="eda939e1-bde5-413c-a796-4f9685dd294e"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>SourceApplication</con:name><con:value>EVRYCPS</con:value></con:property><con:property><con:name>userid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>value2</con:name><con:value>997059085</con:value></con:property><con:property><con:name>credentials</con:name><con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value></con:property><con:property><con:name>orgid</con:name><con:value>4201</con:value></con:property><con:property><con:name>customerid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>debitAccount</con:name><con:value>96550146549</con:value></con:property><con:property><con:name>debitAcntccy</con:name><con:value>NOK</con:value></con:property><con:property><con:name>debitAgentBic</con:name><con:value>asdfsa</con:value></con:property><con:property><con:name>item1</con:name><con:value>PaymentChannel</con:value></con:property><con:property><con:name>value1</con:name><con:value>BES</con:value></con:property><con:property><con:name>item2</con:name><con:value>AgreementId</con:value></con:property><con:property><con:name>item3</con:name><con:value>SelfService</con:value></con:property><con:property><con:name>value3</con:name><con:value>true</con:value></con:property><con:property><con:name>item4</con:name><con:value>LogRef</con:value></con:property><con:property><con:name>value4</con:name><con:value>${=java.util.UUID.randomUUID()}</con:value></con:property><con:property><con:name>ReqExnDate</con:name><con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value></con:property><con:property><con:name>intCredAgentBic</con:name><con:value>ESSESESSXXX</con:value></con:property><con:property><con:name>intCreditAccount</con:name><con:value>SE4550000000058398257466</con:value></con:property><con:property><con:name>ReqExnDateTmrw</con:name><con:value/></con:property><con:property><con:name>intCredAgentCountry</con:name><con:value>SE</con:value></con:property><con:property><con:name>agreementid</con:name><con:value>997059085</con:value></con:property><con:property><con:name>instrAmount</con:name><con:value>15001</con:value></con:property><con:property><con:name>PFCRequestLog</con:name><con:value>{"Verify":["VERIFY_CUSTOMERLIMITS_COUNTRY"],"CountryCode":"SE","Amount":{"Amount":15001,"Currency":"NOK"},"Immediate":"NON_IMMEDIATE","Domestic":"CROSSBORDER","AccountOwner":"997059085","Market":"BM"}</con:value></con:property><con:property><con:name>PFCResponseLog</con:name><con:value>{"Code":10003,"Description":"Transaction limit for this country exceeded."}</con:value></con:property></con:properties></con:config></con:testStep><con:testStep type="request" name="Authorization_v1_2" id="4b292727-5fd6-4c44-a72a-3a1a0749a8d9">
+      <con:testStep type="properties" name="Properties" id="eda939e1-bde5-413c-a796-4f9685dd294e"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>SourceApplication</con:name><con:value>EVRYCPS</con:value></con:property><con:property><con:name>userid</con:name><con:value>32334114456</con:value></con:property><con:property><con:name>value2</con:name><con:value>32334114456</con:value></con:property><con:property><con:name>credentials</con:name><con:value>03110012010400425kglPboRi3h1Z4YUjUpQ0UB65Ta2kPKj1KWwkWemtrL+SoWqMxx/KuqxUVbNyTu6DsSaabKNt2t+xJppso23a37EmmmyjbdrffJeRiGWfHDGwxCWOpDYc2jgSxAz1+8eEsSaabKNt2t/XzlyjxYnxhcG46wcbIKp/sSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw=apG4tU0NraPbbqKUp39erKDFa7xy6z+r4VDMr/6qBlkFniGaNeDXv4cZcZZQQI6JtwB3JYQk6WqLA7oyp1FWRM6n46ehgNmHVNly8fTnQbIuGJSF2LUyGI7aE92/dgtp8jv9bsGpNe58K+xb4LeIHwjb2nVVvt4/2oLtDQ8IPJE=</con:value></con:property><con:property><con:name>orgid</con:name><con:value>4201</con:value></con:property><con:property><con:name>customerid</con:name><con:value>32334114456</con:value></con:property><con:property><con:name>debitAccount</con:name><con:value>40689510703</con:value></con:property><con:property><con:name>debitAcntccy</con:name><con:value>NOK</con:value></con:property><con:property><con:name>debitAgentBic</con:name><con:value>asdfsa</con:value></con:property><con:property><con:name>item1</con:name><con:value>PaymentChannel</con:value></con:property><con:property><con:name>value1</con:name><con:value>BES</con:value></con:property><con:property><con:name>item2</con:name><con:value>AgreementId</con:value></con:property><con:property><con:name>item3</con:name><con:value>SelfService</con:value></con:property><con:property><con:name>value3</con:name><con:value>true</con:value></con:property><con:property><con:name>item4</con:name><con:value>LogRef</con:value></con:property><con:property><con:name>value4</con:name><con:value>${=java.util.UUID.randomUUID()}</con:value></con:property><con:property><con:name>ReqExnDate</con:name><con:value>${= java.time.LocalDateTime.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value></con:property><con:property><con:name>intCredAgentBic</con:name><con:value>ESSESESSXXX</con:value></con:property><con:property><con:name>intCreditAccount</con:name><con:value>SE4550000000058398257466</con:value></con:property><con:property><con:name>ReqExnDateTmrw</con:name><con:value/></con:property><con:property><con:name>intCredAgentCountry</con:name><con:value>SE</con:value></con:property><con:property><con:name>agreementid</con:name><con:value>32334114456</con:value></con:property><con:property><con:name>instrAmount</con:name><con:value>25000</con:value></con:property><con:property><con:name>PFCRequestLog</con:name><con:value>{"Verify":["VERIFY_CUSTOMERLIMITS_COUNTRY"],"CountryCode":"SE","Amount":{"Amount":25000,"Currency":"NOK"},"Immediate":"NON_IMMEDIATE","Domestic":"CROSSBORDER","AccountOwner":"32334114456","Market":"BM"}</con:value></con:property><con:property><con:name>PFCResponseLog</con:name><con:value>{"Code":10003,"Description":"Transaction limit for this country exceeded."}</con:value></con:property></con:properties></con:config></con:testStep><con:testStep type="request" name="Authorization_v1_2" id="4b292727-5fd6-4c44-a72a-3a1a0749a8d9">
         <con:settings/>
         <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
@@ -186,73 +186,73 @@ declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
             </con:settings>
             <con:encoding>UTF-8</con:encoding>
             <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
-            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">\r
-   <soapenv:Header>\r
-      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">\r
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>\r
-         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
-         <wsc:Function>PIN Create</wsc:Function>\r
-         <wsc:Version>V2.0</wsc:Version>\r
-         <wsc:ClientContext>\r
-            <wsc:userid>${Properties#userid}</wsc:userid>\r
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
-            <wsc:channel>NBA</wsc:channel>\r
-            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
-            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>\r
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
-            <wsc:locale>en</wsc:locale>\r
-            <wsc:ip>1.1.1.1</wsc:ip>\r
-            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>\r
-            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>\r
-            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>\r
-         </wsc:ClientContext>\r
-      </wsc:AutHeader>\r
-   </soapenv:Header>\r
-   <soapenv:Body>\r
-      <urn:PaymentCreateRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">\r
-         <urn:paymentMessage>\r
-            <urn1:paymentIdentification xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">\r
-               <urn2:messageIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>\r
-               <urn2:endToEndIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>\r
-            </urn1:paymentIdentification>\r
-            <urn1:paymentInfo xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">\r
-               <urn3:paymentMethod xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">TRF</urn3:paymentMethod>\r
-               <urn2:paymentTypeInformation xmlns:urn2="urn:pins.payment.evry.com:domain:debtor:v2_0">\r
-                  <urn2:instructionPriority>NORM</urn2:instructionPriority>\r
-               </urn2:paymentTypeInformation>\r
-               <urn3:requestedExecutionDate xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">${Properties#ReqExnDate}</urn3:requestedExecutionDate>\r
-               <urn3:debtorAccount xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">\r
-                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAccount}</urn2:identification>\r
-                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAcntccy}</urn2:currency>\r
-               </urn3:debtorAccount>\r
-            </urn1:paymentInfo>\r
-            <urn1:transaction xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">\r
-               <urn4:amount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
-                  <urn2:instructedAmount currency="NOK" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">\r
-                     <urn2:amount>${Properties#instrAmount}</urn2:amount>\r
-                  </urn2:instructedAmount>\r
-               </urn4:amount>\r
-               <urn4:chargeBearer xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">SHAR</urn4:chargeBearer>\r
-               <urn4:creditorAgent xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
-                  <urn2:bic xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#intCredAgentBic}</urn2:bic>\r
-                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">\r
-                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>\r
-                  </urn2:postalAddress>\r
-               </urn4:creditorAgent>\r
-               <urn4:creditor xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
-                  <urn2:name xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">USCred</urn2:name>\r
-                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">\r
-                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>\r
-                     <urn2:addressLine>asdfasdfs</urn2:addressLine>\r
-                  </urn2:postalAddress>\r
-               </urn4:creditor>\r
-               <urn4:creditorAccount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
-                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#intCreditAccount}</urn2:identification>\r
-               </urn4:creditorAccount>\r
-            </urn1:transaction>\r
-         </urn:paymentMessage>\r
-      </urn:PaymentCreateRequest>\r
-   </soapenv:Body>\r
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${Properties#value1}" key="${Properties#item1}"/>
+            <wsc:item value="${Properties#value2}" key="${Properties#item2}"/>
+            <wsc:item value="${Properties#value4}" key="${Properties#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:paymentMessage>
+            <urn1:paymentIdentification xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn2:messageIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
+               <urn2:endToEndIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn3:paymentMethod xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">TRF</urn3:paymentMethod>
+               <urn2:paymentTypeInformation xmlns:urn2="urn:pins.payment.evry.com:domain:debtor:v2_0">
+                  <urn2:instructionPriority>NORM</urn2:instructionPriority>
+               </urn2:paymentTypeInformation>
+               <urn3:requestedExecutionDate xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:debtorAccount xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn4:amount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:instructedAmount currency="NOK" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:amount>${Properties#instrAmount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">SHAR</urn4:chargeBearer>
+               <urn4:creditorAgent xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:bic xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#intCredAgentBic}</urn2:bic>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:name xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">USCred</urn2:name>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${Properties#intCredAgentCountry}</urn2:country>
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#intCreditAccount}</urn2:identification>
+               </urn4:creditorAccount>
+            </urn1:transaction>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
             
             <con:assertion type="Valid HTTP Status Codes" id="ba26a2bb-d518-4c80-a0df-fefa3a758b05" name="Valid HTTP Status Codes">

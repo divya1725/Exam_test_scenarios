@@ -62,7 +62,7 @@ pipeline {
                script{
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" -e TAGS="${params.ExecutionTags}" --name ${containername} soapui"""
+                 	sh """docker run -e SLM_LICENSE_SERVER="https://api.slm.manage.smartbear.com:443" -e API_KEY="ffc18e5e-03d7-44a2-b136-6d7cdd73a313" -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" -e TAGS="${params.ExecutionTags}" --name ${containername} soapui"""
                }
             }
         }

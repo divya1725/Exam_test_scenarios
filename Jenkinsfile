@@ -23,7 +23,7 @@ pipeline {
         label 'docker'
     }
           
-   triggers {cron(env.BRANCH_NAME == 'master' ? '0 4 * * 1' : '')  }
+  // triggers {cron(env.BRANCH_NAME == 'master' ? '0 4 * * 1' : '')  }
   
     parameters {
 	   choice(

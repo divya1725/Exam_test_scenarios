@@ -17,6 +17,7 @@ def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')
 //def slackChannelName = "#slackmessgetest"
 def slackChannelName = "#regressiontestresults"
 def wsReportFolder = "https://fsjenkins.evry.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
+def PROJECT_FOLDER="/usr/local/SmartBear/project"
 
 pipeline {
     agent {
@@ -38,7 +39,7 @@ pipeline {
         )
 	   choice(
             name: 'SuiteName',
-            choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002 ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project'],          
+            choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002_ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project'],          
             description: 'Select a project to run'
         )
 		booleanParam(
@@ -62,8 +63,11 @@ pipeline {
                script{
 					
                  	sh "docker build -t soapui . -f Dockerfile"
-                 	sh """docker run -e COMMAND_LINE="${params.Environments}" -e SUITENAME="${params.SuiteName}" -e LOADFROMJSON="${params.loadEnvFromJsonFile}" -e TAGS="${params.ExecutionTags}" --name ${containername} soapui"""
-               }
+		       	def workingspace= pwd()
+		       	echo "${workingspace}"
+          	      	sh """docker run -e SLM_LICENSE_SERVER="https://api.slm.manage.smartbear.com:443" -e API_KEY="ffc18e5e-03d7-44a2-b136-6d7cdd73a313" -v="${workingspace}/${params.SuiteName}":${PROJECT_FOLDER}/${params.SuiteName} -v="${workingspace}/ext":/ext -e COMMAND_LINE="-f/%reports% '-RJUnit-Style HTML Report' -FHTML '-E${params.Environments}' '${PROJECT_FOLDER}/${params.SuiteName}'" --name ${containername} soapui"""
+	       
+	       }
             }
         }
 
@@ -126,4 +130,3 @@ pipeline {
     }
    
 }
-

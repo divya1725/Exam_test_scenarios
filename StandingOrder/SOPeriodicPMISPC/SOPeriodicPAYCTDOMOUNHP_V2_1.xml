@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="bb8acaba-f9ef-4345-96b2-902d52f52a70" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="SOPeriodicPAYCTDOMOUCPHPWX_V2_0" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="03670532-5b8f-49d2-b293-225ce6149a82" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="SOPeriodicPAYCTDOMOUNHP_V2_1" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
-    <con:setting id="bb8acaba-f9ef-4345-96b2-902d52f52a70fileName">SOPeriodicPAYCTDOMOUCPHPWX_V2_0</con:setting>
-  </con:settings>
+    
+  <con:setting id="c5b4065d-4598-4f0e-89ce-4d359007f1cafileName">SOPeriodicPAYCTDOMOUNHP_V2_1</con:setting><con:setting id="03670532-5b8f-49d2-b293-225ce6149a82fileName">SOPeriodicPAYCTDOMOUNHP_V2_1</con:setting></con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="properties" name="Properties" id="ee3973a2-feda-4991-8308-eee03adf3809">
+  <con:testStep type="properties" name="Properties" id="6f6423af-89ec-4bf9-a7ca-89dc508acb10">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
@@ -34,7 +34,7 @@
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
-          <con:value>609565</con:value>
+          <con:value>${#TestSuite#UserID}</con:value>
         </con:property>
         <con:property>
           <con:name>bankId</con:name>
@@ -78,7 +78,7 @@
         </con:property>
         <con:property>
           <con:name>CreditorAgent</con:name>
-          <con:value>SHEDNO22XXX</con:value>
+          <con:value>SPTRNO22XXX</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorCountry</con:name>
@@ -86,7 +86,7 @@
         </con:property>
         <con:property>
           <con:name>CreditorCurrency</con:name>
-          <con:value>EUR</con:value>
+          <con:value>NOK</con:value>
         </con:property>
         <con:property>
           <con:name>PaymentChannel_BM</con:name>
@@ -94,11 +94,11 @@
         </con:property>
         <con:property>
           <con:name>CreditAccountNumber</con:name>
-          <con:value>44159509343</con:value>
+          <con:value>32400006297</con:value>
         </con:property>
         <con:property>
           <con:name>Amount</con:name>
-          <con:value>600</con:value>
+          <con:value>60</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -119,7 +119,7 @@
       </con:properties>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="c3aa040c-dce9-4e7f-9791-117c57854979" name="SO Create">
+  <con:testStep type="request" id="647888a5-ae90-44c6-82ee-b7eeb3f55f7c" name="SO Create">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
@@ -144,7 +144,6 @@
             <wsc:orgid>${Properties#orgid}</wsc:orgid>
             <wsc:customerid>${Properties#customerid}</wsc:customerid>
             <wsc:ip>1.1.1.1</wsc:ip>
-            
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>
             <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>
          </wsc:ClientContext>
@@ -154,21 +153,21 @@
       <urn:standingOrderCreateRequest>
          <urn:standingOrder>
             <!--Optional:-->
-            <urn1:recurrence>DAILY</urn1:recurrence>
+            <urn1:recurrence>BIWEEKLY</urn1:recurrence>
             <urn1:dueDates>
                <!--1 or more repetitions:-->
                <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
             </urn1:dueDates>
             <!--Optional:-->
             <!--Optional:-->
-            <urn1:bankHolidayAdjustment>AFTER</urn1:bankHolidayAdjustment>
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
             <!--Optional:-->
             <urn1:exemptions>
                <!--1 or more repetitions:-->
                <urn1:exemption>
                   <urn1:startDate>${Properties#ExceptionStartDate}</urn1:startDate>
                   <urn1:endDate>${Properties#ExceptionEndDate}</urn1:endDate>
-                  <urn1:recurring>true</urn1:recurring>
+                  <urn1:recurring>false</urn1:recurring>
                   <!--Optional:-->
                   <urn1:description>DescriptionOneExemption</urn1:description>
                </urn1:exemption>
@@ -184,8 +183,8 @@
                   <!--Optional:-->
                   <!--Optional:-->
                   <!--Optional:-->
-                  <urn3:instructionPriority>HIGH</urn3:instructionPriority>
-                  <urn3:categoryPurpose>SUPP</urn3:categoryPurpose>
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <urn3:serviceLevel>URGP</urn3:serviceLevel>
                </urn3:paymentTypeInformation>
                <!--Optional:-->
                <urn3:debtorAccount>
@@ -202,13 +201,10 @@
             <urn1:transaction>
                <!--Optional:-->
                <urn4:amount>
-                  <urn2:equivalentAmount>
-                     <urn2:amount currency="${Properties#currencyCode}">
-                        <urn2:amount>${Properties#Amount}</urn2:amount>
-                     </urn2:amount>
-                     <urn2:currencyOfTransfer>${Properties#CreditorCurrency}</urn2:currencyOfTransfer>
-                  </urn2:equivalentAmount>
                   <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="${Properties#currencyCode}">
+                     <urn2:amount>${Properties#Amount}</urn2:amount>
+                  </urn2:instructedAmount>
                </urn4:amount>
                <!--Optional:-->
                <!--Optional:-->
@@ -230,7 +226,6 @@
                      <!--Optional:-->
                      <!--Optional:-->
                      <!--Optional:-->
-                     <urn2:addressType>ADDR</urn2:addressType>
                      <urn2:postCode>4502</urn2:postCode>
                      <!--Optional:-->
                      <urn2:townName>test</urn2:townName>
@@ -247,7 +242,13 @@
                   <!--Optional:-->
                   <!--Optional:-->
                   <!--Optional:-->
-                  <urn2:name>cred</urn2:name>
+                  <urn2:name>Cred</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:postCode>2121</urn2:postCode>
+                     <urn2:townName>test</urn2:townName>
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>
+                     <urn2:country>NO</urn2:country>
+                  </urn2:postalAddress>
                </urn4:creditor>
                <!--Optional:-->
                <urn4:creditorAccount>
@@ -256,16 +257,10 @@
                   <urn2:currency>${Properties#CreditorCurrency}</urn2:currency>
                </urn4:creditorAccount>
                <!--Optional:-->
-               <urn4:ultimateCreditor>
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-                  <!--Optional:-->
-               </urn4:ultimateCreditor>
                <!--Zero or more repetitions:-->
                <!--Optional:-->
                <!--Zero or more repetitions:-->
+               <urn4:remittanceInformationUnstructured>ISPC</urn4:remittanceInformationUnstructured>
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
@@ -389,7 +384,7 @@ declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
               <con:element>ns2:agreementVersion</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>1</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
@@ -1249,7 +1244,339 @@ declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="SO Create VALI" id="f824bb09-6b0d-48a4-996c-25c433c61bb7">
+  <con:testStep type="request" id="3c93808d-da4e-4fb4-86df-6fd48221e10a" name="SO_Create_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_1ServicePortTypeSoap11</con:interface><con:operation>standingOrderCreate</con:operation><con:request name="SO_Create_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="65866863-cd0c-4b70-9bad-f1853b3bbc90"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSStandingOrder_V2_1Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1" xmlns:urn1="urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1" xmlns:urn3="urn:srv.stord.fs.tietoevry.com:domain:debtor:v2_1" xmlns:urn4="urn:srv.stord.fs.tietoevry.com:domain:creditor:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderCreateRequest>
+         <urn:standingOrder>
+            <!--Optional:-->
+            <urn1:recurrence>WEEKLY</urn1:recurrence>
+            <urn1:dueDates>
+               <!--1 or more repetitions:-->
+               <urn1:dueDate>${Properties#DueDate}</urn1:dueDate>
+            </urn1:dueDates>
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>
+            <!--Optional:-->
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <!--Optional:-->
+            <urn1:paymentInfo>
+               <!--Optional:-->
+               <urn3:paymentTypeInformation>
+                  <!--Optional:-->
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn3:categoryPurpose>SUPP</urn3:categoryPurpose>
+               </urn3:paymentTypeInformation>
+               <!--Optional:-->
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>
+                  <!--Optional:-->
+               </urn3:debtorAccount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn3:debtor>
+                  <!--Optional:-->
+                  <urn2:id>
+                     <!--You have a CHOICE of the next 2 items at this level-->
+                     <urn2:OrgId>
+                        <!--Optional:-->
+                        <urn2:Id>${Properties#orgid}</urn2:Id>
+                     </urn2:OrgId>
+                  </urn2:id>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn3:debtor>
+               <!--Optional:-->
+            </urn1:paymentInfo>
+            <!--1 or more repetitions:-->
+            <urn1:transaction>
+               <!--Optional:-->
+               <urn4:amount>
+                  <!--You have a CHOICE of the next 2 items at this level-->
+                  <urn2:instructedAmount currency="${Properties#currencyCode}">
+                     <urn2:amount>${Properties#Amount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <!--Optional:-->
+               <urn4:creditor>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <urn2:country>NO</urn2:country>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:creditor>
+               <!--Optional:-->
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>
+                  <urn2:currency>${Properties#CreditorCurrency}</urn2:currency>
+                  <!--Optional:-->
+               </urn4:creditorAccount>
+               <!--Optional:-->
+               <urn4:ultimateCreditor>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <urn2:postalAddress>
+                     <!--Optional:-->
+                     <urn2:addressType>HOME</urn2:addressType>
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <!--Optional:-->
+                     <urn2:country>NO</urn2:country>
+                     <!--0 to 7 repetitions:-->
+                  </urn2:postalAddress>
+                  <!--Optional:-->
+                  <!--Optional:-->
+                  <!--Optional:-->
+               </urn4:ultimateCreditor>
+            </urn1:transaction>
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>
+            <!--Optional:-->
+            <urn1:chargesRequired>false</urn1:chargesRequired>
+         </urn:standingOrder>
+      </urn:standingOrderCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="286c3306-4534-4bec-9369-3f5bc20cd715" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="01a49d02-2577-4f45-b7f6-7f30d2433bdd" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="97e1d913-4443-4b87-ae0d-6f144071e566" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="d3f360f0-70c1-44d1-90ae-64d8a365b15a" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1/PINSStandingOrder_V2_1ServicePortType/standingOrderCreateRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+  <con:testStep type="request" id="e9b84dd1-b4e2-41fb-ada4-0d465843fa05" name="SO_Confirm_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_1ServicePortTypeSoap11</con:interface><con:operation>standingOrderStatusUpdate</con:operation><con:request name="SO_Confirm_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="d855ad80-8d7f-4b46-8c5e-7a9a26cf506f"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSStandingOrder_V2_1Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1" xmlns:urn1="urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>\r
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:standingOrderStatusUpdateRequest>\r
+         <urn:standingOrderKey>\r
+            <urn1:agreementId>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>\r
+            <!--Optional:-->\r
+            <urn1:agreementVersion>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>\r
+         </urn:standingOrderKey>\r
+         <urn:standingOrderAction>CONFIRM</urn:standingOrderAction>\r
+      </urn:standingOrderStatusUpdateRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="eca15d6e-e5d0-4d8d-8b83-9534f223bda0" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="37f4015b-dc6a-498e-b91d-22e348215cf3" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="2850b373-5d50-44e6-ae70-7bbd55c66c4a" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="c2baa0ce-b620-4a01-8a20-33f10ed0b0f8" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1/PINSStandingOrder_V2_1ServicePortType/standingOrderStatusUpdateRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+  <con:testStep type="request" id="6d18e49d-b2db-4beb-8b51-8b95d2a1416f" name="SO_Update_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_1ServicePortTypeSoap11</con:interface><con:operation>standingOrderUpdate</con:operation><con:request name="SO_Update_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="ed1c83a0-b6fc-442c-a795-deee9c07683d"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSStandingOrder_V2_1Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1" xmlns:urn1="urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1" xmlns:urn3="urn:srv.stord.fs.tietoevry.com:domain:debtor:v2_1" xmlns:urn4="urn:srv.stord.fs.tietoevry.com:domain:creditor:v2_1">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>\r
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:standingOrderUpdateRequest>\r
+         <urn:standingOrder>\r
+            <!--Optional:-->\r
+            <urn1:recurrence>WEEKLY</urn1:recurrence>\r
+            <urn1:dueDates>\r
+               <urn1:dueDate>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:dueDate>\r
+            </urn1:dueDates>\r
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>\r
+            <urn1:exemptions>\r
+               <urn1:exemption>\r
+                  <urn1:startDate>${= java.time.LocalDateTime.now().plusDays(10).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:startDate>\r
+                  <urn1:endDate>${= java.time.LocalDateTime.now().plusDays(15).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:endDate>\r
+                  <urn1:recurring>false</urn1:recurring>\r
+               </urn1:exemption>\r
+            </urn1:exemptions>\r
+            <urn1:paymentInfo>\r
+               <urn3:debtorAccount>\r
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>\r
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>\r
+               </urn3:debtorAccount>\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <!--Optional:-->\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn2:instructedAmount currency="NOK">\r
+                     <urn2:amount>2</urn2:amount>\r
+                  </urn2:instructedAmount>\r
+               </urn4:amount>\r
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>\r
+               <urn4:creditor>\r
+                  <urn2:name>SO Cred</urn2:name>\r
+                  <urn2:postalAddress>\r
+                     <urn2:postCode>45022</urn2:postCode>\r
+                     <urn2:townName>test</urn2:townName>\r
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>\r
+                     <urn2:country>NO</urn2:country>\r
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>\r
+                  </urn2:postalAddress>\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>\r
+                  <!--Optional:-->\r
+               </urn4:creditorAccount>\r
+            </urn1:transaction>\r
+            <urn1:standingOrderKey>\r
+               <urn1:agreementId>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>\r
+               <!--Optional:-->\r
+               <urn1:agreementVersion>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>\r
+            </urn1:standingOrderKey>\r
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>\r
+            <!--Optional:-->\r
+            <urn1:chargesRequired>false</urn1:chargesRequired>\r
+         </urn:standingOrder>\r
+      </urn:standingOrderUpdateRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="2dd18bbd-2cb8-4c5a-b14c-1922fc930e22" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="f2ab88cd-4ba1-4246-b462-81aa0924a7d6" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="538767e4-97e2-41f6-abe8-c829fb102809" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="e8742462-b11a-4b17-9d58-1d2dedafef76" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1/PINSStandingOrder_V2_1ServicePortType/standingOrderUpdateRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+  <con:testStep type="request" id="7ab5e4ed-0190-4516-a63a-626622516536" name="SO_Update_V2_0"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface><con:operation>standingOrderUpdate</con:operation><con:request name="SO_Update_V2_0" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="9c7d1f05-ab23-4335-b8f8-74dc5a6df1d7"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSStandingOrder_V2_0Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0" xmlns:urn1="urn:srv.stord.fs.evry.com:domain:standingorder:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:srv.stord.fs.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:srv.stord.fs.evry.com:domain:creditor:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>\r
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:standingOrderUpdateRequest>\r
+         <urn:standingOrder>\r
+            <!--Optional:-->\r
+            <urn1:recurrence>WEEKLY</urn1:recurrence>\r
+            <urn1:dueDates>\r
+               <urn1:dueDate>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:dueDate>\r
+            </urn1:dueDates>\r
+            <urn1:bankHolidayAdjustment>BEFORE</urn1:bankHolidayAdjustment>\r
+            <urn1:exemptions>\r
+               <urn1:exemption>\r
+                  <urn1:startDate>${= java.time.LocalDateTime.now().plusDays(10).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:startDate>\r
+                  <urn1:endDate>${= java.time.LocalDateTime.now().plusDays(15).format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</urn1:endDate>\r
+                  <urn1:recurring>false</urn1:recurring>\r
+               </urn1:exemption>\r
+            </urn1:exemptions>\r
+            <urn1:paymentInfo>\r
+               <urn3:debtorAccount>\r
+                  <urn2:identification>${Properties#accountNumber}</urn2:identification>\r
+                  <urn2:currency>${Properties#currencyCode}</urn2:currency>\r
+               </urn3:debtorAccount>\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <!--Optional:-->\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn2:instructedAmount currency="NOK">\r
+                     <urn2:amount>2</urn2:amount>\r
+                  </urn2:instructedAmount>\r
+               </urn4:amount>\r
+               <urn4:chargeBearer>DEBT</urn4:chargeBearer>\r
+               <urn4:creditor>\r
+                  <urn2:name>SO Cred</urn2:name>\r
+                  <urn2:postalAddress>\r
+                     <urn2:postCode>45022</urn2:postCode>\r
+                     <urn2:townName>test</urn2:townName>\r
+                     <urn2:countrySubDivision>test</urn2:countrySubDivision>\r
+                     <urn2:country>NO</urn2:country>\r
+                     <urn2:addressLine>asdfasdfs</urn2:addressLine>\r
+                  </urn2:postalAddress>\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn2:identification>${Properties#CreditAccountNumber}</urn2:identification>\r
+                  <!--Optional:-->\r
+               </urn4:creditorAccount>\r
+            </urn1:transaction>\r
+            <urn1:standingOrderKey>\r
+               <urn1:agreementId>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>\r
+               <!--Optional:-->\r
+               <urn1:agreementVersion>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>\r
+            </urn1:standingOrderKey>\r
+            <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>\r
+            <!--Optional:-->\r
+            <urn1:chargesRequired>false</urn1:chargesRequired>\r
+         </urn:standingOrder>\r
+      </urn:standingOrderUpdateRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="ca55a0aa-57de-492f-ad85-7003e6300f0c" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="ebee1dcd-0ca3-40ed-96a7-57d2d7b8915e" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="d19cdce1-a65d-4e7a-b824-f8b3b9fc74aa" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="4b0c85b5-88ce-4ed6-b1a5-f8936a1361cd" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials>
+      <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+      <con:authType>No Authorization</con:authType>
+    </con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.evry.com:ws:standingorder:v2_0/PINSStandingOrder_V2_0ServicePortType/standingOrderUpdateRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+  <con:testStep type="jdbc" name="SO Create VALI" id="f36df4a3-ca09-4ab7-8649-5935302a0614" disabled="true">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1544,7 +1871,54 @@ declare namespace ns1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0';
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" name="SO Confirm" id="2eb99ca8-a8b5-4306-94b0-db3bb499a511">
+  <con:testStep type="request" id="486dd2bb-c0c2-4707-ab5e-37516334e773" name="SO_Search_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_1ServicePortTypeSoap11</con:interface><con:operation>standingOrderSearch</con:operation><con:request name="SO_Search_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="76f182fc-eede-450c-86cf-edea39eec321"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSStandingOrder_V2_1Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1" xmlns:urn1="urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>1.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>${Properties#UserID}</wsc:userid>\r
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>\r
+            <wsc:channel>${Properties#channel}</wsc:channel>\r
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>\r
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>\r
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:standingOrderSearchRequest>\r
+         <urn:standingOrderSearch>\r
+            <urn:searchCriteria>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <urn1:standingOrderType>PERIODIC</urn1:standingOrderType>\r
+               <urn1:standingOrderRecurrence>WEEKLY</urn1:standingOrderRecurrence>\r
+               <!--Zero or more repetitions:-->\r
+               <!--Zero or more repetitions:-->\r
+               <urn1:standingOrderDebitAccount>${Properties#accountNumber}</urn1:standingOrderDebitAccount>\r
+               <!--Optional:-->\r
+               <!--Optional:-->\r
+               <urn1:bankEmployeeInitiated>false</urn1:bankEmployeeInitiated>\r
+               <!--Optional:-->\r
+               <urn1:filterByOrgUnit>false</urn1:filterByOrgUnit>\r
+            </urn:searchCriteria>\r
+            <urn:pagingElement>\r
+               <urn2:startIndex>0</urn2:startIndex>\r
+               <urn2:pageSize>100</urn2:pageSize>\r
+            </urn:pagingElement>\r
+         </urn:standingOrderSearch>\r
+      </urn:standingOrderSearchRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="fb07fdb5-976a-415f-8632-ef3e81dd4d55" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="6024336c-35d2-4981-b44d-bdd3716d9ca6" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="1d9e8f4e-3540-493e-89c4-088e10434bdd" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="f67f5bc6-9a7f-4514-87f2-7ec72af03038" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1/PINSStandingOrder_V2_1ServicePortType/standingOrderSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+  
+  
+  <con:testStep type="request" name="SO Confirm" id="b7e34745-b143-497e-ab2c-5fefbbf5bce8">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSStandingOrder_V1_5ServicePortTypeSoap11</con:interface>
@@ -1784,733 +2158,7 @@ declare namespace ns4='urn:srv.stord.fs.evry.com:ws:standingorder:v1_5';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="STO_AGREEMENT" id="2eaef5e8-9119-42e5-988c-a5aed10b4775">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select * from STO_AGREEMENT where AGREEMENTID  = '${SO Create#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}'</con:query>
-      <con:assertion type="XPath Match" id="ecf27127-9310-4712-a01b-c9e80e63de32" name="Status">
-        <con:configuration>
-          <path>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</path>
-          <content>ACTIVE</content>
-          <allowWildcards>false</allowWildcards>
-          <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
-          <ignoreComments>false</ignoreComments>
-        </con:configuration>
-      </con:assertion>
-      <con:assertion type="MessageContentAssertion" id="3e454b2b-e3bc-4ece-8bfd-04429c50fd83" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INTERNAL_ID[1]</con:xpath>
-            <con:element>INTERNAL_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>3023</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:xpath>
-            <con:element>AGREEMENTID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2534</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/VERSIONNR[1]</con:xpath>
-            <con:element>VERSIONNR</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]</con:xpath>
-            <con:element>CUSTOMERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>24126297919</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORG_ID[1]</con:xpath>
-            <con:element>ORG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTTYPE[1]</con:xpath>
-            <con:element>AGREEMENTTYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>PERIODIC</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECURRENCETYPE[1]</con:xpath>
-            <con:element>RECURRENCETYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${SO Create#RawRequest#declare namespace urn='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace urn1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //urn:standingOrderCreateRequest[1]/urn:standingOrder[1]/urn1:recurrence[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:xpath>
-            <con:element>STATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>ACTIVE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/END_DATE[1]</con:xpath>
-            <con:element>END_DATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANKHOLIDAYADJUSTMENT[1]</con:xpath>
-            <con:element>BANKHOLIDAYADJUSTMENT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${SO Create#RawRequest#declare namespace urn='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace urn1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //urn:standingOrderCreateRequest[1]/urn:standingOrder[1]/urn1:bankHolidayAdjustment[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREATED_DATE[1]</con:xpath>
-            <con:element>CREATED_DATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2019-11-18 09:58:03</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATEDBY[1]</con:xpath>
-            <con:element>INITIATEDBY</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>CUSTOMER</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKET_TYPE[1]</con:xpath>
-            <con:element>MARKET_TYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>BM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATOR_ID[1]</con:xpath>
-            <con:element>INITIATOR_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>24126297919</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AUTH_AGREEMENTID[1]</con:xpath>
-            <con:element>AUTH_AGREEMENTID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>24126297919</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHANNEL[1]</con:xpath>
-            <con:element>CHANNEL</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>BES</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORORGUNIT[1]</con:xpath>
-            <con:element>INITIATORORGUNIT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_CENTRAL_AGREEMENTID[1]</con:xpath>
-            <con:element>FK_CENTRAL_AGREEMENTID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SOURCEAPPLICATION[1]</con:xpath>
-            <con:element>SOURCEAPPLICATION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>SB1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEVICE_ID[1]</con:xpath>
-            <con:element>DEVICE_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1.1.1.1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHARGE_REQUIRED[1]</con:xpath>
-            <con:element>CHARGE_REQUIRED</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTACCOUNTNUMBER[1]</con:xpath>
-            <con:element>AGREEMENTACCOUNTNUMBER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42020643514</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <INTERNAL_ID>3023</INTERNAL_ID>
-         <AGREEMENTID>2534</AGREEMENTID>
-         <VERSIONNR>1</VERSIONNR>
-         <CUSTOMERID>24126297919</CUSTOMERID>
-         <ORG_ID>4201</ORG_ID>
-         <AGREEMENTTYPE>PERIODIC</AGREEMENTTYPE>
-         <RECURRENCETYPE>WEEKLY</RECURRENCETYPE>
-         <STATUS>VALIDATED</STATUS>
-         <END_DATE/>
-         <BANKHOLIDAYADJUSTMENT>BEFORE</BANKHOLIDAYADJUSTMENT>
-         <CREATED_DATE>2019-11-18 09:58:03</CREATED_DATE>
-         <INITIATEDBY>CUSTOMER</INITIATEDBY>
-         <MARKET_TYPE>BM</MARKET_TYPE>
-         <INITIATOR_ID>24126297919</INITIATOR_ID>
-         <AUTH_AGREEMENTID>24126297919</AUTH_AGREEMENTID>
-         <CHANNEL>BES</CHANNEL>
-         <INITIATORORGUNIT/>
-         <FK_CENTRAL_AGREEMENTID/>
-         <SOURCEAPPLICATION>SB1</SOURCEAPPLICATION>
-         <DEVICE_ID>1.1.1.1</DEVICE_ID>
-         <CHARGE_REQUIRED>N</CHARGE_REQUIRED>
-         <AGREEMENTACCOUNTNUMBER>42020643514</AGREEMENTACCOUNTNUMBER>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="STO_RECURRENCE" id="86928eeb-e022-45eb-936c-65779034eeb5">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select * from STO_RECURRENCE 
-where FK_AGREEMENT_INTERNAL_ID ='${SO Create VALI#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/INTERNAL_ID[1]}'</con:query>
-      <con:assertion type="XPath Match" id="ecf27127-9310-4712-a01b-c9e80e63de32" name="Status">
-        <con:configuration>
-          <path>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</path>
-          <content>ACTIVE</content>
-          <allowWildcards>false</allowWildcards>
-          <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
-          <ignoreComments>false</ignoreComments>
-        </con:configuration>
-      </con:assertion>
-      <con:assertion type="MessageContentAssertion" id="3e454b2b-e3bc-4ece-8bfd-04429c50fd83" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INTERNAL_ID[1]</con:xpath>
-            <con:element>INTERNAL_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>3612</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ORG_ID[1]</con:xpath>
-            <con:element>ORG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECURRENCETYPE[1]</con:xpath>
-            <con:element>RECURRENCETYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${SO Create#RawRequest#declare namespace urn='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace urn1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //urn:standingOrderCreateRequest[1]/urn:standingOrder[1]/urn1:recurrence[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:xpath>
-            <con:element>STATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>ACTIVE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/END_DATE[1]</con:xpath>
-            <con:element>END_DATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANKHOLIDAYADJUSTMENT[1]</con:xpath>
-            <con:element>BANKHOLIDAYADJUSTMENT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${SO Create#RawRequest#declare namespace urn='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace urn1='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //urn:standingOrderCreateRequest[1]/urn:standingOrder[1]/urn1:bankHolidayAdjustment[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORORGUNIT[1]</con:xpath>
-            <con:element>INITIATORORGUNIT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <INTERNAL_ID>3612</INTERNAL_ID>
-         <FK_AGREEMENT_INTERNAL_ID>3023</FK_AGREEMENT_INTERNAL_ID>
-         <DUE_DATE>2019-11-18 00:00:00</DUE_DATE>
-         <ORG_ID>4201</ORG_ID>
-         <RECURRENCETYPE>WEEKLY</RECURRENCETYPE>
-         <STATUS>PENDING_APPROVAL</STATUS>
-         <END_DATE/>
-         <BANKHOLIDAYADJUSTMENT>BEFORE</BANKHOLIDAYADJUSTMENT>
-         <INITIATORORGUNIT/>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="delay" name="Delay" id="cd099824-d91a-4d4d-90ac-d31b663be3df">
-    <con:settings/>
-    <con:config>
-      <delay>${Properties#Delay}</delay>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="STO_RECURRENCE_COMPLETED" id="fd29408c-3df5-4347-8f9e-cda3f251307c">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select * from STO_RECURRENCE_COMPLETED 
-where FK_AGREEMENT_INTERNAL_ID ='${SO Create VALI#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/INTERNAL_ID[1]}'</con:query>
-      <con:assertion type="MessageContentAssertion" id="3514d7cc-7ac2-4e6c-be6f-a9920591f36c" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DUE_DATE[1]</con:xpath>
-            <con:element>DUE_DATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2019-12-23 00:00:00</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_AGREEMENT_INTERNAL_ID[1]</con:xpath>
-            <con:element>FK_AGREEMENT_INTERNAL_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>3085</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREATED_DATETIME[1]</con:xpath>
-            <con:element>CREATED_DATETIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2019-11-21 10:10:07.794231</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>62355</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_REF[1]</con:xpath>
-            <con:element>PAYMENT_REF</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>62355</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <DUE_DATE>2019-12-23 00:00:00</DUE_DATE>
-         <FK_AGREEMENT_INTERNAL_ID>3085</FK_AGREEMENT_INTERNAL_ID>
-         <CREATED_DATETIME>2019-11-21 10:10:07.794231</CREATED_DATETIME>
-         <TRANSACTIONSID>62355</TRANSACTIONSID>
-         <PAYMENT_REF>62355</PAYMENT_REF>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="TRANSACTIONS" id="7d35dbcc-024b-4ac6-848b-35381f00bae5">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select * from TRANSACTIONS 
-where AGREEMENTID = '${SO Create#Response#declare namespace ns6='urn:srv.stord.fs.evry.com:ws:standingorder:v2_0'; declare namespace ns2='urn:srv.stord.fs.evry.com:domain:standingorder:v2_0'; //ns6:standingOrderCreateResponse[1]/ns6:standingOrderKey[1]/ns2:agreementId[1]}'</con:query>
-      <con:assertion type="MessageContentAssertion" id="3514d7cc-7ac2-4e6c-be6f-a9920591f36c" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>62355</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_REF[1]</con:xpath>
-            <con:element>PAYMENT_REF</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>62355</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
-            <con:element>ISPC</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>PAYCTDOMOUCPHPWX</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRFORDBTRAGT[1]</con:xpath>
-            <con:element>INSTRFORDBTRAGT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <TRANSACTIONSID>62355</TRANSACTIONSID>
-         <ENDTOENDID>c956193a163d4c1d8df929627360910b</ENDTOENDID>
-         <FK_PAYMENTINFOID>44736</FK_PAYMENTINFOID>
-         <INSTRUCTEDAMOUNT>600</INSTRUCTEDAMOUNT>
-         <INSTRUCTEDAMOUNTCCY>NOK</INSTRUCTEDAMOUNTCCY>
-         <EQUIVALENTAMOUNT/>
-         <EQUIVALENTAMOUNTCCY/>
-         <EQUIVALENTAMOUNT_CCYOFTRF/>
-         <INSTRUCTIONID>b7ff925c0fe94324ae505bfd3fb59742</INSTRUCTIONID>
-         <EXCHANGERATE/>
-         <RATETYPE/>
-         <UNITCURRENCY/>
-         <CONTRACTID/>
-         <CHARGEBEARER>SHAR</CHARGEBEARER>
-         <INSTRFORDBTRAGT/>
-         <PURPOSE_CODE/>
-         <PURPOSE_PRTRY/>
-         <PAYMENTTYPE>DOSA</PAYMENTTYPE>
-         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
-         <SEPA>N</SEPA>
-         <DEBITAMOUNTAMT>600</DEBITAMOUNTAMT>
-         <DEBITAMOUNTCCY>NOK</DEBITAMOUNTCCY>
-         <CREDITAMOUNTAMT>600</CREDITAMOUNTAMT>
-         <CREDITAMOUNTCCY>NOK</CREDITAMOUNTCCY>
-         <DEBITCOUNTERVALUEAMT>600</DEBITCOUNTERVALUEAMT>
-         <DEBITCOUNTERVALUECCY>NOK</DEBITCOUNTERVALUECCY>
-         <CREDITCOUNTERVALUEAMT>600</CREDITCOUNTERVALUEAMT>
-         <CREDITCOUNTERVALUECCY>NOK</CREDITCOUNTERVALUECCY>
-         <EXCHANGERATEVALUE>1</EXCHANGERATEVALUE>
-         <EXCHANGERATETYPE>NONE</EXCHANGERATETYPE>
-         <MARKETPRODUCTCHARGEAMT>25</MARKETPRODUCTCHARGEAMT>
-         <MARKETPRODUCTCHARGECCY>NOK</MARKETPRODUCTCHARGECCY>
-         <MARKETPRODUCTNAME>PI Domestic</MARKETPRODUCTNAME>
-         <CATEGORYPURPOSECODE/>
-         <INSTRUCTIONPRIORITY/>
-         <ISPC>PAYCTDOMOUSALA</ISPC>
-         <FK_PROCESSINGLINEID>50</FK_PROCESSINGLINEID>
-         <HIDDEN>N</HIDDEN>
-         <RISKSTATUS/>
-         <INTERNALNOTE/>
-         <FIRSTLACKOFFUNDSMESSAGESENT>N</FIRSTLACKOFFUNDSMESSAGESENT>
-         <AGREEMENTTYPE>SOPE</AGREEMENTTYPE>
-         <AGREEMENTID>2592</AGREEMENTID>
-         <AGREEMENTVERSION>1</AGREEMENTVERSION>
-         <CONFIDENTIAL>N</CONFIDENTIAL>
-         <SERVICELEVEL/>
-         <PROVIDERID/>
-         <BRANDID/>
-         <BOOKINGLEVEL>D</BOOKINGLEVEL>
-         <CREDITTEXTCODE>13</CREDITTEXTCODE>
-         <DEBITTEXTCODE>520</DEBITTEXTCODE>
-         <PRIORITIZED>N</PRIORITIZED>
-         <INITIATORBANKID>4201</INITIATORBANKID>
-         <DEBETACCOUNTNO>42249506189</DEBETACCOUNTNO>
-         <DEBETACCOUNTNOISIBAN>N</DEBETACCOUNTNOISIBAN>
-         <RELEASEDATE>2019-12-23 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2019-12-23 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>62355</PAYMENT_REF>
-         <RECEIPTORDER>NONE</RECEIPTORDER>
-         <STATUSCHANGETIME>2019-11-21 10:10:07.727399</STATUSCHANGETIME>
-         <EINVOICEOWNERID/>
-         <PRODUCT_FAMILY_NAME>Domestic Out</PRODUCT_FAMILY_NAME>
-         <PRODUCT_GROUP_NAME>Clean Payment Credit Transfer</PRODUCT_GROUP_NAME>
-         <PRODUCT_AREA_NAME>Payment</PRODUCT_AREA_NAME>
-         <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
-         <PEPROCESSINGLINE>PE_DOM_OUT</PEPROCESSINGLINE>
-         <DEBETACCOUNTNOIBAN/>
-         <DEB_TXN_DOMAIN_CODE>PMNT</DEB_TXN_DOMAIN_CODE>
-         <DEB_TXN_FAMILY_CODE>ICDT</DEB_TXN_FAMILY_CODE>
-         <DEB_TXN_SUBFAMILY_CODE>SALA</DEB_TXN_SUBFAMILY_CODE>
-         <CRED_TXN_DOMAIN_CODE>PMNT</CRED_TXN_DOMAIN_CODE>
-         <CRED_TXN_FAMILY_CODE>RCDT</CRED_TXN_FAMILY_CODE>
-         <CRED_TXN_SUBFAMILY_CODE>SALA</CRED_TXN_SUBFAMILY_CODE>
-         <DEBIT_BOOKING_ID/>
-         <DUPLICATECHECKNEEDED/>
-         <NON_STP_BANK/>
-         <NON_STP_CUSTOMER/>
-         <CANCEL_FLAG/>
-         <REFERENCE_TRANSACTION_ID/>
-         <NOTIFY_CREDIT_POSTING/>
-         <DIRECTION>OUTWARD</DIRECTION>
-         <PAYMENT_SUB_STATUS/>
-         <FORCE_FUND/>
-         <WB_FLAG>N</WB_FLAG>
-         <LAST_UPDATED_TIME/>
-         <AUTHORITY_REPORTING_CODE/>
-         <REF_TRANSACTION_DIRECTION/>
-         <REFERENCE_PAYMENT_REF/>
-         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
-         <LASTFRAUDCHECKDATE>2019-11-21 10:10:07.553158</LASTFRAUDCHECKDATE>
-         <PAYMENTORDERDATE>2019-12-23 00:00:00</PAYMENTORDERDATE>
-         <ACTIVITY_PERIOD>2019-12-31 00:00:00</ACTIVITY_PERIOD>
-         <DEBIT_VALUE_DATE_RULE>DAY0</DEBIT_VALUE_DATE_RULE>
-         <CREDIT_VALUE_DATE_RULE>CUT0</CREDIT_VALUE_DATE_RULE>
-         <EXCHANGERATEVALUE_MIDRATE/>
-         <UETR_ID>16e3cdce-fd1d-462f-a80c-c872ab38dcac</UETR_ID>
-         <EINVOICETYPE/>
-         <INITIATEDDEBITVALUEDATE/>
-         <INITIATEDCREDITVALUEDATE/>
-         <EXCHANGERATEUNIT>1</EXCHANGERATEUNIT>
-         <CREDITEXCHANGERATE/>
-         <CREDITEXCHANGERATETYPE/>
-         <CREDITEXCHANGERATEUNIT/>
-         <CHARGE_AGREEMENT_IDENTIFIED_AT/>
-         <ACCUMULATION_AGREEMENT_ID/>
-         <INVOICEREFERENCE/>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="e88c368e-07c8-47a0-8b9c-3c8ea5e04ab5" name="SO Close">
+  </con:testStep><con:testStep type="request" id="14e821c7-eac6-49ab-b74c-789661d61961" name="SO Close">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSStandingOrder_V2_0ServicePortTypeSoap11</con:interface>
@@ -2683,8 +2331,36 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep>
-  <con:properties/>
+  </con:testStep><con:testStep type="request" id="05e4c822-fc3f-4eb9-88ab-5b15a5a4a3d9" name="SO_Close_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSStandingOrder_V2_1ServicePortTypeSoap11</con:interface><con:operation>standingOrderStatusUpdate</con:operation><con:request name="SO_Close_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="d855ad80-8d7f-4b46-8c5e-7a9a26cf506f"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSStandingOrder_V2_1Service</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1" xmlns:urn1="urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel_PM}"/>
+            <wsc:item key="LogRef" value="${=java.util.UUID.randomUUID()}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:standingOrderStatusUpdateRequest>
+         <urn:standingOrderKey>
+            <urn1:agreementId>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementId[1]}</urn1:agreementId>
+            <!--Optional:-->
+            <urn1:agreementVersion>${SO_Create_V2_1#Response#declare namespace ns2='urn:srv.stord.fs.tietoevry.com:domain:standingorder:v2_1'; declare namespace ns3='urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1'; //ns3:standingOrderCreateResponse[1]/ns3:standingOrderKey[1]/ns2:agreementVersion[1]}</urn1:agreementVersion>
+         </urn:standingOrderKey>
+         <urn:standingOrderAction>CLOSE</urn:standingOrderAction>
+      </urn:standingOrderStatusUpdateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" id="eca15d6e-e5d0-4d8d-8b83-9534f223bda0" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="Response SLA Assertion" id="37f4015b-dc6a-498e-b91d-22e348215cf3" name="Response SLA" disabled="true"><con:configuration><SLA>200</SLA></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" id="2850b373-5d50-44e6-ae70-7bbd55c66c4a" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" id="c2baa0ce-b620-4a01-8a20-33f10ed0b0f8" name="Schema Compliance"><con:configuration/></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:srv.stord.fs.tietoevry.com:ws:standingorder:v2_1/PINSStandingOrder_V2_1ServicePortType/standingOrderStatusUpdateRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/>
   <con:reportParameters/>
   <con:breakPoints>
     <con:testStepId>9f96b5c1-8936-418b-ab65-ef8019d7494f</con:testStepId>
@@ -2712,16 +2388,16 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>550ab880-3d3b-4f39-8ee8-a584ebf5cbb7</con:testStepId>
+    <con:testStepId>408258e2-c243-4c5b-9a76-2e30b828a94c</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>cd099824-d91a-4d4d-90ac-d31b663be3df</con:testStepId>
+    <con:testStepId>2f7e8b69-7067-47bc-8809-60e4ad8cbad4</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:environmentSpec>
+  <con:breakPoints><con:testStepId>e4d183cf-f23f-41a4-88ec-10372b1439ac</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>65b9a02f-5880-4dc1-9410-3c40216088e7</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>cebebb90-b42f-4e2d-a291-6cd59be1a3d4</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ca84247c-8753-4de9-8238-991d69b72bcf</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>a17e126b-1c05-4728-97d1-ba7f58dd148b</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:environmentSpec>
     <con:entry environmentId="dd815c52-5459-48fb-8082-7934a148a22b">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>

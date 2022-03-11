@@ -84,8 +84,6 @@ pipeline {
             	  junit "**/*/reports/*.xml"   
                   
              	  archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
-
-
                 }
          // cleanWs()
 
@@ -94,7 +92,7 @@ pipeline {
             script {
               emailNotification(success_email_to)
                 slackSend(
-                    channel: "${slackChannelName}",
+              //      channel: "${slackChannelName}",
                     color: 'good',
                     message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :jenkins_success:".stripIndent()
 
@@ -106,7 +104,7 @@ pipeline {
             script {
               emailNotification(failed_email_to)
                 slackSend(
-                    channel: "${slackChannelName}",
+                //    channel: "${slackChannelName}",
                     color: 'danger',
                     message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :fire:".stripIndent()
 

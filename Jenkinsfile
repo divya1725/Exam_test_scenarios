@@ -81,9 +81,10 @@ pipeline {
              	  sh "docker stop ${containername}"
              	  sh "docker rm ${containername}"
                   
-            	  junit "**/*/reports/*.xml"   
+		   archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
+            	  //junit "**/*/reports/*.xml"   
                   
-             	  archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
+             	  //archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
                 }
          // cleanWs()
 

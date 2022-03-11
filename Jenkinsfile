@@ -75,7 +75,7 @@ pipeline {
   post {
         always {           
           
-           script{
+           script {
              	
                   sh "docker cp ${containername}:/usr/local/SmartBear/project ${WORKSPACE}"
              	  sh "docker stop ${containername}"
@@ -92,7 +92,7 @@ pipeline {
             script {
               emailNotification(success_email_to)
                 slackSend(
-              //      channel: "${slackChannelName}",
+                    channel: "${slackChannelName}",
                     color: 'good',
                     message: "Regression Testing ${env.BRANCH_NAME} : Projects:${params.SuiteName} ran successfully on ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :jenkins_success:".stripIndent()
 
@@ -104,7 +104,7 @@ pipeline {
             script {
               emailNotification(failed_email_to)
                 slackSend(
-                //    channel: "${slackChannelName}",
+                    channel: "${slackChannelName}",
                     color: 'danger',
                     message: "${env.BRANCH_NAME} : Automation Suite-${params.SuiteName} failed in ${params.Environments}. Check <${BUILD_URL}|run Details> and download <${wsReportFolder}|artifacts> :fire:".stripIndent()
 

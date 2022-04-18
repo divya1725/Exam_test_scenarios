@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="3b3dbb47-5d03-410f-9854-fdf8c254b912" created="3.0.0" activeEnvironment="G-S1" name="PreDefined-Creditor" resourceRoot="" updated="3.3.2" encryptionMode="Not encrypted" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\EvryJenkinsRegression\PreDefined-Creditor\scripts" compositeProjectFormat="1.3" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="3b3dbb47-5d03-410f-9854-fdf8c254b912" created="3.0.0" activeEnvironment="G-S1" name="PreDefined-Creditor" resourceRoot="" updated="3.20.1" encryptionMode="Not encrypted" scriptLibrary="C:\Ullasa\Projects\JenkinsRegression\EvryJenkinsRegression\PreDefined-Creditor\scripts" compositeProjectFormat="1.3" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
     <con:setting id="3b3dbb47-5d03-410f-9854-fdf8c254b912fileName">PreDefined-Creditor</con:setting>
     <con:setting id="IncludeOverview">true</con:setting>
@@ -150,9 +150,9 @@
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
     <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
-
-def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
-def date1 = CommonLibrary.getDate('yyyyMMdd')
+def now = new Date()
+def time =  java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmssSSS'))
+def date1 = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd')).toString()
 
 def objProject = testRunner.getTestCase().getTestSuite().getProject()
 def projPath = objProject.getPath()
@@ -162,28 +162,27 @@ new File(filePath).mkdir()
 filePathDate =filePath + File.separator +date1 + File.separator
 new File(filePathDate).mkdir()
 def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
-filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+filePathSuite = filePath + File.separator + date1 + File.separator + suiteName + File.separator
 new File(filePathSuite).mkdir()
 
  fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
  pw = new PrintWriter(fos)
  def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
 def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
-log.info "Before-->"
+
 if ( testStep instanceof JdbcRequestTestStep )
 {
 	def lineSeperator =  "\n ****************************************************************************\n " 
-	def res = 	 testStep.testRequest.response.getRequestContent() + lineSeperator +  testStep.testRequest.response.responseContent	
+	def res = new String(testStep.testRequest.response.getRawRequestData()) + lineSeperator +  testStep.testRequest.response.responseContent
 	pw.write(res)
 }
 else{
-	log.info CurrentStep
 	testStepResult.writeTo(pw)
 }
  pw.close()
  fos.close()</con:script>
   </con:eventHandlers>
-  <con:eventHandlers type="ProjectRunListener.beforeRun" name="ProjectRunListener.beforeRun">
+  <con:eventHandlers type="ProjectRunListener.beforeRun" name="ProjectRunListener.beforeRun" target="">
     <con:script>ProjectEnvironments.load(projectRunner,context,log)</con:script>
   </con:eventHandlers>
   <con:environment id="910232ff-c0d2-487a-9498-583b8c39ed47" name="G-D4" index="0">
@@ -192,12 +191,6 @@ else{
     </con:service>
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D4}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
-    </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
     </con:service>
     <con:property>
       <con:name>G_D4</con:name>
@@ -245,12 +238,6 @@ else{
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D2}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
     </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
     <con:property>
       <con:name>G_D4</con:name>
       <con:value>10.246.89.107:23621</con:value>
@@ -296,12 +283,6 @@ else{
     </con:service>
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#G_D6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
-    </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
     </con:service>
     <con:property>
       <con:name>G_D4</con:name>
@@ -401,12 +382,6 @@ else{
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R_S6}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
     </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
     <con:property>
       <con:name>G_D4</con:name>
       <con:value>10.246.89.107:23621</con:value>
@@ -453,12 +428,6 @@ else{
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="" proxyHost="" proxyPort="" proxyUsername="" proxyPassword="">http://${#Project#R_A1}/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
     </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
     <con:property>
       <con:name>G_D4</con:name>
       <con:value>10.246.89.107:23621</con:value>
@@ -504,12 +473,6 @@ else{
     </con:service>
     <con:service type="SOAP" name="PINSPaymentAuthorization_V1_3PortTypeSoap11">
       <con:endpoint authProfile="No Authorization">http://ald-eos-g-app02.man.cosng.net:22411/pin/services/PINSPaymentAuthorization_V1_3</con:endpoint>
-    </con:service>
-    <con:service type="SOAP" name="PINSPaymentPredefinedCreditor_V2_1PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
-    </con:service>
-    <con:service type="SOAP" name="PAYSPaymentPredefinedCreditor_V1_0PortTypeSoap11">
-      <con:endpoint authProfile="No Authorization"/>
     </con:service>
     <con:property>
       <con:name>G_D4</con:name>

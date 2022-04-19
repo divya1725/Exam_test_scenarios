@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="c2b3ad25-b908-472f-b0f9-bdac47acdc68" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Auth" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="c2b3ad25-b908-472f-b0f9-bdac47acdc68fileName">Auth</con:setting>
+  </con:settings>
+  <con:testStep type="jdbc" name="FetchAccount_NOK" id="c2cb26aa-c5c7-4013-b70f-feb90e439448">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH-DATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password>1</con:password>
+      <con:connectionProperties/>
+      <con:query>select distinct(CUSTOMERID),ACCOUNTNUMBER,FIRSTNAME,CURRENCY  
+from V_authorisation
+where CUSTBANKID='4201' 
+and CURRENCY = 'NOK' 
+and length(customerID)='11' 
+fetch first 2 rows only</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" name="Authorization_v1_2" id="c8df2d8f-a5af-42c4-b083-78ae1823e391" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PAYSPaymentAuthorization_V1_2PortTypeSoap11</con:interface>
+      <con:operation>PaymentAuthorizationCreate</con:operation>
+      <con:request name="Authorization_v1_2" id="3817dd58-eead-4601-ba33-8dd13cbcbe55" timeout="">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://10.246.89.106:24901/pin/services/PAYSPaymentAuthorization_V1_2Service</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <!--Optional:-->
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <!--Optional:-->
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <!--Optional:-->
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <!--Zero or more repetitions:-->
+            <wsc:item key="${Properties#item4}" value="${Properties#value4}"/>
+            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
+            <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>
+            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentAuthorizationCreateRequest>
+         <urn:cpsAuthorizationMessage>
+            <urn1:cpsUserAuthorizationData>
+               <urn2:agreementData>
+                  <urn3:agreementId>${Properties#value2}</urn3:agreementId>
+                  <urn3:bankId>${Properties#orgid}</urn3:bankId>
+                  <urn3:customerID>${Properties#customerid}</urn3:customerID>
+                  <urn3:productID>1234</urn3:productID>
+                  <urn3:migrationDate>2019-02-03+05:00</urn3:migrationDate>
+               </urn2:agreementData>
+               <urn2:userId>${Properties#customerid}</urn2:userId>
+               <urn2:sessionID>qw24213</urn2:sessionID>
+               <urn2:firstName>Fname</urn2:firstName>
+               <urn2:lastName>Lname</urn2:lastName>
+               <urn2:socialSecurityNumber>${Properties#customerid}</urn2:socialSecurityNumber>
+               <urn2:userAccount>
+                  <urn2:accountNumber>${Properties#DebtorAccount}</urn2:accountNumber>
+                  <urn2:accountOwnerIdentifier>${Properties#customerid}</urn2:accountOwnerIdentifier>
+                  <urn2:currencyCode>NOK</urn2:currencyCode>
+                  <urn2:accountType>CoreAccount</urn2:accountType>
+                  <urn2:role>View</urn2:role>
+                  <urn2:role>Register</urn2:role>
+                  <urn2:role>Appprove</urn2:role>
+                  <urn2:role>Salary</urn2:role>
+                  <urn2:role>Transfer</urn2:role>
+                  <urn2:approvalLimit>99999</urn2:approvalLimit>
+                  <urn2:registerLimit>99999</urn2:registerLimit>
+                  <urn2:numberOfVerifiers>0</urn2:numberOfVerifiers>
+                  <urn2:numberOfApprovers>1</urn2:numberOfApprovers>
+                  <urn2:bookingLevel>M</urn2:bookingLevel>
+               </urn2:userAccount>
+            </urn1:cpsUserAuthorizationData>
+         </urn:cpsAuthorizationMessage>
+      </urn:PaymentAuthorizationCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Simple Contains" id="b8f08a37-3f9c-4303-9089-273eacff50cd" name="Contains">
+          <con:configuration>
+            <token>&lt;Message>OK&lt;/Message></token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:jmsPropertyConfig/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="71b4f24c-5706-4f06-88d6-a4d2fde0fe4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ca264e55-9942-4681-a7bb-84d8e92fbb36">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="0d2a83b1-0b94-4ddb-a3b8-2b6d39688af8">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="b7ee27fc-11cc-479a-908d-0464b4ef8931">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="88d50a84-f41a-4a39-ba5f-8b1fb1069302">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="4c71e673-5dd7-462e-86e7-316510af0b4b">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c05d7630-7a50-443b-a3ae-c915912d2fc2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="000a42ad-b2ac-4dbd-a9d8-fb77d94ff95e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="fac38c3e-1c72-4531-99c3-542b40ed9826">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f20756f5-0b6f-4aff-a253-46afed799988">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="733a7999-4cd6-47f6-9842-afb6ad86b237">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="7db1644e-2473-4463-959a-051b4ca66469">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="d86b5dec-5a8f-4edf-a0e9-b325f622fce3">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c788e2a4-aac9-4f0d-92b2-f434e3bd2175">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="5308c353-4431-4cea-b441-bc9253a6e90e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="5308c353-4431-4cea-b441-bc9253a6e90e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

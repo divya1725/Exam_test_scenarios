@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="5520ead4-402a-4ffd-9fb7-3df7a303d1de" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Pain001_Camt055_PaymentInfo PmtInfCxl False" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>TC will perform PAIN002 Cancel action at PaymentInfo level and validate Camt055 and Camt029 response when PmtInfCxl is false</con:description>
+  <con:settings>
+    <con:setting id="5931ed63-bc91-4ba5-99bc-f15bbf07ec51fileName">Pain001_Camt055_PaymentInfo-PmtInfCxl-False</con:setting>
+    <con:setting id="5520ead4-402a-4ffd-9fb7-3df7a303d1defileName">Pain001_Camt055_PaymentInfo-PmtInfCxl-False</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="DB Account" id="67dcf803-0954-4eeb-b224-7f96df9c21ce">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH-DATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password>1</con:password>
+      <con:connectionProperties/>
+      <con:query>select CUSTOMERID,ACCOUNTNUMBER  from V_authorisation 
+where CUSTBANKID='${Properties#bankId}' 
+and length(customerID)='11' 
+and ROWNUM=1</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <CUSTOMERID>01010077571</CUSTOMERID>
+         <ACCOUNTNUMBER>42125748338</ACCOUNTNUMBER>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SetProperties" id="0317c8b6-84f4-49fe-abee-0bb61d250060">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+
+def customerID = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def debtorAccountNumber = context.expand( '${DB Account#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerID)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("accountNumber",debtorAccountNumber)
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+
+def EndtoEndID = "P002_"+datetime;
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("msgID",EndtoEndID );
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt055","");
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt029","")
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReasonCamt055","");
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusCamt029","");
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxnactualStatusCamt029","");</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="2569987d-acc8-4e1b-8946-81021a1bd729">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value>01016003499</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankId</con:name>
+          <con:value>4201</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>96550145224</con:value>
+        </con:property>
+        <con:property>
+          <con:name>dueDate</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy-MM-dd'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>msgID</con:name>
+          <con:value>P002_19422073723</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendFormat</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>BANKID</bankId><userId>CUSTOMERID</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>ACCOUNTID</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>DATET00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>TIMESTAMP</MsgId><CreDtTm>DATET00:06:27.355+02:00</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><InitgPty><Nm>Vin fjerner co.</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>600685</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>TIMESTAMP.P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>DATE</ReqdExctnDt><Dbtr><Id><OrgId><Othr><Id>921095899</Id></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>ACCOUNTID</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>TIMESTAMP.T4</InstrId><EndToEndId>TIMESTAMP.T4</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>NULL</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="EUR">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>GIBACZPXXXX</BICFI><Nm>SwedbankAB</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>CZ</Ctry><AdrLine>Brunkerbergstorg 8</AdrLine><AdrLine>10534 Stockholm</AdrLine></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>Nerikes Telecom</Nm><PstlAdr><AdrTp>ADDR</AdrTp><PstCd>6781</PstCd><TwnNm>London</TwnNm><Ctry>CZ</Ctry><AdrLine>Kamrerarvagen 18</AdrLine><AdrLine>12930 Hagersten</AdrLine></PstlAdr><CtryOfRes>CZ</CtryOfRes></Cdtr><CdtrAcct><Id><IBAN>CZ6508000000192000145399</IBAN></Id></CdtrAcct></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSend</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0" ><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>4201</bankId><userId>01016003499</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>96550145224</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2022-04-19T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.04"><CstmrCdtTrfInitn><GrpHdr><MsgId>P002_19422073723</MsgId><CreDtTm>2022-04-19T00:06:27.355+02:00</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><InitgPty><Nm>Vin fjerner co.</Nm><Id><OrgId><AnyBIC>SPTRNO22XXX</AnyBIC><Othr><Id>600685</Id><SchmeNm><Cd>BANK</Cd></SchmeNm></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>P002_19422073723.P1</PmtInfId><PmtMtd>TRF</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>10.00</CtrlSum><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><ReqdExctnDt>2022-04-19</ReqdExctnDt><Dbtr><Id><OrgId><Othr><Id>921095899</Id></Othr></OrgId></Id></Dbtr><DbtrAcct><Id><Othr><Id>96550145224</Id><SchmeNm><Cd>BBAN</Cd></SchmeNm></Othr></Id></DbtrAcct><DbtrAgt><FinInstnId><BICFI>SPTRNO22XXX</BICFI></FinInstnId></DbtrAgt><ChrgBr>SHAR</ChrgBr><CdtTrfTxInf><PmtId><InstrId>P002_19422073723.T4</InstrId><EndToEndId>P002_19422073723.T4</EndToEndId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty><CtgyPurp><Cd>NULL</Cd></CtgyPurp></PmtTpInf><Amt><InstdAmt Ccy="EUR">10.00</InstdAmt></Amt><CdtrAgt><FinInstnId><BICFI>GIBACZPXXXX</BICFI><Nm>SwedbankAB</Nm><PstlAdr><AdrTp>ADDR</AdrTp><Ctry>CZ</Ctry><AdrLine>Brunkerbergstorg 8</AdrLine><AdrLine>10534 Stockholm</AdrLine></PstlAdr></FinInstnId></CdtrAgt><Cdtr><Nm>Nerikes Telecom</Nm><PstlAdr><AdrTp>ADDR</AdrTp><PstCd>6781</PstCd><TwnNm>London</TwnNm><Ctry>CZ</Ctry><AdrLine>Kamrerarvagen 18</AdrLine><AdrLine>12930 Hagersten</AdrLine></PstlAdr><CtryOfRes>CZ</CtryOfRes></Cdtr><CdtrAcct><Id><IBAN>CZ6508000000192000145399</IBAN></Id></CdtrAcct></CdtTrfTxInf></PmtInf></CstmrCdtTrfInitn></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>assignmentID</con:name>
+          <con:value>C19422073739</con:value>
+        </con:property>
+        <con:property>
+          <con:name>messageToSendCamt055General</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0"><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>BANKID</bankId><userId>CUSTOMERID</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>ACCOUNTID</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>DATET00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.055.001.01"><CstmrPmtCxlReq><Assgnmt><Id>ASSIGNMENTID</Id><Assgnr><Pty><Nm>sanath685</Nm><PstlAdr><StrtNm>TimesSquare</StrtNm><BldgNb>7</BldgNb><PstCd>NY</PstCd><TwnNm>NewYork</TwnNm><Ctry>US</Ctry></PstlAdr><Id><PrvtId><Othr><Id>san600685</Id></Othr></PrvtId></Id></Pty></Assgnr><Assgne><Agt><FinInstnId><BIC>BBBBUS33</BIC></FinInstnId></Agt></Assgne><CreDtTm>DATET16:05:30</CreDtTm></Assgnmt><Undrlyg><OrgnlPmtInfAndCxl><OrgnlPmtInfId>OPMTID</OrgnlPmtInfId><OrgnlGrpInf><OrgnlMsgId>OMSGID</OrgnlMsgId><OrgnlMsgNmId>camt555</OrgnlMsgNmId></OrgnlGrpInf><NbOfTxs>1</NbOfTxs><PmtInfCxl>false</PmtInfCxl><TxInf><OrgnlInstrId>TXNID</OrgnlInstrId></TxInf></OrgnlPmtInfAndCxl></Undrlyg></CstmrPmtCxlReq></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>messagetoSendCamt055</con:name>
+          <con:value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Wrapper xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:pin.payment.edb.com:authpain001wrapper:v1_0"><auth><![CDATA[<?xml version="1.0" encoding="UTF-8"?><AgreementAuthorizationRequest><authRequest><agreementData><agreementId>600685</agreementId><bankId>4201</bankId><userId>01016003499</userId><userFirstName>Ext.Telepay</userFirstName><userLastName>EvryFileArchive</userLastName><userIdType>EXTU</userIdType><productID>0</productID><organizationId>921095899</organizationId><preapproved>true</preapproved><rejectionLevel>TRANSACTION</rejectionLevel><origin>PAYMUL</origin></agreementData><agreementAccount><accountNumber>96550145224</accountNumber><swiftAdress>SPTRNO22XXX</swiftAdress><currencyCode>NOK</currencyCode><accountType>CoreAccount</accountType><access>CREDIT_AND_DEBIT</access><bookingLevel>D</bookingLevel><approvalLimit>10000000</approvalLimit><registerLimit>10000000</registerLimit><numberOfVerifiers>0</numberOfVerifiers><numberOfApprovers>0</numberOfApprovers></agreementAccount><metaInformation><receivedTimestamp>2022-04-19T00:05:37</receivedTimestamp></metaInformation></authRequest></AgreementAuthorizationRequest>]]]]>><![CDATA[</auth><content><![CDATA[<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.055.001.01"><CstmrPmtCxlReq><Assgnmt><Id>C19422073739</Id><Assgnr><Pty><Nm>sanath685</Nm><PstlAdr><StrtNm>TimesSquare</StrtNm><BldgNb>7</BldgNb><PstCd>NY</PstCd><TwnNm>NewYork</TwnNm><Ctry>US</Ctry></PstlAdr><Id><PrvtId><Othr><Id>san600685</Id></Othr></PrvtId></Id></Pty></Assgnr><Assgne><Agt><FinInstnId><BIC>BBBBUS33</BIC></FinInstnId></Agt></Assgne><CreDtTm>2022-04-19T16:05:30</CreDtTm></Assgnmt><Undrlyg><OrgnlPmtInfAndCxl><OrgnlPmtInfId>P002_19422073723.P1</OrgnlPmtInfId><OrgnlGrpInf><OrgnlMsgId>P002_19422073723</OrgnlMsgId><OrgnlMsgNmId>camt555</OrgnlMsgNmId></OrgnlGrpInf><NbOfTxs>1</NbOfTxs><PmtInfCxl>false</PmtInfCxl><TxInf><OrgnlInstrId>P002_19422073723.T4</OrgnlInstrId></TxInf></OrgnlPmtInfAndCxl></Undrlyg></CstmrPmtCxlReq></Document>]]]]>><![CDATA[</content></Wrapper>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>expectedStatusReasonCamt055</con:name>
+          <con:value>ACCP</con:value>
+        </con:property>
+        <con:property>
+          <con:name>actualStatusReasonCamt055</con:name>
+          <con:value>ACCP</con:value>
+        </con:property>
+        <con:property>
+          <con:name>expectedStatusCamt029</con:name>
+          <con:value>CNCL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>actualStatusCamt029</con:name>
+          <con:value>CNCL</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TxnExpectedStatusCamt029</con:name>
+          <con:value>ACCR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TxnactualStatusCamt029</con:name>
+          <con:value>ACCR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>receiveMessageCamt055</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.002.001.04">
+  <CstmrPmtStsRpt>
+    <GrpHdr>
+      <MsgId>600685.17861264131940562762075.2879</MsgId>
+      <CreDtTm>2022-04-19T16:07:42.222+02:00</CreDtTm>
+      <InitgPty>
+        <Nm>sanath685</Nm>
+        <PstlAdr>
+          <StrtNm>TimesSquare</StrtNm>
+          <BldgNb>7</BldgNb>
+          <PstCd>NY</PstCd>
+          <TwnNm>NewYork</TwnNm>
+          <Ctry>US</Ctry>
+        </PstlAdr>
+        <Id>
+          <PrvtId>
+            <Othr>
+              <Id>san600685</Id>
+            </Othr>
+          </PrvtId>
+        </Id>
+      </InitgPty>
+    </GrpHdr>
+    <OrgnlGrpInfAndSts>
+      <OrgnlMsgId>C19422073739</OrgnlMsgId>
+      <OrgnlMsgNmId>camt.055.001.01</OrgnlMsgNmId>
+      <GrpSts>ACCP</GrpSts>
+    </OrgnlGrpInfAndSts>
+  </CstmrPmtStsRpt>
+</Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>receiveMessageCamt029</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.029.001.03">
+  <RsltnOfInvstgtn><!-- [CAMT055][C19422073739] -->
+    <Assgnmt>
+      <Id>600685.49861095517709009875794.2879</Id>
+      <Assgnr>
+        <Agt>
+          <FinInstnId>
+            <BIC>BBBBUS33</BIC>
+          </FinInstnId>
+        </Agt>
+      </Assgnr>
+      <Assgne>
+        <Pty>
+          <Nm>sanath685</Nm>
+          <PstlAdr>
+            <StrtNm>TimesSquare</StrtNm>
+            <BldgNb>7</BldgNb>
+            <PstCd>NY</PstCd>
+            <TwnNm>NewYork</TwnNm>
+            <Ctry>US</Ctry>
+          </PstlAdr>
+          <Id>
+            <PrvtId>
+              <Othr>
+                <Id>san600685</Id>
+              </Othr>
+            </PrvtId>
+          </Id>
+        </Pty>
+      </Assgne>
+      <CreDtTm>2022-04-19T16:07:42.218+02:00</CreDtTm>
+    </Assgnmt>
+    <Sts>
+      <Conf>CNCL</Conf>
+    </Sts>
+    <CxlDtls>
+      <OrgnlPmtInfAndSts>
+        <OrgnlPmtInfId>P002_19422073723.P1</OrgnlPmtInfId>
+        <OrgnlGrpInf>
+          <OrgnlMsgId>P002_19422073723</OrgnlMsgId>
+          <OrgnlMsgNmId>pain.001.001.04</OrgnlMsgNmId>
+          <OrgnlCreDtTm>2022-04-19T16:07:42.253+02:00</OrgnlCreDtTm>
+        </OrgnlGrpInf>
+        <OrgnlNbOfTxs>1</OrgnlNbOfTxs>
+        <OrgnlCtrlSum>104.66</OrgnlCtrlSum>
+        <TxInfAndSts>
+          <OrgnlInstrId>P002_19422073723.T4</OrgnlInstrId>
+          <TxCxlSts>ACCR</TxCxlSts>
+        </TxInfAndSts>
+      </OrgnlPmtInfAndSts>
+    </CxlDtls>
+  </RsltnOfInvstgtn>
+</Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>pmtID</con:name>
+          <con:value>P002_19422073723.P1</con:value>
+        </con:property>
+        <con:property>
+          <con:name>txnId</con:name>
+          <con:value>P002_19422073723.T4</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePAIN001File" id="8470f3ee-8574-4547-872e-18305bd12f0a">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def MsgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('msgID');
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#MessageToSendFormat}' )
+
+//Parmeters needed in message
+def Account = context.expand( '${Properties#accountNumber}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#dueDate}' )
+def BANKID = context.expand( '${Properties#bankId}' )
+def pmtID = MsgID+'.P1'
+def txnId = MsgID+'.T4'
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("TIMESTAMP",MsgID) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSend",messageToSend);
+def opmtId = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pmtID",pmtID);
+def TxnId = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("txnId",txnId);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushAndReceiveFilePayment" id="f5b3b863-9d93-4b5b-9e87-56b7206ffab6">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#messagetoSend#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+
+//def filecontent = context.expand( '${TestCase#messagetoSend}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueuePAIN001}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#receiveQueuePAIN001}' )
+def msgId = context.expand( '${Properties#msgId}' )
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)
+//// Receive message from MQ
+//String receiveMessage = mqMessageUtils.receiveMessage(mQMessageQueueRecieve);
+////Check results only if received message
+//log.info msgId
+//if (!(("No messsage").equals(receiveMessage))){
+//	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+//	def response = groovyUtils.getXmlHolder(receiveMessage)
+//	log.info  response.getNodeValue("//*:OrgnlMsgId");
+//	ArrayList&lt;String> list= response.getNodeValues("//*:AddtlInf");
+//	log.info list;
+//// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+//}
+//// No message
+//else log.info "No message received"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="e32a8926-d2e2-4904-9e52-b6c9714758ea">
+    <con:settings/>
+    <con:config>
+      <delay>10000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS" id="a85f80a0-8448-459a-a43a-a5a822975c6e">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH-DATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password>1</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  TRANSACTIONSID ,
+  ENDTOENDID ,
+  PAYMENTTYPE,
+  PAYMENTSTATUS,
+  ISPC ,
+FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS 
+WHERE 
+  ENDTOENDID LIKE '%${Properties#msgID}%'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>172310</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>P002_14720113519.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>172310</TRANSACTIONSID>
+         <ENDTOENDID>P002_14720113519.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PrepareCamt055File" id="37304647-3eb7-42f3-aa93-2ed806209610">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+import java.text.SimpleDateFormat
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+
+def assignmentID = "C"+datetime;
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("assignmentID",assignmentID );
+
+//MsgID
+ASSIGNMENTID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('assignmentID');
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#messageToSendCamt055General}' )
+
+//Parmeters needed in message
+def Account = context.expand( '${Properties#accountNumber}' )
+def customerid = context.expand( '${Properties#customerid}' )
+def dueDate = context.expand( '${Properties#dueDate}' )
+def BANKID = context.expand( '${Properties#bankId}' )
+def MsgID = context.expand( '${Properties#msgID}' )
+def pmtID = context.expand( '${Properties#pmtID}' )
+def txnId = context.expand( '${Properties#txnId}' )
+
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("ASSIGNMENTID",ASSIGNMENTID) ;
+messageToSend = messageToSend.replaceAll("OMSGID",MsgID) ;
+messageToSend = messageToSend.replaceAll("CUSTOMERID",customerid) ;
+messageToSend = messageToSend.replaceAll("ACCOUNTID",Account) ;
+messageToSend = messageToSend.replaceAll("DATE",dueDate) ;
+messageToSend = messageToSend.replaceAll("BANKID",BANKID) ;
+messageToSend = messageToSend.replaceAll("OPMTID",pmtID) ;
+messageToSend = messageToSend.replaceAll("TXNID",txnId) ;
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("messagetoSendCamt055",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushAndReceive_Camt055" id="cb6086f0-1147-4ea5-8d2d-67c6617fde07">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+
+
+def filecontent = context.expand( '${Properties#messagetoSendCamt055#declare namespace ns1=\'urn:pin.payment.edb.com:authpain001wrapper:v1_0\'; //ns1:Wrapper[1]}' )
+
+// Set MQ properties
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQQueuemanager = context.expand( '${#Project#mqManager}' )
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueueCamt055}' )
+def mQMessageQueueRecieve = context.expand( '${#Project#receiveQueueCamt055}' )
+def mQMessageQueueReceiveCamt029 = context.expand( '${#Project#receiveQueueCamt029}' )
+
+def assignmentID = context.expand( '${Properties#assignmentID}' )
+def msgId = context.expand( '${Properties#msgID}' )
+
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent)
+/// Receive message from MQ
+////String receiveMessageCamt055 = mqMessageUtils.browseMessage(mQMessageQueueRecieve,assignmentID);
+//String receiveMessage = mqMessageUtils.browseMessage(mQMessageQueueRecieve,assignmentID);
+//String receiveMessage1 = mqMessageUtils.browseMessage(mQMessageQueueReceiveCamt029,msgId);
+////Check results only if received message
+//
+//log.info "receiveMessageCamt055 : " + receiveMessage
+//log.info "receiveMessageCamt029 : " + receiveMessage1
+//
+//def receiveCamt055 = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt055",receiveMessage);
+//def receiveCamt029 = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt029",receiveMessage1);
+//
+//log.info "assignmentID: " + assignmentID
+//log.info "msgId: " + msgId
+//
+//if (!(("No messsage").equals(receiveMessage))){
+//	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+//	def response = groovyUtils.getXmlHolder(receiveMessage)
+//	log.info  response.getNodeValue("//*:OrgnlMsgId");
+//	ArrayList&lt;String> statusCamt055= response.getNodeValues("//*:GrpSts");
+//	log.info statusCamt055;
+//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReasonCamt055",statusCamt055[0]);
+//}
+//if (!(("No messsage").equals(receiveMessage1))){
+//	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+//	def responseCamt029 = groovyUtils.getXmlHolder(receiveMessage1)
+//	log.info  "OrgnlMsgId : " +  responseCamt029.getNodeValue("//*:OrgnlMsgId");
+//	ArrayList&lt;String> statusCamt029= responseCamt029.getNodeValues("//*:Conf");
+//	ArrayList&lt;String> TxnstatusCamt029= responseCamt029.getNodeValues("//*:TxCxlSts");		
+//	log.info statusCamt029;
+//	log.info TxnstatusCamt029;
+//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusCamt029",statusCamt029[0]);
+//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxnactualStatusCamt029",TxnstatusCamt029[0]);
+//// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+//}
+//
+//// No message
+//else log.info "No message received"</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay1" id="68e75a2d-5ea5-46f7-81ab-ae044e0f6184">
+    <con:settings/>
+    <con:config>
+      <delay>5000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="ValidatePAIN002Logs" id="6addd3dc-8e49-4200-b8c9-16fc9912289f">
+    <con:settings/>
+    <con:config>
+      <script>import groovy.json.JsonSlurper
+
+def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' )
+def  intPort = context.expand( '${#Project#Port}' )
+def CPSLogStr
+def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env=env.substring(2)
+def strFileDirectory = "/ebs/$env/pin/logs/piPaymentProcessor"
+
+def strLogRef = context.expand( '${Properties#LogRef}' )
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+               assert false," Failed to conenct to linux server!!"
+
+def assignmentID = context.expand( '${Properties#assignmentID}' )
+assignmentID = "&lt;OrgnlMsgId>$assignmentID&lt;/OrgnlMsgId>"
+
+def assignmentIDCamt29 = context.expand( '${Properties#assignmentID}' )
+assignmentIDCamt29 = "\\[$assignmentIDCamt29]"
+
+
+String command2="cd $strFileDirectory;grep -B 24 -A 5 '$assignmentID'   mqpayload.log";
+def pain002 = ServerConnect.execCommand(command2)
+
+command2="cd $strFileDirectory;grep -B 1 -A 52 '$assignmentIDCamt29'   mqpayload.log";
+def camt029 = ServerConnect.execCommand(command2)
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt055",pain002);
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("receiveMessageCamt029",camt029);
+
+if (!(("No messsage").equals(pain002))){
+	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+	def response = groovyUtils.getXmlHolder(pain002)
+	//log.info  response.getNodeValue("//*:OrgnlMsgId");
+	ArrayList&lt;String> statusCamt055= response.getNodeValues("//*:GrpSts");
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusReasonCamt055",statusCamt055[0]);
+}
+if (!(("No messsage").equals(camt029))){
+	def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+	def responseCamt029 = groovyUtils.getXmlHolder(camt029)
+	//log.info  "OrgnlMsgId : " +  responseCamt029.getNodeValue("//*:OrgnlMsgId");
+	ArrayList&lt;String> statusCamt029= responseCamt029.getNodeValues("//*:Conf");
+	ArrayList&lt;String> TxnstatusCamt029= responseCamt029.getNodeValues("//*:TxCxlSts");		
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("actualStatusCamt029",statusCamt029[0]);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxnactualStatusCamt029",TxnstatusCamt029[0]);
+// TO DO : Add more things here, Based on subsequest test steps, Take MessageIdentification sent and received message and give input to seaches.
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_CANC" id="a99b55c5-2c08-46c1-8712-d06e91f528ce">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH-DATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password>1</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT 
+  TRANSACTIONSID ,
+  ENDTOENDID ,
+  PAYMENTTYPE,
+  PAYMENTSTATUS,
+  ISPC ,
+FK_PROCESSINGLINEID 
+FROM 
+  TRANSACTIONS 
+WHERE 
+  ENDTOENDID LIKE '%${Properties#msgID}%' order by TRANSACTIONSID asc</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="8e97c887-32b1-4c89-8f5a-4e8a7d8c4bc2" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>172314</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ENDTOENDID[1]</con:xpath>
+            <con:element>ENDTOENDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>P002_14720115044.T4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTTYPE[1]</con:xpath>
+            <con:element>PAYMENTTYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>INPX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>CANC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ISPC[1]</con:xpath>
+            <con:element>ISPC</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:xpath>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>172314</TRANSACTIONSID>
+         <ENDTOENDID>P002_14720115044.T4</ENDTOENDID>
+         <PAYMENTTYPE>INPX</PAYMENTTYPE>
+         <PAYMENTSTATUS>CANC</PAYMENTSTATUS>
+         <ISPC>PAYCTINTOUPNPWX</ISPC>
+         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="ValidateFromQueue-Status" id="7391441b-980a-4bbe-bb0b-88de4032585d">
+    <con:settings/>
+    <con:config>
+      <script>def expectedStatusReasonCamt055 = context.expand( '${Properties#expectedStatusReasonCamt055}' )
+def actualStatusReasonCamt055 = context.expand( '${Properties#actualStatusReasonCamt055}' )
+def expectedStatusCamt029 = context.expand( '${Properties#expectedStatusCamt029}' )
+def actualStatusCamt029 = context.expand( '${Properties#actualStatusCamt029}' )
+def TxnExpectedStatusCamt029 = context.expand( '${Properties#TxnExpectedStatusCamt029}' )
+def TxnactualStatusCamt029 = context.expand( '${Properties#TxnactualStatusCamt029}' )
+
+if (!actualStatusReasonCamt055.equals(expectedStatusReasonCamt055)) 
+{
+	assert false,"Camt055 Status is invalid";
+}
+
+if (!actualStatusCamt029.equals(expectedStatusCamt029)) 
+{
+	assert false,"Camt 029 Status is invalid";
+}
+
+if (!TxnactualStatusCamt029.equals(TxnExpectedStatusCamt029)) 
+{
+	assert false,"Camt 029 Txn Status is invalid";
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>7ac37089-fb5d-4637-a84a-61afd3ee482d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dcfeaf88-06eb-4da4-8e30-0d466e532b69</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cf1ce8df-473a-4b68-8a98-1136b32dbd59</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>49a79f07-4486-4b5c-9f37-e305dafdb87a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="657a20b2-d63b-4bf3-808e-2c92b686c769">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

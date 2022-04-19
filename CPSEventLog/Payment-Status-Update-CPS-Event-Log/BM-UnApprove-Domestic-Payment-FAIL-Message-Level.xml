@@ -97,19 +97,19 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214164</con:value>
+          <con:value>261187722</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174104</con:value>
+          <con:value>1258597</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>189830</con:value>
+          <con:value>1379130</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_211005-BM UnApprove Domestic Payment FAIL Message Level</con:value>
+          <con:value>28032022_110609-BM UnApprove Domestic Payment FAIL Message Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -129,7 +129,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57216,"bankId":"4201","message":"Opphev godkjenning feilet for oppdragsid=189830","severity":"WARNING","method":"unapprove","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_211005-BM UnApprove Domestic Payment FAIL Message Level","timeStamp":"2020-09-17T15:40:10Z","tppId":"05","tppName":"UnApprovePayment"}</con:value>
+          <con:value>{"logCode":57216,"bankId":"4201","message":"Opphev godkjenning feilet for oppdragsid=1379130","severity":"WARNING","method":"unapprove","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110609-BM UnApprove Domestic Payment FAIL Message Level","timeStamp":"2022-03-28T05:36:09Z","tppId":"09","tppName":"UnApprovePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -153,7 +153,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>05</con:value>
+          <con:value>09</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -835,16 +835,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

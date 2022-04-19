@@ -95,19 +95,19 @@
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>189819</con:value>
+          <con:value>149943</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214153</con:value>
+          <con:value>334724</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174093</con:value>
+          <con:value>107591</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_210322-BM Update Domestic Amount Limit Validation</con:value>
+          <con:value>21022022_164513-BM Update Domestic Amount Limit Validation</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_210322-BM Update Domestic Amount Limit Validation","timeStamp":"2020-09-17T15:33:27Z","tppId":"22","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"21022022_164513-BM Update Domestic Amount Limit Validation","timeStamp":"2022-02-21T11:15:13Z","tppId":"13","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>22</con:value>
+          <con:value>13</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -693,16 +693,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -795,5 +793,4 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message :'
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:tagId>64b0d4d5-322b-4079-91e6-4cd07fe1b9fa</con:tagId>
 </con:testCase>

@@ -526,16 +526,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

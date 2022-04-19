@@ -97,19 +97,19 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>319789</con:value>
+          <con:value>261187714</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>278466</con:value>
+          <con:value>1258589</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>295020</con:value>
+          <con:value>1379122</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>09102020_171422-BM Approve Domestic Payment Successfull Message Level</con:value>
+          <con:value>28032022_110229-BM Approve Domestic Payment Successfull Message Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -129,7 +129,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57201,"bankId":"4201","message":"Godkjenning utført for meldingsid 278466","severity":"INFO","method":"approve","module":"CPS","userId":"114456","agreementId":"114456","logref":"09102020_171422-BM Approve Domestic Payment Successfull Message Level","timeStamp":"2020-10-09T11:44:22Z","tppId":"22","tppName":"ApprovePayment"}</con:value>
+          <con:value>{"logCode":57201,"bankId":"4201","message":"Godkjenning utført for meldingsid 1258589","severity":"INFO","method":"approve","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110229-BM Approve Domestic Payment Successfull Message Level","timeStamp":"2022-03-28T05:32:29Z","tppId":"29","tppName":"ApprovePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -153,7 +153,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>22</con:value>
+          <con:value>29</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -584,12 +584,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="cf3c298d-5588-49b2-af4c-e7b96d8fe7ac">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="request" id="091f0e83-2159-4d8e-875a-b06c184a9a8a" name="ApprovePayment">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -626,8 +620,10 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
    <soapenv:Body>
       <urn:PaymentApproveRequest>
          <!--You have a CHOICE of the next 4 items at this level-->
-         
-      <urn:messageInput><urn1:messageId>${Properties#messageId}</urn1:messageId></urn:messageInput></urn:PaymentApproveRequest>
+         <urn:messageInput>
+            <urn1:messageId>${Properties#messageId}</urn1:messageId>
+         </urn:messageInput>
+      </urn:PaymentApproveRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Valid HTTP Status Codes" id="22b93ec2-7a71-4d71-8d2d-a9a2d26a464b" name="Valid HTTP Status Codes">
@@ -744,16 +740,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -844,10 +838,4 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message : 
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>cf3c298d-5588-49b2-af4c-e7b96d8fe7ac</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:tagId>64b0d4d5-322b-4079-91e6-4cd07fe1b9fa</con:tagId>
 </con:testCase>

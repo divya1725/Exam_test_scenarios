@@ -91,11 +91,11 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174091</con:value>
+          <con:value>107589</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>189817</con:value>
+          <con:value>149941</con:value>
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
@@ -103,11 +103,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214151</con:value>
+          <con:value>334722</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_210201-BM Update International Salary Amount Limit Validation</con:value>
+          <con:value>14122021_180515-BM Update International Salary Amount Limit Validation</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_210201-BM Update International Salary Amount Limit Validation","timeStamp":"2020-09-17T15:32:06Z","tppId":"01","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"14122021_180515-BM Update International Salary Amount Limit Validation","timeStamp":"2021-12-14T12:35:31Z","tppId":"15","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>01</con:value>
+          <con:value>15</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -505,7 +505,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select P.SALARY,P.CATEGORYPURPOSECODE
@@ -567,12 +567,6 @@ TRANSACTIONSID in (${Properties#transactionId})</con:query>
         </con:configuration>
       </con:assertion>
       <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="delay" name="Delay" id="cff72883-f6d9-465c-ba6d-d564c8ee8a8c">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
     </con:config>
   </con:testStep>
   <con:testStep type="request" name="UpdatePayment" id="5cb4a03e-dfe1-4655-847d-8b7cf1376c2a">
@@ -764,16 +758,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -858,11 +850,6 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message :'
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>1a93bf31-a4bf-433b-baae-517a48218c89</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>cff72883-f6d9-465c-ba6d-d564c8ee8a8c</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

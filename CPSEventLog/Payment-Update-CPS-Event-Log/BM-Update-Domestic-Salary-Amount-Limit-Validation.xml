@@ -95,19 +95,19 @@
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>193636</con:value>
+          <con:value>149939</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>218169</con:value>
+          <con:value>334720</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>177770</con:value>
+          <con:value>107587</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>28092020_195240-BM Update Domestic Salary Amount Limit Validation</con:value>
+          <con:value>14122021_180354-BM Update Domestic Salary Amount Limit Validation</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689510703","severity":"WARNING","method":"update","module":"EVRYCPS","userId":"114456","agreementId":"114456","logref":"28092020_195240-BM Update Domestic Salary Amount Limit Validation","timeStamp":"2020-09-28T14:22:41Z","tppId":"40","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"14122021_180354-BM Update Domestic Salary Amount Limit Validation","timeStamp":"2021-12-14T12:34:10Z","tppId":"54","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>40</con:value>
+          <con:value>54</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -505,7 +505,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWH</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>sad</con:password>
       <con:connectionProperties/>
       <con:query>select P.SALARY,P.CATEGORYPURPOSECODE
@@ -764,16 +764,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

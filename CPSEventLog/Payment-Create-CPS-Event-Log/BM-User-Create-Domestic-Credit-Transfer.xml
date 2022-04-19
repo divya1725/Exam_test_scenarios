@@ -96,11 +96,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>319749</con:value>
+          <con:value>334716</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>09102020_162829-BM User Create Domestic Credit Transfer</con:value>
+          <con:value>21022022_163829-BM User Create Domestic Credit Transfer</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -120,7 +120,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57231,"bankId":"4201","message":"Enkeltbetaling innland opprettet. Transaksjonsid=319749","severity":"INFO","method":"create","module":"CPS","userId":"32334114456","agreementId":"32334114456","logref":"09102020_162829-BM User Create Domestic Credit Transfer","timeStamp":"2020-10-09T10:58:31Z","tppId":"29","tppName":"Create"}</con:value>
+          <con:value>{"logCode":57231,"bankId":"4201","message":"Enkeltbetaling innland opprettet. Transaksjonsid=334716","severity":"INFO","method":"create","module":"CPS","userId":"20117759955","agreementId":"20117759955","logref":"21022022_163829-BM User Create Domestic Credit Transfer","timeStamp":"2022-02-21T11:08:31Z","tppId":"29","tppName":"Create"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -1253,16 +1253,14 @@ def strFileDirectory = '/eos/' + env + '/pin/i1/logs/pin'
 def strFileName = "cpseventlog.log"
 
 def strLogRef = context.expand( '${Properties#LogRef}' )
-
 def CPSLogList = ""
 try{
  	if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
 	assert false," Failed to conenct to linux server!!"
 	else
 	 log.info "Connected to the server successfully!!"
-	 
-	def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-	CPSLogList = ServerConnect.execCommand(command)
+	
+	CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
  }catch(Exception ex){
  	throw new Exception ("Error while connection to server --" + ex)
@@ -1270,10 +1268,12 @@ try{
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
+
+log.info "CPSLogStr-->" + CPSLogStr
 
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("CPSEventLog", CPSLogStr)</script>
     </con:config>
@@ -1349,5 +1349,4 @@ assert req_TppName.trim() == res_TppName.toString().trim(), 'Expected TppName : 
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:tagId>64b0d4d5-322b-4079-91e6-4cd07fe1b9fa</con:tagId>
 </con:testCase>

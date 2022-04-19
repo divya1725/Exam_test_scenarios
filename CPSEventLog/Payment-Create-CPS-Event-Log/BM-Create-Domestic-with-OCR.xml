@@ -95,11 +95,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214145</con:value>
+          <con:value>334718</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_205813-BM Create Domestic with OCR</con:value>
+          <con:value>21022022_164209-BM Create Domestic with OCR</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -119,7 +119,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57231,"bankId":"4201","message":"Enkeltbetaling innland opprettet. Transaksjonsid=214145","severity":"INFO","method":"create","module":"CPS","userId":"32331684812","agreementId":"32331684812","logref":"17092020_205813-BM Create Domestic with OCR","timeStamp":"2020-09-17T15:28:18Z","tppId":"13","tppName":"CreatePayment"}</con:value>
+          <con:value>{"logCode":57231,"bankId":"4201","message":"Enkeltbetaling innland opprettet. Transaksjonsid=334718","severity":"INFO","method":"create","module":"CPS","userId":"20117759955","agreementId":"20117759955","logref":"21022022_164209-BM Create Domestic with OCR","timeStamp":"2022-02-21T11:12:09Z","tppId":"09","tppName":"CreatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -143,7 +143,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>13</con:value>
+          <con:value>09</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -642,16 +642,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

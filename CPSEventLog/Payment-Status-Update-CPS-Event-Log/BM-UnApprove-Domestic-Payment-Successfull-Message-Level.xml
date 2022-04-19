@@ -97,19 +97,19 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214163</con:value>
+          <con:value>261187721</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174103</con:value>
+          <con:value>1258596</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>189829</con:value>
+          <con:value>1379129</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_210924-BM UnApprove Domestic Payment Successfull Message Level</con:value>
+          <con:value>28032022_110541-BM UnApprove Domestic Payment Successfull Message Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -129,7 +129,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57211,"bankId":"4201","message":"Opphev godkjenning utført for meldingsid=174103","severity":"INFO","method":"unapprove","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_210924-BM UnApprove Domestic Payment Successfull Message Level","timeStamp":"2020-09-17T15:39:30Z","tppId":"24","tppName":"UnApprovePayment"}</con:value>
+          <con:value>{"logCode":57211,"bankId":"4201","message":"Opphev godkjenning utført for meldingsid=1258596","severity":"INFO","method":"unapprove","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110541-BM UnApprove Domestic Payment Successfull Message Level","timeStamp":"2022-03-28T05:35:41Z","tppId":"41","tppName":"UnApprovePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -153,7 +153,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>24</con:value>
+          <con:value>41</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -340,7 +340,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
                   <urn3:instructionPriority>NORM</urn3:instructionPriority>
                </urn3:paymentTypeInformation>
                <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:requestedExecutionDate>2021-02-03+05:00</urn3:requestedExecutionDate>
                <urn3:debtorAccount>
                   <urn2:identification>${Properties#accountNumber}</urn2:identification>
                   <urn2:currency>${Properties#currencyCode}</urn2:currency>
@@ -820,6 +820,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
     <con:settings/>
     <con:config>
       <script>import groovy.json.JsonSlurper
+import com.jcraft.jsch.*
 
 def strHost = context.expand( '${#Project#EOSHost}' )
 def strUsername = context.expand( '${#Project#UserName}' )
@@ -832,22 +833,20 @@ def strFileDirectory = '/eos/' + env + '/pin/i1/logs/pin'
 def strFileName = "cpseventlog.log"
 
 def strLogRef = context.expand( '${Properties#LogRef}' )
- 
-if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
-	assert false," Failed to conenct to linux server!!"
+
+ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false,"Failed to conenct to linux server!!"
 else
- log.info "Connected to the server successfully!!"
+	assert true
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

@@ -95,19 +95,19 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260270176</con:value>
+          <con:value>261187720</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>478965</con:value>
+          <con:value>1258595</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>527175</con:value>
+          <con:value>1379128</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>25092020_104323-BM Confirm Domestic Payment FAIL Transaction Level</con:value>
+          <con:value>28032022_110512-BM Confirm Domestic Payment FAIL Transaction Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57232,"bankId":"4201","message":"Enkeltbetaling innland feilet ved bekreftelse. Frakonto=40680100227, id=260270176","severity":"WARNING","method":"confirm","module":"CPS","userId":"309613","agreementId":"309613","logref":"25092020_104323-BM Confirm Domestic Payment FAIL Transaction Level","timeStamp":"2020-09-25T05:13:26Z","tppId":"23","tppName":"ConfirmPayment"}</con:value>
+          <con:value>{"logCode":57202,"bankId":"4201","message":"Godkjenning utført for oppdragsid=1379128","severity":"INFO","method":"approve","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110512-BM Confirm Domestic Payment FAIL Transaction Level","timeStamp":"2022-03-28T05:35:12Z","tppId":"12","tppName":"ApprovePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>23</con:value>
+          <con:value>12</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -346,7 +346,7 @@
                   <urn3:instructionPriority>NORM</urn3:instructionPriority>
                </urn3:paymentTypeInformation>
                <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:requestedExecutionDate>2021-02-03+05:00</urn3:requestedExecutionDate>
                <urn3:debtorAccount>
                   <urn2:identification>${Properties#accountNumber}</urn2:identification>
                   <urn2:currency>${Properties#currencyCode}</urn2:currency>
@@ -601,10 +601,108 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="9d5eb8e4-0bd8-4793-b505-e9dd60c950c3">
+  <con:testStep type="request" id="3e41222b-4d80-4e4a-8093-94aa77f74f73" name="ApprovePayment">
     <con:settings/>
-    <con:config>
-      <delay>1000</delay>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V1_5PortTypeSoap11</con:interface>
+      <con:operation>PaymentApprove</con:operation>
+      <con:request name="ApprovePayment" id="9625ba4a-a91f-4056-bb71-902ee7e08207">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app04.man.cosng.net:22641/pin/services/PINSPaymentStatusUpdate_V1_5</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5" xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v1_5">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#UserID}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>${Properties#channel}</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item key="${Properties#item4}" value="${Properties#value4}"/>
+            <wsc:item value="${Properties#value5}" key="${Properties#item5}"/>
+            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
+            <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentApproveRequest>
+         <!--You have a CHOICE of the next 4 items at this level-->
+         <urn:paymentInfoInput>
+            <urn1:paymentInfoId>${Properties#paymentInfoId}</urn1:paymentInfoId>
+         </urn:paymentInfoInput>
+      </urn:PaymentApproveRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" id="22b93ec2-7a71-4d71-8d2d-a9a2d26a464b" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="SOAP Fault Assertion" id="26c24f61-758e-488f-bd71-c7a8eb0c7a12" name="Not SOAP Fault"/>
+        <con:assertion type="Schema Compliance" id="6e4fbcd0-7d35-4119-a993-5683cf4ff526" name="Schema Compliance">
+          <con:configuration/>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="3a55911c-1cbb-4037-834e-f083c8ae3fdd" name="Match content of [ErrorCode]">
+          <con:configuration>
+            <path>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns4='urn:pays.payment.edb.com:domain:edb-types:v1';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns4:ResponseState[1]/ns1:ErrorCode[1]/text()</path>
+            <content>0</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="6e445214-10a7-4a1d-9686-93a0875c6731" name="Match content of [ns2:paymentStatus]">
+          <con:configuration>
+            <path>declare namespace ns2='urn:pins.payment.evry.com:domain:payment-status-update:v1_5';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns3:paymentStatusUpdateSummary[1]/ns2:paymentStatus[1]/text()</path>
+            <content>READY_FOR_DUE_DATE</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="XPath Match" id="e6b55c9f-41ba-4cde-88fe-aaf267da4ddf" name="Match content of [ns2:message]">
+          <con:configuration>
+            <path>declare namespace ns2='urn:pins.payment.evry.com:domain:payment-status-update:v1_5';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
+//ns3:PaymentApproveResponse[1]/ns3:paymentStatusUpdateSummary[1]/ns2:message[1]/text()</path>
+            <content>OK</content>
+            <allowWildcards>false</allowWildcards>
+            <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+            <ignoreComments>false</ignoreComments>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5/PINSPaymentStatusUpdate_V1_5PortType/PaymentApproveRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="81de96df-6d43-4c0d-858f-3654e1a4a45f">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="bbf112eb-3cdd-4b64-a488-c03a5ec8871e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
     </con:config>
   </con:testStep>
   <con:testStep type="request" id="e93d8897-bf09-4afe-9a27-35dea0f1ca77" name="ConfirmPayment">
@@ -645,8 +743,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
          <!--You have a CHOICE of the next 4 items at this level-->
          <urn:transactionInput>
             <!--1 or more repetitions:-->
-            
-         <urn1:transactionId>${Properties#transactionId}</urn1:transactionId></urn:transactionInput>
+            <urn1:transactionId>${Properties#transactionId}</urn1:transactionId>
+         </urn:transactionInput>
       </urn:PaymentConfirmRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
@@ -764,16 +862,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -872,7 +968,7 @@ log.info "CPS EventLog verified successfully!!"</script>
     <con:properties/>
   </con:breakPoints>
   <con:breakPoints>
-    <con:testStepId>9d5eb8e4-0bd8-4793-b505-e9dd60c950c3</con:testStepId>
+    <con:testStepId>3e41222b-4d80-4e4a-8093-94aa77f74f73</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

@@ -91,11 +91,11 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174094</con:value>
+          <con:value>107592</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>189820</con:value>
+          <con:value>149944</con:value>
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
@@ -103,11 +103,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214154</con:value>
+          <con:value>334725</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_210403-BM Update CreditTransfer on VALI Status with Amount Limit Validation</con:value>
+          <con:value>21022022_164542-BM Update CreditTransfer on VALI Status with Amount Limit Validation</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_210403-BM Update CreditTransfer on VALI Status with Amount Limit Validation","timeStamp":"2020-09-17T15:34:08Z","tppId":"03","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57236,"bankId":"4201","message":"Kontroll av registreringsbeløp feilet ved oppdatering av innlandsbetaling. Frakonto=40689504029","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"21022022_164542-BM Update CreditTransfer on VALI Status with Amount Limit Validation","timeStamp":"2022-02-21T11:15:42Z","tppId":"42","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>03</con:value>
+          <con:value>42</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -498,12 +498,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="67f0beb1-4083-4a58-9955-b9bd799ad3c5">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="request" name="UpdatePayment" id="2ca2bff2-8409-4512-9bc8-86b5cc16f891">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -690,16 +684,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -784,11 +776,6 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message :'
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>e1117957-3f96-4d01-a47b-a626278c6b69</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>67f0beb1-4083-4a58-9955-b9bd799ad3c5</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

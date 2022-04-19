@@ -95,19 +95,19 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>214167</con:value>
+          <con:value>261187725</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>174107</con:value>
+          <con:value>1258600</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>189833</con:value>
+          <con:value>1379133</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>17092020_211220-BM Cancel Domestic Payment Success for Approve Status Transaction Level</con:value>
+          <con:value>28032022_110737-BM Cancel Domestic Payment Success for Approve Status Transaction Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,15 +127,15 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57253,"bankId":"4201","message":"Operasjon CANCEL utført for transaksjonsid=214167","severity":"INFO","method":"cancel","module":"CPS","userId":"684812","agreementId":"684812","logref":"17092020_211220-BM Cancel Domestic Payment Success for Approve Status Transaction Level","timeStamp":"2020-09-17T15:42:24Z","tppId":"20","tppName":"CancelPmtV2_0"}</con:value>
+          <con:value>{"logCode":57251,"bankId":"4201","message":"Operasjon CANCEL utført for meldingsid=1258600","severity":"INFO","method":"cancel","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110737-BM Cancel Domestic Payment Success for Approve Status Transaction Level","timeStamp":"2022-03-28T05:37:37Z","tppId":"37","tppName":"CancelPmtV2_0"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
-          <con:value>57253</con:value>
+          <con:value>57251</con:value>
         </con:property>
         <con:property>
           <con:name>message</con:name>
-          <con:value>Operasjon CANCEL utført for transaksjonsid=${Properties#transactionId}</con:value>
+          <con:value>Operasjon CANCEL utført for meldingsid=${Properties#messageId}</con:value>
         </con:property>
         <con:property>
           <con:name>severity</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>20</con:value>
+          <con:value>37</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -346,7 +346,7 @@
                   <urn3:instructionPriority>NORM</urn3:instructionPriority>
                </urn3:paymentTypeInformation>
                <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:requestedExecutionDate>2021-02-03+05:00</urn3:requestedExecutionDate>
                <urn3:debtorAccount>
                   <urn2:identification>${Properties#accountNumber}</urn2:identification>
                   <urn2:currency>${Properties#currencyCode}</urn2:currency>
@@ -747,11 +747,8 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
    </soapenv:Header>
    <soapenv:Body>
       <urn:PaymentCancelRequest>
-         <urn:transactionInput>
-            <!--1 or more repetitions:-->
-            <urn1:transactionId>${Properties#transactionId}</urn1:transactionId>
-         </urn:transactionInput>
-      </urn:PaymentCancelRequest>
+         
+      <urn:messageInput><urn1:messageId>${Properties#messageId}</urn1:messageId></urn:messageInput></urn:PaymentCancelRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="Valid HTTP Status Codes" id="564bc989-a37c-4aa4-bf4f-4f1261a87a60" name="Valid HTTP Status Codes">
@@ -868,16 +865,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 

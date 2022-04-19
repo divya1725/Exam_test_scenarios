@@ -97,19 +97,19 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>260270174</con:value>
+          <con:value>261187717</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>478963</con:value>
+          <con:value>1258592</con:value>
         </con:property>
         <con:property>
           <con:name>paymentInfoId</con:name>
-          <con:value>527173</con:value>
+          <con:value>1379125</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>25092020_104213-BM Approve Domestic Payment FAIL for VALI Status PaymentInfo Level</con:value>
+          <con:value>28032022_110350-BM Approve Domestic Payment FAIL for VALI Status PaymentInfo Level</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -129,7 +129,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57205,"bankId":"4201","message":"Godkjenning feilet for oppdragsid=527173","severity":"WARNING","method":"approve","module":"CPS","userId":"309613","agreementId":"309613","logref":"25092020_104213-BM Approve Domestic Payment FAIL for VALI Status PaymentInfo Level","timeStamp":"2020-09-25T05:12:16Z","tppId":"13","tppName":"ApprovePayment"}</con:value>
+          <con:value>{"logCode":57205,"bankId":"4201","message":"Godkjenning feilet for oppdragsid=1379125","severity":"WARNING","method":"approve","module":"CPS","userId":"684812","agreementId":"684812","logref":"28032022_110350-BM Approve Domestic Payment FAIL for VALI Status PaymentInfo Level","timeStamp":"2022-03-28T05:33:50Z","tppId":"50","tppName":"ApprovePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -153,7 +153,7 @@ PAYMENT_APPROVE_MESSAGE_SUCCESS(57201, "Godkjenning utført for meldingsid {0}",
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>13</con:value>
+          <con:value>50</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -603,12 +603,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="f0995b4b-f005-4f72-aee5-e1c1d7dfaee1">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="request" id="a3a9280c-22ad-403e-9781-038eaae81288" name="ApprovePayment">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -774,16 +768,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -871,11 +863,6 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message : 
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>ed51b512-0c5b-4f2c-8ed5-71631a253508</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>f0995b4b-f005-4f72-aee5-e1c1d7dfaee1</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

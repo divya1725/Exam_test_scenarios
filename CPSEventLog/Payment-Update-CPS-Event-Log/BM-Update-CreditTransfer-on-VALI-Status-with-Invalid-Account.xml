@@ -92,11 +92,11 @@
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>278501</con:value>
+          <con:value>107586</con:value>
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>295055</con:value>
+          <con:value>149938</con:value>
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
@@ -104,11 +104,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>319824</con:value>
+          <con:value>334719</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>09102020_173458-BM Update CreditTransfer on VALI Status with Invalid Account</con:value>
+          <con:value>21022022_164340-BM Update CreditTransfer on VALI Status with Invalid Account</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -128,7 +128,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57239,"bankId":"4201","message":"Oppdatering av innlandsbetaling feilet. Frakonto=40689510703 og transaksjonsid=319824","severity":"WARNING","method":"update","module":"CPS","userId":"114456","agreementId":"114456","logref":"09102020_173458-BM Update CreditTransfer on VALI Status with Invalid Account","timeStamp":"2020-10-09T12:04:58Z","tppId":"58","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57239,"bankId":"4201","message":"Oppdatering av innlandsbetaling feilet. Frakonto=40689504029 og transaksjonsid=334719","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"21022022_164340-BM Update CreditTransfer on VALI Status with Invalid Account","timeStamp":"2022-02-21T11:13:40Z","tppId":"40","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -152,7 +152,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>58</con:value>
+          <con:value>40</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -499,12 +499,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="8d71fdf8-266a-477d-9c92-001aa2096b93">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="request" name="UpdatePayment" id="d93a3d83-5029-4f85-a676-a43eab3206e3">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -691,16 +685,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -785,11 +777,6 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message :'
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>e1117957-3f96-4d01-a47b-a626278c6b69</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>8d71fdf8-266a-477d-9c92-001aa2096b93</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

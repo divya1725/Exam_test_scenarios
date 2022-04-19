@@ -95,11 +95,11 @@
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>222134</con:value>
+          <con:value>334717</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>29092020_104729-BM User Create Domestic Salary</con:value>
+          <con:value>21022022_163953-BM User Create Domestic Salary</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -119,7 +119,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57221,"bankId":"4201","message":"Enkeltbetaling lønn opprettet. Transaksjonsid=222134","severity":"INFO","method":"create","module":"EVRYCPS","userId":"32334114456","agreementId":"32334114456","logref":"29092020_104729-BM User Create Domestic Salary","timeStamp":"2020-09-29T05:17:32Z","tppId":"29","tppName":"Create"}</con:value>
+          <con:value>{"logCode":57221,"bankId":"4201","message":"Enkeltbetaling lønn opprettet. Transaksjonsid=334717","severity":"INFO","method":"create","module":"CPS","userId":"20117759955","agreementId":"20117759955","logref":"21022022_163953-BM User Create Domestic Salary","timeStamp":"2022-02-21T11:09:55Z","tppId":"53","tppName":"Create"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -143,7 +143,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>29</con:value>
+          <con:value>53</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -610,15 +610,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -698,5 +697,4 @@ log.info "CPS Event Log verified successfully!!"</script>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:tagId>64b0d4d5-322b-4079-91e6-4cd07fe1b9fa</con:tagId>
 </con:testCase>

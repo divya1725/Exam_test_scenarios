@@ -95,19 +95,19 @@
         </con:property>
         <con:property>
           <con:name>paymentinfoId</con:name>
-          <con:value>295056</con:value>
+          <con:value>149940</con:value>
         </con:property>
         <con:property>
           <con:name>messageId</con:name>
-          <con:value>278502</con:value>
+          <con:value>107588</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>319825</con:value>
+          <con:value>334721</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>09102020_174237-BM Update Salary Payments on VALI Status with Invalid Account</con:value>
+          <con:value>21022022_164410-BM Update Salary Payments on VALI Status with Invalid Account</con:value>
         </con:property>
         <con:property>
           <con:name>item4</con:name>
@@ -127,7 +127,7 @@
         </con:property>
         <con:property>
           <con:name>CPSEventLog</con:name>
-          <con:value>{"logCode":57239,"bankId":"4201","message":"Oppdatering av innlandsbetaling feilet. Frakonto=40689510703 og transaksjonsid=319825","severity":"WARNING","method":"update","module":"CPS","userId":"114456","agreementId":"114456","logref":"09102020_174237-BM Update Salary Payments on VALI Status with Invalid Account","timeStamp":"2020-10-09T12:12:37Z","tppId":"37","tppName":"UpdatePayment"}</con:value>
+          <con:value>{"logCode":57239,"bankId":"4201","message":"Oppdatering av innlandsbetaling feilet. Frakonto=40689504029 og transaksjonsid=334721","severity":"WARNING","method":"update","module":"CPS","userId":"684812","agreementId":"684812","logref":"21022022_164410-BM Update Salary Payments on VALI Status with Invalid Account","timeStamp":"2022-02-21T11:14:11Z","tppId":"10","tppName":"UpdatePayment"}</con:value>
         </con:property>
         <con:property>
           <con:name>logCode</con:name>
@@ -151,7 +151,7 @@
         </con:property>
         <con:property>
           <con:name>tppId</con:name>
-          <con:value>37</con:value>
+          <con:value>10</con:value>
         </con:property>
         <con:property>
           <con:name>tppName</con:name>
@@ -498,12 +498,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="delay" name="Delay" id="e2add21a-76f4-4331-a016-e53be5bc78aa">
-    <con:settings/>
-    <con:config>
-      <delay>1000</delay>
-    </con:config>
-  </con:testStep>
   <con:testStep type="request" name="UpdatePayment" id="c8625c7d-7cfa-4472-b006-f68b72ab4914">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -714,16 +708,14 @@ if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(
 else
  log.info "Connected to the server successfully!!"
 
-
-def command = "cd $strFileDirectory;grep '$strLogRef' $strFileName"
-def CPSLogList = ServerConnect.execCommand(command)
+def CPSLogList = ServerConnect.grepFileFromServer(strFileDirectory, strFileName , strLogRef)
 
 ServerConnect.closeConnection()
 
-if (CPSLogList == "")
+if (CPSLogList.size() == 0)
 	assert false , "CPS Event log not added"
 else
-	CPSLogStr = CPSLogList.split('INFO CPSEVENTLOG -')[1]
+	CPSLogStr = CPSLogList.get(0).split('INFO CPSEVENTLOG -')[1]
 
 log.info "CPSLogStr-->" + CPSLogStr
 
@@ -803,11 +795,6 @@ assert req_Message.trim() == res_Message.toString().trim(), 'Expected Message :'
   </con:breakPoints>
   <con:breakPoints>
     <con:testStepId>29314f94-e23a-4c58-9807-0747c8d96826</con:testStepId>
-    <con:status>NONE</con:status>
-    <con:properties/>
-  </con:breakPoints>
-  <con:breakPoints>
-    <con:testStepId>e2add21a-76f4-4331-a016-e53be5bc78aa</con:testStepId>
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>

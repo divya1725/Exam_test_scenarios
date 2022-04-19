@@ -15,7 +15,7 @@ def emailNotification( email) {
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
-def slackChannelName = "#regressiontestresults"
+def slackChannelName = "#regressiontestjenkins"
 def wsReportFolder = "https://fsjenkins.evry.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
 def PROJECT_FOLDER="/usr/local/SmartBear/project"
 
@@ -39,7 +39,7 @@ pipeline {
         )
 	   choice(
             name: 'SuiteName',
-            choices: ['','Bank Internal Comment', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002_ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project'],          
+            choices: ['','Bank Internal Comment','TestComp', 'Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','PAIN002_ErrorCodes','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project'],          
             description: 'Select a project to run'
         )
 		booleanParam(
@@ -75,17 +75,16 @@ pipeline {
   post {
         always {           
           
-           script{
+           script {
              	
                   sh "docker cp ${containername}:/usr/local/SmartBear/project ${WORKSPACE}"
              	  sh "docker stop ${containername}"
              	  sh "docker rm ${containername}"
                   
-            	  junit "**/*/reports/*.xml"   
+		   archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
+            	  //junit "**/*/reports/*.xml"   
                   
-             	  archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
-
-
+             	  //archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
                 }
          // cleanWs()
 

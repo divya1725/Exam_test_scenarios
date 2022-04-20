@@ -3240,6 +3240,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:search:v1_9';
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="delay" name="Delay" id="b5ccbe47-e608-4ea3-9355-439f27c9e3e8">
+    <con:settings/>
+    <con:config>
+      <delay>1000</delay>
+    </con:config>
+  </con:testStep>
   <con:testStep type="jdbc" name="RISK STATUS" id="2c814763-5894-4500-a127-0091bcd1fbb2">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
@@ -3247,11 +3253,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:search:v1_9';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>${#Project#pwhConnectionString}</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>Select RISKSTATUS,PAYMENTSTATUS,ENDTOENDID,transactionsid
-From transactions where transactionsid= ${Create#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //urn:PaymentCreateResponse[1]/urn:paymentResult[1]/urn2:transactionId[1]}</con:query>
+From transactions where 
+transactionsid = '${Create#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //urn:PaymentCreateResponse[1]/urn:paymentResult[1]/urn2:transactionId[1]}'</con:query>
       <con:assertion type="MessageContentAssertion" id="61d49c14-a408-4cc3-b863-ac0f75b43aab" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>

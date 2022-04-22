@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="2d2dca16-9c12-490c-9c11-391eaef45827" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="MltpleDebitAcct_8_TRANS_AyncBatchupdate" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="2d2dca16-9c12-490c-9c11-391eaef45827fileName">MltpleDebitAcct_8_TRANS_AyncBatchupdate</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="jdbc" name="ASYNC_STUPBATCH_MESSAGES_DB" id="8a1cf042-9168-421a-b697-f3f0a5b1d468">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from ASYNC_STUPBATCH_MESSAGES 
+where MESSAGEID = '${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="DataAndMetadataAssertion" id="44f464be-3d34-41dc-9f68-e71271101da9" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]</con:path>
+            <con:element>FK_BATCHID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10133</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:path>
+            <con:element>MESSAGEID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${GetTransactionID#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}</con:expectedValue>
+            <con:caseSensitive>true</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <FK_BATCHID>10133</FK_BATCHID>
+         <MESSAGEID>1289537</MESSAGEID>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay 2" id="30856089-56f2-4e9d-bb01-acf00b1bb440" disabled="true">
+    <con:settings/>
+    <con:config>
+      <delay>35000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_BATCH_DB" id="af9c2eab-7d49-4209-9f9a-df016689fe0e">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from ASYNC_STATUSUPDATE_BATCH where BATCHID = 
+'${ASYNC_STUPBATCH_MESSAGES_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]}'</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="Simple Contains" id="6be61fac-c62c-455f-ad4b-d477c53a17f3" name="Contains">
+        <con:configuration>
+          <token>COMPLETED</token>
+          <ignoreCase>false</ignoreCase>
+          <useRegEx>false</useRegEx>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="ASYNC_STATUSUPDATE_LOG_DB" id="b9944cd6-5474-4fe5-9dff-12b23ca83c4c">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from ASYNC_STATUSUPDATE_LOG where 
+FK_BATCHID = '${ASYNC_STATUSUPDATE_BATCH_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/BATCHID[1]}'
+order by RESULTCODE asc</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="66d8c940-6505-475b-90c5-a217cabd335f" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSUPDATE_LOGID[1]</con:xpath>
+            <con:element>STATUSUPDATE_LOGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>12881</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_BATCHID[1]</con:xpath>
+            <con:element>FK_BATCHID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10142</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RESULTCODE[1]</con:xpath>
+            <con:element>RESULTCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SUCC</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSCOUNT[1]</con:xpath>
+            <con:element>TRANSCOUNT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>6</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <STATUSUPDATE_LOGID>12881</STATUSUPDATE_LOGID>
+         <FK_BATCHID>10142</FK_BATCHID>
+         <RESULTCODE>SUCC</RESULTCODE>
+         <TRANSCOUNT>6</TRANSCOUNT>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="TRANSACTIONS_DB" id="ba75a217-ace5-4e78-8cf2-a23c5cc9a64d">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select unique(A.MESSAGEID),C.TRANSACTIONSID,C.FK_PAYMENTINFOID,C.PAYMENTSTATUS
+from MESSAGE A,PAYMENTINFO B, TRANSACTIONS C, ADVICETRANSACTION D where 
+ A.MESSAGEID = B.FK_MESSAGEID and B.PAYMENTINFOID = C.FK_PAYMENTINFOID and 
+ A.MESSAGEID = 
+ '${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]}'
+ order by PAYMENTSTATUS asc</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="1a2499e5-4808-4bea-a805-70d08a0f17b1" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>409279</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461610</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>409279</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461611</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>3</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>409279</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461609</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/MESSAGEID[1]</con:xpath>
+            <con:element>MESSAGEID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>409279</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/TRANSACTIONSID[1]</con:xpath>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461608</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/PAYMENTSTATUS[1]</con:xpath>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>RFDD</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>409279</MESSAGEID>
+         <TRANSACTIONSID>461610</TRANSACTIONSID>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+      </Row>
+      <Row rowNumber="2">
+         <MESSAGEID>409279</MESSAGEID>
+         <TRANSACTIONSID>461611</TRANSACTIONSID>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+      </Row>
+      <Row rowNumber="3">
+         <MESSAGEID>409279</MESSAGEID>
+         <TRANSACTIONSID>461609</TRANSACTIONSID>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+      </Row>
+      <Row rowNumber="4">
+         <MESSAGEID>409279</MESSAGEID>
+         <TRANSACTIONSID>461608</TRANSACTIONSID>
+         <PAYMENTSTATUS>RFDD</PAYMENTSTATUS>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="APPROVER_DB" id="bd908ec9-5f2e-4185-9b3b-7188896752d5">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from APPROVER where 
+FK_TRANSACTIONSID in 
+('${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/TRANSACTIONSID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[3]/TRANSACTIONSID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[4]/TRANSACTIONSID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[5]/TRANSACTIONSID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[6]/TRANSACTIONSID[1]}')
+or 
+FK_PAYMENTINFOID in 
+('${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[2]/FK_PAYMENTINFOID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[3]/FK_PAYMENTINFOID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[4]/FK_PAYMENTINFOID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[5]/FK_PAYMENTINFOID[1]}',
+'${#[PaymentStatusUpdateAsync#MultipleDebitAcct_8_TRANSACTIONS#GetTransactionID]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[6]/FK_PAYMENTINFOID[1]}'
+)</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="MessageContentAssertion" id="68ab1988-567e-4cf8-83d2-dc65240e29bd" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]</con:xpath>
+            <con:element>APPROVERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>173508</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVERIDENTIFIER[1]</con:xpath>
+            <con:element>APPROVERIDENTIFIER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${ASYNC_STATUSUPDATE_BATCH_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/APPROVALDATE[1]</con:xpath>
+            <con:element>APPROVALDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>2021-02-12 10:46:53.152713</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Fname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTNAME[1]</con:xpath>
+            <con:element>LASTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Lname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461608</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/APPROVERID[1]</con:xpath>
+            <con:element>APPROVERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>173509</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/APPROVERIDENTIFIER[1]</con:xpath>
+            <con:element>APPROVERIDENTIFIER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${ASYNC_STATUSUPDATE_BATCH_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/APPROVALDATE[1]</con:xpath>
+            <con:element>APPROVALDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-02-12 10:46:53.152713</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Fname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/LASTNAME[1]</con:xpath>
+            <con:element>LASTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Lname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461609</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>3</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/APPROVERID[1]</con:xpath>
+            <con:element>APPROVERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>173506</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/APPROVERIDENTIFIER[1]</con:xpath>
+            <con:element>APPROVERIDENTIFIER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${ASYNC_STATUSUPDATE_BATCH_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/APPROVALDATE[1]</con:xpath>
+            <con:element>APPROVALDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-02-12 10:46:53.152713</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Fname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/LASTNAME[1]</con:xpath>
+            <con:element>LASTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Lname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[3]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461610</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/APPROVERID[1]</con:xpath>
+            <con:element>APPROVERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>173507</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/APPROVERIDENTIFIER[1]</con:xpath>
+            <con:element>APPROVERIDENTIFIER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>${ASYNC_STATUSUPDATE_BATCH_DB#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/APPROVERID[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/APPROVALDATE[1]</con:xpath>
+            <con:element>APPROVALDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2021-02-12 10:46:53.152713</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/FIRSTNAME[1]</con:xpath>
+            <con:element>FIRSTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Fname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/LASTNAME[1]</con:xpath>
+            <con:element>LASTNAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Lname</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[4]/FK_TRANSACTIONSID[1]</con:xpath>
+            <con:element>FK_TRANSACTIONSID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>461611</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <APPROVERID>173508</APPROVERID>
+         <APPROVERIDENTIFIER>01010077571</APPROVERIDENTIFIER>
+         <APPROVALDATE>2021-02-12 10:46:53.152713</APPROVALDATE>
+         <FIRSTNAME>Fname</FIRSTNAME>
+         <LASTNAME>Lname</LASTNAME>
+         <FK_TRANSACTIONSID>461608</FK_TRANSACTIONSID>
+         <EXTERN_APPR_VENDOR/>
+         <EXTERN_APPR_METHOD/>
+         <EXTERN_APPR_REF/>
+      </Row>
+      <Row rowNumber="2">
+         <APPROVERID>173509</APPROVERID>
+         <APPROVERIDENTIFIER>01010077571</APPROVERIDENTIFIER>
+         <APPROVALDATE>2021-02-12 10:46:53.152713</APPROVALDATE>
+         <FIRSTNAME>Fname</FIRSTNAME>
+         <LASTNAME>Lname</LASTNAME>
+         <FK_TRANSACTIONSID>461609</FK_TRANSACTIONSID>
+         <EXTERN_APPR_VENDOR/>
+         <EXTERN_APPR_METHOD/>
+         <EXTERN_APPR_REF/>
+      </Row>
+      <Row rowNumber="3">
+         <APPROVERID>173506</APPROVERID>
+         <APPROVERIDENTIFIER>01010077571</APPROVERIDENTIFIER>
+         <APPROVALDATE>2021-02-12 10:46:53.152713</APPROVALDATE>
+         <FIRSTNAME>Fname</FIRSTNAME>
+         <LASTNAME>Lname</LASTNAME>
+         <FK_TRANSACTIONSID>461610</FK_TRANSACTIONSID>
+         <EXTERN_APPR_VENDOR/>
+         <EXTERN_APPR_METHOD/>
+         <EXTERN_APPR_REF/>
+      </Row>
+      <Row rowNumber="4">
+         <APPROVERID>173507</APPROVERID>
+         <APPROVERIDENTIFIER>01010077571</APPROVERIDENTIFIER>
+         <APPROVALDATE>2021-02-12 10:46:53.152713</APPROVALDATE>
+         <FIRSTNAME>Fname</FIRSTNAME>
+         <LASTNAME>Lname</LASTNAME>
+         <FK_TRANSACTIONSID>461611</FK_TRANSACTIONSID>
+         <EXTERN_APPR_VENDOR/>
+         <EXTERN_APPR_METHOD/>
+         <EXTERN_APPR_REF/>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>ConnectionString</con:name>
+      <con:value>jdbc:oracle:thin:pendata/pen@//10.246.89.97:1530/pen_g_functional</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>d364be37-6ee9-4faf-a9c4-4441fbe4f0f0</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2509a06b-e0de-4089-91ff-5c8e84f5d2f7</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f97b6934-4732-4cd8-923a-345eae858a9c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>630859e6-fd1c-4679-9b30-2acc1f3f3552</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

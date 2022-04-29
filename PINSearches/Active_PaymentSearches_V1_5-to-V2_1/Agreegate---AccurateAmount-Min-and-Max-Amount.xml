@@ -26,7 +26,7 @@ TransactionHistoricSearch: Sum of all amounts in Payment Info level <=1.8]]></co
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  
@@ -769,7 +769,18 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="80ddfd04-19b6-47f4-9fd3-c1282b500563" name="PaymentAccountSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentAccountSearch</con:operation><con:request name="PaymentAccountSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="666df245-6ed9-4979-9c17-42d930b4fd47"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  <con:testStep type="request" id="80ddfd04-19b6-47f4-9fd3-c1282b500563" name="PaymentAccountSearch_V2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="666df245-6ed9-4979-9c17-42d930b4fd47">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -813,8 +824,11 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
          </urn:searchCriteria>
       </urn:PaymentAccountSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="0bed9809-3bc8-4105-bd30-a466ca39dcba"/><con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="85713a7c-aedb-4709-afe7-f4e2a55c0c73">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="0bed9809-3bc8-4105-bd30-a466ca39dcba"/>
+        <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="85713a7c-aedb-4709-afe7-f4e2a55c0c73">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -838,8 +852,19 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentAccountSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentAccountSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="b7dd51fa-9765-40db-abac-3fd4931b3fe3" name="PaymentAccountSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -898,7 +923,8 @@ else
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="SOAP Fault Assertion" id="bc777cbc-5589-4c71-ba10-df1ce3316add" name="Not SOAP Fault"/>
         <con:assertion type="GroovyScriptAssertion" id="859fc499-18bd-48ff-9c0a-8ca25a721cf9" name="accurateAmount">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -923,7 +949,8 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
+}</scriptText>
+          </con:configuration>
         </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
@@ -1027,7 +1054,8 @@ else
           </con:configuration>
         </con:assertion>
         <con:assertion type="GroovyScriptAssertion" id="97617a02-945d-4a2c-b370-906bb83d7232" name="AccurateAmount">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 def NoOfElements = context.expand( '${PaymentAccountSearch_V1_9#Response#declare namespace ns2=\'http://control.ws.payment.edb.com\'; declare namespace ns5=\'urn:pins.payment.evry.com:ws:paymentsearch:v1_9\'; declare namespace ns3=\'urn:pins.payment.evry.com:domain:search:v1_9\'; //ns5:PaymentAccountSearchResponse[1]/ns5:result[1]/ns3:elementControl[1]/ns2:NumberOfElements[1]}' ) as Float
@@ -1050,7 +1078,8 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
+}</scriptText>
+          </con:configuration>
         </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
@@ -1113,7 +1142,18 @@ else
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="6168c1d4-f659-414b-90ed-5947ec246094" name="PaymentMessageSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentMessageSearch</con:operation><con:request name="PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  <con:testStep type="request" id="6168c1d4-f659-414b-90ed-5947ec246094" name="PaymentMessageSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -1158,14 +1198,18 @@ else
          </urn:searchCriteria>\r
       </urn:PaymentMessageSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="50913227-38c0-4477-9866-f52cb0803d5a"/><con:assertion type="Simple Contains" name="Non Sal Transaction" id="db506c0f-6591-4870-a409-4459354494e5">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="50913227-38c0-4477-9866-f52cb0803d5a"/>
+        <con:assertion type="Simple Contains" name="Non Sal Transaction" id="db506c0f-6591-4870-a409-4459354494e5">
           <con:configuration>
             <token>${NSalPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="d7e22b27-2c8c-4629-a15d-4eb7233fb225">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="d7e22b27-2c8c-4629-a15d-4eb7233fb225">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1189,8 +1233,19 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="9c064149-6076-4677-9ead-78e0dec12234" name="PaymentMessageSearch-V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1257,7 +1312,8 @@ else
           </con:configuration>
         </con:assertion>
         <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="2199ebf1-7e9d-4023-abc1-3b4f77269a28">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1282,7 +1338,8 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
+}</scriptText>
+          </con:configuration>
         </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
@@ -1474,7 +1531,18 @@ else
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="ef18b275-0b9c-4f30-9c53-a8f0f2ecab19" name="TransactionSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentTransactionSearch</con:operation><con:request name="TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  <con:testStep type="request" id="ef18b275-0b9c-4f30-9c53-a8f0f2ecab19" name="TransactionSearch_V2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -1517,14 +1585,18 @@ else
          </urn:searchCriteria>\r
       </urn:PaymentTransactionSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="dee27725-7eba-4d4f-87a1-c6e599846753"/><con:assertion type="Simple Contains" name="Non Sal Transaction" id="b5c26704-d621-4e38-b0b7-e8b32d1bb712">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="dee27725-7eba-4d4f-87a1-c6e599846753"/>
+        <con:assertion type="Simple Contains" name="Non Sal Transaction" id="b5c26704-d621-4e38-b0b7-e8b32d1bb712">
           <con:configuration>
             <token>${NSalPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="109d5b59-997a-4e9a-a561-cd167dd49374">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="109d5b59-997a-4e9a-a561-cd167dd49374">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1548,8 +1620,19 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="34885b78-e792-4dbb-8e8d-8fac937fdaec" name="TransactionSearch_v2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1614,7 +1697,8 @@ else
           </con:configuration>
         </con:assertion>
         <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="6adcc2e7-5913-4bea-a6f3-b2759e9651c2">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1639,7 +1723,8 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
+}</scriptText>
+          </con:configuration>
         </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
@@ -1829,7 +1914,19 @@ else
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="80be1f12-1211-4fb7-b862-82e1d4a698fe" name="PaymentInfoSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentPaymentInfoSearch</con:operation><con:request name="PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  </con:testStep>
+  <con:testStep type="request" id="80be1f12-1211-4fb7-b862-82e1d4a698fe" name="PaymentInfoSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -1873,14 +1970,18 @@ else
          </urn:searchCriteria>\r
       </urn:PaymentPaymentInfoSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="ee0b61f9-17a0-410b-886a-91776a482a14"/><con:assertion type="Simple Contains" name="Non Sal Transaction" id="ac0019c2-bbc7-46da-8c35-6d6b67e8ca89">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="ee0b61f9-17a0-410b-886a-91776a482a14"/>
+        <con:assertion type="Simple Contains" name="Non Sal Transaction" id="ac0019c2-bbc7-46da-8c35-6d6b67e8ca89">
           <con:configuration>
             <token>${NSalPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="39fa7999-a374-4967-bc4a-cca341b83a88">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="39fa7999-a374-4967-bc4a-cca341b83a88">
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1904,8 +2005,20 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" id="b60da82a-761e-4bbd-a53f-9927670d6731" name="PaymentInfoSearch_V2_0">
+}</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="b60da82a-761e-4bbd-a53f-9927670d6731" name="PaymentInfoSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -1970,7 +2083,8 @@ else
           </con:configuration>
         </con:assertion>
         <con:assertion type="GroovyScriptAssertion" name="accurateAmount" id="4688f9cb-4049-48a4-93af-f415923f14a8">
-          <con:configuration><scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
+          <con:configuration>
+            <scriptText>def accurateMinAmount = context.expand( '${#TestCase#AccurateMinAmount}' ) as Float
 
 def accurateMaxAmount = context.expand( '${#TestCase#AccurateMaxAmount}' ) as Float
 
@@ -1995,7 +2109,8 @@ else
 {
 	assert true;
 }
-}</scriptText></con:configuration>
+}</scriptText>
+          </con:configuration>
         </con:assertion>
         <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
@@ -2029,7 +2144,8 @@ else
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="PaymentInfoSearch_V1_9" id="f67fb859-a1d9-49ee-8734-7a736b5ac425">
+  </con:testStep>
+  <con:testStep type="request" name="PaymentInfoSearch_V1_9" id="f67fb859-a1d9-49ee-8734-7a736b5ac425">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
@@ -2184,7 +2300,8 @@ else
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:properties>
+  </con:testStep>
+  <con:properties>
     <con:property>
       <con:name>PaymentId</con:name>
       <con:value>32664</con:value>
@@ -2377,7 +2494,57 @@ else
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:breakPoints><con:testStepId>80ddfd04-19b6-47f4-9fd3-c1282b500563</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>b7dd51fa-9765-40db-abac-3fd4931b3fe3</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>6168c1d4-f659-414b-90ed-5947ec246094</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>49ea8267-9f55-44f2-aadc-0799d38bfa0d</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ef18b275-0b9c-4f30-9c53-a8f0f2ecab19</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>34885b78-e792-4dbb-8e8d-8fac937fdaec</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>80be1f12-1211-4fb7-b862-82e1d4a698fe</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>9c064149-6076-4677-9ead-78e0dec12234</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>b60da82a-761e-4bbd-a53f-9927670d6731</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>e2996861-1f5b-4107-85c3-7ae2d5721f0c</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:environmentSpec>
+  <con:breakPoints>
+    <con:testStepId>80ddfd04-19b6-47f4-9fd3-c1282b500563</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b7dd51fa-9765-40db-abac-3fd4931b3fe3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>6168c1d4-f659-414b-90ed-5947ec246094</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>49ea8267-9f55-44f2-aadc-0799d38bfa0d</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ef18b275-0b9c-4f30-9c53-a8f0f2ecab19</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>34885b78-e792-4dbb-8e8d-8fac937fdaec</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>80be1f12-1211-4fb7-b862-82e1d4a698fe</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>9c064149-6076-4677-9ead-78e0dec12234</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b60da82a-761e-4bbd-a53f-9927670d6731</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e2996861-1f5b-4107-85c3-7ae2d5721f0c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
     <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>

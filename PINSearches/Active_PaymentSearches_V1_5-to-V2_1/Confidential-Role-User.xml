@@ -12,7 +12,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>dgfd</con:password>
       <con:connectionProperties/>
       <con:query>SELECT CUSTOMERID,ACCOUNTNUMBER,FIRSTNAME,CURRENCY  
@@ -580,7 +580,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="f9b5c52f-53af-4c2c-8e60-6717df2bd431" name="PaymentAccountSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentAccountSearch</con:operation><con:request name="PaymentAccountSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="666df245-6ed9-4979-9c17-42d930b4fd47"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  <con:testStep type="request" id="f9b5c52f-53af-4c2c-8e60-6717df2bd431" name="PaymentAccountSearch_V2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentAccountSearch</con:operation>
+      <con:request name="PaymentAccountSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="666df245-6ed9-4979-9c17-42d930b4fd47">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -623,12 +634,14 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>
       </urn:PaymentAccountSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="54dc5b56-eece-457f-bd9f-f67208a7e606">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="54dc5b56-eece-457f-bd9f-f67208a7e606">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="d4b157c4-4ba8-4805-ad84-5498f835def3">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="d4b157c4-4ba8-4805-ad84-5498f835def3">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -636,31 +649,45 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Confidential Transaction" id="37b0d9d0-09d9-4d6a-93c2-077afbcd704f">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Confidential Transaction" id="37b0d9d0-09d9-4d6a-93c2-077afbcd704f">
           <con:configuration>
             <token>${ConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Non Confidential Transaction" id="7adef513-e2ba-49a3-a750-b10e4150d9ee">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Non Confidential Transaction" id="7adef513-e2ba-49a3-a750-b10e4150d9ee">
           <con:configuration>
             <token>${NConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="dae64151-2c2e-4903-93b6-26fff8afb58f">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="dae64151-2c2e-4903-93b6-26fff8afb58f">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="3f25be2d-3483-4fec-bdf3-843ae6ad49ef">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="3f25be2d-3483-4fec-bdf3-843ae6ad49ef">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentAccountSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentAccountSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="c85cc0d2-b5ce-4ab2-be0a-ed0a1e30ccad" name="PaymentAccountSearchV2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -716,14 +743,13 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentAccountSearchRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        
-        
         <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="a9355cc0-08c7-4f51-8e1e-6b3eb4d2b190">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="f2d4f5bc-aa41-4f14-99f2-45e1b7f8c6ac">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="f2d4f5bc-aa41-4f14-99f2-45e1b7f8c6ac">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -731,31 +757,36 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Confidential Transaction" id="770e4745-750b-40d2-be78-1ab682e410ad">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Confidential Transaction" id="770e4745-750b-40d2-be78-1ab682e410ad">
           <con:configuration>
             <token>${ConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Non Confidential Transaction" id="10e8b118-d397-4fa8-ac41-e5b90f8adcf4">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Non Confidential Transaction" id="10e8b118-d397-4fa8-ac41-e5b90f8adcf4">
           <con:configuration>
             <token>${NConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="242cf758-138c-478d-ba66-81d319e7987d">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="242cf758-138c-478d-ba66-81d319e7987d">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="31ecbc81-c227-4e83-987b-b5ca3153be4d">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="31ecbc81-c227-4e83-987b-b5ca3153be4d">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials>
+        </con:assertion>
+        <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
         </con:credentials>
@@ -1500,7 +1531,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="c0305880-48b9-4879-9485-aae30595be61" name="Conf_PaymentMessageSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentMessageSearch</con:operation><con:request name="Conf_PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  <con:testStep type="request" id="c0305880-48b9-4879-9485-aae30595be61" name="Conf_PaymentMessageSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="Conf_PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -1540,12 +1582,14 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>\r
       </urn:PaymentMessageSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="e23824fe-eeb2-47a4-9b4b-71bf0970cdc0">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="e23824fe-eeb2-47a4-9b4b-71bf0970cdc0">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="8f0fec21-3126-4962-a54e-7cbde4372b71">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="8f0fec21-3126-4962-a54e-7cbde4372b71">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -1553,19 +1597,31 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Confidential Transaction" id="438f8d02-c6c0-4177-bf18-2c75bbda6fb5">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Confidential Transaction" id="438f8d02-c6c0-4177-bf18-2c75bbda6fb5">
           <con:configuration>
             <token>${ConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="a7474cf5-b335-43ed-8d78-667132081fac">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="a7474cf5-b335-43ed-8d78-667132081fac">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="2a83bab7-1862-4b79-98a3-433e8f73d072" name="Conf_PaymentMessageSearchV2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1617,14 +1673,13 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentMessageSearchRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        
-        
         <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="94cdf0d1-4551-432c-af12-0b08b7610229">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="112ce3c7-4c54-4173-8752-09c6cb7e0c1b">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="112ce3c7-4c54-4173-8752-09c6cb7e0c1b">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -1632,19 +1687,22 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Confidential Transaction" id="3431c362-a5ec-48bd-b7ae-6b8aa0cae08e">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Confidential Transaction" id="3431c362-a5ec-48bd-b7ae-6b8aa0cae08e">
           <con:configuration>
             <token>${ConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="9b3d6e5c-7b4f-4672-ad04-911936696a57">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="9b3d6e5c-7b4f-4672-ad04-911936696a57">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials>
+        </con:assertion>
+        <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
         </con:credentials>
@@ -2354,7 +2412,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="cb3b7c69-f06f-4afa-b5af-198dfb360ad7" name="Conf_PaymentInfoSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentPaymentInfoSearch</con:operation><con:request name="Conf_PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  <con:testStep type="request" id="cb3b7c69-f06f-4afa-b5af-198dfb360ad7" name="Conf_PaymentInfoSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="Conf_PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -2391,7 +2460,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>
       </urn:PaymentPaymentInfoSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="ddaaa9bb-6d6a-4a3a-8dff-e2e290cac003"/><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="ddaaa9bb-6d6a-4a3a-8dff-e2e290cac003"/>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="ca7aa732-3c9c-42cd-b514-b4053b7a1aef" name="Conf_PaymentInfoSearchV2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -3134,7 +3214,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="df1d2f22-e7e0-45ea-a3da-b8739b8341a3" name="Conf_TransactionSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentTransactionSearch</con:operation><con:request name="Conf_TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  <con:testStep type="request" id="df1d2f22-e7e0-45ea-a3da-b8739b8341a3" name="Conf_TransactionSearch_V2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="Conf_TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -3175,12 +3266,14 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>
       </urn:PaymentTransactionSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="78732d8d-8ccd-4196-8b8d-55d3cb4232d6">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="78732d8d-8ccd-4196-8b8d-55d3cb4232d6">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="acb19d8e-caeb-466e-a09b-570bc9a91110">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="acb19d8e-caeb-466e-a09b-570bc9a91110">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -3188,13 +3281,24 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="76c59d3b-49f9-486d-a18d-13125b819bd9">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="76c59d3b-49f9-486d-a18d-13125b819bd9">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="d0a3c667-8985-4892-9aef-177347790b96" name="Conf_TransactionSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -3248,13 +3352,13 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionSearchRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        
         <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="880c64b4-73c6-4030-be12-634ed0ccb09f">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="61e09f9a-c244-4893-be75-601cd24feb52">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="61e09f9a-c244-4893-be75-601cd24feb52">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -3262,13 +3366,15 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="2f4fedc0-2fb1-4477-9dc7-6836977403a1">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="2f4fedc0-2fb1-4477-9dc7-6836977403a1">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials>
+        </con:assertion>
+        <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
         </con:credentials>
@@ -3943,7 +4049,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="b5f4862d-0ce2-4a2c-b0cb-93474e6e790e" name="Non Conf_PaymentMessageSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentMessageSearch</con:operation><con:request name="Non Conf_PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  <con:testStep type="request" id="b5f4862d-0ce2-4a2c-b0cb-93474e6e790e" name="Non Conf_PaymentMessageSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentMessageSearch</con:operation>
+      <con:request name="Non Conf_PaymentMessageSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a06d90b4-b489-44c5-8acc-83d25ed371eb">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -3986,12 +4103,14 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>
       </urn:PaymentMessageSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="db390114-80de-4797-8038-951fce1acbcb">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="db390114-80de-4797-8038-951fce1acbcb">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="04041e95-8e18-4e33-b6de-043d04765dce">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="04041e95-8e18-4e33-b6de-043d04765dce">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -3999,19 +4118,31 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="eac51236-66f0-4242-aa0a-8104325a8233">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="eac51236-66f0-4242-aa0a-8104325a8233">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="b098a368-fa7d-4ae4-86c4-a6bb1156ce8a">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="b098a368-fa7d-4ae4-86c4-a6bb1156ce8a">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentMessageSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="ed4d5e0c-41a5-471b-b95d-f6e553165ac9" name="Non Conf_PaymentMessageSearchV2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -4067,14 +4198,13 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentMessageSearchRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        
-        
         <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="80c6bf36-01d8-4b6f-bafb-6eb55aef99c7">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="1525915c-0a4c-4980-8689-f2d5301124bc">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="1525915c-0a4c-4980-8689-f2d5301124bc">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -4082,19 +4212,22 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="740833ca-5b71-420c-9b2b-8b96145ac842">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="740833ca-5b71-420c-9b2b-8b96145ac842">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="cfe9789c-5bd8-4083-97ea-2bcbee96b3cb">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="cfe9789c-5bd8-4083-97ea-2bcbee96b3cb">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials>
+        </con:assertion>
+        <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
         </con:credentials>
@@ -4822,7 +4955,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="8da8900f-b09e-4cff-9564-3216399fc71b" name="Non Conf_PaymentInfoSearchV2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentPaymentInfoSearch</con:operation><con:request name="Non Conf_PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  <con:testStep type="request" id="8da8900f-b09e-4cff-9564-3216399fc71b" name="Non Conf_PaymentInfoSearchV2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentPaymentInfoSearch</con:operation>
+      <con:request name="Non Conf_PaymentInfoSearchV2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="69786592-4dc8-4443-92af-3cc7744b1752">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -4863,7 +5007,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>\r
       </urn:PaymentPaymentInfoSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="3e3ce266-c0fb-4e6e-a441-4f039b10b28e"/><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="3e3ce266-c0fb-4e6e-a441-4f039b10b28e"/>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentPaymentInfoSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="2529ef37-abdb-46f1-baca-5611ff454979" name="Non Conf_PaymentInfoSearchV2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -5449,7 +5604,18 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="8cd90bd5-9be2-40cc-a378-589657c0c82a" name="Non Conf_TransactionSearch_V2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentTransactionSearch</con:operation><con:request name="Non Conf_TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
+  <con:testStep type="request" id="8cd90bd5-9be2-40cc-a378-589657c0c82a" name="Non Conf_TransactionSearch_V2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentTransactionSearch</con:operation>
+      <con:request name="Non Conf_TransactionSearch_V2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="5b9dabca-f3f1-435f-92ef-c1d2ac0c7fe9">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">\r
    <soapenv:Header>\r
       <wsc:AutHeader>\r
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>\r
@@ -5487,12 +5653,14 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>\r
       </urn:PaymentTransactionSearchRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="60e5e0a2-9553-498b-b994-421c8a12c3c8">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="60e5e0a2-9553-498b-b994-421c8a12c3c8">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="43643e87-3d45-448f-a697-698e9dfca197">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="43643e87-3d45-448f-a697-698e9dfca197">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -5500,25 +5668,39 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Non Confidential Transaction" id="843cbcff-4e4f-45db-9054-0558fcee03d4">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Non Confidential Transaction" id="843cbcff-4e4f-45db-9054-0558fcee03d4">
           <con:configuration>
             <token>${NConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="c1ff856a-8788-4dc8-a6f7-91f8d09b0f5e">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="c1ff856a-8788-4dc8-a6f7-91f8d09b0f5e">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="a4f165dd-adac-4774-91d0-96b7776578ab">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="a4f165dd-adac-4774-91d0-96b7776578ab">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" id="dfd02873-eecc-41e2-966d-e2f601a51126" name="Non Conf_TransactionSearch_V2_0">
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentTransactionSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="dfd02873-eecc-41e2-966d-e2f601a51126" name="Non Conf_TransactionSearch_V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -5568,13 +5750,13 @@ declare namespace ns2='http://control.ws.payment.edb.com';
       </urn:PaymentTransactionSearchRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        
         <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="b0490190-050f-44e1-8c16-7749c36b2d70">
           <con:settings/>
           <con:configuration>
             <codes>200</codes>
           </con:configuration>
-        </con:assertion><con:assertion type="XPath Match" name="XPath Match" id="229bbe42-31ed-4c50-a84f-7c3995d933e6">
+        </con:assertion>
+        <con:assertion type="XPath Match" name="XPath Match" id="229bbe42-31ed-4c50-a84f-7c3995d933e6">
           <con:configuration>
             <path>//*:ErrorCode</path>
             <content>0</content>
@@ -5582,25 +5764,29 @@ declare namespace ns2='http://control.ws.payment.edb.com';
             <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
             <ignoreComments>false</ignoreComments>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="Non Confidential Transaction" id="3b9e83fd-f613-4e2c-8657-d6e508660662">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="Non Confidential Transaction" id="3b9e83fd-f613-4e2c-8657-d6e508660662">
           <con:configuration>
             <token>${NConfPaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="55f5cd54-4115-4fd2-b890-a044975beb17">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="55f5cd54-4115-4fd2-b890-a044975beb17">
           <con:configuration>
             <token>${ConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="98ff09ba-fc98-4943-a14b-d9c9bb0624ee">
+        </con:assertion>
+        <con:assertion type="Simple Contains" name="NonConfidentialCreditorName" id="98ff09ba-fc98-4943-a14b-d9c9bb0624ee">
           <con:configuration>
             <token>${NConfPaymentCreate#Request#declare namespace urn1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; declare namespace urn2='urn:pins.payment.evry.com:domain:sepa-complex-types:v8'; declare namespace urn4='urn:pins.payment.evry.com:domain:creditor:v1_8'; //urn:PaymentCreateRequest[1]/urn:paymentMessage[1]/urn1:transaction[1]/urn4:creditor[1]/urn2:name[1]}</token>
             <ignoreCase>false</ignoreCase>
             <useRegEx>false</useRegEx>
           </con:configuration>
-        </con:assertion><con:credentials>
+        </con:assertion>
+        <con:credentials>
           <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
           <con:authType>No Authorization</con:authType>
         </con:credentials>
@@ -5632,7 +5818,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="Non Conf_TransactionSearch_V1_9" id="8d8b69f1-1b81-4920-b573-533085f590fd">
+  </con:testStep>
+  <con:testStep type="request" name="Non Conf_TransactionSearch_V1_9" id="8d8b69f1-1b81-4920-b573-533085f590fd">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_9PortTypeSoap11</con:interface>
@@ -5777,7 +5964,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="Non Conf_TransactionSearch_V1_8" id="29dea87c-4aea-4f91-bfa7-0ed23af3ec70">
+  </con:testStep>
+  <con:testStep type="request" name="Non Conf_TransactionSearch_V1_8" id="29dea87c-4aea-4f91-bfa7-0ed23af3ec70">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_8PortTypeSoap11</con:interface>
@@ -5920,7 +6108,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="Non Conf_TransactionSearch_V1_7" id="8c7492cb-e302-4bb0-be33-3f38dc182612">
+  </con:testStep>
+  <con:testStep type="request" name="Non Conf_TransactionSearch_V1_7" id="8c7492cb-e302-4bb0-be33-3f38dc182612">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_7PortTypeSoap11</con:interface>
@@ -6063,7 +6252,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="Non Conf_TransactionSearch_V1_6" id="4e385d12-931c-46a0-842f-ffd511d0fbec">
+  </con:testStep>
+  <con:testStep type="request" name="Non Conf_TransactionSearch_V1_6" id="4e385d12-931c-46a0-842f-ffd511d0fbec">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_6PortTypeSoap11</con:interface>
@@ -6199,7 +6389,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="Non Conf_TransactionSearch_V1_5" id="605af40d-5489-47d3-a4a1-c008833dc05d">
+  </con:testStep>
+  <con:testStep type="request" name="Non Conf_TransactionSearch_V1_5" id="605af40d-5489-47d3-a4a1-c008833dc05d">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V1_5PortTypeSoap11</con:interface>
@@ -6335,7 +6526,19 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="32d1285a-ba52-41be-adbd-bcbbe657c741" name="BookingSearch_v2_1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface><con:operation>PaymentBookingSearch</con:operation><con:request name="BookingSearch_v2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="36e41166-3660-4dde-8ec5-12d97beb1fe2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
+  </con:testStep>
+  <con:testStep type="request" id="32d1285a-ba52-41be-adbd-bcbbe657c741" name="BookingSearch_v2_1">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentSearch_V2_1PortTypeSoap11</con:interface>
+      <con:operation>PaymentBookingSearch</con:operation>
+      <con:request name="BookingSearch_v2_1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="36e41166-3660-4dde-8ec5-12d97beb1fe2">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-D6}/pin/services/PINSPaymentSearch_V2_1</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1" xmlns:urn1="urn:pins.payment.tietoevry.com:domain:search:v2_1" xmlns:urn2="urn:pins.payment.tietoevry.com:domain:common:v2_1" xmlns:urn3="urn:pins.payment.tietoevry.com:domain:complex-types:v2_1">
    <soapenv:Header>
       <wsc:AutHeader>
          <wsc:SourceApplication>${#TestCase#SourceApplication}</wsc:SourceApplication>
@@ -6374,9 +6577,26 @@ declare namespace ns2='http://control.ws.payment.edb.com';
          </urn:searchCriteria>
       </urn:PaymentBookingSearchRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="fd1fba16-15e7-4a01-8dce-7a3637413b79"/><con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="8719842f-ed3c-466b-9eb8-0082aeed9766">
-          <con:configuration><token>${BookingSearch_v2_1#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_1'; //ns5:PaymentBookingSearchResponse[1]}</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration>
-        </con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentBookingSearchRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" id="803d32d0-1064-4eae-8420-54b53e65c495" name="BookingSearch_v2_0">
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="fd1fba16-15e7-4a01-8dce-7a3637413b79"/>
+        <con:assertion type="Simple Contains" name="ConfidentialCreditorName" id="8719842f-ed3c-466b-9eb8-0082aeed9766">
+          <con:configuration>
+            <token>${BookingSearch_v2_1#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentsearch:v2_1'; //ns5:PaymentBookingSearchResponse[1]}</token>
+            <ignoreCase>false</ignoreCase>
+            <useRegEx>false</useRegEx>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.tietoevry.com:ws:paymentsearch:v2_1/PINSPaymentSearch_V2_1PortType/PaymentBookingSearchRequest"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="803d32d0-1064-4eae-8420-54b53e65c495" name="BookingSearch_v2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -6467,7 +6687,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="7e33bac4-51f8-48e4-a947-139aebeef512" name="AccountSearch_v2_0">
+  </con:testStep>
+  <con:testStep type="request" id="7e33bac4-51f8-48e4-a947-139aebeef512" name="AccountSearch_v2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -6566,7 +6787,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="3d0d6d4a-588b-45d6-8912-044fe93e7e33" name="PaymentMessageSearch-V2_0">
+  </con:testStep>
+  <con:testStep type="request" id="3d0d6d4a-588b-45d6-8912-044fe93e7e33" name="PaymentMessageSearch-V2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -6666,7 +6888,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="06fb7859-8c80-437d-ba97-21fad3571967" name="TransactionSearch_v2_0">
+  </con:testStep>
+  <con:testStep type="request" id="06fb7859-8c80-437d-ba97-21fad3571967" name="TransactionSearch_v2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -6759,7 +6982,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" id="8bafaa6f-0b12-4319-9f3b-b5dca6d1c2f0" name="PaymentInfoSearch_v2_0">
+  </con:testStep>
+  <con:testStep type="request" id="8bafaa6f-0b12-4319-9f3b-b5dca6d1c2f0" name="PaymentInfoSearch_v2_0">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentSearch_V2_0PortTypeSoap11</con:interface>
@@ -6850,7 +7074,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="ConfApprove" id="ab066f8e-e9c4-427c-84f7-75fa20e6d7ec">
+  </con:testStep>
+  <con:testStep type="request" name="ConfApprove" id="ab066f8e-e9c4-427c-84f7-75fa20e6d7ec">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentStatusUpdate_V1_5PortTypeSoap11</con:interface>
@@ -6959,7 +7184,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:testStep type="request" name="NConfApprove" id="5a9bff04-0893-43c4-ade4-b5a354bf6dad">
+  </con:testStep>
+  <con:testStep type="request" name="NConfApprove" id="5a9bff04-0893-43c4-ade4-b5a354bf6dad">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPaymentStatusUpdate_V1_5PortTypeSoap11</con:interface>
@@ -7068,7 +7294,8 @@ declare namespace ns2='http://control.ws.payment.edb.com';
         </con:environmentSpec>
       </con:request>
     </con:config>
-  </con:testStep><con:properties>
+  </con:testStep>
+  <con:properties>
     <con:property>
       <con:name>PaymentId</con:name>
       <con:value>32664</con:value>
@@ -7239,7 +7466,82 @@ declare namespace ns2='http://control.ws.payment.edb.com';
     <con:status>NONE</con:status>
     <con:properties/>
   </con:breakPoints>
-  <con:breakPoints><con:testStepId>c85cc0d2-b5ce-4ab2-be0a-ed0a1e30ccad</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>2a83bab7-1862-4b79-98a3-433e8f73d072</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>d0a3c667-8985-4892-9aef-177347790b96</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ca7aa732-3c9c-42cd-b514-b4053b7a1aef</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>ed4d5e0c-41a5-471b-b95d-f6e553165ac9</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>dfd02873-eecc-41e2-966d-e2f601a51126</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>2529ef37-abdb-46f1-baca-5611ff454979</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>32d1285a-ba52-41be-adbd-bcbbe657c741</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>f9b5c52f-53af-4c2c-8e60-6717df2bd431</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>c0305880-48b9-4879-9485-aae30595be61</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>cb3b7c69-f06f-4afa-b5af-198dfb360ad7</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>df1d2f22-e7e0-45ea-a3da-b8739b8341a3</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>b5f4862d-0ce2-4a2c-b0cb-93474e6e790e</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>8da8900f-b09e-4cff-9564-3216399fc71b</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>8cd90bd5-9be2-40cc-a378-589657c0c82a</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:environmentSpec>
+  <con:breakPoints>
+    <con:testStepId>c85cc0d2-b5ce-4ab2-be0a-ed0a1e30ccad</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2a83bab7-1862-4b79-98a3-433e8f73d072</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d0a3c667-8985-4892-9aef-177347790b96</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ca7aa732-3c9c-42cd-b514-b4053b7a1aef</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ed4d5e0c-41a5-471b-b95d-f6e553165ac9</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>dfd02873-eecc-41e2-966d-e2f601a51126</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2529ef37-abdb-46f1-baca-5611ff454979</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>32d1285a-ba52-41be-adbd-bcbbe657c741</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f9b5c52f-53af-4c2c-8e60-6717df2bd431</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>c0305880-48b9-4879-9485-aae30595be61</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cb3b7c69-f06f-4afa-b5af-198dfb360ad7</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>df1d2f22-e7e0-45ea-a3da-b8739b8341a3</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>b5f4862d-0ce2-4a2c-b0cb-93474e6e790e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>8da8900f-b09e-4cff-9564-3216399fc71b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>8cd90bd5-9be2-40cc-a378-589657c0c82a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
     <con:entry environmentId="bab00d5a-ca3b-4a45-9b61-6d643ac5ab87">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>

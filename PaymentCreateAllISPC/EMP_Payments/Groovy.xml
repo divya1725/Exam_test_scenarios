@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="de781059-b97b-4f1f-80ec-d3a7caf16516" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Groovy" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="0852a67e-93c7-4bbd-bced-7cb04d651b14fileName">Groovy</con:setting>
+    <con:setting id="de781059-b97b-4f1f-80ec-d3a7caf16516fileName">Groovy</con:setting>
+  </con:settings>
+  <con:testStep type="groovy" name="app log" id="dfa51e24-1995-4ecd-b139-907864f83efd">
+    <con:settings/>
+    <con:config>
+      <script>import groovy.json.JsonSlurper
+
+def strHost = context.expand( '${#Project#EOSHost}' )
+log.info strHost
+def strUsername = context.expand( '${#Project#UserName}' )
+log.info strUsername
+def strPassword = context.expand( '${#Project#Password}' )
+log.info strPassword
+def  intPort = context.expand( '${#Project#Port}' )
+log.info intPort
+
+def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+env = env.substring(2)
+log.info env
+def strFileDirectory = '/eos/' + env + '/pin/i1/logs/pin'
+log.info strFileDirectory
+//def strLogRef = context.expand( '${Properties#LogRef}' )
+//log.info strLogRef
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+	assert false," Failed to conenct to linux server!!"
+else
+ log.info "Connected to the server successfully!!"
+
+def grepString = context.expand( '${#TestSuite#GrepString}' )
+
+log.info grepString
+ grepString = 'cd ' + strFileDirectory + ';' + grepString
+log.info grepString
+def applog = ServerConnect.execCommand(grepString)
+log.info "applog is :" + applog
+log.info applog
+ServerConnect.closeConnection()
+
+assert applog.trim() != " ", "applog found in app.log!!, Grep Command:" + grepString
+
+def testSuiteProperty = testRunner.testCase.testSuite.getPropertyValue( "applog" )
+testRunner.testCase.testSuite.setPropertyValue( "applog", applog )</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="99dcb4b9-e58f-4103-ac8d-80fcc1b1ce21">
+    <con:settings/>
+    <con:config>
+      <delay>1000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="app log validation" id="c31c0bcf-c6b0-435c-94b7-80da56cc4043">
+    <con:settings/>
+    <con:config>
+      <script>def applog = context.expand( '${#TestSuite#applog}' )
+def accountnumberexpected = context.expand( '${#TestSuite#accountnumberexpected}' )
+
+assert applog.contains(accountnumberexpected)
+log.info(accountnumberexpected)
+
+if(applog.contains('EVRY')){
+log.info('EVRY')
+}
+
+if(applog.contains('technical error')) {
+log.error('technical error')
+}
+
+else if(applog.contains('Null pointer')) {
+log.error('Null Pointer')
+}
+
+else if(applog.contains('Technical error in reservation engine')) {
+log.error('Technical error in reservation engine')
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

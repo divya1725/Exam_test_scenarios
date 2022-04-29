@@ -380,9 +380,9 @@ PAYMENTTYPE: NRTP	ISPC:PAYCTDOMOUEXRTP	PAYMENT_CLASSIFICATION: Domestic	ISEDITAB
       <urn:PaymentCreateRequest>
          <urn:paymentMessage>
             <urn1:paymentIdentification>
-               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification><urn2:endToEndIdentification>${#TestSuite#endtoendID}</urn2:endToEndIdentification>
+               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
+               <urn2:endToEndIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
                <!--Optional:-->
-               
             </urn1:paymentIdentification>
             <urn1:paymentInfo>
                <urn3:paymentMethod>TRF</urn3:paymentMethod>
@@ -420,7 +420,13 @@ PAYMENTTYPE: NRTP	ISPC:PAYCTDOMOUEXRTP	PAYMENT_CLASSIFICATION: Domestic	ISEDITAB
                <!--Optional:-->
                <!--Optional:-->
                <!--Optional:-->
-               <urn4:creditorAgent><urn2:bic>${#TestSuite#debitBankBic}</urn2:bic><urn2:postalAddress><urn2:country>NO</urn2:country></urn2:postalAddress></urn4:creditorAgent><urn4:creditorAccount>
+               <urn4:creditorAgent>
+                  <urn2:bic>${#TestSuite#debitBankBic}</urn2:bic>
+                  <urn2:postalAddress>
+                     <urn2:country>NO</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditorAccount>
                   <urn2:identification>${#TestSuite#creditAccount}</urn2:identification>
                   <!--Optional:-->
                </urn4:creditorAccount>
@@ -439,7 +445,7 @@ PAYMENTTYPE: NRTP	ISPC:PAYCTDOMOUEXRTP	PAYMENT_CLASSIFICATION: Domestic	ISEDITAB
       </urn:PaymentCreateRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="MessageContentAssertion" id="dc80c0ad-b8fc-4db2-bed1-fe449b687553" name="Message Content Assertion">
+        <con:assertion type="MessageContentAssertion" id="cb5bec11-488a-4a1f-84f3-90c633b677eb" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
               <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
@@ -449,7 +455,7 @@ declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
               <con:element>ErrorCode</con:element>
               <con:type>XmlInt</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
@@ -462,7 +468,7 @@ declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
               <con:element>Severity</con:element>
               <con:type>XmlInt</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
@@ -575,27 +581,244 @@ declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
-              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
 declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
-declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
-//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:paymentTypeInformation[1]/ns1:serviceLevel[1]</con:xpath>
-              <con:element>ns6:serviceLevel</con:element>
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]</con:xpath>
+              <con:element>errorItem</con:element>
               <con:type xsi:nil="true"/>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@key</con:xpath>
+              <con:element>@key</con:element>
+              <con:type>XmlString</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>NRTP</con:expectedValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>6456</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v21';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:edb-types:v1';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@value</con:xpath>
+              <con:element>@value</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>A similar payment was recently added. Make sure it is not a mistake.</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
               <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
 declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
-//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:paymentProduct[1]</con:xpath>
-              <con:element>ns4:paymentProduct</con:element>
-              <con:type>XmlString</con:type>
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:messageId[1]</con:xpath>
+              <con:element>ns4:messageId</con:element>
+              <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>PI Domestic</con:expectedValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1290501</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:paymentInfoId[1]</con:xpath>
+              <con:element>ns4:paymentInfoId</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1422853</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:transactionId[1]</con:xpath>
+              <con:element>ns4:transactionId</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>261236702</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:paymentReference[1]</con:xpath>
+              <con:element>ns4:paymentReference</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>261236702</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:debitAmount[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:debitAmount[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:creditAmount[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:creditAmount[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:debitCounterValue[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:debitCounterValue[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:creditCounterValue[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:creditCounterValue[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:conversionRateInfo[1]/ns1:rate[1]</con:xpath>
+              <con:element>ns5:rate</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:conversionRateInfo[1]/ns1:type[1]</con:xpath>
+              <con:element>ns5:type</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NONE</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentAmounts[1]/ns1:conversionRateInfo[1]/ns1:unitNumber[1]</con:xpath>
+              <con:element>ns5:unitNumber</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:releaseDate[1]</con:xpath>
+              <con:element>ns4:releaseDate</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2022-04-21+02:00</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -606,8 +829,423 @@ declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
               <con:element>ns4:paymentType</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>DOMESTIC</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:paymentProduct[1]</con:xpath>
+              <con:element>ns4:paymentProduct</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>PI Domestic</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:transactionFee[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:transactionFee[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>10.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:additionalServiceCharge[1]/ns1:serviceName[1]</con:xpath>
+              <con:element>ns5:serviceName</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Outward OUR</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:additionalServiceCharge[1]/ns1:charge[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:additionalServiceCharge[1]/ns1:charge[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2.50</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentIdentification[1]/ns1:messageIdentification[1]</con:xpath>
+              <con:element>ns5:messageIdentification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>3394114</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentIdentification[1]/ns1:endToEndIdentification[1]</con:xpath>
+              <con:element>ns5:endToEndIdentification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>PAYCTDOMOUEXRTP_SameBank</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:groupHeader[1]/ns1:creationDateTime[1]</con:xpath>
+              <con:element>ns5:creationDateTime</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2022-04-21T15:13:06.945+02:00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:paymentMethod[1]</con:xpath>
+              <con:element>ns6:paymentMethod</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>TRF</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:paymentTypeInformation[1]/ns1:instructionPriority[1]</con:xpath>
+              <con:element>ns6:instructionPriority</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NORM</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:paymentTypeInformation[1]/ns1:serviceLevel[1]</con:xpath>
+              <con:element>ns6:serviceLevel</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NRTP</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:requestedExecutionDate[1]</con:xpath>
+              <con:element>ns6:requestedExecutionDate</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2022-04-21+02:00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtorAccount[1]/ns1:identification[1]</con:xpath>
+              <con:element>ns5:identification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>42010020958</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtorAccount[1]/ns1:currency[1]</con:xpath>
+              <con:element>ns5:currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:debtor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:debtorAgentBIC[1]</con:xpath>
+              <con:element>ns6:debtorAgentBIC</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>SPTRNO22XXX</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:name[1]</con:xpath>
+              <con:element>ns5:name</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Film arbeid AS.</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:postCode[1]</con:xpath>
+              <con:element>ns5:postCode</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>8438</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:townName[1]</con:xpath>
+              <con:element>ns5:townName</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>STØ</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NO</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns2='urn:pays.payment.edb.com:domain:debtor:v1_4';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtor[1]/ns1:postalAddress[1]/ns1:addressLine[1]</con:xpath>
+              <con:element>ns5:addressLine</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Grini Næringspark Postboks 85</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:amount[1]/ns1:instructedAmount[1]/@currency</con:xpath>
+              <con:element>@currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:amount[1]/ns1:instructedAmount[1]/ns1:amount[1]</con:xpath>
+              <con:element>ns5:amount</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1.00</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:transaction[1]/ns1:chargeBearer[1]</con:xpath>
+              <con:element>ns7:chargeBearer</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>DEBT</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:bic[1]</con:xpath>
+              <con:element>ns5:bic</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>SPTRNO22XXX</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:nationalId[1]</con:xpath>
+              <con:element>ns5:nationalId</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>4201</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAgent[1]/ns1:postalAddress[1]/ns1:country[1]</con:xpath>
+              <con:element>ns5:country</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NO</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:transaction[1]/ns1:creditor[1]</con:xpath>
+              <con:element>ns7:creditor</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAccount[1]/ns1:identification[1]</con:xpath>
+              <con:element>ns5:identification</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>42010039950</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns3='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns4='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:sepa-complex-types:v4';
+declare namespace ns2='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAccount[1]/ns1:currency[1]</con:xpath>
+              <con:element>ns5:currency</con:element>
+              <con:type xsi:nil="true"/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NOK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='urn:pins.payment.edb.com:domain:paymentinitiation:v1_6';
+declare namespace ns3='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
+declare namespace ns1='urn:pays.payment.edb.com:domain:creditor:v1_4';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:transaction[1]/ns1:confidential[1]</con:xpath>
+              <con:element>ns7:confidential</con:element>
+              <con:type>XmlBoolean</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>false</con:expectedValue>
               <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -622,12 +1260,13 @@ declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
             <Message>OK</Message>
             <NativeError xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
             <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <errorItem key="6456" value="A similar payment was recently added. Make sure it is not a mistake."/>
          </ns3:ResponseState>
          <ns2:paymentResult>
-            <ns4:messageId>76129</ns4:messageId>
-            <ns4:paymentInfoId>117974</ns4:paymentInfoId>
-            <ns4:transactionId>287891</ns4:transactionId>
-            <ns4:paymentReference>287891</ns4:paymentReference>
+            <ns4:messageId>1290501</ns4:messageId>
+            <ns4:paymentInfoId>1422853</ns4:paymentInfoId>
+            <ns4:transactionId>261236702</ns4:transactionId>
+            <ns4:paymentReference>261236702</ns4:paymentReference>
             <ns4:paymentAmounts>
                <ns5:debitAmount currency="NOK">
                   <ns5:amount>1.00</ns5:amount>
@@ -647,24 +1286,24 @@ declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
                   <ns5:unitNumber>1</ns5:unitNumber>
                </ns5:conversionRateInfo>
             </ns4:paymentAmounts>
-            <ns4:releaseDate>2021-02-24+01:00</ns4:releaseDate>
+            <ns4:releaseDate>2022-04-21+02:00</ns4:releaseDate>
             <ns4:paymentType>DOMESTIC</ns4:paymentType>
             <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
             <ns4:transactionFee currency="NOK">
                <ns5:amount>10.00</ns5:amount>
             </ns4:transactionFee>
             <ns4:additionalServiceCharge>
-               <ns5:serviceName>PE Additional charges</ns5:serviceName>
+               <ns5:serviceName>Outward OUR</ns5:serviceName>
                <ns5:charge currency="NOK">
-                  <ns5:amount>7.00</ns5:amount>
+                  <ns5:amount>2.50</ns5:amount>
                </ns5:charge>
             </ns4:additionalServiceCharge>
             <ns4:paymentIdentification>
-               <ns5:messageIdentification>2618425</ns5:messageIdentification>
-               <ns5:endToEndIdentification>PAYCTDOMOUEXRTP_Neg</ns5:endToEndIdentification>
+               <ns5:messageIdentification>3394114</ns5:messageIdentification>
+               <ns5:endToEndIdentification>PAYCTDOMOUEXRTP_SameBank</ns5:endToEndIdentification>
             </ns4:paymentIdentification>
             <ns4:groupHeader>
-               <ns5:creationDateTime>2021-02-24T06:04:40.324+01:00</ns5:creationDateTime>
+               <ns5:creationDateTime>2022-04-21T15:13:06.945+02:00</ns5:creationDateTime>
             </ns4:groupHeader>
             <ns4:paymentInfo>
                <ns6:paymentMethod>TRF</ns6:paymentMethod>
@@ -672,7 +1311,7 @@ declare namespace ns2='urn:pins.payment.edb.com:ws:paymentinitiation:v1_6';
                   <ns6:instructionPriority>NORM</ns6:instructionPriority>
                   <ns6:serviceLevel>NRTP</ns6:serviceLevel>
                </ns6:paymentTypeInformation>
-               <ns6:requestedExecutionDate>2021-02-24+01:00</ns6:requestedExecutionDate>
+               <ns6:requestedExecutionDate>2022-04-21+02:00</ns6:requestedExecutionDate>
                <ns6:debtorAccount>
                   <ns5:identification>42010020958</ns5:identification>
                   <ns5:currency>NOK</ns5:currency>

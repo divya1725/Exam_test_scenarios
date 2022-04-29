@@ -1555,6 +1555,202 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
       </con:request>
     </con:config>
   </con:testStep>
+  <con:testStep type="delay" name="Delay" id="ec6a8576-d84e-4fb8-a736-6b1ceca6dad9">
+    <con:settings/>
+    <con:config>
+      <delay>7000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="B_EventLog" id="61a60927-ff13-42ac-ade7-f1ced9fa78d6">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password>dgfd</con:password>
+      <con:connectionProperties/>
+      <con:query>SELECT BUSINESSKEY, LOG_ID,BANK_ORG_ID, FK_EVENT_TYPE_ID, ACCOUNT_NUMBER, EVENT_TYPE.SUBCATEGORY
+FROM EVENT_LOG INNER JOIN EVENT_TYPE ON EVENT_LOG. FK_EVENT_TYPE_ID = EVENT_TYPE.EVENT_TYPE_ID WHERE BUSINESSKEY = '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}' ORDER BY EVENT_TYPE.SUBCATEGORY ASC</con:query>
+      <con:assertion type="JDBC Status" id="f7d7dd8f-ff20-4fa7-9446-3cf4aa7854b5" name="JDBC Status"/>
+      <con:assertion type="MessageContentAssertion" id="4a9816a0-9251-49a5-aade-c78905fbca34" name="Message Content Assertion">
+        <con:configuration xsi:type="con:MessageContentAssertion">
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
+            <con:element>@fetchSize</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BUSINESSKEY[1]</con:xpath>
+            <con:element>BUSINESSKEY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LOG_ID[1]</con:xpath>
+            <con:element>LOG_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>89095</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANK_ORG_ID[1]</con:xpath>
+            <con:element>BANK_ORG_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_EVENT_TYPE_ID[1]</con:xpath>
+            <con:element>FK_EVENT_TYPE_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>6</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNT_NUMBER[1]</con:xpath>
+            <con:element>ACCOUNT_NUMBER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42023281230</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SUBCATEGORY[1]</con:xpath>
+            <con:element>SUBCATEGORY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>CONFIRM</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
+            <con:element>@rowNumber</con:element>
+            <con:type/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/BUSINESSKEY[1]</con:xpath>
+            <con:element>BUSINESSKEY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/LOG_ID[1]</con:xpath>
+            <con:element>LOG_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>89094</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/BANK_ORG_ID[1]</con:xpath>
+            <con:element>BANK_ORG_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_EVENT_TYPE_ID[1]</con:xpath>
+            <con:element>FK_EVENT_TYPE_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ACCOUNT_NUMBER[1]</con:xpath>
+            <con:element>ACCOUNT_NUMBER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>42023281230</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SUBCATEGORY[1]</con:xpath>
+            <con:element>SUBCATEGORY</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>CREATE</con:expectedValue>
+            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <BUSINESSKEY>170356</BUSINESSKEY>
+         <LOG_ID>89095</LOG_ID>
+         <BANK_ORG_ID>4201</BANK_ORG_ID>
+         <FK_EVENT_TYPE_ID>6</FK_EVENT_TYPE_ID>
+         <ACCOUNT_NUMBER>42023281230</ACCOUNT_NUMBER>
+         <SUBCATEGORY>CONFIRM</SUBCATEGORY>
+      </Row>
+      <Row rowNumber="2">
+         <BUSINESSKEY>170356</BUSINESSKEY>
+         <LOG_ID>89094</LOG_ID>
+         <BANK_ORG_ID>4201</BANK_ORG_ID>
+         <FK_EVENT_TYPE_ID>1</FK_EVENT_TYPE_ID>
+         <ACCOUNT_NUMBER>42023281230</ACCOUNT_NUMBER>
+         <SUBCATEGORY>CREATE</SUBCATEGORY>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
   <con:testStep type="request" id="0cf54ade-1693-4464-89d7-b6002b4a514f" name="PaymentRead">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -2757,202 +2953,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
           </con:entry>
         </con:environmentSpec>
       </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="delay" name="Delay" id="ec6a8576-d84e-4fb8-a736-6b1ceca6dad9">
-    <con:settings/>
-    <con:config>
-      <delay>7000</delay>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="B_EventLog" id="61a60927-ff13-42ac-ade7-f1ced9fa78d6">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
-      <con:password>dgfd</con:password>
-      <con:connectionProperties/>
-      <con:query>SELECT BUSINESSKEY, LOG_ID,BANK_ORG_ID, FK_EVENT_TYPE_ID, ACCOUNT_NUMBER, EVENT_TYPE.SUBCATEGORY
-FROM EVENT_LOG INNER JOIN EVENT_TYPE ON EVENT_LOG. FK_EVENT_TYPE_ID = EVENT_TYPE.EVENT_TYPE_ID WHERE BUSINESSKEY = '${PaymentRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transactionId[1]}' ORDER BY EVENT_TYPE.SUBCATEGORY ASC</con:query>
-      <con:assertion type="JDBC Status" id="f7d7dd8f-ff20-4fa7-9446-3cf4aa7854b5" name="JDBC Status"/>
-      <con:assertion type="MessageContentAssertion" id="4a9816a0-9251-49a5-aade-c78905fbca34" name="Message Content Assertion">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BUSINESSKEY[1]</con:xpath>
-            <con:element>BUSINESSKEY</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LOG_ID[1]</con:xpath>
-            <con:element>LOG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>89095</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BANK_ORG_ID[1]</con:xpath>
-            <con:element>BANK_ORG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FK_EVENT_TYPE_ID[1]</con:xpath>
-            <con:element>FK_EVENT_TYPE_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>6</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCOUNT_NUMBER[1]</con:xpath>
-            <con:element>ACCOUNT_NUMBER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42023281230</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/SUBCATEGORY[1]</con:xpath>
-            <con:element>SUBCATEGORY</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>CONFIRM</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/BUSINESSKEY[1]</con:xpath>
-            <con:element>BUSINESSKEY</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/LOG_ID[1]</con:xpath>
-            <con:element>LOG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>89094</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/BANK_ORG_ID[1]</con:xpath>
-            <con:element>BANK_ORG_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/FK_EVENT_TYPE_ID[1]</con:xpath>
-            <con:element>FK_EVENT_TYPE_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/ACCOUNT_NUMBER[1]</con:xpath>
-            <con:element>ACCOUNT_NUMBER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42023281230</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[2]/SUBCATEGORY[1]</con:xpath>
-            <con:element>SUBCATEGORY</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>CREATE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <BUSINESSKEY>170356</BUSINESSKEY>
-         <LOG_ID>89095</LOG_ID>
-         <BANK_ORG_ID>4201</BANK_ORG_ID>
-         <FK_EVENT_TYPE_ID>6</FK_EVENT_TYPE_ID>
-         <ACCOUNT_NUMBER>42023281230</ACCOUNT_NUMBER>
-         <SUBCATEGORY>CONFIRM</SUBCATEGORY>
-      </Row>
-      <Row rowNumber="2">
-         <BUSINESSKEY>170356</BUSINESSKEY>
-         <LOG_ID>89094</LOG_ID>
-         <BANK_ORG_ID>4201</BANK_ORG_ID>
-         <FK_EVENT_TYPE_ID>1</FK_EVENT_TYPE_ID>
-         <ACCOUNT_NUMBER>42023281230</ACCOUNT_NUMBER>
-         <SUBCATEGORY>CREATE</SUBCATEGORY>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
     </con:config>
   </con:testStep>
   <con:properties>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="f3213ea3-9344-4938-aaae-b5a6f6c2798e" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Force_Funds" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="f3213ea3-9344-4938-aaae-b5a6f6c2798e" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Force_Funds" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
   <con:description>This testcase displays the flow of FORCEFUNDS, which is a PIN Action. The balance of the accounts can be checked using the 'Read Balance'. 
 Later the payment is created and further the action is performed.
 
@@ -191,6 +191,10 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
           <con:name>RequExecDate</con:name>
           <con:value>${= java.time.LocalDateTime.now().plusDays(-1).format(java.time.format.DateTimeFormatter.ofPattern('dd-MMM-yy'))}</con:value>
         </con:property>
+        <con:property>
+          <con:name>DestinationApplication</con:name>
+          <con:value>PIN</con:value>
+        </con:property>
       </con:properties>
     </con:config>
   </con:testStep>
@@ -208,20 +212,22 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentauthorization:v1_2" xmlns:urn1="urn:pays.payment.edb.com:domain:paymentauthorization:v1_2" xmlns:urn2="urn:pays.payment.edb.com:domain:authorization:v1_2" xmlns:urn3="urn:pays.payment.edb.com:domain:authorization:v1_1">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>${Properties#DestinatioApplication}</wsc:DestinationApplication>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
+         <wsc:Version>V2.0</wsc:Version>
          <wsc:ClientContext>
-            <wsc:userid>${DataSource#DebCustomerID}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:userid>00077571</wsc:userid>
+            <wsc:credentials>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${DataSource#OrgID}</wsc:orgid>
-            <wsc:orgunit>${DataSource#OrgID}</wsc:orgunit><wsc:customerid>${DataSource#DebCustomerID}</wsc:customerid>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:orgunit>4201</wsc:orgunit>
+            <wsc:customerid>01010077571</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
             <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item2}" value="${DataSource#DebCustomerID}"/>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item value="BES" key="PaymentChannel"/>
+            <wsc:item value="00077571" key="AgreementId"/>
+            <wsc:item value="2021-04-14-BM Payment" key="LogRef"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -230,17 +236,17 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
          <urn:cpsAuthorizationMessage>
             <urn1:cpsUserAuthorizationData>
                <urn2:agreementData>
-                  <urn3:agreementId>${DataSource#DebCustomerID}</urn3:agreementId>
-                  <urn3:bankId>${DataSource#OrgID}</urn3:bankId>
-                  <urn3:customerID>${DataSource#DebCustomerID}</urn3:customerID>
-                  <urn3:productID>${DataSource#DebCustomerID}</urn3:productID>
+                  <urn3:agreementId>00077571</urn3:agreementId>
+                  <urn3:bankId>4201</urn3:bankId>
+                  <urn3:customerID>01010077571</urn3:customerID>
+                  <urn3:productID>12342345</urn3:productID>
                </urn2:agreementData>
-               <urn2:userId>${DataSource#DebCustomerID}</urn2:userId>
+               <urn2:userId>00077571</urn2:userId>
                <urn2:sessionID>12106704005</urn2:sessionID>
                <urn2:firstName>Test</urn2:firstName>
                <urn2:lastName>Cust</urn2:lastName>
                <urn2:userAccount>
-                  <urn2:accountNumber>${DataSource#DebAccountID}</urn2:accountNumber>
+                  <urn2:accountNumber>42125748338</urn2:accountNumber>
                   <urn2:accountOwnerIdentifier>12106704005</urn2:accountOwnerIdentifier>
                   <urn2:currencyCode>NOK</urn2:currencyCode>
                   <urn2:accountType>CoreAccount</urn2:accountType>
@@ -325,82 +331,76 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPayment_V1_10</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_10" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_10" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_8" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_8">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>${Properties#DestinatioApplication}</wsc:DestinationApplication>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_10" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v1_10" xmlns:urn2="urn:pins.payment.evry.com:domain:sepa-complex-types:v8" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v1_8" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v1_8">\r
+   <soapenv:Header>\r
+   <wsc:AutHeader>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
+         <wsc:Version>V2.0</wsc:Version>
          <wsc:ClientContext>
-            <wsc:userid>${DataSource#DebCustomerID}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:userid>00077571</wsc:userid>
+            <wsc:credentials>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${DataSource#OrgID}</wsc:orgid>
-            <wsc:orgunit>${DataSource#OrgID}</wsc:orgunit>
-            <wsc:customerid>${DataSource#DebCustomerID}</wsc:customerid>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:orgunit>4201</wsc:orgunit>
+            <wsc:customerid>01010077571</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
             <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item2}" value="${DataSource#DebCustomerID}"/>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item value="BES" key="PaymentChannel"/>
+            <wsc:item value="00077571" key="AgreementId"/>
+            <wsc:item value="2022-05-04-BM Payment" key="LogRef"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentCreateRequest>
-         <urn:paymentMessage>
-            <urn1:paymentIdentification>
-               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
-               <urn2:endToEndIdentification>332</urn2:endToEndIdentification>
-            </urn1:paymentIdentification>
-            <urn1:paymentInfo>
-               <urn3:paymentMethod>TRF</urn3:paymentMethod>
-               <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:paymentTypeInformation>
-                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
-               </urn3:paymentTypeInformation>
-               
-               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate><urn3:debtorAccount>
-                  <urn2:identification>${DataSource#DebAccountID}</urn2:identification>
-                  <urn2:currency>${Properties#DebitAcntccy}</urn2:currency>
-               </urn3:debtorAccount>
-               <urn3:debtorAgentBIC>${DataSource#DebitorAgent}</urn3:debtorAgentBIC>
-            </urn1:paymentInfo>
-            <urn1:transaction>
-               <urn4:amount>
-                  <!--You have a CHOICE of the next 2 items at this level-->
-                  <urn2:instructedAmount currency="${DataSource#Instructedccy}">
-                     <urn2:amount>${DataSource#InstructedAmt}</urn2:amount>
-                  </urn2:instructedAmount>
-               </urn4:amount>
-               <urn4:chargeBearer>${DataSource#chargeBearer}</urn4:chargeBearer>
-               <urn4:creditorAgent>
-                  <urn2:bic>${DataSource#CreditorAgent}</urn2:bic>
-                  <urn2:postalAddress>
-                     <urn2:country>${DataSource#CreditorCountry}</urn2:country>
-                  </urn2:postalAddress>
-               </urn4:creditorAgent>
-               <urn4:creditor>
-                  <urn2:name>${DataSource#CreditorName}</urn2:name>
-                  <urn2:postalAddress>
-                     <urn2:department>asd</urn2:department>
-                     <urn2:subDepartment>sd</urn2:subDepartment>
-                     <urn2:streetName>sd</urn2:streetName>
-                     <urn2:buildingNumber>32</urn2:buildingNumber>
-                     <urn2:postCode>323</urn2:postCode>
-                     <urn2:townName>sd</urn2:townName>
-                     <urn2:country>${DataSource#CreditorCountry}</urn2:country>
-                  </urn2:postalAddress>
-               </urn4:creditor>
-               <urn4:creditorAccount>
-                  <urn2:identification>${DataSource#Creditor_Account}</urn2:identification>
-                  <urn2:currency>${DataSource#CreditorCcy}</urn2:currency>
-               </urn4:creditorAccount>
-               <urn1:remittanceInformationUnstructured>${DataSource#FreeText}</urn1:remittanceInformationUnstructured>
-            </urn1:transaction>
-         </urn:paymentMessage>
-      </urn:PaymentCreateRequest>
-   </soapenv:Body>
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentCreateRequest>\r
+         <urn:paymentMessage>\r
+            <urn1:paymentIdentification>\r
+               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>\r
+               <urn2:endToEndIdentification>332</urn2:endToEndIdentification>\r
+            </urn1:paymentIdentification>\r
+            <urn1:paymentInfo>\r
+               <urn3:paymentMethod>TRF</urn3:paymentMethod>\r
+               <!--You have a CHOICE of the next 2 items at this level-->\r
+               <urn3:paymentTypeInformation>\r
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>\r
+               </urn3:paymentTypeInformation>\r
+               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>\r
+               <urn3:debtorAccount>\r
+                  <urn2:identification>42125748338</urn2:identification>\r
+                  <urn2:currency>${Properties#DebitAcntccy}</urn2:currency>\r
+               </urn3:debtorAccount>\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn2:instructedAmount currency="NOK">\r
+                     <urn2:amount>1</urn2:amount>\r
+                  </urn2:instructedAmount>\r
+               </urn4:amount>\r
+               <urn4:chargeBearer>SHAR</urn4:chargeBearer>\r
+               <urn4:creditor>\r
+                  <urn2:name>Funds</urn2:name>\r
+                  <urn2:postalAddress>\r
+                     <urn2:department>asd</urn2:department>\r
+                     <urn2:subDepartment>sd</urn2:subDepartment>\r
+                     <urn2:streetName>sd</urn2:streetName>\r
+                     <urn2:buildingNumber>32</urn2:buildingNumber>\r
+                     <urn2:postCode>323</urn2:postCode>\r
+                     <urn2:townName>sd</urn2:townName>\r
+                     <urn2:country>NO</urn2:country>\r
+                  </urn2:postalAddress>\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn2:identification>${Properties#CreditAccount}</urn2:identification>\r
+                  <urn2:currency>NOK</urn2:currency>\r
+               </urn4:creditorAccount>\r
+               <urn1:remittanceInformationUnstructured>Testing</urn1:remittanceInformationUnstructured>\r
+            </urn1:transaction>\r
+         </urn:paymentMessage>\r
+      </urn:PaymentCreateRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="SOAP Response" id="2a521e8f-f98f-47ab-81f3-71f316c03c6c"/>
         <con:assertion type="Valid HTTP Status Codes" id="af8e67c9-a9fc-4c99-9f77-0525d95d6a3c" name="Valid HTTP Status Codes">
@@ -499,21 +499,23 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
         <con:endpoint>http://10.246.89.107:23621/pin/services/PAYSPaymentStatusUpdate_V1_1Service</con:endpoint>
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1_1" xmlns:urn1="urn:pays.payment.edb.com:domain:payment-status-update:v1_1">
    <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>${Properties#DestinatioApplication}</wsc:DestinationApplication>
+     <wsc:AutHeader>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
+         <wsc:Version>V2.0</wsc:Version>
          <wsc:ClientContext>
-            <wsc:userid>${DataSource#DebCustomerID}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:userid>00077571</wsc:userid>
+            <wsc:credentials>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${DataSource#OrgID}</wsc:orgid>
-            <wsc:orgunit>${DataSource#OrgID}</wsc:orgunit><wsc:customerid>${DataSource_old#CustomerID}</wsc:customerid>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:orgunit>4201</wsc:orgunit>
+            <wsc:customerid>01010077571</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
             <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item2}" value="${DataSource#DebCustomerID}"/>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item value="BES" key="PaymentChannel"/>
+            <wsc:item value="00077571" key="AgreementId"/>
+            <wsc:item value="2022-05-04-BM Payment" key="LogRef"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -819,21 +821,22 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pays.payment.edb.com:ws:paymentstatusupdate:v1_1" xmlns:urn1="urn:pays.payment.edb.com:domain:payment-status-update:v1_1">
    <soapenv:Header>
       <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>${Properties#DestinatioApplication}</wsc:DestinationApplication>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
+         <wsc:Version>V2.0</wsc:Version>
          <wsc:ClientContext>
-            <wsc:userid>${DataSource#DebCustomerID}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:userid>00077571</wsc:userid>
+            <wsc:credentials>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${DataSource#OrgID}</wsc:orgid>
-            <wsc:orgunit>${DataSource#OrgID}</wsc:orgunit>
-            <wsc:customerid>${DataSource_old#CustomerID}</wsc:customerid>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:orgunit>4201</wsc:orgunit>
+            <wsc:customerid>01010077571</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
             <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item2}" value="${DataSource#DebCustomerID}"/>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item value="BES" key="PaymentChannel"/>
+            <wsc:item value="00077571" key="AgreementId"/>
+            <wsc:item value="2022-05-04-BM Payment" key="LogRef"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -914,21 +917,22 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
         <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v21" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v1_10">
    <soapenv:Header>
        <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>${Properties#DestinatioApplication}</wsc:DestinationApplication>
+         <wsc:SourceApplication>EVRYCPS</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
          <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
+         <wsc:Version>V2.0</wsc:Version>
          <wsc:ClientContext>
-            <wsc:userid>${DataSource#DebCustomerID}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:userid>00077571</wsc:userid>
+            <wsc:credentials>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</wsc:credentials>
             <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>${DataSource#OrgID}</wsc:orgid>
-            <wsc:orgunit>${DataSource#OrgID}</wsc:orgunit>
-            <wsc:customerid>${DataSource_old#CustomerID}</wsc:customerid>
+            <wsc:orgid>4201</wsc:orgid>
+            <wsc:orgunit>4201</wsc:orgunit>
+            <wsc:customerid>01010077571</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
             <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="${Properties#item2}" value="${DataSource#DebCustomerID}"/>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item3}" value="${Properties#value3}"/>
+            <wsc:item value="BES" key="PaymentChannel"/>
+            <wsc:item value="00077571" key="AgreementId"/>
+            <wsc:item value="2022-05-04-BM Payment" key="LogRef"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -1128,7 +1132,7 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c )))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>update Transactions set PAYMENTSTATUS  = 'LAFU' where TRANSACTIONSID = '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
@@ -1149,7 +1153,7 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c )))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select TRANSACTIONSID, PAYMENTSTATUS from TRANSACTIONS where TRANSACTIONSID = '${Approve#Response#declare namespace ns3='urn:pays.payment.edb.com:ws:paymentstatusupdate:v1_1'; declare namespace ns2='urn:pays.payment.edb.com:domain:payment-status-update:v1_1'; //ns3:PaymentApproveResponse[1]/ns3:approvalResult[1]/ns2:transactionId[1]}'</con:query>
@@ -1188,7 +1192,7 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
             <wsc:credentials>${Properties#credentials}</wsc:credentials>
             <wsc:channel>INT</wsc:channel>
             <wsc:orgid>4201</wsc:orgid>
-            <wsc:customerid>00829362201</wsc:customerid>
+            <wsc:customerid>01010077571</wsc:customerid>
             <wsc:locale>NO</wsc:locale>
             <wsc:ip>123.123.123.123</wsc:ip>
             <wsc:item key="PaymentChannel" value="ITR"/>
@@ -1254,11 +1258,12 @@ declare namespace ns1='urn:pays.payment.edb.com:domain:payment-status-update:v1_
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c )))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>SELECT BUSINESSKEY, LOG_ID,BANK_ORG_ID, FK_EVENT_TYPE_ID, ACCOUNT_NUMBER, EVENT_TYPE.SUBCATEGORY
-FROM EVENT_LOG INNER JOIN EVENT_TYPE ON EVENT_LOG.FK_EVENT_TYPE_ID = EVENT_TYPE.EVENT_TYPE_ID WHERE BUSINESSKEY = '${PaymentRead#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns4:result[1]/ns4:transactionId[1]}'</con:query>
+FROM EVENT_LOG INNER JOIN EVENT_TYPE ON EVENT_LOG.FK_EVENT_TYPE_ID = EVENT_TYPE.EVENT_TYPE_ID WHERE BUSINESSKEY = '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v1_10'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v1_10'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'
+order by LOG_ID asc</con:query>
       <con:assertion type="JDBC Status" id="501faf20-68e8-49e5-95f4-7ca5916352a1" name="JDBC Status"/>
       <con:assertion type="JDBC Status" name="JDBC Status1" id="398ee09f-750a-495f-a972-ca3b3882f485"/>
       <con:assertion type="MessageContentAssertion" name="Message Content Assertion" id="03003501-6855-4261-bbbe-6c545e088480">
@@ -1669,23 +1674,6 @@ FROM EVENT_LOG INNER JOIN EVENT_TYPE ON EVENT_LOG.FK_EVENT_TYPE_ID = EVENT_TYPE.
 </Results>]]></con:originalMessage>
         </con:configuration>
       </con:assertion>
-      <con:properties/>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="Fetch Account" id="d3d4e4e3-51f3-4086-981f-65c308ab2869">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>select CUSTOMERID,ACCOUNTNUMBER  from V_authorisation
-where CUSTBANKID='4201'
-and length(customerID)='11'
-and ROWNUM = 1</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>

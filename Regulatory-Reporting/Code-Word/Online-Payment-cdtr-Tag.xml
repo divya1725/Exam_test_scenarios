@@ -9,24 +9,12 @@
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>DataBase</con:dbConnectionName>
+      <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>SELECT DISTINCT(VA.CUSTOMERID),VA.ACCOUNTNUMBER,VA.FIRSTNAME,VA.CURRENCY
-FROM V_AUTHORISATION VA ,V_AUTH_USERINFO VAU 
-WHERE VA.ACCOUNTNUMBER=VAU.ACCOUNTNUMBER and 
-VAU.MARKETTYPE='BM' and 
-VA.ACCOUNTNUMBER NOT LIKE '4068%' and
-VA.CURRENCY='NOK' and 
-VA.CUSTBANKID='4201' and 
-VA.BLOCKEDFORCREDIT= 'N' and
-VA.BLOCKEDFORDEBIT= 'N' and
-VA.BLOCKED='N' and
-VA.CLOSED='N' and
-VA.DESCRIPTIONCODE!='C'
-fetch first 2 row only</con:query>
+      <con:query>select distinct(CUSTOMERID), ACCOUNTNUMBER,CURRENCY, ROLEBANKID, COUNTRYCODE from v_authorisation where ACCOUNTNUMBER like'965003%'</con:query>
       <con:assertion type="MessageContentAssertion" id="0154373b-f52b-4558-a157-061c54fb0d55" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -1912,11 +1900,11 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from transactions where TRANSACTIONSID ='${CreatePyment#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
-      <con:assertion type="MessageContentAssertion" id="c7baae8a-9a46-4b6c-aba8-d501e6f46523" name="Message Content Assertion">
+      <con:assertion type="MessageContentAssertion" id="2e53cba9-e894-4e82-b2ba-02c99bb73133" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
             <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
@@ -1925,7 +1913,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -1935,165 +1922,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTIONID[1]</con:xpath>
-            <con:element>INSTRUCTIONID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>5741949</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/MARKETPRODUCTNAME[1]</con:xpath>
-            <con:element>MARKETPRODUCTNAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>IntOutCode</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <TRANSACTIONSID>438567</TRANSACTIONSID>
-         <ENDTOENDID>3984049</ENDTOENDID>
-         <FK_PAYMENTINFOID>409107</FK_PAYMENTINFOID>
-         <INSTRUCTEDAMOUNT>1</INSTRUCTEDAMOUNT>
-         <INSTRUCTEDAMOUNTCCY>SEK</INSTRUCTEDAMOUNTCCY>
-         <EQUIVALENTAMOUNT/>
-         <EQUIVALENTAMOUNTCCY/>
-         <EQUIVALENTAMOUNT_CCYOFTRF/>
-         <INSTRUCTIONID>5741949</INSTRUCTIONID>
-         <EXCHANGERATE/>
-         <RATETYPE/>
-         <UNITCURRENCY/>
-         <CONTRACTID/>
-         <CHARGEBEARER>DEBT</CHARGEBEARER>
-         <INSTRFORDBTRAGT/>
-         <PURPOSE_CODE/>
-         <PURPOSE_PRTRY/>
-         <PAYMENTTYPE>INPX</PAYMENTTYPE>
-         <PAYMENTSTATUS>RFPE</PAYMENTSTATUS>
-         <SEPA>N</SEPA>
-         <DEBITAMOUNTAMT>1.06</DEBITAMOUNTAMT>
-         <DEBITAMOUNTCCY>NOK</DEBITAMOUNTCCY>
-         <CREDITAMOUNTAMT>1</CREDITAMOUNTAMT>
-         <CREDITAMOUNTCCY>SEK</CREDITAMOUNTCCY>
-         <DEBITCOUNTERVALUEAMT>1.06</DEBITCOUNTERVALUEAMT>
-         <DEBITCOUNTERVALUECCY>NOK</DEBITCOUNTERVALUECCY>
-         <CREDITCOUNTERVALUEAMT>1.06</CREDITCOUNTERVALUEAMT>
-         <CREDITCOUNTERVALUECCY>NOK</CREDITCOUNTERVALUECCY>
-         <EXCHANGERATEVALUE>1.057</EXCHANGERATEVALUE>
-         <EXCHANGERATETYPE>SELL</EXCHANGERATETYPE>
-         <MARKETPRODUCTCHARGEAMT>23</MARKETPRODUCTCHARGEAMT>
-         <MARKETPRODUCTCHARGECCY>NOK</MARKETPRODUCTCHARGECCY>
-         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
-         <CATEGORYPURPOSECODE/>
-         <INSTRUCTIONPRIORITY/>
-         <ISPC>PAYCTINTOUPNPWX</ISPC>
-         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
-         <HIDDEN>N</HIDDEN>
-         <RISKSTATUS/>
-         <INTERNALNOTE/>
-         <FIRSTLACKOFFUNDSMESSAGESENT>N</FIRSTLACKOFFUNDSMESSAGESENT>
-         <AGREEMENTTYPE/>
-         <AGREEMENTID/>
-         <AGREEMENTVERSION/>
-         <CONFIDENTIAL>N</CONFIDENTIAL>
-         <SERVICELEVEL/>
-         <PROVIDERID>5465765</PROVIDERID>
-         <BRANDID>876</BRANDID>
-         <BOOKINGLEVEL>T</BOOKINGLEVEL>
-         <CREDITTEXTCODE>301</CREDITTEXTCODE>
-         <DEBITTEXTCODE>301</DEBITTEXTCODE>
-         <PRIORITIZED>N</PRIORITIZED>
-         <INITIATORBANKID>4201</INITIATORBANKID>
-         <DEBETACCOUNTNO>42009513358</DEBETACCOUNTNO>
-         <DEBETACCOUNTNOISIBAN>N</DEBETACCOUNTNOISIBAN>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438567</PAYMENT_REF>
-         <RECEIPTORDER>NONE</RECEIPTORDER>
-         <STATUSCHANGETIME>2020-12-31 13:17:56.672492</STATUSCHANGETIME>
-         <EINVOICEOWNERID>645654</EINVOICEOWNERID>
-         <PRODUCT_FAMILY_NAME>International Out</PRODUCT_FAMILY_NAME>
-         <PRODUCT_GROUP_NAME>Clean Payment Credit Transfer</PRODUCT_GROUP_NAME>
-         <PRODUCT_AREA_NAME>Payment</PRODUCT_AREA_NAME>
-         <PROCESSINGBANKORGID>4201</PROCESSINGBANKORGID>
-         <PEPROCESSINGLINE>PE_INT_OUT</PEPROCESSINGLINE>
-         <DEBETACCOUNTNOIBAN/>
-         <DEB_TXN_DOMAIN_CODE>PMNT</DEB_TXN_DOMAIN_CODE>
-         <DEB_TXN_FAMILY_CODE>IICT</DEB_TXN_FAMILY_CODE>
-         <DEB_TXN_SUBFAMILY_CODE>XBCT</DEB_TXN_SUBFAMILY_CODE>
-         <CRED_TXN_DOMAIN_CODE>PMNT</CRED_TXN_DOMAIN_CODE>
-         <CRED_TXN_FAMILY_CODE>RICT</CRED_TXN_FAMILY_CODE>
-         <CRED_TXN_SUBFAMILY_CODE>XBCT</CRED_TXN_SUBFAMILY_CODE>
-         <DEBIT_BOOKING_ID>438567</DEBIT_BOOKING_ID>
-         <DUPLICATECHECKNEEDED>N</DUPLICATECHECKNEEDED>
-         <NON_STP_BANK/>
-         <NON_STP_CUSTOMER/>
-         <CANCEL_FLAG/>
-         <REFERENCE_TRANSACTION_ID/>
-         <NOTIFY_CREDIT_POSTING/>
-         <DIRECTION>OUTWARD</DIRECTION>
-         <PAYMENT_SUB_STATUS/>
-         <FORCE_FUND>N</FORCE_FUND>
-         <WB_FLAG>N</WB_FLAG>
-         <LAST_UPDATED_TIME/>
-         <AUTHORITY_REPORTING_CODE/>
-         <REF_TRANSACTION_DIRECTION/>
-         <REFERENCE_PAYMENT_REF/>
-         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
-         <LASTFRAUDCHECKDATE>2020-12-31 13:17:53.628884</LASTFRAUDCHECKDATE>
-         <PAYMENTORDERDATE>2020-12-31 00:00:00</PAYMENTORDERDATE>
-         <ACTIVITY_PERIOD>2020-04-30 00:00:00</ACTIVITY_PERIOD>
-         <DEBIT_VALUE_DATE_RULE>DAY0</DEBIT_VALUE_DATE_RULE>
-         <CREDIT_VALUE_DATE_RULE>SPOT</CREDIT_VALUE_DATE_RULE>
-         <EXCHANGERATEVALUE_MIDRATE>1.047</EXCHANGERATEVALUE_MIDRATE>
-         <UETR_ID>5cc7decd-b940-48d7-ae68-c683383aebb0</UETR_ID>
-         <EINVOICETYPE>EINVOICE</EINVOICETYPE>
-         <INITIATEDDEBITVALUEDATE/>
-         <INITIATEDCREDITVALUEDATE/>
-         <EXCHANGERATEUNIT>1</EXCHANGERATEUNIT>
-         <CREDITEXCHANGERATE/>
-         <CREDITEXCHANGERATETYPE/>
-         <CREDITEXCHANGERATEUNIT/>
-         <CHARGE_AGREEMENT_IDENTIFIED_AT/>
-         <ACCUMULATION_AGREEMENT_ID/>
-         <INVOICEREFERENCE>123123434</INVOICEREFERENCE>
-         <CREDIT_BOOKING_ID/>
-         <SKKOTYPE>N</SKKOTYPE>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:assertion type="MessageContentAssertion" id="232b6b70-f21b-4574-8c5f-b1c7fbe13f9a" name="Message Content Assertion 2">
-        <con:configuration xsi:type="con:MessageContentAssertion">
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/@fetchSize</con:xpath>
-            <con:element>@fetchSize</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:xpath>
-            <con:element>@rowNumber</con:element>
-            <con:type/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2102,8 +1930,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>438616</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>261266694</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2113,7 +1940,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>3984049</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2122,8 +1948,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>409149</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>1435205</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2133,7 +1958,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2143,7 +1967,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>SEK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2152,8 +1975,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2162,8 +1983,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2172,8 +1991,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2182,8 +1999,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>1027059</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>3198358</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2192,8 +2008,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2202,8 +2016,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2212,8 +2024,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2222,8 +2032,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2233,7 +2041,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>DEBT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2242,8 +2049,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2252,8 +2057,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2262,8 +2065,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2273,7 +2074,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>INPX</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2282,8 +2082,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>RFPE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>TBAP</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2293,7 +2092,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2302,8 +2100,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>1.06</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>102.61</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2313,7 +2110,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>NOK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2323,7 +2119,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2333,7 +2128,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>SEK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2342,8 +2136,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>1.06</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>102.61</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2351,9 +2144,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:element>DEBITCOUNTERVALUECCY</con:element>
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
+            <con:enabled>true</con:enabled>
             <con:expectedValue>NOK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2362,8 +2154,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>1.06</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>102.61</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2373,7 +2164,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>NOK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2382,8 +2172,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>1.057</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>102.61</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2393,7 +2182,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>SELL</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2402,8 +2190,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>23</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>2</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2413,7 +2200,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>NOK</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2422,8 +2208,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>IntOutCode</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>Test utenlandsbetaling 123</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2432,8 +2217,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2442,8 +2225,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2453,7 +2234,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>PAYCTINTOUPNPWX</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2462,8 +2242,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>8</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:expectedValue>2</con:expectedValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2473,7 +2252,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2482,8 +2260,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2492,8 +2268,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2503,7 +2277,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2512,8 +2285,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2522,8 +2293,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2532,8 +2301,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2543,7 +2310,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -2552,598 +2318,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PROVIDERID[1]</con:xpath>
-            <con:element>PROVIDERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>5465765</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BRANDID[1]</con:xpath>
-            <con:element>BRANDID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>876</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BOOKINGLEVEL[1]</con:xpath>
-            <con:element>BOOKINGLEVEL</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>T</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITTEXTCODE[1]</con:xpath>
-            <con:element>CREDITTEXTCODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>301</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBITTEXTCODE[1]</con:xpath>
-            <con:element>DEBITTEXTCODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>301</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRIORITIZED[1]</con:xpath>
-            <con:element>PRIORITIZED</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
-            <con:element>INITIATORBANKID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
-            <con:element>DEBETACCOUNTNO</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42009513358</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNOISIBAN[1]</con:xpath>
-            <con:element>DEBETACCOUNTNOISIBAN</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:xpath>
-            <con:element>RELEASEDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
-            <con:element>REQUESTEDEXECUTIONDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_REF[1]</con:xpath>
-            <con:element>PAYMENT_REF</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>438616</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECEIPTORDER[1]</con:xpath>
-            <con:element>RECEIPTORDER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>NONE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSCHANGETIME[1]</con:xpath>
-            <con:element>STATUSCHANGETIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 17:51:39.630468</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EINVOICEOWNERID[1]</con:xpath>
-            <con:element>EINVOICEOWNERID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>645654</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_FAMILY_NAME[1]</con:xpath>
-            <con:element>PRODUCT_FAMILY_NAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>International Out</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_GROUP_NAME[1]</con:xpath>
-            <con:element>PRODUCT_GROUP_NAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>Clean Payment Credit Transfer</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_AREA_NAME[1]</con:xpath>
-            <con:element>PRODUCT_AREA_NAME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>Payment</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PROCESSINGBANKORGID[1]</con:xpath>
-            <con:element>PROCESSINGBANKORGID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4201</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PEPROCESSINGLINE[1]</con:xpath>
-            <con:element>PEPROCESSINGLINE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>PE_INT_OUT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNOIBAN[1]</con:xpath>
-            <con:element>DEBETACCOUNTNOIBAN</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_DOMAIN_CODE[1]</con:xpath>
-            <con:element>DEB_TXN_DOMAIN_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>PMNT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_FAMILY_CODE[1]</con:xpath>
-            <con:element>DEB_TXN_FAMILY_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>IICT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_SUBFAMILY_CODE[1]</con:xpath>
-            <con:element>DEB_TXN_SUBFAMILY_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>XBCT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_DOMAIN_CODE[1]</con:xpath>
-            <con:element>CRED_TXN_DOMAIN_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>PMNT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_FAMILY_CODE[1]</con:xpath>
-            <con:element>CRED_TXN_FAMILY_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>RICT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_SUBFAMILY_CODE[1]</con:xpath>
-            <con:element>CRED_TXN_SUBFAMILY_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>XBCT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBIT_BOOKING_ID[1]</con:xpath>
-            <con:element>DEBIT_BOOKING_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>438616</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DUPLICATECHECKNEEDED[1]</con:xpath>
-            <con:element>DUPLICATECHECKNEEDED</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NON_STP_BANK[1]</con:xpath>
-            <con:element>NON_STP_BANK</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NON_STP_CUSTOMER[1]</con:xpath>
-            <con:element>NON_STP_CUSTOMER</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CANCEL_FLAG[1]</con:xpath>
-            <con:element>CANCEL_FLAG</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REFERENCE_TRANSACTION_ID[1]</con:xpath>
-            <con:element>REFERENCE_TRANSACTION_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NOTIFY_CREDIT_POSTING[1]</con:xpath>
-            <con:element>NOTIFY_CREDIT_POSTING</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DIRECTION[1]</con:xpath>
-            <con:element>DIRECTION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>OUTWARD</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_SUB_STATUS[1]</con:xpath>
-            <con:element>PAYMENT_SUB_STATUS</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FORCE_FUND[1]</con:xpath>
-            <con:element>FORCE_FUND</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/WB_FLAG[1]</con:xpath>
-            <con:element>WB_FLAG</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LAST_UPDATED_TIME[1]</con:xpath>
-            <con:element>LAST_UPDATED_TIME</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AUTHORITY_REPORTING_CODE[1]</con:xpath>
-            <con:element>AUTHORITY_REPORTING_CODE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REF_TRANSACTION_DIRECTION[1]</con:xpath>
-            <con:element>REF_TRANSACTION_DIRECTION</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REFERENCE_PAYMENT_REF[1]</con:xpath>
-            <con:element>REFERENCE_PAYMENT_REF</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSFER_IN_SAME_BANK[1]</con:xpath>
-            <con:element>TRANSFER_IN_SAME_BANK</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTFRAUDCHECKDATE[1]</con:xpath>
-            <con:element>LASTFRAUDCHECKDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 17:51:39.148103</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTORDERDATE[1]</con:xpath>
-            <con:element>PAYMENTORDERDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-12-31 00:00:00</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACTIVITY_PERIOD[1]</con:xpath>
-            <con:element>ACTIVITY_PERIOD</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>2020-04-30 00:00:00</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBIT_VALUE_DATE_RULE[1]</con:xpath>
-            <con:element>DEBIT_VALUE_DATE_RULE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>DAY0</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDIT_VALUE_DATE_RULE[1]</con:xpath>
-            <con:element>CREDIT_VALUE_DATE_RULE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>SPOT</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXCHANGERATEVALUE_MIDRATE[1]</con:xpath>
-            <con:element>EXCHANGERATEVALUE_MIDRATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1.047</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/UETR_ID[1]</con:xpath>
-            <con:element>UETR_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>9cb0c8ac-54f9-45b4-bfda-3e67ba7f2e7e</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EINVOICETYPE[1]</con:xpath>
-            <con:element>EINVOICETYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>EINVOICE</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATEDDEBITVALUEDATE[1]</con:xpath>
-            <con:element>INITIATEDDEBITVALUEDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATEDCREDITVALUEDATE[1]</con:xpath>
-            <con:element>INITIATEDCREDITVALUEDATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXCHANGERATEUNIT[1]</con:xpath>
-            <con:element>EXCHANGERATEUNIT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>=</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATE[1]</con:xpath>
-            <con:element>CREDITEXCHANGERATE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATETYPE[1]</con:xpath>
-            <con:element>CREDITEXCHANGERATETYPE</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATEUNIT[1]</con:xpath>
-            <con:element>CREDITEXCHANGERATEUNIT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHARGE_AGREEMENT_IDENTIFIED_AT[1]</con:xpath>
-            <con:element>CHARGE_AGREEMENT_IDENTIFIED_AT</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCUMULATION_AGREEMENT_ID[1]</con:xpath>
-            <con:element>ACCUMULATION_AGREEMENT_ID</con:element>
-            <con:type xsi:nil="true"/>
-            <con:operator>exists</con:operator>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -3153,7 +2327,517 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>123123434</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PROVIDERID[1]</con:xpath>
+            <con:element>PROVIDERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>5465765</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BRANDID[1]</con:xpath>
+            <con:element>BRANDID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>876</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/BOOKINGLEVEL[1]</con:xpath>
+            <con:element>BOOKINGLEVEL</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>T</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITTEXTCODE[1]</con:xpath>
+            <con:element>CREDITTEXTCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>301</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBITTEXTCODE[1]</con:xpath>
+            <con:element>DEBITTEXTCODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>301</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRIORITIZED[1]</con:xpath>
+            <con:element>PRIORITIZED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATORBANKID[1]</con:xpath>
+            <con:element>INITIATORBANKID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:xpath>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>96500304038</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNOISIBAN[1]</con:xpath>
+            <con:element>DEBETACCOUNTNOISIBAN</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:xpath>
+            <con:element>RELEASEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-05-09 00:00:00</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:xpath>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-04-23 00:00:00</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_REF[1]</con:xpath>
+            <con:element>PAYMENT_REF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>261266694</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/RECEIPTORDER[1]</con:xpath>
+            <con:element>RECEIPTORDER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NONE</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/STATUSCHANGETIME[1]</con:xpath>
+            <con:element>STATUSCHANGETIME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-05-09 13:46:29.681139</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EINVOICEOWNERID[1]</con:xpath>
+            <con:element>EINVOICEOWNERID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>645654</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_FAMILY_NAME[1]</con:xpath>
+            <con:element>PRODUCT_FAMILY_NAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>International Out</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_GROUP_NAME[1]</con:xpath>
+            <con:element>PRODUCT_GROUP_NAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Clean Payment Credit Transfer</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PRODUCT_AREA_NAME[1]</con:xpath>
+            <con:element>PRODUCT_AREA_NAME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Payment</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PROCESSINGBANKORGID[1]</con:xpath>
+            <con:element>PROCESSINGBANKORGID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>4201</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PEPROCESSINGLINE[1]</con:xpath>
+            <con:element>PEPROCESSINGLINE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PE_INT_OUT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNOIBAN[1]</con:xpath>
+            <con:element>DEBETACCOUNTNOIBAN</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_DOMAIN_CODE[1]</con:xpath>
+            <con:element>DEB_TXN_DOMAIN_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PMNT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_FAMILY_CODE[1]</con:xpath>
+            <con:element>DEB_TXN_FAMILY_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>IICT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEB_TXN_SUBFAMILY_CODE[1]</con:xpath>
+            <con:element>DEB_TXN_SUBFAMILY_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>XBCT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_DOMAIN_CODE[1]</con:xpath>
+            <con:element>CRED_TXN_DOMAIN_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PMNT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_FAMILY_CODE[1]</con:xpath>
+            <con:element>CRED_TXN_FAMILY_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>RICT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CRED_TXN_SUBFAMILY_CODE[1]</con:xpath>
+            <con:element>CRED_TXN_SUBFAMILY_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>XBCT</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBIT_BOOKING_ID[1]</con:xpath>
+            <con:element>DEBIT_BOOKING_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DUPLICATECHECKNEEDED[1]</con:xpath>
+            <con:element>DUPLICATECHECKNEEDED</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/TRANSFER_IN_SAME_BANK[1]</con:xpath>
+            <con:element>TRANSFER_IN_SAME_BANK</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LASTFRAUDCHECKDATE[1]</con:xpath>
+            <con:element>LASTFRAUDCHECKDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-05-09 13:46:29.580648</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENTORDERDATE[1]</con:xpath>
+            <con:element>PAYMENTORDERDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-05-09 00:00:00</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACTIVITY_PERIOD[1]</con:xpath>
+            <con:element>ACTIVITY_PERIOD</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2020-04-30 00:00:00</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NON_STP_BANK[1]</con:xpath>
+            <con:element>NON_STP_BANK</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NON_STP_CUSTOMER[1]</con:xpath>
+            <con:element>NON_STP_CUSTOMER</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CANCEL_FLAG[1]</con:xpath>
+            <con:element>CANCEL_FLAG</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REFERENCE_TRANSACTION_ID[1]</con:xpath>
+            <con:element>REFERENCE_TRANSACTION_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/NOTIFY_CREDIT_POSTING[1]</con:xpath>
+            <con:element>NOTIFY_CREDIT_POSTING</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DIRECTION[1]</con:xpath>
+            <con:element>DIRECTION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>OUTWARD</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/PAYMENT_SUB_STATUS[1]</con:xpath>
+            <con:element>PAYMENT_SUB_STATUS</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/FORCE_FUND[1]</con:xpath>
+            <con:element>FORCE_FUND</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/WB_FLAG[1]</con:xpath>
+            <con:element>WB_FLAG</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>N</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/LAST_UPDATED_TIME[1]</con:xpath>
+            <con:element>LAST_UPDATED_TIME</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/AUTHORITY_REPORTING_CODE[1]</con:xpath>
+            <con:element>AUTHORITY_REPORTING_CODE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REF_TRANSACTION_DIRECTION[1]</con:xpath>
+            <con:element>REF_TRANSACTION_DIRECTION</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/REFERENCE_PAYMENT_REF[1]</con:xpath>
+            <con:element>REFERENCE_PAYMENT_REF</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/DEBIT_VALUE_DATE_RULE[1]</con:xpath>
+            <con:element>DEBIT_VALUE_DATE_RULE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>DAY0</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDIT_VALUE_DATE_RULE[1]</con:xpath>
+            <con:element>CREDIT_VALUE_DATE_RULE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>CUT0</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXCHANGERATEVALUE_MIDRATE[1]</con:xpath>
+            <con:element>EXCHANGERATEVALUE_MIDRATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>101.86</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/UETR_ID[1]</con:xpath>
+            <con:element>UETR_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>8451aaa7-dda4-4272-9030-8be96cd225eb</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EINVOICETYPE[1]</con:xpath>
+            <con:element>EINVOICETYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>EINVOICE</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATEDDEBITVALUEDATE[1]</con:xpath>
+            <con:element>INITIATEDDEBITVALUEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/INITIATEDCREDITVALUEDATE[1]</con:xpath>
+            <con:element>INITIATEDCREDITVALUEDATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/EXCHANGERATEUNIT[1]</con:xpath>
+            <con:element>EXCHANGERATEUNIT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>=</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATE[1]</con:xpath>
+            <con:element>CREDITEXCHANGERATE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATETYPE[1]</con:xpath>
+            <con:element>CREDITEXCHANGERATETYPE</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CREDITEXCHANGERATEUNIT[1]</con:xpath>
+            <con:element>CREDITEXCHANGERATEUNIT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/CHARGE_AGREEMENT_IDENTIFIED_AT[1]</con:xpath>
+            <con:element>CHARGE_AGREEMENT_IDENTIFIED_AT</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:xpath>//Results[1]/ResultSet[1]/Row[1]/ACCUMULATION_AGREEMENT_ID[1]</con:xpath>
+            <con:element>ACCUMULATION_AGREEMENT_ID</con:element>
+            <con:type xsi:nil="true"/>
+            <con:operator>exists</con:operator>
+            <con:enabled>false</con:enabled>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -3162,8 +2846,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:type xsi:nil="true"/>
             <con:operator>exists</con:operator>
             <con:enabled>false</con:enabled>
-            <con:expectedValue xsi:nil="true"/>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:elements>
@@ -3173,21 +2855,20 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:operator>=</con:operator>
             <con:enabled>false</con:enabled>
             <con:expectedValue>N</con:expectedValue>
-            <con:hasValue>false</con:hasValue>
             <con:numberType>false</con:numberType>
           </con:elements>
           <con:originalMessage><![CDATA[<Results>
    <ResultSet fetchSize="10">
       <Row rowNumber="1">
-         <TRANSACTIONSID>438616</TRANSACTIONSID>
+         <TRANSACTIONSID>261266694</TRANSACTIONSID>
          <ENDTOENDID>3984049</ENDTOENDID>
-         <FK_PAYMENTINFOID>409149</FK_PAYMENTINFOID>
+         <FK_PAYMENTINFOID>1435205</FK_PAYMENTINFOID>
          <INSTRUCTEDAMOUNT>1</INSTRUCTEDAMOUNT>
          <INSTRUCTEDAMOUNTCCY>SEK</INSTRUCTEDAMOUNTCCY>
          <EQUIVALENTAMOUNT/>
          <EQUIVALENTAMOUNTCCY/>
          <EQUIVALENTAMOUNT_CCYOFTRF/>
-         <INSTRUCTIONID>1027059</INSTRUCTIONID>
+         <INSTRUCTIONID>3198358</INSTRUCTIONID>
          <EXCHANGERATE/>
          <RATETYPE/>
          <UNITCURRENCY/>
@@ -3197,25 +2878,25 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <PURPOSE_CODE/>
          <PURPOSE_PRTRY/>
          <PAYMENTTYPE>INPX</PAYMENTTYPE>
-         <PAYMENTSTATUS>RFPE</PAYMENTSTATUS>
+         <PAYMENTSTATUS>TBAP</PAYMENTSTATUS>
          <SEPA>N</SEPA>
-         <DEBITAMOUNTAMT>1.06</DEBITAMOUNTAMT>
+         <DEBITAMOUNTAMT>102.61</DEBITAMOUNTAMT>
          <DEBITAMOUNTCCY>NOK</DEBITAMOUNTCCY>
          <CREDITAMOUNTAMT>1</CREDITAMOUNTAMT>
          <CREDITAMOUNTCCY>SEK</CREDITAMOUNTCCY>
-         <DEBITCOUNTERVALUEAMT>1.06</DEBITCOUNTERVALUEAMT>
+         <DEBITCOUNTERVALUEAMT>102.61</DEBITCOUNTERVALUEAMT>
          <DEBITCOUNTERVALUECCY>NOK</DEBITCOUNTERVALUECCY>
-         <CREDITCOUNTERVALUEAMT>1.06</CREDITCOUNTERVALUEAMT>
+         <CREDITCOUNTERVALUEAMT>102.61</CREDITCOUNTERVALUEAMT>
          <CREDITCOUNTERVALUECCY>NOK</CREDITCOUNTERVALUECCY>
-         <EXCHANGERATEVALUE>1.057</EXCHANGERATEVALUE>
+         <EXCHANGERATEVALUE>102.61</EXCHANGERATEVALUE>
          <EXCHANGERATETYPE>SELL</EXCHANGERATETYPE>
-         <MARKETPRODUCTCHARGEAMT>23</MARKETPRODUCTCHARGEAMT>
+         <MARKETPRODUCTCHARGEAMT>2</MARKETPRODUCTCHARGEAMT>
          <MARKETPRODUCTCHARGECCY>NOK</MARKETPRODUCTCHARGECCY>
-         <MARKETPRODUCTNAME>IntOutCode</MARKETPRODUCTNAME>
+         <MARKETPRODUCTNAME>Test utenlandsbetaling 123</MARKETPRODUCTNAME>
          <CATEGORYPURPOSECODE/>
          <INSTRUCTIONPRIORITY/>
          <ISPC>PAYCTINTOUPNPWX</ISPC>
-         <FK_PROCESSINGLINEID>8</FK_PROCESSINGLINEID>
+         <FK_PROCESSINGLINEID>2</FK_PROCESSINGLINEID>
          <HIDDEN>N</HIDDEN>
          <RISKSTATUS/>
          <INTERNALNOTE/>
@@ -3225,6 +2906,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <AGREEMENTVERSION/>
          <CONFIDENTIAL>N</CONFIDENTIAL>
          <SERVICELEVEL/>
+         <INVOICEREFERENCE>123123434</INVOICEREFERENCE>
          <PROVIDERID>5465765</PROVIDERID>
          <BRANDID>876</BRANDID>
          <BOOKINGLEVEL>T</BOOKINGLEVEL>
@@ -3232,13 +2914,13 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <DEBITTEXTCODE>301</DEBITTEXTCODE>
          <PRIORITIZED>N</PRIORITIZED>
          <INITIATORBANKID>4201</INITIATORBANKID>
-         <DEBETACCOUNTNO>42009513358</DEBETACCOUNTNO>
+         <DEBETACCOUNTNO>96500304038</DEBETACCOUNTNO>
          <DEBETACCOUNTNOISIBAN>N</DEBETACCOUNTNOISIBAN>
-         <RELEASEDATE>2020-12-31 00:00:00</RELEASEDATE>
-         <REQUESTEDEXECUTIONDATE>2020-12-31 00:00:00</REQUESTEDEXECUTIONDATE>
-         <PAYMENT_REF>438616</PAYMENT_REF>
+         <RELEASEDATE>2022-05-09 00:00:00</RELEASEDATE>
+         <REQUESTEDEXECUTIONDATE>2020-04-23 00:00:00</REQUESTEDEXECUTIONDATE>
+         <PAYMENT_REF>261266694</PAYMENT_REF>
          <RECEIPTORDER>NONE</RECEIPTORDER>
-         <STATUSCHANGETIME>2020-12-31 17:51:39.630468</STATUSCHANGETIME>
+         <STATUSCHANGETIME>2022-05-09 13:46:29.681139</STATUSCHANGETIME>
          <EINVOICEOWNERID>645654</EINVOICEOWNERID>
          <PRODUCT_FAMILY_NAME>International Out</PRODUCT_FAMILY_NAME>
          <PRODUCT_GROUP_NAME>Clean Payment Credit Transfer</PRODUCT_GROUP_NAME>
@@ -3252,8 +2934,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <CRED_TXN_DOMAIN_CODE>PMNT</CRED_TXN_DOMAIN_CODE>
          <CRED_TXN_FAMILY_CODE>RICT</CRED_TXN_FAMILY_CODE>
          <CRED_TXN_SUBFAMILY_CODE>XBCT</CRED_TXN_SUBFAMILY_CODE>
-         <DEBIT_BOOKING_ID>438616</DEBIT_BOOKING_ID>
-         <DUPLICATECHECKNEEDED>N</DUPLICATECHECKNEEDED>
+         <DEBIT_BOOKING_ID/>
+         <DUPLICATECHECKNEEDED/>
+         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
+         <LASTFRAUDCHECKDATE>2022-05-09 13:46:29.580648</LASTFRAUDCHECKDATE>
+         <PAYMENTORDERDATE>2022-05-09 00:00:00</PAYMENTORDERDATE>
+         <ACTIVITY_PERIOD>2020-04-30 00:00:00</ACTIVITY_PERIOD>
          <NON_STP_BANK/>
          <NON_STP_CUSTOMER/>
          <CANCEL_FLAG/>
@@ -3267,14 +2953,10 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <AUTHORITY_REPORTING_CODE/>
          <REF_TRANSACTION_DIRECTION/>
          <REFERENCE_PAYMENT_REF/>
-         <TRANSFER_IN_SAME_BANK>N</TRANSFER_IN_SAME_BANK>
-         <LASTFRAUDCHECKDATE>2020-12-31 17:51:39.148103</LASTFRAUDCHECKDATE>
-         <PAYMENTORDERDATE>2020-12-31 00:00:00</PAYMENTORDERDATE>
-         <ACTIVITY_PERIOD>2020-04-30 00:00:00</ACTIVITY_PERIOD>
          <DEBIT_VALUE_DATE_RULE>DAY0</DEBIT_VALUE_DATE_RULE>
-         <CREDIT_VALUE_DATE_RULE>SPOT</CREDIT_VALUE_DATE_RULE>
-         <EXCHANGERATEVALUE_MIDRATE>1.047</EXCHANGERATEVALUE_MIDRATE>
-         <UETR_ID>9cb0c8ac-54f9-45b4-bfda-3e67ba7f2e7e</UETR_ID>
+         <CREDIT_VALUE_DATE_RULE>CUT0</CREDIT_VALUE_DATE_RULE>
+         <EXCHANGERATEVALUE_MIDRATE>101.86</EXCHANGERATEVALUE_MIDRATE>
+         <UETR_ID>8451aaa7-dda4-4272-9030-8be96cd225eb</UETR_ID>
          <EINVOICETYPE>EINVOICE</EINVOICETYPE>
          <INITIATEDDEBITVALUEDATE/>
          <INITIATEDCREDITVALUEDATE/>
@@ -3284,7 +2966,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          <CREDITEXCHANGERATEUNIT/>
          <CHARGE_AGREEMENT_IDENTIFIED_AT/>
          <ACCUMULATION_AGREEMENT_ID/>
-         <INVOICEREFERENCE>123123434</INVOICEREFERENCE>
          <CREDIT_BOOKING_ID/>
          <SKKOTYPE>N</SKKOTYPE>
       </Row>
@@ -3302,7 +2983,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>Database</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select * from instructions where FK_TRANSACTIONSID ='${CreatePyment#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>

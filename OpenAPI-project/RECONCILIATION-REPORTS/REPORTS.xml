@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="4b24458a-26f0-4275-8d1c-dbf3ff5eb8e0" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="REPORTS" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="91e2281c-2dda-4c8a-ba73-e4ff0a0f7910fileName">REPORTS</con:setting>
+    <con:setting id="4b24458a-26f0-4275-8d1c-dbf3ff5eb8e0fileName">REPORTS</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="9ecc3e60-2d03-4df6-bdcf-fb5569482a68">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Bic_4201</con:name>
+          <con:value>SPTRNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_3625</con:name>
+          <con:value>SPAVNOBB</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_2544</con:name>
+          <con:value>VEFONO21</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_1802</con:name>
+          <con:value>SHEDNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_9021</con:name>
+          <con:value>BNPANOK0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="httprequest" name="CRR_REPORTS" id="9d89274f-c66a-4e5a-af32-b54c23a85f05">
+    <con:settings/>
+    <con:config method="POST" xsi:type="con:HttpRequest" id="1f1e97ca-83c4-4855-bcba-dbe1c1a547b6" name="CRR_REPORTS" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings>
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+      </con:settings>
+      <con:endpoint>https://${#Project#NIC_Reports}/nic/services/RealTimeCRR</con:endpoint>
+      <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:CRR="urn:eu:nets:realtime247:crr:core.2015.10.14">
+	<SOAP-ENV:Body>
+		<CRR:SendCycleReconciliationReportRequest>
+			<CRR:MessageId>${Properties#LogRef}</CRR:MessageId>
+			<CRR:SendingId>NETS-RTC</CRR:SendingId>
+			<CRR:ReceivingId>${Properties#Bic_1802}</CRR:ReceivingId>
+			<CRR:ServiceId>RTC</CRR:ServiceId>
+			<CRR:TestCode>Test</CRR:TestCode>
+			<CRR:ClearingDate>${Properties#ReqExnDate}</CRR:ClearingDate>
+			<CRR:CycleName>NR-1135</CRR:CycleName>
+			<CRR:AccumulatedNumberOfPositions>1</CRR:AccumulatedNumberOfPositions>
+			<CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+			<CRR:ReportForFinancialInstitution financialInstitutionId="SHEDNO22" type="INST">
+				<CRR:AccumulatedNumberOfPositions>2</CRR:AccumulatedNumberOfPositions>
+				<CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+				<CRR:AsDebtorAgent>
+					<CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+					<CRR:AccumulatedAmountSettled Ccy="NOK">-1000.00</CRR:AccumulatedAmountSettled>
+					<CRR:ReportForDebtorAgentCounterParty>
+						<CRR:DirectClearingParticipantId>SPRONO22</CRR:DirectClearingParticipantId>
+						<CRR:FinInstId>SPRONO22</CRR:FinInstId>
+						<CRR:Pacs004Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>0</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs004Total>
+						<CRR:Pacs008Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>1</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">-1000.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs008Total>
+					</CRR:ReportForDebtorAgentCounterParty>
+				</CRR:AsDebtorAgent>
+				<CRR:AsCreditorAgent>
+					<CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+					<CRR:AccumulatedAmountSettled Ccy="NOK">1000.00</CRR:AccumulatedAmountSettled>
+					<CRR:ReportForCreditorAgentCounterParty>
+						<CRR:DirectClearingParticipantId>SPTRNO22</CRR:DirectClearingParticipantId>
+						<CRR:FinInstId>SPTRNO22</CRR:FinInstId>
+						<CRR:Pacs004Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>0</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs004Total>
+						<CRR:Pacs008Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>1</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">1000.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs008Total>
+					</CRR:ReportForCreditorAgentCounterParty>
+				</CRR:AsCreditorAgent>
+			</CRR:ReportForFinancialInstitution>
+		</CRR:SendCycleReconciliationReportRequest>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+      <con:assertion type="DataAndMetadataAssertion" id="9745d133-8569-485d-abd8-8e0ea177e060" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+            <con:element>OriginalMessageId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>170522160030</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+            <con:element>SendingId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SHEDNO22</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:ReceivingId[1]</con:path>
+            <con:element>ReceivingId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NETS-RTC</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:TestCode[1]</con:path>
+            <con:element>TestCode</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Test</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendCycleReconciliationReportResponse xmlns="urn:eu:nets:realtime247:crr:core.2015.10.14">
+         <OriginalMessageId>170522160030</OriginalMessageId>
+         <SendingId>SHEDNO22</SendingId>
+         <ReceivingId>NETS-RTC</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendCycleReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:credentials>
+        <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+        <con:authType>No Authorization</con:authType>
+      </con:credentials>
+      <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+      <con:parameters>
+        <con:parameter>
+          <con:name>LogRef</con:name>
+          <con:value>CRR_${Properties#LogRef}</con:value>
+          <con:style>HEADER</con:style>
+          <con:default>CRR_${Properties#LogRef}</con:default>
+        </con:parameter>
+      </con:parameters>
+      <con:environmentSpec>
+        <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b99b6483-39ec-4072-b7e0-509c8ef53c3d">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+      </con:environmentSpec>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="httprequest" name="CRR_REPORTS_BNPP" id="ecc67ebd-821b-47fd-a4e0-515ca21cf671">
+    <con:settings/>
+    <con:config method="POST" xsi:type="con:HttpRequest" id="1f1e97ca-83c4-4855-bcba-dbe1c1a547b6" name="CRR_REPORTS_BNPP" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings>
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+      </con:settings>
+      <con:endpoint>https://${#Project#NIC_Reports}/nic/services/RealTimeCRR</con:endpoint>
+      <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:CRR="urn:eu:nets:realtime247:crr:core.2015.10.14">
+	<SOAP-ENV:Body>
+		<CRR:SendCycleReconciliationReportRequest>
+			<CRR:MessageId>${Properties#LogRef}</CRR:MessageId>
+			<CRR:SendingId>NETS-RTC</CRR:SendingId>
+			<CRR:ReceivingId>${Properties#Bic_9021}</CRR:ReceivingId>
+			<CRR:ServiceId>RTC</CRR:ServiceId>
+			<CRR:TestCode>Test</CRR:TestCode>
+			<CRR:ClearingDate>${Properties#ReqExnDate}</CRR:ClearingDate>
+			<CRR:CycleName>NR-1135</CRR:CycleName>
+			<CRR:AccumulatedNumberOfPositions>1</CRR:AccumulatedNumberOfPositions>
+			<CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+			<CRR:ReportForFinancialInstitution financialInstitutionId="SHEDNO22" type="INST">
+				<CRR:AccumulatedNumberOfPositions>2</CRR:AccumulatedNumberOfPositions>
+				<CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+				<CRR:AsDebtorAgent>
+					<CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+					<CRR:AccumulatedAmountSettled Ccy="NOK">-1000.00</CRR:AccumulatedAmountSettled>
+					<CRR:ReportForDebtorAgentCounterParty>
+						<CRR:DirectClearingParticipantId>SPRONO22</CRR:DirectClearingParticipantId>
+						<CRR:FinInstId>SPRONO22</CRR:FinInstId>
+						<CRR:Pacs004Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>0</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs004Total>
+						<CRR:Pacs008Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>1</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">-1000.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs008Total>
+					</CRR:ReportForDebtorAgentCounterParty>
+				</CRR:AsDebtorAgent>
+				<CRR:AsCreditorAgent>
+					<CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+					<CRR:AccumulatedAmountSettled Ccy="NOK">1000.00</CRR:AccumulatedAmountSettled>
+					<CRR:ReportForCreditorAgentCounterParty>
+						<CRR:DirectClearingParticipantId>SPTRNO22</CRR:DirectClearingParticipantId>
+						<CRR:FinInstId>SPTRNO22</CRR:FinInstId>
+						<CRR:Pacs004Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>0</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs004Total>
+						<CRR:Pacs008Total>
+							<CRR:SettledTotal>
+								<CRR:TotalNumber>1</CRR:TotalNumber>
+								<CRR:TotalAmount Ccy="NOK">1000.00</CRR:TotalAmount>
+							</CRR:SettledTotal>
+						</CRR:Pacs008Total>
+					</CRR:ReportForCreditorAgentCounterParty>
+				</CRR:AsCreditorAgent>
+			</CRR:ReportForFinancialInstitution>
+		</CRR:SendCycleReconciliationReportRequest>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+      <con:assertion type="DataAndMetadataAssertion" id="24fcbdd2-af76-4fda-9e52-b872f7077bc8" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+            <con:element>OriginalMessageId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>170522163344</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+            <con:element>SendingId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BNPANOK0XXX</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:ReceivingId[1]</con:path>
+            <con:element>ReceivingId</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NETS-RTC</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:TestCode[1]</con:path>
+            <con:element>TestCode</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Test</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendCycleReconciliationReportResponse xmlns="urn:eu:nets:realtime247:crr:core.2015.10.14">
+         <OriginalMessageId>170522163344</OriginalMessageId>
+         <SendingId>BNPANOK0XXX</SendingId>
+         <ReceivingId>NETS-RTC</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendCycleReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:credentials>
+        <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+        <con:authType>No Authorization</con:authType>
+      </con:credentials>
+      <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+      <con:parameters>
+        <con:parameter>
+          <con:name>LogRef</con:name>
+          <con:value>CRR_${Properties#LogRef}</con:value>
+          <con:style>HEADER</con:style>
+          <con:default>CRR_${Properties#LogRef}</con:default>
+        </con:parameter>
+      </con:parameters>
+      <con:environmentSpec>
+        <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b99b6483-39ec-4072-b7e0-509c8ef53c3d">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+      </con:environmentSpec>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="httprequest" name="DSR_REPORTS" id="58e645f5-263e-4577-a723-98fa200f7e71">
+    <con:settings/>
+    <con:config method="POST" xsi:type="con:HttpRequest" id="1f1e97ca-83c4-4855-bcba-dbe1c1a547b6" name="DSR_REPORTS" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings>
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+      </con:settings>
+      <con:endpoint>https://${#Project#NIC_Reports}/nic/services/RealTimeDSR</con:endpoint>
+      <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+	<SOAP-ENV:Body>
+		<SendDirectSettlementReportRequest>
+			<MessageId>${Properties#LogRef}</MessageId>
+			<SendingId>NICS REAL</SendingId>
+			<ReceivingId>SPTRNO22</ReceivingId>
+			<ServiceId>RTC</ServiceId>
+			<TestCode>Test</TestCode>
+			<ClearingDate>${Properties#ReqExnDate}</ClearingDate>
+			<CycleName>NR-1135</CycleName>
+			<AccumulatedAmountSettled Ccy="NOK">5.00</AccumulatedAmountSettled>
+			<ReportForFinancialInstitution financialInstitutionId="SPTRNO22">
+				<AccumulatedAmountSettled Ccy="NOK">7.00</AccumulatedAmountSettled>
+			</ReportForFinancialInstitution>
+			<ReportForFinancialInstitution financialInstitutionId="VEFONO21">
+				<AccumulatedAmountSettled Ccy="NOK">-2.00</AccumulatedAmountSettled>
+			</ReportForFinancialInstitution>
+		</SendDirectSettlementReportRequest>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+      <con:assertion type="DataAndMetadataAssertion" id="ac4d43aa-d73c-45f8-86db-b6b2592e9513" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+            <con:element>OriginalMessageId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>170522162131</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:SendingId[1]</con:path>
+            <con:element>SendingId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>SPTRNO22</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:ReceivingId[1]</con:path>
+            <con:element>ReceivingId</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NICS REAL</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:TestCode[1]</con:path>
+            <con:element>TestCode</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Test</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendDirectSettlementReportResponse xmlns="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+         <OriginalMessageId>170522162131</OriginalMessageId>
+         <SendingId>SPTRNO22</SendingId>
+         <ReceivingId>NICS REAL</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendDirectSettlementReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:credentials>
+        <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+        <con:authType>No Authorization</con:authType>
+      </con:credentials>
+      <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+      <con:parameters>
+        <con:parameter>
+          <con:name>LogRef</con:name>
+          <con:value>DSR_${Properties#LogRef}</con:value>
+          <con:style>HEADER</con:style>
+          <con:default>DSR_${Properties#LogRef}</con:default>
+        </con:parameter>
+      </con:parameters>
+      <con:environmentSpec>
+        <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b99b6483-39ec-4072-b7e0-509c8ef53c3d">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+      </con:environmentSpec>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="httprequest" name="DSR_REPORTS_BNPP" id="be89254c-bb88-4042-bfc9-cd120e84f460">
+    <con:settings/>
+    <con:config method="POST" xsi:type="con:HttpRequest" id="1f1e97ca-83c4-4855-bcba-dbe1c1a547b6" name="DSR_REPORTS_BNPP" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings>
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+      </con:settings>
+      <con:endpoint>https://${#Project#NIC_Reports}/nic/services/RealTimeDSR</con:endpoint>
+      <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+	<SOAP-ENV:Body>
+		<SendDirectSettlementReportRequest>
+			<MessageId>${Properties#LogRef}</MessageId>
+			<SendingId>NICS REAL</SendingId>
+			<ReceivingId>${Properties#Bic_9021}</ReceivingId>
+			<ServiceId>RTC</ServiceId>
+			<TestCode>Test</TestCode>
+			<ClearingDate>${Properties#ReqExnDate}</ClearingDate>
+			<CycleName>NR-1135</CycleName>
+			<AccumulatedAmountSettled Ccy="NOK">5.00</AccumulatedAmountSettled>
+			<ReportForFinancialInstitution financialInstitutionId="SPTRNO22">
+				<AccumulatedAmountSettled Ccy="NOK">7.00</AccumulatedAmountSettled>
+			</ReportForFinancialInstitution>
+			<ReportForFinancialInstitution financialInstitutionId="VEFONO21">
+				<AccumulatedAmountSettled Ccy="NOK">-2.00</AccumulatedAmountSettled>
+			</ReportForFinancialInstitution>
+		</SendDirectSettlementReportRequest>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+      <con:assertion type="DataAndMetadataAssertion" id="aed134f0-28f8-4a4b-88ce-b6671f650464" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+            <con:element>OriginalMessageId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>170522162152</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:SendingId[1]</con:path>
+            <con:element>SendingId</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>BNPANOK0</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:ReceivingId[1]</con:path>
+            <con:element>ReceivingId</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>NICS REAL</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>declare namespace ns1='urn:eu:nets:realtime247:dsr:real.2021.03.01';
+//ns1:SendDirectSettlementReportResponse[1]/ns1:TestCode[1]</con:path>
+            <con:element>TestCode</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>Test</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendDirectSettlementReportResponse xmlns="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+         <OriginalMessageId>170522162152</OriginalMessageId>
+         <SendingId>BNPANOK0</SendingId>
+         <ReceivingId>NICS REAL</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendDirectSettlementReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:credentials>
+        <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+        <con:authType>No Authorization</con:authType>
+      </con:credentials>
+      <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+      <con:parameters>
+        <con:parameter>
+          <con:name>LogRef</con:name>
+          <con:value>DSR_${Properties#LogRef}</con:value>
+          <con:style>HEADER</con:style>
+          <con:default>DSR_${Properties#LogRef}</con:default>
+        </con:parameter>
+      </con:parameters>
+      <con:environmentSpec>
+        <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="b99b6483-39ec-4072-b7e0-509c8ef53c3d">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+        <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+          <con:authProfile>Inherit From Parent</con:authProfile>
+        </con:entry>
+      </con:environmentSpec>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

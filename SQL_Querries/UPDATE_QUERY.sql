@@ -1,0 +1,12 @@
+COMMIT
+;--=========================================================================
+UPDATE TRANSACTIONS SET RELEASEDATE = TRUNC(SYSDATE) --    PAYMENTSTATUS = 'VALI'
+WHERE 1=1 AND AGREEMENTID IN ('10293') -- AND PAYMENTSTATUS = 'RFDD' -- AND INITIATORBANKID = '9055' -- AND ENDTOENDID LIKE '%20211213%'
+;--=========================================================================
+UPDATE STO_RECURRENCE SET DUE_DATE = '27-JAN-22' --   DUE_DATE = TRUNC(SYSDATE-15)
+WHERE 1=1 AND FK_AGREEMENT_INTERNAL_ID = '11970' -- AND STATUS = 'PENDING_DATE'
+;--=========================================================================
+SELECT * FROM STO_AGREEMENT WHERE STATUS = 'VALIDATED';
+UPDATE STO_AGREEMENT SET END_DATE = SYSDATE-1 WHERE STATUS = 'VALIDATED'
+;--=========================================================================
+UPDATE STO_RECURRENCE SET END_DATE = SYSDATE WHERE FK_AGREEMENT_INTERNAL_ID IN (SELECT INTERNAL_ID FROM STO_AGREEMENT WHERE TRUNC(CREATED_DATE) < SYSDATE-300);

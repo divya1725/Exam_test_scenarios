@@ -1,0 +1,3 @@
+-- Events Table
+SELECT * FROM EVENT_LOG ORDER BY LOG_ID DESC;
+select * from EVENT_TYPE;

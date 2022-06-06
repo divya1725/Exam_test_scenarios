@@ -86,7 +86,7 @@ pipeline {
                   
              	  //archiveArtifacts artifacts: 'project/*/results/*/*/*.txt', fingerprint: true, allowEmptyArchive: true
                 }
-         // cleanWs()
+          cleanWs()
 
          }
         success {

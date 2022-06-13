@@ -1,4 +1,5 @@
 FROM smartbear/ready-api-soapui-testrunner:latest
+USER jenkins
 RUN mkdir -p $PROJECT_FOLDER && \
    echo "$PROJECT_FOLDER"
 COPY ./ $PROJECT_FOLDER

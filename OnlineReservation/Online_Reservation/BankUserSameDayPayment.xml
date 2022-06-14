@@ -14,11 +14,10 @@
       <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,
-CURRENCYCODE  from V_AUTH_USERINFO 
-where BANKORGID='4201'  and MARKETTYPE = 'PM' 
-and CHANNEL = 'INT' 
-fetch first 2 rows only</con:query>
+      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'
+and CHANNEL = 'INT'  
+and  length(RBSUSERID) > 0
+and ACCOUNTNUMBER='42022047986'</con:query>
       <con:assertion type="Simple Contains" id="dc7f5166-96a1-45a8-a978-2426a850c722" name="Contains">
         <con:configuration>
           <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -39,7 +38,7 @@ fetch first 2 rows only</con:query>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
-          <con:value>E210338</con:value>
+          <con:value>e211732</con:value>
         </con:property>
         <con:property>
           <con:name>credentials</con:name>
@@ -59,7 +58,7 @@ fetch first 2 rows only</con:query>
         </con:property>
         <con:property>
           <con:name>DebitAcntccy</con:name>
-          <con:value>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}</con:value>
+          <con:value>NOK</con:value>
         </con:property>
         <con:property>
           <con:name>CreditAccount</con:name>
@@ -79,7 +78,7 @@ fetch first 2 rows only</con:query>
         </con:property>
         <con:property>
           <con:name>value2</con:name>
-          <con:value>07046535477</con:value>
+          <con:value>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]}</con:value>
         </con:property>
         <con:property>
           <con:name>item3</con:name>
@@ -123,11 +122,11 @@ fetch first 2 rows only</con:query>
         </con:property>
         <con:property>
           <con:name>addAmount</con:name>
-          <con:value>100</con:value>
+          <con:value>10000</con:value>
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>90.00</con:value>
+          <con:value>10790.28</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>
@@ -135,7 +134,7 @@ fetch first 2 rows only</con:query>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>261233472</con:value>
+          <con:value>261426879</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -712,7 +711,9 @@ if (availableBalanceInt > debitAmountInt){
 }else {
 	def addAmount = debitAmountInt * 10
 	testRunner.getTestCase().getTestStepByName("Properties").setPropertyValue("addAmount", addAmount.toString())	
-}</script>
+}
+
+def responseAsXml = context.expand( '${#[Online_Reservation#PMPrioritizationOnDueDate#FetchAccount]#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )</script>
     </con:config>
   </con:testStep>
   <con:testStep type="request" id="569db9b2-dec8-40ab-88a9-8197a65fea3e" name="AddAmount">

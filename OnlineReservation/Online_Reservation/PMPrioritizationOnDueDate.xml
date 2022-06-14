@@ -15,7 +15,8 @@
       <con:password/>
       <con:connectionProperties/>
       <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  
-and  length(RBSUSERID) > 0 and ACCOUNTNUMBER!='42123393613' fetch first 2 rows only</con:query>
+and  length(RBSUSERID) > 0 and ACCOUNTNUMBER IN
+(SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where BLOCKEDFORCREDIT='N' and BLOCKEDFORDEBIT='N' and Closed='N' )</con:query>
       <con:assertion type="Simple Contains" id="8fedd5e3-c854-4f96-82e4-714bb6b2fb6b" name="Contains">
         <con:configuration>
           <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -116,11 +117,11 @@ and  length(RBSUSERID) > 0 and ACCOUNTNUMBER!='42123393613' fetch first 2 rows o
         </con:property>
         <con:property>
           <con:name>addAmount</con:name>
-          <con:value>100</con:value>
+          <con:value>100000</con:value>
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>3947.74</con:value>
+          <con:value>137.56</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>
@@ -128,7 +129,7 @@ and  length(RBSUSERID) > 0 and ACCOUNTNUMBER!='42123393613' fetch first 2 rows o
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>261230080</con:value>
+          <con:value>261426840</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -685,7 +686,7 @@ declare namespace ns2='urn:srv.dep.savings.fs.edb.com:domain:account:v15_3';
       </con:transfers>
     </con:config>
   </con:testStep>
-  <con:testStep type="groovy" name="setBalance" id="a7bb9ae0-3a45-43ab-af01-3d6dc6b8291b">
+  <con:testStep type="groovy" name="setBalance" id="a7bb9ae0-3a45-43ab-af01-3d6dc6b8291b" disabled="true">
     <con:settings/>
     <con:config>
       <script>def debitAmount = context.expand( '${Properties#amount}' )

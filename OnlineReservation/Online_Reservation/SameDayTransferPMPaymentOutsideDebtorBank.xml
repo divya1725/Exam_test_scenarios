@@ -14,10 +14,9 @@
       <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'  
-and CHANNEL = 'INT' and
-ACCOUNTNUMBER!=42123393613
-and ROWNUM=1</con:query>
+      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  
+and  length(RBSUSERID) > 0 and ACCOUNTNUMBER IN
+(SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where BLOCKEDFORCREDIT='N' and BLOCKEDFORDEBIT='N' and Closed='N' )</con:query>
       <con:assertion type="Simple Contains" id="e4dbce32-3b85-4d35-84af-95d24ea44019" name="Contains">
         <con:configuration>
           <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -38,7 +37,9 @@ and ROWNUM=1</con:query>
       <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='2544'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  and ROWNUM=1</con:query>
+      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='2544'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  
+and  length(RBSUSERID) > 0 
+and ACCOUNTNUMBER!='42123393613' fetch first 2 rows only</con:query>
       <con:assertion type="Simple Contains" id="28cb4878-7de5-463c-86e6-7f2b586612fa" name="Contains">
         <con:configuration>
           <token>${FetchCreditAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -147,7 +148,7 @@ and ROWNUM=1</con:query>
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>5155.74</con:value>
+          <con:value>23753.88</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>
@@ -155,7 +156,7 @@ and ROWNUM=1</con:query>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
-          <con:value>261233477</con:value>
+          <con:value>261426798</con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>

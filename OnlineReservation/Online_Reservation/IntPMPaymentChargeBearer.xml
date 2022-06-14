@@ -14,11 +14,9 @@
       <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   
-and CHANNEL = 'INT'  
-and
-ACCOUNTNUMBER!=42123393613
-and ROWNUM=1</con:query>
+      <con:query>select AGREEMENTID,ACCOUNTNUMBER,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'   and CHANNEL = 'INT'  
+and  length(RBSUSERID) > 0 and ACCOUNTNUMBER IN
+(SELECT ACCOUNTNUMBER FROM V_AUTHORISATION where BLOCKEDFORCREDIT='N' and BLOCKEDFORDEBIT='N' and Closed='N' )</con:query>
       <con:assertion type="Simple Contains" id="1a63a5e4-e9e5-4702-b0a2-b38e9981f8ba" name="Contains">
         <con:configuration>
           <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -127,7 +125,7 @@ and ROWNUM=1</con:query>
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>2885.74</con:value>
+          <con:value>43.00</con:value>
         </con:property>
         <con:property>
           <con:name>channel</con:name>

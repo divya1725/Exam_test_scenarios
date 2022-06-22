@@ -15,8 +15,7 @@
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select AGREEMENTID,ACCOUNTNUMBER,USERID,FIRSTNAME,CURRENCYCODE  from V_AUTH_USERINFO where BANKORGID='4201'  and MARKETTYPE = 'PM'  
-and CHANNEL = 'INT'  and ACCOUNTNUMBER not in ('42023706975','42123393613') and ROWNUM=1</con:query>
+      <con:query>select USERID,ACCOUNTNUMBER,FIRSTNAME from v_auth_userinfo where ACCOUNTNUMBER='42121307027'</con:query>
       <con:assertion type="Simple Contains" id="8fedd5e3-c854-4f96-82e4-714bb6b2fb6b" name="Contains">
         <con:configuration>
           <token>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</token>
@@ -101,7 +100,7 @@ and CHANNEL = 'INT'  and ACCOUNTNUMBER not in ('42023706975','42123393613') and 
         </con:property>
         <con:property>
           <con:name>availableBalance</con:name>
-          <con:value>-17675.26</con:value>
+          <con:value>90000010444.00</con:value>
         </con:property>
         <con:property>
           <con:name>transactionId</con:name>
@@ -908,73 +907,74 @@ declare namespace ns3='http://reservations.ws.pca.finance.edb.com';
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://ald-eos-g-app04.man.cosng.net:22641/pin/services/PINSPayment_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>2.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${#TestSuite#userId_BankUser1}</wsc:userid>
-            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>4201</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>
-            <wsc:item key="SelfService" value="False"/>
-            <wsc:item key="Employee" value="${#TestSuite#userId_BankUser1}"/>
-            <wsc:item key="LogRef" value="${Properties#value2}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentCreateRequest>
-         <urn:paymentMessage>
-            <urn1:paymentIdentification>
-               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
-               <urn2:endToEndIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
-            </urn1:paymentIdentification>
-            <urn1:paymentInfo>
-               <urn3:paymentMethod>TRF</urn3:paymentMethod>
-               <!--You have a CHOICE of the next 2 items at this level-->
-               <urn3:paymentTypeInformation>
-                  <urn3:instructionPriority>NORM</urn3:instructionPriority>
-                  <urn3:categoryPurpose>SUPP</urn3:categoryPurpose>
-               </urn3:paymentTypeInformation>
-               <urn3:requestedExecutionDate>${Properties#reqExnDate}</urn3:requestedExecutionDate>
-               <urn3:debtorAccount>
-                  <urn2:identification>${Properties#debitAccount}</urn2:identification>
-                  <urn2:currency>${Properties#debitAcntccy}</urn2:currency>
-               </urn3:debtorAccount>
-            </urn1:paymentInfo>
-            <urn1:transaction>
-               <urn4:amount>
-                  <!--You have a CHOICE of the next 2 items at this level-->
-                  <urn2:instructedAmount currency="NOK">
-                     <urn2:amount>${Properties#amount}</urn2:amount>
-                  </urn2:instructedAmount>
-               </urn4:amount>
-               <urn4:chargeBearer>SHAR</urn4:chargeBearer>
-               <urn4:creditor>
-                  <urn2:name>Jhonny</urn2:name>
-                  <urn2:postalAddress>
-                     <urn2:postCode>1212</urn2:postCode>
-                     <urn2:townName>town</urn2:townName>
-                     <urn2:country>NO</urn2:country>
-                  </urn2:postalAddress>
-               </urn4:creditor>
-               <urn4:creditorAccount>
-                  <urn2:identification>${Properties#creditAccount}</urn2:identification>
-                  <urn2:currency>NOK</urn2:currency>
-               </urn4:creditorAccount>
-               <urn1:remittanceInformationUnstructured>STRUC</urn1:remittanceInformationUnstructured>
-            </urn1:transaction>
-            <urn1:autoConfirm>DISABLED</urn1:autoConfirm><urn1:retailPaymentApprovalNeeded>false</urn1:retailPaymentApprovalNeeded>
-         </urn:paymentMessage>
-      </urn:PaymentCreateRequest>
-   </soapenv:Body>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>2.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>E211732</wsc:userid>\r
+            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>\r
+            <wsc:channel>NBA</wsc:channel>\r
+            <wsc:orgid>4201</wsc:orgid>\r
+            <wsc:customerid xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>\r
+            <wsc:item key="SelfService" value="False"/>\r
+            <wsc:item key="Employee" value="e211732"/>\r
+            <wsc:item key="LogRef" value="${Properties#value2}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentCreateRequest>\r
+         <urn:paymentMessage>\r
+            <urn1:paymentIdentification>\r
+               <urn2:messageIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>\r
+               <urn2:endToEndIdentification>${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>\r
+            </urn1:paymentIdentification>\r
+            <urn1:paymentInfo>\r
+               <urn3:paymentMethod>TRF</urn3:paymentMethod>\r
+               <!--You have a CHOICE of the next 2 items at this level-->\r
+               <urn3:paymentTypeInformation>\r
+                  <urn3:instructionPriority>NORM</urn3:instructionPriority>\r
+                  <urn3:categoryPurpose>SUPP</urn3:categoryPurpose>\r
+               </urn3:paymentTypeInformation>\r
+               <urn3:requestedExecutionDate>${Properties#reqExnDate}</urn3:requestedExecutionDate>\r
+               <urn3:debtorAccount>\r
+                  <urn2:identification>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</urn2:identification>\r
+                  <urn2:currency>NOK</urn2:currency>\r
+               </urn3:debtorAccount>\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn2:instructedAmount currency="NOK">\r
+                     <urn2:amount>${Properties#amount}</urn2:amount>\r
+                  </urn2:instructedAmount>\r
+               </urn4:amount>\r
+               <urn4:chargeBearer>SHAR</urn4:chargeBearer>\r
+               <urn4:creditor>\r
+                  <urn2:name>Jhonny</urn2:name>\r
+                  <urn2:postalAddress>\r
+                     <urn2:postCode>1212</urn2:postCode>\r
+                     <urn2:townName>town</urn2:townName>\r
+                     <urn2:country>NO</urn2:country>\r
+                  </urn2:postalAddress>\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn2:identification>${Properties#creditAccount}</urn2:identification>\r
+                  <urn2:currency>NOK</urn2:currency>\r
+               </urn4:creditorAccount>\r
+               <urn1:remittanceInformationUnstructured>STRUC</urn1:remittanceInformationUnstructured>\r
+            </urn1:transaction>\r
+            <urn1:autoConfirm>DISABLED</urn1:autoConfirm>\r
+            <urn1:retailPaymentApprovalNeeded>false</urn1:retailPaymentApprovalNeeded>\r
+         </urn:paymentMessage>\r
+      </urn:PaymentCreateRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="MessageContentAssertion" id="6b3418b1-11dc-433a-96d5-5b3e0f20cbc9" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
@@ -1782,34 +1782,34 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPayment_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>2.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${#TestSuite#userId_BankUser1}</wsc:userid>
-            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>4201</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>
-            <wsc:item key="SelfService" value="False"/>
-            <wsc:item key="Employee" value="${#TestSuite#userId_BankUser1}"/>
-            <wsc:item key="LogRef" value="${Properties#value2}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentReadRequest>
-         
-      <urn:transactionId>${PaymentCreate_v2_0#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn:transactionId></urn:PaymentReadRequest>
-   </soapenv:Body>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>PaymentClient</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>2.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>E211732</wsc:userid>\r
+            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>\r
+            <wsc:channel>NBA</wsc:channel>\r
+            <wsc:orgid>4201</wsc:orgid>\r
+            <wsc:customerid xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="ITR"/>\r
+            <wsc:item key="SelfService" value="False"/>\r
+            <wsc:item key="Employee" value="e211732"/>\r
+            <wsc:item key="LogRef" value="da86b75e-6cfd-45d0-a11f-ba9b21fc10ed"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentReadRequest>\r
+         <urn:transactionId>${PaymentCreate_v2_0#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn:transactionId>\r
+      </urn:PaymentReadRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="MessageContentAssertion" id="baaaa959-a7d3-4072-a079-2dffb8974a9a" name="Message Content Assertion">
+        <con:assertion type="MessageContentAssertion" id="00afac54-31d4-41c7-9c9c-c27966053881" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
               <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
@@ -1821,7 +1821,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1834,7 +1833,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1847,7 +1845,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>111</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1860,7 +1857,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>true</con:enabled>
               <con:expectedValue>OK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1872,8 +1868,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>exists</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue xsi:nil="true"/>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1887,7 +1881,6 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>true</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1898,8 +1891,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>260314204</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>261433778</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1908,10 +1900,9 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 //ns2:PaymentReadResponse[1]/ns2:paymentResult[1]/ns1:result[1]/ns1:transactionId[1]</con:xpath>
               <con:element>ns4:transactionId</con:element>
               <con:type>XmlLong</con:type>
-              <con:operator>exists</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>260314204</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>261433778</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1922,8 +1913,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>522217</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>1354118</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1934,8 +1924,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>570948</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>1494205</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -1945,9 +1934,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:initiatorIdentifier</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>TESTUSERPI28</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>e211732</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1957,9 +1945,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:paymentStatus</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>VALIDATED</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1971,7 +1958,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>false</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1983,7 +1969,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>CLIENT_GENERATED</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -1994,8 +1979,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-14+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-22+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2007,7 +1991,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PAYCTDOMOUPME</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2019,7 +2002,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PI Domestic</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2031,7 +2013,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2044,7 +2025,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>2.30</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2056,8 +2036,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>3117225</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>5242992</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2069,8 +2048,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>3419495</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>3900928</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2082,8 +2060,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-14T08:08:07.000+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-22T08:17:02.000+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2096,7 +2073,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>TRF</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2109,7 +2085,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NORM</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2122,7 +2097,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>SUPP</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2134,8 +2108,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-14+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-22+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2148,8 +2121,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>42123393613</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>42121307027</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2163,7 +2135,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2176,7 +2147,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>SPTRNO22XXX</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2189,8 +2159,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>Mehmed Samantha Stornes</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>Stein Janna Lindquist</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2203,8 +2172,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>7603</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>5736</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2217,8 +2185,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>LEVANGER</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>GRANVIN</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2232,7 +2199,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2245,8 +2211,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>TORVIKVEGEN 52</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>Postboks 2554</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2260,7 +2225,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2274,7 +2238,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>10.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2287,7 +2250,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>SHAR</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2301,7 +2263,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>4201</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2315,7 +2276,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2329,7 +2289,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>Jhonny</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2343,7 +2302,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>1212</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2357,7 +2315,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>town</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2371,7 +2328,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2385,7 +2341,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>42010308121</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2399,7 +2354,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2412,7 +2366,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>false</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2424,8 +2377,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>0497cc71-ef7b-40a5-b7bd-3f88875e90fe</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>9bddbb35-28be-40c3-b713-fc66e53de79a</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2438,7 +2390,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>STRUC</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2451,7 +2402,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>ns8:NorwegianNationalPaymentInformation</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2464,7 +2414,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NONE</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2476,7 +2425,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PM</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2488,7 +2436,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>ITR</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2501,7 +2448,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>DAY0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2514,7 +2460,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>CUT0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2527,7 +2472,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2540,7 +2484,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>10.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2553,7 +2496,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2566,7 +2508,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>10.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2579,7 +2520,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2592,7 +2532,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>10.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2605,7 +2544,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2618,7 +2556,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>10.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2631,7 +2568,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>1</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2644,7 +2580,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NONE</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2657,7 +2592,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>1</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2669,7 +2603,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>UPDATE_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2681,7 +2614,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>CONFIRM_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -2693,7 +2625,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -2708,26 +2639,26 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
          </ns3:ResponseState>
          <ns2:paymentResult>
             <ns4:result>
-               <ns4:paymentReference>260314204</ns4:paymentReference>
-               <ns4:transactionId>260314204</ns4:transactionId>
-               <ns4:messageId>522217</ns4:messageId>
-               <ns4:paymentInfoId>570948</ns4:paymentInfoId>
-               <ns4:initiatorIdentifier>TESTUSERPI28</ns4:initiatorIdentifier>
+               <ns4:paymentReference>261433778</ns4:paymentReference>
+               <ns4:transactionId>261433778</ns4:transactionId>
+               <ns4:messageId>1354118</ns4:messageId>
+               <ns4:paymentInfoId>1494205</ns4:paymentInfoId>
+               <ns4:initiatorIdentifier>e211732</ns4:initiatorIdentifier>
                <ns4:paymentStatus>VALIDATED</ns4:paymentStatus>
                <ns4:prioritized>false</ns4:prioritized>
                <ns4:originalFormat>CLIENT_GENERATED</ns4:originalFormat>
-               <ns4:releaseDate>2020-10-14+02:00</ns4:releaseDate>
+               <ns4:releaseDate>2022-06-22+02:00</ns4:releaseDate>
                <ns4:internalProductCode>PAYCTDOMOUPME</ns4:internalProductCode>
                <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
                <ns4:transactionFee currency="NOK">
                   <ns5:amount>2.30</ns5:amount>
                </ns4:transactionFee>
                <ns4:paymentIdentification>
-                  <ns5:messageIdentification>3117225</ns5:messageIdentification>
-                  <ns5:endToEndIdentification>3419495</ns5:endToEndIdentification>
+                  <ns5:messageIdentification>5242992</ns5:messageIdentification>
+                  <ns5:endToEndIdentification>3900928</ns5:endToEndIdentification>
                </ns4:paymentIdentification>
                <ns4:groupHeader>
-                  <ns5:creationDateTime>2020-10-14T08:08:07.000+02:00</ns5:creationDateTime>
+                  <ns5:creationDateTime>2022-06-22T08:17:02.000+02:00</ns5:creationDateTime>
                </ns4:groupHeader>
                <ns4:paymentInfo>
                   <ns6:paymentMethod>TRF</ns6:paymentMethod>
@@ -2735,19 +2666,19 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
                      <ns6:instructionPriority>NORM</ns6:instructionPriority>
                      <ns6:categoryPurpose>SUPP</ns6:categoryPurpose>
                   </ns6:paymentTypeInformation>
-                  <ns6:requestedExecutionDate>2020-10-14+02:00</ns6:requestedExecutionDate>
+                  <ns6:requestedExecutionDate>2022-06-22+02:00</ns6:requestedExecutionDate>
                   <ns6:debtorAccount>
-                     <ns5:identification>42123393613</ns5:identification>
+                     <ns5:identification>42121307027</ns5:identification>
                      <ns5:currency>NOK</ns5:currency>
                   </ns6:debtorAccount>
                   <ns6:debtorAgentBIC>SPTRNO22XXX</ns6:debtorAgentBIC>
                   <ns6:debtor>
-                     <ns5:name>Mehmed Samantha Stornes</ns5:name>
+                     <ns5:name>Stein Janna Lindquist</ns5:name>
                      <ns5:postalAddress>
-                        <ns5:postCode>7603</ns5:postCode>
-                        <ns5:townName>LEVANGER</ns5:townName>
+                        <ns5:postCode>5736</ns5:postCode>
+                        <ns5:townName>GRANVIN</ns5:townName>
                         <ns5:country>NO</ns5:country>
-                        <ns5:addressLine>TORVIKVEGEN 52</ns5:addressLine>
+                        <ns5:addressLine>Postboks 2554</ns5:addressLine>
                      </ns5:postalAddress>
                   </ns6:debtor>
                </ns4:paymentInfo>
@@ -2777,7 +2708,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
                      <ns5:currency>NOK</ns5:currency>
                   </ns7:creditorAccount>
                   <ns7:confidential>false</ns7:confidential>
-                  <ns7:uetrId>0497cc71-ef7b-40a5-b7bd-3f88875e90fe</ns7:uetrId>
+                  <ns7:uetrId>9bddbb35-28be-40c3-b713-fc66e53de79a</ns7:uetrId>
                   <ns4:remittanceInformation>
                      <ns5:remittanceInformationUnstructured>STRUC</ns5:remittanceInformationUnstructured>
                   </ns4:remittanceInformation>
@@ -2870,96 +2801,96 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://10.246.89.106:24901/pin/services/PINSPayment_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentAuthorizationCreate</wsc:Function>
-         <wsc:Version>2.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${#TestSuite#userId_BankUser1}</wsc:userid>
-            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>
-            <wsc:channel>NBA</wsc:channel>
-            <wsc:orgid>4201</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:ip>1.1.1.1</wsc:ip>
-            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>
-            <wsc:item key="SelfService" value="False"/>
-            <wsc:item key="Employee" value="${#TestSuite#userId_BankUser1}"/>
-            <wsc:item key="LogRef" value="${Properties#value2}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentUpdateRequest>
-         <urn:paymentMessage>
-            <urn1:transactionId>${PaymentRead#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //urn:PaymentReadResponse[1]/urn:paymentResult[1]/urn2:result[1]/urn2:transactionId[1]}</urn1:transactionId>
-            <urn1:paymentInfo>
-               <urn2:paymentMethod>TRF</urn2:paymentMethod>
-               <urn2:requestedExecutionDate>${Properties#updateDateTmr}</urn2:requestedExecutionDate>
-               <urn2:debtorAccount>
-                  <urn3:identification>${Properties#debitAccount}</urn3:identification>
-                  <urn3:currency>${Properties#debitAcntccy}</urn3:currency>
-               </urn2:debtorAccount>
-               <urn2:instructionForDebtorAgent>instructionforDebtAgent</urn2:instructionForDebtorAgent>
-            </urn1:paymentInfo>
-            <urn1:transaction>
-               <urn4:amount>
-                  <!--You have a CHOICE of the next 2 items at this level-->
-                  <urn3:instructedAmount currency="NOK">
-                     <urn3:amount>25</urn3:amount>
-                  </urn3:instructedAmount>
-               </urn4:amount>
-               <urn4:chargeBearer>CRED</urn4:chargeBearer>
-               <urn4:creditor>
-                  <urn3:name>abcd</urn3:name>
-                  <urn3:postalAddress>
-                     <urn3:addressType>ADDR</urn3:addressType>
-                     <urn3:department>dept</urn3:department>
-                     <urn3:subDepartment>subdept</urn3:subDepartment>
-                     <urn3:streetName>streetName</urn3:streetName>
-                     <urn3:buildingNumber>Building</urn3:buildingNumber>
-                     <urn3:postCode>4321</urn3:postCode>
-                     <urn3:townName>townName</urn3:townName>
-                     <urn3:countrySubDivision>countrySubDivi</urn3:countrySubDivision>
-                     <urn3:country>NO</urn3:country>
-                     <urn3:addressLine>addrln1</urn3:addressLine>
-                  </urn3:postalAddress>
-                  <urn3:emailAddress>creditoremail@evri.com</urn3:emailAddress>
-                  <urn3:contactDetailsName>creditor contact</urn3:contactDetailsName>
-               </urn4:creditor>
-               <urn4:creditorAccount>
-                  <urn3:identification>${Properties#creditAccount}</urn3:identification>
-                  <urn3:currency>NOK</urn3:currency>
-               </urn4:creditorAccount>
-               <urn4:ultimateCreditor>
-                  <urn3:name>UC_Name1</urn3:name>
-                  <urn3:postalAddress>
-                     <urn3:addressType>ADDR</urn3:addressType>
-                     <urn3:department>UC_dept</urn3:department>
-                     <urn3:subDepartment>UC_subDept</urn3:subDepartment>
-                     <urn3:streetName>UC_stNm</urn3:streetName>
-                     <urn3:postCode>1234</urn3:postCode>
-                     <urn3:townName>UC_townNm</urn3:townName>
-                     <urn3:countrySubDivision>UC_countryDivision</urn3:countrySubDivision>
-                     <urn3:country>NO</urn3:country>
-                  </urn3:postalAddress>
-               </urn4:ultimateCreditor>
-               <urn1:remittanceInformationUnstructured>Edit and Retry enduser before confirm</urn1:remittanceInformationUnstructured>
-            </urn1:transaction>
-            <urn1:editPaymentOptions>
-               <urn3:chargeOption>
-                  <urn3:charge currency="NOK">
-                     <urn3:amount>5</urn3:amount>
-                  </urn3:charge>
-               </urn3:chargeOption>
-            </urn1:editPaymentOptions>
-         </urn:paymentMessage>
-      </urn:PaymentUpdateRequest>
-   </soapenv:Body>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>2.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>E211732</wsc:userid>\r
+            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>\r
+            <wsc:channel>NBA</wsc:channel>\r
+            <wsc:orgid>4201</wsc:orgid>\r
+            <wsc:customerid xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>\r
+            <wsc:item key="SelfService" value="False"/>\r
+            <wsc:item key="Employee" value="e211732"/>\r
+            <wsc:item key="LogRef" value="${Properties#value2}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentUpdateRequest>\r
+         <urn:paymentMessage>\r
+            <urn1:transactionId>${PaymentRead#Response#declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //urn:PaymentReadResponse[1]/urn:paymentResult[1]/urn2:result[1]/urn2:transactionId[1]}</urn1:transactionId>\r
+            <urn1:paymentInfo>\r
+               <urn2:paymentMethod>TRF</urn2:paymentMethod>\r
+               <urn2:requestedExecutionDate>${Properties#updateDateTmr}</urn2:requestedExecutionDate>\r
+               <urn2:debtorAccount>\r
+                  <urn3:identification>${FetchAccount#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}</urn3:identification>\r
+                  <urn3:currency>NOK</urn3:currency>\r
+               </urn2:debtorAccount>\r
+               <urn2:instructionForDebtorAgent>instructionforDebtAgent</urn2:instructionForDebtorAgent>\r
+            </urn1:paymentInfo>\r
+            <urn1:transaction>\r
+               <urn4:amount>\r
+                  <!--You have a CHOICE of the next 2 items at this level-->\r
+                  <urn3:instructedAmount currency="NOK">\r
+                     <urn3:amount>5</urn3:amount>\r
+                  </urn3:instructedAmount>\r
+               </urn4:amount>\r
+               <urn4:chargeBearer>CRED</urn4:chargeBearer>\r
+               <urn4:creditor>\r
+                  <urn3:name>abcd</urn3:name>\r
+                  <urn3:postalAddress>\r
+                     <urn3:addressType>ADDR</urn3:addressType>\r
+                     <urn3:department>dept</urn3:department>\r
+                     <urn3:subDepartment>subdept</urn3:subDepartment>\r
+                     <urn3:streetName>streetName</urn3:streetName>\r
+                     <urn3:buildingNumber>Building</urn3:buildingNumber>\r
+                     <urn3:postCode>4321</urn3:postCode>\r
+                     <urn3:townName>townName</urn3:townName>\r
+                     <urn3:countrySubDivision>countrySubDivi</urn3:countrySubDivision>\r
+                     <urn3:country>NO</urn3:country>\r
+                     <urn3:addressLine>addrln1</urn3:addressLine>\r
+                  </urn3:postalAddress>\r
+                  <urn3:emailAddress>creditoremail@evri.com</urn3:emailAddress>\r
+                  <urn3:contactDetailsName>creditor contact</urn3:contactDetailsName>\r
+               </urn4:creditor>\r
+               <urn4:creditorAccount>\r
+                  <urn3:identification>${Properties#creditAccount}</urn3:identification>\r
+                  <urn3:currency>NOK</urn3:currency>\r
+               </urn4:creditorAccount>\r
+               <urn4:ultimateCreditor>\r
+                  <urn3:name>UC_Name1</urn3:name>\r
+                  <urn3:postalAddress>\r
+                     <urn3:addressType>ADDR</urn3:addressType>\r
+                     <urn3:department>UC_dept</urn3:department>\r
+                     <urn3:subDepartment>UC_subDept</urn3:subDepartment>\r
+                     <urn3:streetName>UC_stNm</urn3:streetName>\r
+                     <urn3:postCode>1234</urn3:postCode>\r
+                     <urn3:townName>UC_townNm</urn3:townName>\r
+                     <urn3:countrySubDivision>UC_countryDivision</urn3:countrySubDivision>\r
+                     <urn3:country>NO</urn3:country>\r
+                  </urn3:postalAddress>\r
+               </urn4:ultimateCreditor>\r
+               <urn1:remittanceInformationUnstructured>Edit and Retry enduser before confirm</urn1:remittanceInformationUnstructured>\r
+            </urn1:transaction>\r
+            <urn1:editPaymentOptions>\r
+               <urn3:chargeOption>\r
+                  <urn3:charge currency="NOK">\r
+                     <urn3:amount>5</urn3:amount>\r
+                  </urn3:charge>\r
+               </urn3:chargeOption>\r
+            </urn1:editPaymentOptions>\r
+         </urn:paymentMessage>\r
+      </urn:PaymentUpdateRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
-        <con:assertion type="MessageContentAssertion" id="7164fa5e-52a8-42df-b0a2-34578b6e4810" name="Message Content Assertion">
+        <con:assertion type="MessageContentAssertion" id="4a6b2075-f35c-4c8e-9f1f-8e7f9ebf9b78" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">
             <con:elements>
               <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
@@ -2971,7 +2902,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2984,7 +2914,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -2997,7 +2926,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>111</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3010,7 +2938,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>true</con:enabled>
               <con:expectedValue>OK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3022,8 +2949,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>exists</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue xsi:nil="true"/>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3037,7 +2962,6 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>true</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3049,8 +2973,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>exists</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue xsi:nil="true"/>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3063,7 +2985,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>6846</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3075,8 +2996,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:type>XmlString</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>Instruction Debtor Agent Code is invalid: instructionforDebtAgent</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>The instructed debtor agent code is invalid.: instructionforDebtAgent</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3087,8 +3007,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>296678</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>1354122</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3099,8 +3018,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>313430</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>1494209</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3111,8 +3029,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type>XmlLong</con:type>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>338286</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>261433782</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3122,9 +3039,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:initiatorIdentifier</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>TESTUSERPI28</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>e211732</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3135,8 +3051,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>338285</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>261433778</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3147,8 +3062,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-15+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-23+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3160,7 +3074,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PAYCTDOMOUPME</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3172,7 +3085,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PI Domestic</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3184,7 +3096,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3197,7 +3108,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>5.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3209,8 +3119,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>3480034</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>5242992</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3222,8 +3131,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>5244054</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>3900928</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3235,8 +3143,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-14T16:42:19.771+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-22T08:20:24.047+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3249,7 +3156,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>TRF</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3262,7 +3168,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NORM</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3274,8 +3179,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2020-10-15+02:00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>2022-06-23+02:00</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3288,8 +3192,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>42123393613</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>42121307027</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3303,7 +3206,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3316,7 +3218,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>SPTRNO22XXX</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3329,8 +3230,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>Mehmed Samantha Stornes</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>Stein Janna Lindquist</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3343,8 +3243,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>7603</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>5736</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3357,8 +3256,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>LEVANGER</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>GRANVIN</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3372,7 +3270,6 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3385,8 +3282,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>TORVIKVEGEN 52</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>Postboks 2554</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3399,7 +3295,6 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>instructionforDebtAgent</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3413,7 +3308,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3425,9 +3319,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:amount</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>25.00</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>5.00</con:expectedValue>
               <con:numberType>true</con:numberType>
             </con:elements>
             <con:elements>
@@ -3440,7 +3333,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>CRED</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3454,7 +3346,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>4201</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3468,7 +3359,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3480,9 +3370,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:name</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>abcd</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3494,9 +3383,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:addressType</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>ADDR</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3508,9 +3396,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:department</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>dept</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3522,9 +3409,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:subDepartment</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>subdept</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3536,9 +3422,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:streetName</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>streetName</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3550,9 +3435,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:buildingNumber</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>Building</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3564,9 +3448,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:postCode</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>4321</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3578,9 +3461,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:townName</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>townName</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3592,9 +3474,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:countrySubDivision</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>countrySubDivi</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3606,9 +3487,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:country</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3620,9 +3500,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:addressLine</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>addrln1</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3634,9 +3513,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:emailAddress</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>creditoremail@evri.com</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3648,9 +3526,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:contactDetailsName</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>creditor contact</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3664,7 +3541,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>42010308121</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3678,7 +3554,6 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>NOK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3690,9 +3565,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:name</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_Name1</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3704,9 +3578,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:addressType</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>ADDR</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3718,9 +3591,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:department</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_dept</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3732,9 +3604,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:subDepartment</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_subDept</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3746,9 +3617,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:streetName</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_stNm</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3760,9 +3630,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:postCode</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>1234</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3774,9 +3643,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:townName</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_townNm</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3788,9 +3656,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:countrySubDivision</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>UC_countryDivision</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3802,9 +3669,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:country</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>NO</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3817,7 +3683,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>false</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3829,8 +3694,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>250eedeb-937d-4163-bfbe-d6a15f364a38</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>9bddbb35-28be-40c3-b713-fc66e53de79a</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3843,7 +3707,6 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>Edit and Retry enduser before confirm</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3854,8 +3717,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>UPDATE_PAYMENT</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3866,8 +3728,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>UPDATE_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>CONFIRM_PAYMENT</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3878,8 +3739,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>CONFIRM_PAYMENT</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
+              <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3891,7 +3751,6 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:operator>=</con:operator>
               <con:enabled>false</con:enabled>
               <con:expectedValue>PM</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:elements>
@@ -3901,9 +3760,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:paymentStatus</con:element>
               <con:type xsi:nil="true"/>
               <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>VALIDATED</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
               <con:numberType>false</con:numberType>
             </con:elements>
             <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -3915,45 +3773,45 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <ComponentId>111</ComponentId>
             <Message>OK</Message>
             <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
-            <errorItem key="6846" value="Instruction Debtor Agent Code is invalid: instructionforDebtAgent"/>
+            <errorItem key="6846" value="The instructed debtor agent code is invalid.: instructionforDebtAgent"/>
          </ns3:ResponseState>
          <ns2:paymentResult>
-            <ns4:messageId>296678</ns4:messageId>
-            <ns4:paymentInfoId>313430</ns4:paymentInfoId>
-            <ns4:transactionId>338286</ns4:transactionId>
-            <ns4:initiatorIdentifier>TESTUSERPI28</ns4:initiatorIdentifier>
-            <ns4:paymentReference>338285</ns4:paymentReference>
-            <ns4:releaseDate>2020-10-15+02:00</ns4:releaseDate>
+            <ns4:messageId>1354122</ns4:messageId>
+            <ns4:paymentInfoId>1494209</ns4:paymentInfoId>
+            <ns4:transactionId>261433782</ns4:transactionId>
+            <ns4:initiatorIdentifier>e211732</ns4:initiatorIdentifier>
+            <ns4:paymentReference>261433778</ns4:paymentReference>
+            <ns4:releaseDate>2022-06-23+02:00</ns4:releaseDate>
             <ns4:internalProductCode>PAYCTDOMOUPME</ns4:internalProductCode>
             <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
             <ns4:transactionFee currency="NOK">
                <ns5:amount>5.00</ns5:amount>
             </ns4:transactionFee>
             <ns4:paymentIdentification>
-               <ns5:messageIdentification>3480034</ns5:messageIdentification>
-               <ns5:endToEndIdentification>5244054</ns5:endToEndIdentification>
+               <ns5:messageIdentification>5242992</ns5:messageIdentification>
+               <ns5:endToEndIdentification>3900928</ns5:endToEndIdentification>
             </ns4:paymentIdentification>
             <ns4:groupHeader>
-               <ns5:creationDateTime>2020-10-14T16:42:19.771+02:00</ns5:creationDateTime>
+               <ns5:creationDateTime>2022-06-22T08:20:24.047+02:00</ns5:creationDateTime>
             </ns4:groupHeader>
             <ns4:paymentInfo>
                <ns6:paymentMethod>TRF</ns6:paymentMethod>
                <ns6:paymentTypeInformation>
                   <ns6:instructionPriority>NORM</ns6:instructionPriority>
                </ns6:paymentTypeInformation>
-               <ns6:requestedExecutionDate>2020-10-15+02:00</ns6:requestedExecutionDate>
+               <ns6:requestedExecutionDate>2022-06-23+02:00</ns6:requestedExecutionDate>
                <ns6:debtorAccount>
-                  <ns5:identification>42123393613</ns5:identification>
+                  <ns5:identification>42121307027</ns5:identification>
                   <ns5:currency>NOK</ns5:currency>
                </ns6:debtorAccount>
                <ns6:debtorAgentBIC>SPTRNO22XXX</ns6:debtorAgentBIC>
                <ns6:debtor>
-                  <ns5:name>Mehmed Samantha Stornes</ns5:name>
+                  <ns5:name>Stein Janna Lindquist</ns5:name>
                   <ns5:postalAddress>
-                     <ns5:postCode>7603</ns5:postCode>
-                     <ns5:townName>LEVANGER</ns5:townName>
+                     <ns5:postCode>5736</ns5:postCode>
+                     <ns5:townName>GRANVIN</ns5:townName>
                      <ns5:country>NO</ns5:country>
-                     <ns5:addressLine>TORVIKVEGEN 52</ns5:addressLine>
+                     <ns5:addressLine>Postboks 2554</ns5:addressLine>
                   </ns5:postalAddress>
                </ns6:debtor>
                <ns6:instructionForDebtorAgent>instructionforDebtAgent</ns6:instructionForDebtorAgent>
@@ -3961,7 +3819,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <ns4:transaction>
                <ns7:amount>
                   <ns5:instructedAmount currency="NOK">
-                     <ns5:amount>25.00</ns5:amount>
+                     <ns5:amount>5.00</ns5:amount>
                   </ns5:instructedAmount>
                </ns7:amount>
                <ns7:chargeBearer>CRED</ns7:chargeBearer>
@@ -4006,13 +3864,13 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
                   </ns5:postalAddress>
                </ns7:ultimateCreditor>
                <ns7:confidential>false</ns7:confidential>
-               <ns7:uetrId>250eedeb-937d-4163-bfbe-d6a15f364a38</ns7:uetrId>
+               <ns7:uetrId>9bddbb35-28be-40c3-b713-fc66e53de79a</ns7:uetrId>
                <ns4:remittanceInformation>
                   <ns5:remittanceInformationUnstructured>Edit and Retry enduser before confirm</ns5:remittanceInformationUnstructured>
                </ns4:remittanceInformation>
-               <ns4:operationsArray>VIEW_PAYMENT</ns4:operationsArray>
                <ns4:operationsArray>UPDATE_PAYMENT</ns4:operationsArray>
                <ns4:operationsArray>CONFIRM_PAYMENT</ns4:operationsArray>
+               <ns4:operationsArray>VIEW_PAYMENT</ns4:operationsArray>
             </ns4:transaction>
             <ns4:marketType>PM</ns4:marketType>
             <ns4:paymentStatus>VALIDATED</ns4:paymentStatus>
@@ -4048,30 +3906,32 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
         </con:settings>
         <con:encoding>UTF-8</con:encoding>
         <con:endpoint>http://10.246.89.107:23621/pin/services/PINSPayment_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${#TestSuite#sourceApplication_EndUser}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>
-         <wsc:Function>paymentCreate</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#userid}</wsc:userid>
-            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
-            <wsc:channel>${#TestSuite#channel}</wsc:channel>
-            <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:ip>1.1.1.2</wsc:ip>
-            <wsc:item key="${Properties#item1}" value="${Properties#value1}"/>
-            <wsc:item key="${Properties#item2}" value="${Properties#value2}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentReadRequest>
-         <urn:transactionId>${PaymentUpdateBankUser#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentUpdateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn:transactionId>
-      </urn:PaymentReadRequest>
-   </soapenv:Body>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">\r
+   <soapenv:Header>\r
+      <wsc:AutHeader>\r
+         <wsc:SourceApplication>${#TestSuite#sourceApplication_BankUser}</wsc:SourceApplication>\r
+         <wsc:DestinationApplication>PAYS</wsc:DestinationApplication>\r
+         <wsc:Function>paymentAuthorizationCreate</wsc:Function>\r
+         <wsc:Version>2.0</wsc:Version>\r
+         <wsc:ClientContext>\r
+            <wsc:userid>E211732</wsc:userid>\r
+            <wsc:credentials>03111012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37Emmmyjbdrflpq4f56YEcTwqPbJGRxTVbEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu3EfQIWD5xMfpd8V90wfJqE%2FrpIdBWOZCg%3DWlPV5eZ4diuCWN8n8MioYhhi5y3ry7ocUG557FkHElWUtZW5y2o9bV4kNOBI2eIvhnMNNl4KZzZiP60aZOtzU6qC7h54%2FjtOS9LP2XwPBSwC3jUA00HIe25%2FFBsLnNciYlYLbkWKiTZCji3sjsSuUS8K0sIEsS3qoAJRWadlGrE%3D</wsc:credentials>\r
+            <wsc:channel>NBA</wsc:channel>\r
+            <wsc:orgid>4201</wsc:orgid>\r
+            <wsc:customerid xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>\r
+            <wsc:ip>1.1.1.1</wsc:ip>\r
+            <wsc:item key="PaymentChannel" value="${#TestSuite#channel_BankUser}"/>\r
+            <wsc:item key="SelfService" value="False"/>\r
+            <wsc:item key="Employee" value="e211732"/>\r
+            <wsc:item key="LogRef" value="${Properties#value2}"/>\r
+         </wsc:ClientContext>\r
+      </wsc:AutHeader>\r
+   </soapenv:Header>\r
+   <soapenv:Body>\r
+      <urn:PaymentReadRequest>\r
+         <urn:transactionId>${PaymentUpdateBankUser#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentUpdateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</urn:transactionId>\r
+      </urn:PaymentReadRequest>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request>
         <con:assertion type="MessageContentAssertion" id="7dcd8a9f-8fcf-49d5-9d84-d986db7b4074" name="Message Content Assertion">
           <con:configuration xsi:type="con:MessageContentAssertion">

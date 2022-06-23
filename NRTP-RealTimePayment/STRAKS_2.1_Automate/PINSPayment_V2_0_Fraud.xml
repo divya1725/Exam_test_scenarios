@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="0d5f4d10-9ff5-4c88-a4bf-cd39a4fbe444" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="PINSPayment_V2_0_AutoConfirm" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="4ee13b79-3028-44ee-a246-666e614db59c" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="PINSPayment_V2_0_Fraud" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
-    <con:setting id="0d5f4d10-9ff5-4c88-a4bf-cd39a4fbe444fileName">PINSPayment_V2_0_AutoConfirm</con:setting>
+    <con:setting id="4ee13b79-3028-44ee-a246-666e614db59cfileName">PINSPayment_V2_0_Fraud</con:setting>
   </con:settings>
-  <con:testStep type="manualTestStep" name="PINSPayment_V2_0" id="918f1548-53bf-47cf-96a6-e838288a6582" disabled="true">
+  <con:testStep type="manualTestStep" name="PINSPayment_V2_0" id="e2aefd74-5994-4d55-85ca-246a0f6f4a27" disabled="true">
     <con:description>This test case perform below operations
 	Take test data from V_AUTH_USERINFO.
 	Perform Straks 2.1 Payment CREATE using PINSPayment_V2_0.
-	Verify OUTWARD entry in INSTANT_INFLIGHT_INFO table.
-	Perform Payment STATUS READ operation to check the latest status of the Straks2.1 payment.
-	Verify INWARD entry in INSTANT_INWARD_TRANSACTION table.</con:description>
+	Verify Payment is not created and stopped because of FRAUD in RBS</con:description>
     <con:settings/>
     <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:expectedResult/>
     </con:config>
   </con:testStep>
-  <con:testStep type="properties" name="Properties" id="d8dfd932-bc48-42dc-b4d4-276cd39cd7a9">
+  <con:testStep type="properties" name="Properties" id="90344134-31c4-49da-bda6-63ec3e2cb20b">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
@@ -103,10 +101,14 @@
           <con:name>TppId</con:name>
           <con:value>VIPPS AS</con:value>
         </con:property>
+        <con:property>
+          <con:name>SCAPerformed</con:name>
+          <con:value>true</con:value>
+        </con:property>
       </con:properties>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="PWH V_AUTH_USERINFO_NOK" id="23bec77c-1f53-4e7d-b79a-9e0215dd8c28" disabled="true">
+  <con:testStep type="jdbc" name="PWH V_AUTH_USERINFO_NOK" id="c0e3d726-dd8f-4507-a9bf-a11860493279" disabled="true">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -120,8 +122,7 @@
 CURRENCYCODE,ACCOUNTROLENAME FROM V_AUTH_USERINFO WHERE
 BANKORGID IN ('${Properties#orgid}') AND MARKETTYPE='PM'
 AND CHANNEL = '${Properties#PaymentChannel}' AND
-ACCOUNTROLENAME IN ('Register', 'TransferDestination')
-FETCH FIRST 1 ROWS ONLY</con:query>
+ACCOUNTROLENAME IN ('Register') FETCH FIRST 1 ROWS ONLY</con:query>
       <con:assertion type="JDBC Status" id="266efb75-b6f0-4041-abb8-b71379cf3d0a" name="JDBC Status"/>
       <con:assertion type="DataAndMetadataAssertion" id="9c8147b5-ba49-4fd1-9e88-7d5fff08e637" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
@@ -205,12 +206,12 @@ FETCH FIRST 1 ROWS ONLY</con:query>
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="request" id="7b6ee193-1d62-4fbb-ae48-b90598301585" name="PAYMENT_CREATE">
+  <con:testStep type="request" id="2739422b-6cfd-4bfb-bfe5-86060a2cb9c2" name="PAYMENT_CREATE_PFIP">
     <con:settings/>
     <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
       <con:operation>PaymentCreate</con:operation>
-      <con:request name="PAYMENT_CREATE" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8728df7a-2992-40e4-a05c-ff2e924ded2d">
+      <con:request name="PAYMENT_CREATE_PFIP" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8728df7a-2992-40e4-a05c-ff2e924ded2d">
         <con:settings>
           <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
         </con:settings>
@@ -231,12 +232,317 @@ FETCH FIRST 1 ROWS ONLY</con:query>
             <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
             <wsc:customerid>${Properties#customerid}</wsc:customerid>
             <wsc:locale>no_NO.UTF-8</wsc:locale>
-            <wsc:ip>10.24.89.91</wsc:ip>
+            <wsc:ip>10.10.10.11</wsc:ip>
             <wsc:item key="instantExecutionStrategy" value="SYNCHRONOUS"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
-            <wsc:item key="TppId" value="${Properties#TppId}"/>
-            <wsc:item key="TppName" value="${Properties#TppName}"/>
+            <wsc:item key="TppId" value="TppId_${Properties#LogRef}"/>
+            <wsc:item key="TppName" value="TppName_${Properties#LogRef}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest>
+         <urn:paymentMessage>
+            <urn1:paymentIdentification>
+               <urn2:messageIdentification>${Properties#LogRef}</urn2:messageIdentification>
+               <urn2:endToEndIdentification>${Properties#LogRef}</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo>
+               <urn3:paymentMethod>TRF</urn3:paymentMethod>
+               <urn3:paymentTypeInformation>
+                  <urn3:serviceLevel>NRTP</urn3:serviceLevel>
+               </urn3:paymentTypeInformation>
+               <urn3:requestedExecutionDate>${Properties#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:debtorAccount>
+                  <urn2:identification>${Properties#DebitAccount}</urn2:identification>
+                  <urn2:currency>NOK</urn2:currency>
+               </urn3:debtorAccount>
+               <urn3:debtorAgentBIC>${Properties#DebtorAgentBic}</urn3:debtorAgentBIC>
+               <urn3:debtor>
+                  <urn2:name>Norges Automobilforbund avd. Levanger og Verdal</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:addressType>ADDR</urn2:addressType>
+                     <urn2:department>Norges Automobilforbund</urn2:department>
+                     <urn2:subDepartment>Automobilforbund</urn2:subDepartment>
+                     <urn2:streetName>Norges Levanger og Verdal</urn2:streetName>
+                     <urn2:buildingNumber>Automobilf</urn2:buildingNumber>
+                     <urn2:postCode>Levanger</urn2:postCode>
+                     <urn2:townName>Levanger og Verdal</urn2:townName>
+                     <urn2:countrySubDivision>Verdal</urn2:countrySubDivision>
+                     <urn2:country>NO</urn2:country>
+                     <urn2:addressLine>1Norges Automobilforbund avd. Levanger og Verdal1</urn2:addressLine>
+                     <urn2:addressLine>2Norges Automobilforbund avd. Levanger og Verdal2</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn3:debtor>
+            </urn1:paymentInfo>
+            <urn1:transaction>
+               <urn4:amount>
+                  <urn2:instructedAmount currency="NOK">
+                     <urn2:amount>${Properties#InstrAmount}</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer>SLEV</urn4:chargeBearer>
+               <urn4:creditorAgent>
+                  <urn2:bic>${Properties#DebtorAgentBic}</urn2:bic>
+                  <urn2:name>Norges Automobilforbund avd. Levanger og Verdal</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:department>Norges</urn2:department>
+                     <urn2:subDepartment>Automobilforbund</urn2:subDepartment>
+                     <urn2:streetName>avd</urn2:streetName>
+                     <urn2:buildingNumber>Levanger</urn2:buildingNumber>
+                     <urn2:postCode>5774</urn2:postCode>
+                     <urn2:townName>Verdal</urn2:townName>
+                     <urn2:countrySubDivision>Levanger og Verdal</urn2:countrySubDivision>
+                     <urn2:country>NO</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor>
+                  <urn2:name>Albrekt</urn2:name>
+                  <urn2:postalAddress>
+                     <urn2:addressType>ADDR</urn2:addressType>
+                     <urn2:postCode>5736</urn2:postCode>
+                     <urn2:townName>city</urn2:townName>
+                     <urn2:country>NO</urn2:country>
+                     <urn2:addressLine>Address</urn2:addressLine>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount>
+                  <urn2:identification>${Properties#CreditAccount}</urn2:identification>
+               </urn4:creditorAccount>
+               <urn1:remittanceInformationUnstructured>Fraud</urn1:remittanceInformationUnstructured>
+            </urn1:transaction>
+            <urn1:autoConfirm>ENABLED_FORCE_ON_WARNINGS</urn1:autoConfirm>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="77ab5f1f-f6a9-419c-9e3b-04960e4e83ec" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:path>
+              <con:element>ErrorCode</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>6807</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:path>
+              <con:element>Severity</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>2</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:path>
+              <con:element>ComponentId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:path>
+              <con:element>Message</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>Payment is not qualified for real time payments</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:path>
+              <con:element>LogSequence</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:PaymentCreateResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:path>
+              <con:element>@xsi:nil</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]</con:path>
+              <con:element>errorItem</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@key</con:path>
+              <con:element>@key</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>RISK_MODULE_EVENT</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@value</con:path>
+              <con:element>@value</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>FRAUD</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[2]</con:path>
+              <con:element>errorItem</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[2]/@key</con:path>
+              <con:element>@key</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>RISK_MODULE_EVENT_ACTION</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[2]/@value</con:path>
+              <con:element>@value</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>STOP</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:PaymentCreateResponse xmlns:ns10="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns9="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:creditor:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns3:ResponseState>
+            <ErrorCode>6807</ErrorCode>
+            <Severity>2</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>Payment is not qualified for real time payments</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <errorItem key="RISK_MODULE_EVENT" value="FRAUD"/>
+            <errorItem key="RISK_MODULE_EVENT_ACTION" value="STOP"/>
+         </ns3:ResponseState>
+      </ns2:PaymentCreateResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentCreateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="74f5dae0-fa40-49cc-936c-998e5df81a5e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="67d8aa54-2fae-4410-9efb-5f3ee1f3e7ae">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="ea68e869-5240-4127-9397-9489f460a396">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="20bb5776-bed5-4e8f-8977-0bad704b76e2">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="6de74885-9321-4f49-bd1c-2b1469a9eb34">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="e89a39e4-007c-44e4-adb0-5c976de5bac5">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="96e32039-fe49-4380-b772-481365b917b7" name="PAYMENT_CREATE_EFIP" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="PAYMENT_CREATE_EFIP" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="8728df7a-2992-40e4-a05c-ff2e924ded2d">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#G-S1}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PaymentCreate_v2_0</wsc:Function>
+         <wsc:Version>2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>INT</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>no_NO.UTF-8</wsc:locale>
+            <wsc:ip>11.11.11.11</wsc:ip>
+            <wsc:item key="instantExecutionStrategy" value="SYNCHRONOUS"/>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
+            <wsc:item key="LogRef" value="${Properties#LogRef}"/>
+            <wsc:item key="TppId" value="TppId_${Properties#LogRef}"/>
+            <wsc:item key="TppName" value="TppName_${Properties#LogRef}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -309,6 +615,7 @@ FETCH FIRST 1 ROWS ONLY</con:query>
                <urn4:creditorAccount>
                   <urn2:identification>${Properties#CreditAccount}</urn2:identification>
                </urn4:creditorAccount>
+               <urn1:remittanceInformationUnstructured>Transfer To China</urn1:remittanceInformationUnstructured>
             </urn1:transaction>
             <urn1:autoConfirm>ENABLED_FORCE_ON_WARNINGS</urn1:autoConfirm>
          </urn:paymentMessage>
@@ -326,7 +633,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:element>ErrorCode</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>0</con:expectedValue>
+              <con:expectedValue>6000</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -338,7 +645,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:element>Severity</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>0</con:expectedValue>
+              <con:expectedValue>2</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -362,7 +669,7 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
               <con:element>Message</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>true</con:enabled>
-              <con:expectedValue>OK</con:expectedValue>
+              <con:expectedValue>Validation error</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -397,7 +704,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:messageId</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>1314227</con:expectedValue>
+              <con:expectedValue>187327</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -408,7 +715,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:paymentInfoId</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>1453872</con:expectedValue>
+              <con:expectedValue>742265</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -417,9 +724,9 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:transactionId[1]</con:path>
               <con:element>ns4:transactionId</con:element>
-              <con:operatorId>9</con:operatorId>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>261388887</con:expectedValue>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>1000166585</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -430,7 +737,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:initiatorIdentifier</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>19054210828</con:expectedValue>
+              <con:expectedValue>01127314507</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -441,7 +748,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:paymentReference</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>261388887</con:expectedValue>
+              <con:expectedValue>1000166585</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -452,7 +759,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:releaseDate</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2022-05-24+02:00</con:expectedValue>
+              <con:expectedValue>2022-06-08+02:00</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -497,7 +804,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:amount</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>25.00</con:expectedValue>
+              <con:expectedValue>7.00</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -509,7 +816,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:messageIdentification</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>240522144552</con:expectedValue>
+              <con:expectedValue>80622135706</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -521,7 +828,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:endToEndIdentification</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>240522144552</con:expectedValue>
+              <con:expectedValue>80622135706</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -533,7 +840,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns5:creationDateTime</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2022-05-24T11:15:53.515+02:00</con:expectedValue>
+              <con:expectedValue>2022-06-08T10:27:06.032+02:00</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -568,7 +875,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
 //ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:paymentInfo[1]/ns1:paymentTypeInformation[1]/ns1:serviceLevel[1]</con:path>
               <con:element>ns6:serviceLevel</con:element>
               <con:operatorId>1</con:operatorId>
-              <con:enabled>true</con:enabled>
+              <con:enabled>false</con:enabled>
               <con:expectedValue>NRTP</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
@@ -581,7 +888,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:element>ns6:requestedExecutionDate</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>2022-05-24+02:00</con:expectedValue>
+              <con:expectedValue>2022-06-08+02:00</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -593,8 +900,8 @@ declare namespace ns2='urn:pins.payment.evry.com:domain:debtor:v2_0';
 //ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:paymentInfo[1]/ns2:debtorAccount[1]/ns1:identification[1]</con:path>
               <con:element>ns5:identification</con:element>
               <con:operatorId>1</con:operatorId>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>${Properties#DebitAccount}</con:expectedValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>42000705572</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -619,7 +926,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:debtor:v2_0';
               <con:element>ns6:debtorAgentBIC</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>${Properties#DebtorAgentBic}</con:expectedValue>
+              <con:expectedValue>SPTRNO22XXX</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -800,8 +1107,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 //ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:amount[1]/ns1:instructedAmount[1]/ns1:amount[1]</con:path>
               <con:element>ns5:amount</con:element>
               <con:operatorId>1</con:operatorId>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>${Properties#InstrAmount}</con:expectedValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0.19</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>true</con:numberType>
             </con:elements>
@@ -1046,8 +1353,8 @@ declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 //ns4:PaymentCreateResponse[1]/ns4:paymentResult[1]/ns3:transaction[1]/ns2:creditorAccount[1]/ns1:identification[1]</con:path>
               <con:element>ns5:identification</con:element>
               <con:operatorId>1</con:operatorId>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>${Properties#CreditAccount}</con:expectedValue>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>42021430581</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1084,7 +1391,7 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns7:uetrId</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>d8bc653d-ebed-42f7-9e2a-1a6f3cf1aa2a</con:expectedValue>
+              <con:expectedValue>ed4d424b-9ff0-4ed6-9797-51fcee51dbdf</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1095,7 +1402,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
               <con:element>ns4:operationsArray</con:element>
               <con:operatorId>1</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
+              <con:expectedValue>CONFIRM_PAYMENT</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1116,8 +1423,66 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
 //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:paymentStatus[1]</con:path>
               <con:element>ns4:paymentStatus</con:element>
               <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>REJECTED</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]</con:path>
+              <con:element>errorItem</con:element>
+              <con:operatorId>9</con:operatorId>
               <con:enabled>false</con:enabled>
-              <con:expectedValue>PROCESSING</con:expectedValue>
+              <con:expectedValue xsi:nil="true"/>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@key</con:path>
+              <con:element>@key</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>7551</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentCreateResponse[1]/ns2:ResponseState[1]/ns1:errorItem[1]/@value</con:path>
+              <con:element>@value</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>Unable to process the immediate payment</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns2='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0';
+declare namespace ns1='urn:pins.payment.evry.com:domain:complex-types:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+//ns3:PaymentCreateResponse[1]/ns3:paymentResult[1]/ns2:transaction[1]/ns2:remittanceInformation[1]/ns1:remittanceInformationUnstructured[1]</con:path>
+              <con:element>ns5:remittanceInformationUnstructured</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Transfer To China</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+//ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns1:transaction[1]/ns1:operationsArray[2]</con:path>
+              <con:element>ns4:operationsArray</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>VIEW_PAYMENT</con:expectedValue>
               <con:caseSensitive>false</con:caseSensitive>
               <con:numberType>false</con:numberType>
             </con:elements>
@@ -1125,30 +1490,31 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
    <soap:Body>
       <ns2:PaymentCreateResponse xmlns:ns10="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns9="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:creditor:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
          <ns3:ResponseState>
-            <ErrorCode>0</ErrorCode>
-            <Severity>0</Severity>
+            <ErrorCode>6000</ErrorCode>
+            <Severity>2</Severity>
             <ComponentId>111</ComponentId>
-            <Message>OK</Message>
+            <Message>Validation error</Message>
             <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <errorItem key="7551" value="Unable to process the immediate payment"/>
          </ns3:ResponseState>
          <ns2:paymentResult>
-            <ns4:messageId>1314227</ns4:messageId>
-            <ns4:paymentInfoId>1453872</ns4:paymentInfoId>
-            <ns4:transactionId>261388887</ns4:transactionId>
-            <ns4:initiatorIdentifier>19054210828</ns4:initiatorIdentifier>
-            <ns4:paymentReference>261388887</ns4:paymentReference>
-            <ns4:releaseDate>2022-05-24+02:00</ns4:releaseDate>
+            <ns4:messageId>187327</ns4:messageId>
+            <ns4:paymentInfoId>742265</ns4:paymentInfoId>
+            <ns4:transactionId>1000166585</ns4:transactionId>
+            <ns4:initiatorIdentifier>01127314507</ns4:initiatorIdentifier>
+            <ns4:paymentReference>1000166585</ns4:paymentReference>
+            <ns4:releaseDate>2022-06-08+02:00</ns4:releaseDate>
             <ns4:internalProductCode>PAYCTDOMOUEXRTP</ns4:internalProductCode>
             <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
             <ns4:transactionFee currency="NOK">
-               <ns5:amount>25.00</ns5:amount>
+               <ns5:amount>7.00</ns5:amount>
             </ns4:transactionFee>
             <ns4:paymentIdentification>
-               <ns5:messageIdentification>240522144552</ns5:messageIdentification>
-               <ns5:endToEndIdentification>240522144552</ns5:endToEndIdentification>
+               <ns5:messageIdentification>80622135706</ns5:messageIdentification>
+               <ns5:endToEndIdentification>80622135706</ns5:endToEndIdentification>
             </ns4:paymentIdentification>
             <ns4:groupHeader>
-               <ns5:creationDateTime>2022-05-24T11:15:53.515+02:00</ns5:creationDateTime>
+               <ns5:creationDateTime>2022-06-08T10:27:06.032+02:00</ns5:creationDateTime>
             </ns4:groupHeader>
             <ns4:paymentInfo>
                <ns6:paymentMethod>TRF</ns6:paymentMethod>
@@ -1156,9 +1522,9 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
                   <ns6:instructionPriority>NORM</ns6:instructionPriority>
                   <ns6:serviceLevel>NRTP</ns6:serviceLevel>
                </ns6:paymentTypeInformation>
-               <ns6:requestedExecutionDate>2022-05-24+02:00</ns6:requestedExecutionDate>
+               <ns6:requestedExecutionDate>2022-06-08+02:00</ns6:requestedExecutionDate>
                <ns6:debtorAccount>
-                  <ns5:identification>42024493606</ns5:identification>
+                  <ns5:identification>42000705572</ns5:identification>
                   <ns5:currency>NOK</ns5:currency>
                </ns6:debtorAccount>
                <ns6:debtorAgentBIC>SPTRNO22XXX</ns6:debtorAgentBIC>
@@ -1212,15 +1578,19 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
                   </ns5:postalAddress>
                </ns7:creditor>
                <ns7:creditorAccount>
-                  <ns5:identification>42010221913</ns5:identification>
+                  <ns5:identification>42021430581</ns5:identification>
                   <ns5:currency>NOK</ns5:currency>
                </ns7:creditorAccount>
                <ns7:confidential>false</ns7:confidential>
-               <ns7:uetrId>d8bc653d-ebed-42f7-9e2a-1a6f3cf1aa2a</ns7:uetrId>
+               <ns7:uetrId>ed4d424b-9ff0-4ed6-9797-51fcee51dbdf</ns7:uetrId>
+               <ns4:remittanceInformation>
+                  <ns5:remittanceInformationUnstructured>Transfer To China</ns5:remittanceInformationUnstructured>
+               </ns4:remittanceInformation>
+               <ns4:operationsArray>CONFIRM_PAYMENT</ns4:operationsArray>
                <ns4:operationsArray>VIEW_PAYMENT</ns4:operationsArray>
             </ns4:transaction>
             <ns4:marketType>PM</ns4:marketType>
-            <ns4:paymentStatus>PROCESSING</ns4:paymentStatus>
+            <ns4:paymentStatus>REJECTED</ns4:paymentStatus>
          </ns2:paymentResult>
       </ns2:PaymentCreateResponse>
    </soap:Body>
@@ -1257,7 +1627,81 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
       </con:request>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="PWH INSTANT_INFLIGHT_INFO" id="f861f9ef-9a53-44a2-a7f0-3084a8b50e96">
+  <con:testStep type="jdbc" name="PWH TRANSACTIONS EFIP" id="fd319752-d37a-4a51-8215-4151465c3dcd" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT TRANSACTIONSID, RISKSTATUS, PAYMENTSTATUS 
+FROM TRANSACTIONS WHERE TRANSACTIONSID = '${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
+      <con:assertion type="DataAndMetadataAssertion" id="e376dcbe-29f4-47b6-8523-025c18427be0" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:path>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000166585</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>true</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:path>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC, VALI</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:path>
+            <con:element>RISKSTATUS</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>CFIP, EFIP, PFIP</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <TRANSACTIONSID>1000166585</TRANSACTIONSID>
+         <RISKSTATUS>EFIP</RISKSTATUS>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="PWH INSTANT_INFLIGHT_INFO EFIP" id="a54b3a66-acab-46b8-a57c-0a9592acbb66" disabled="true">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -1287,11 +1731,11 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
           <con:elements>
             <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
             <con:element>@rowNumber</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
+            <con:operatorId>10</con:operatorId>
+            <con:enabled>true</con:enabled>
             <con:expectedValue>1</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
+            <con:numberType>true</con:numberType>
           </con:elements>
           <con:elements>
             <con:path>//Results[1]/ResultSet[1]/Row[1]/DIRECTION[1]</con:path>
@@ -1332,8 +1776,8 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
           <con:elements>
             <con:path>//Results[1]/ResultSet[1]/Row[1]/STATUS[1]</con:path>
             <con:element>STATUS</con:element>
-            <con:operatorId>9</con:operatorId>
-            <con:enabled>true</con:enabled>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
             <con:expectedValue>REJECTED</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
@@ -1393,9 +1837,9 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
       <con:properties/>
     </con:config>
   </con:testStep>
-  <con:testStep type="httprequest" name="PAYMENTSTATUS_READ" id="6e411521-9cdc-46c6-a944-eaef9d85c67b">
+  <con:testStep type="httprequest" name="PAYMENTSTATUS_READ EFIP" id="353a039d-c5bc-4046-85a9-d346a121cc1e" disabled="true">
     <con:settings/>
-    <con:config method="GET" xsi:type="con:HttpRequest" id="aa9c49f5-a286-46a7-ab4d-7cfb636599ef" name="PAYMENTSTATUS_READ" postQueryString="false" mediaType="text/xml" downloadIncludedResources="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:config method="GET" xsi:type="con:HttpRequest" id="aa9c49f5-a286-46a7-ab4d-7cfb636599ef" name="PAYMENTSTATUS_READ EFIP" postQueryString="false" mediaType="text/xml" downloadIncludedResources="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:settings>
         <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
         <con:setting id="com.eviware.soapui.impl.support.AbstractHttpRequest@follow-redirects">true</con:setting>
@@ -1410,8 +1854,8 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:path>$[0]['transactionId']</con:path>
             <con:element>transactionId</con:element>
             <con:operatorId>1</con:operatorId>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000166585</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>true</con:numberType>
             <con:expectedDataType>2</con:expectedDataType>
@@ -1421,7 +1865,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>paymentReference</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>261388887</con:expectedValue>
+            <con:expectedValue>1000166585</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1431,7 +1875,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>endToEndId</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>240522144552</con:expectedValue>
+            <con:expectedValue>80622135706</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1439,7 +1883,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
           <con:elements>
             <con:path>$[0]['status']</con:path>
             <con:element>status</con:element>
-            <con:operatorId>9</con:operatorId>
+            <con:operatorId>1</con:operatorId>
             <con:enabled>true</con:enabled>
             <con:expectedValue>REJECTED</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
@@ -1451,7 +1895,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>lastStatusChangeTime</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>2022-05-24T11:16:36.290129</con:expectedValue>
+            <con:expectedValue>2022-06-08T10:27:07.345522</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1461,7 +1905,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>statusReason</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>[{"code":"AB05","description":"Creditor timed out (reported to debtor agent).","sourceSystem":"Other","additionalInfo":["Transaction stopped due to timeout"]}]</con:expectedValue>
+            <con:expectedValue>[{"code":"DS04","description":"The order was rejected by the bank side (for reasons concerning content).","sourceSystem":"Payment initiation","additionalInfo":["The order was rejected by the bank side (for reasons concerning content)"]}]</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>4</con:expectedDataType>
@@ -1470,8 +1914,8 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:path>$[0]['statusReason'][0]['code']</con:path>
             <con:element>code</con:element>
             <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>AB05</con:expectedValue>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>DS04</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1480,8 +1924,8 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:path>$[0]['statusReason'][0]['description']</con:path>
             <con:element>description</con:element>
             <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>Creditor timed out (reported to debtor agent).</con:expectedValue>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>The order was rejected by the bank side (for reasons concerning content).</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1491,7 +1935,7 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>sourceSystem</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>Other</con:expectedValue>
+            <con:expectedValue>Payment initiation</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
@@ -1501,12 +1945,12 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
             <con:element>0</con:element>
             <con:operatorId>1</con:operatorId>
             <con:enabled>false</con:enabled>
-            <con:expectedValue>Transaction stopped due to timeout</con:expectedValue>
+            <con:expectedValue>The order was rejected by the bank side (for reasons concerning content)</con:expectedValue>
             <con:caseSensitive>false</con:caseSensitive>
             <con:numberType>false</con:numberType>
             <con:expectedDataType>1</con:expectedDataType>
           </con:elements>
-          <con:originalMessage>[{"transactionId":261388887,"paymentReference":"261388887","endToEndId":"240522144552","status":"REJECTED","lastStatusChangeTime":"2022-05-24T11:16:36.290129","statusReason":[{"code":"AB05","description":"Creditor timed out (reported to debtor agent).","sourceSystem":"Other","additionalInfo":["Transaction stopped due to timeout"]}]}]</con:originalMessage>
+          <con:originalMessage>[{"transactionId":1000166585,"paymentReference":"1000166585","endToEndId":"80622135706","status":"REJECTED","lastStatusChangeTime":"2022-06-08T10:27:07.345522","statusReason":[{"code":"DS04","description":"The order was rejected by the bank side (for reasons concerning content).","sourceSystem":"Payment initiation","additionalInfo":["The order was rejected by the bank side (for reasons concerning content)"]}]}]</con:originalMessage>
         </con:configuration>
       </con:assertion>
       <con:credentials>
@@ -1619,80 +2063,6 @@ TRANSACTIONID='${PAYMENT_CREATE#Response#declare namespace ns4='urn:pins.payment
           <con:authProfile>Inherit From Parent</con:authProfile>
         </con:entry>
       </con:environmentSpec>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="PWH INSTANT_INWARD_TRANSACTION" id="0774f68b-92d1-45d3-bb9f-816e5148bd11">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>SELECT TRANSACTIONSID,MSGID,PAYMENTSTATUS FROM 
-INSTANT_INWARD_TRANSACTION WHERE MSGID = '${PWH INSTANT_INFLIGHT_INFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/MSGID[1]}'</con:query>
-      <con:assertion type="DataAndMetadataAssertion" id="e376dcbe-29f4-47b6-8523-025c18427be0" name="Smart Assertion">
-        <con:configuration xsi:type="con:DataAndMetadataAssertion">
-          <con:mode>Received Data</con:mode>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
-            <con:element>@fetchSize</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>10</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
-            <con:element>@rowNumber</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:path>
-            <con:element>TRANSACTIONSID</con:element>
-            <con:operatorId>6</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>${Payment_Create#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>true</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/MSGID[1]</con:path>
-            <con:element>MSGID</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>4cbf945740ab4e9fa19992424e13b4e6</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:path>
-            <con:element>PAYMENTSTATUS</con:element>
-            <con:operatorId>3</con:operatorId>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>COMP,</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <TRANSACTIONSID>1000163893</TRANSACTIONSID>
-         <MSGID>4cbf945740ab4e9fa19992424e13b4e6</MSGID>
-         <PAYMENTSTATUS>COMP</PAYMENTSTATUS>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
     </con:config>
   </con:testStep>
   <con:properties/>

@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="4cb0a18c-adb9-4d94-93f3-55dda745f253" discardOkResults="false" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="CAVA_Create_BBAN" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="" zephyrTestName="" zephyrTestId="" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>PIDOM-6838</con:description>
+  <con:settings>
+    <con:setting id="4cb0a18c-adb9-4d94-93f3-55dda745f253fileName">CAVA_Create_BBAN</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="Fetch_Data" id="0c57e63e-caeb-4c8a-9e7f-20f31a4e708c" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>import groovy.sql.Sql;
+
+identifyTestCase();
+fetchDetails();
+connectPwh("true");
+
+log.info "Test Data setting Done.!"
+
+public void connectPwh(status)
+{
+	String resultSet;
+	String currency = "NOK";
+	if(sepa) {
+		currency = "EUR"
+	}
+
+	query1 = "SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY,CUSTOMERTYPE FROM V_AUTHORISATION WHERE ROLETYPE='EIER' AND LENGTH(CUSTOMERID) = '11' "
+	query2 = "AND CUSTBANKID = "+orgid+" AND CURRENCY = '"+currency+"'  AND CUSTOMERID NOT LIKE '%000%' "
+	query3 = "AND ROWNUM = 1"
+	sqlQuery = query1+query2+query3
+
+	if (status == 'true')
+	{
+		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
+		resultSet		=	connection.rows(sqlQuery)
+		connection.close();
+		log.info resultSet
+	}
+	if (!resultSet.isEmpty())
+	{
+		log.info "0"
+		String customers=	resultSet.CUSTOMERID[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		log.info "01"
+		String account	= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		currency			= 	resultSet.CURRENCY[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		String custType	=	resultSet.CUSTOMERTYPE[0].toString().replaceAll("[^a-zA-Z0-9]+","");
+		String userid		= 	customers;
+
+		if(marketType == 'BM' || custType != 'P' )
+		{
+			log.info "1"
+			userid	= 	(customers.substring(5) as int).toString().replaceAll("[^a-zA-Z0-9]+","")
+			testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid);
+		}
+		log.info "2"
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customers);
+		log.info "3"
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency);
+	}
+}
+
+public void identifyTestCase()
+{
+	testCaseName	=	context.getCurrentStep().getTestCase().getLabel();
+	testCaseName	= 	testCaseName.toLowerCase();
+	marketType	= null;
+	sepa = null;
+
+	if (testCaseName.contains("sepa"))
+	{
+		sepa = true;
+	}
+
+	if (testCaseName.contains("bm"))
+	{
+		marketType = "BM"
+		payChannel = "BES";
+	}
+	else if (testCaseName.contains("pm"))
+	{
+		marketType = "PM"
+		payChannel = "INT";
+	}
+	else if (testCaseName.contains("emp"))
+	{
+		marketType = "EMP"
+		payChannel = "ITR";
+	}
+}
+
+public void fetchDetails()
+{
+	orgid = context.expand( '${Properties#orgid}' );
+	envDetails		=	DetectTestEnvironment.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
+	orgidDetails	=	DetectTestEnvironment.getBankDetailsOf(orgid);
+
+	connect	=	envDetails[3];
+	pwhString = envDetails[4];
+	schema	=	"pwhdata"
+	paswd	=	"pwh"
+	
+	credentials = orgidDetails[2];
+	debtorAgent = orgidDetails[3];
+
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhString);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent_Bic",debtorAgent);
+	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
+}</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="47c6bde5-a66a-4f01-beb3-74e76f333c31">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>SourceApplication</con:name>
+          <con:value>PaymentClient</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgid</con:name>
+          <con:value>35803100</con:value>
+        </con:property>
+        <con:property>
+          <con:name>credentials</con:name>
+          <con:value>03111013010400425GWfpot6k%2Fmks%2FEYCsehqE%2B6ypxDnhoQe1cPSToeH6a9Vo%2Bzq0WRhPZ%2FP3hY9BTDejrSIpQnXuqKD%2FMjoNuGS8RMPTmTCgkOmjGPUUQDIt8sl98Nba9Trkx34QzE3Ly%2BmdHfX94rnv%2BvYLqKvAWlCL3GmfsOE%2BimPYAkyRKA%2FtIa1gSbV8PL7TnEYVTVAJx4r68CQtGWcP1JJdSy2emkS34HmOXBCM1LvQxeD1DqTYeQ%3Dup6z7NbZXlvojNz0S2ximCbT2zXJUjXrDKqtkwb0CoA7SX%2BL7Ecls7IhwUH4DcYjClsKGiLdDbYLBGJ2oLAbswvr8PWxvigfnMuEwm9YJZ0eahd%2B4V6Qo1W%2FRcAT1Vrjqdz5yx1c7Zmna3px9f7QmVSpv0Ki%2FjxI%2FdczJpdrLlA%3D</con:value>
+        </con:property>
+        <con:property>
+          <con:name>userid</con:name>
+          <con:value>e232105</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Employee</con:name>
+          <con:value>e232105</con:value>
+        </con:property>
+        <con:property>
+          <con:name>SelfService</con:name>
+          <con:value>false</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerid</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>debitAccount</con:name>
+          <con:value>31511000033026</con:value>
+        </con:property>
+        <con:property>
+          <con:name>debitAcntccy</con:name>
+          <con:value>EUR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>DebtorAgent_Bic</con:name>
+          <con:value>HANDNOKKXXX</con:value>
+        </con:property>
+        <con:property>
+          <con:name>PaymentChannel</con:name>
+          <con:value>ITR</con:value>
+        </con:property>
+        <con:property>
+          <con:name>verifier_1</con:name>
+          <con:value>e212927</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditorAgent_Bic</con:name>
+          <con:value>DAAEDEDDXXX</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditorAgent_Country</con:name>
+          <con:value>DE</con:value>
+        </con:property>
+        <con:property>
+          <con:name>creditAccount</con:name>
+          <con:value>DE89370400440532013000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDateTmrw</con:name>
+          <con:value>${= java.time.LocalDateTime.now().plusDays(1)}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd_HHmmss'))}_${=context.getCurrentStep().getTestCase().getLabel()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>HST_PaymentId</con:name>
+          <con:value>1231</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Unique_ID</con:name>
+          <con:value>${=Math.abs(new Random().nextInt() % 6000000) + 1}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>test</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd_HHmmss'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Unstructured_Remittance</con:name>
+          <con:value>testing</con:value>
+        </con:property>
+        <con:property>
+          <con:name>pwhURL</con:name>
+          <con:value>jdbc:oracle:thin:pwhdata/pwh@10.246.89.97:1530/pwh_g_d17</con:value>
+        </con:property>
+        <con:property>
+          <con:name>AgreementId</con:name>
+          <con:value/>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="FetchDBData" id="dc74c64c-d02c-4927-9eab-9b13044f39e7">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY,CUSTOMERTYPE 
+FROM V_AUTHORISATION 
+WHERE ROLETYPE='EIER' 
+AND LENGTH(CUSTOMERID) = '11' 
+AND CUSTBANKID = ${Properties#orgid} 
+AND CURRENCY = 'EUR'  
+AND CUSTOMERID NOT LIKE '%000%' AND ROWNUM = 1</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="setProperties" id="8e5dc648-0724-47b9-81b6-d090726b4d44">
+    <con:settings/>
+    <con:config>
+      <script>def customerId = context.expand( '${FetchDBData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CUSTOMERID[1]}' )
+def accountNumber = context.expand( '${FetchDBData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' )
+def currency = context.expand( '${FetchDBData#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCY[1]}' )
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",customerId.replaceAll("[^a-zA-Z0-9]+",""));
+		
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customerId.replaceAll("[^a-zA-Z0-9]+",""));
+//testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",customerId.replaceAll("[^a-zA-Z0-9]+",""));
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",accountNumber.substring(4));
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="6e6e0d27-7a4e-4166-a3d4-4471a8ca8799" name="PaymentCreate">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="PaymentCreate" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="695c9e85-d2cf-4922-8678-bf6a74d755f7">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+       <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:ip>1.1.1.1</wsc:ip>
+           <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="false" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:paymentMessage>
+            <urn1:paymentIdentification xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn2:messageIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
+               <urn2:endToEndIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn3:paymentMethod xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">TRF</urn3:paymentMethod>
+               <urn3:requestedExecutionDate xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">2020-05-06</urn3:requestedExecutionDate>
+               <urn3:debtorAccount xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAccount}</urn2:identification>
+                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn4:amount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:instructedAmount currency="EUR" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:amount>1</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">SHAR</urn4:chargeBearer>
+               <urn4:creditorAgent xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:bic xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#creditorAgent_Bic}</urn2:bic>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${Properties#creditorAgent_Country}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:name xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">BBAN</urn2:name>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${Properties#creditorAgent_Country}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${Properties#creditAccount}</urn2:identification>
+               </urn4:creditorAccount>
+               <urn1:remittanceInformationUnstructured>Wb_hit</urn1:remittanceInformationUnstructured>
+            </urn1:transaction>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="fa75ef61-279f-412d-9d07-d45104507a41" name="Not SOAP Fault"/>
+        <con:assertion type="Valid HTTP Status Codes" id="ba26a2bb-d518-4c80-a0df-fefa3a758b05" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="167d9f96-76d2-4bf6-a000-b38923d9cd15" name="writeToFile">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentCreateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="b9fac067-7616-4899-89c7-993fa5ec57e1" name="PaymentConfirm">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentConfirm</con:operation>
+      <con:request name="PaymentConfirm" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="f85380ab-ba2c-4f3a-b9b7-023346f51aca">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:ip>1.1.1.1</wsc:ip>
+           <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="false" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentConfirmRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0">
+         <urn:transactionInput>
+            <urn1:transactionId xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v2_0">${PaymentCreate#Response#//ns4:transactionId[1]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentConfirmRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="29c4a05a-99b5-4b0c-9cb9-22846c9eb8fd"/>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="81d7bee6-3dc2-478d-99ef-875a2a139e39">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="writeToFile" id="9da467f6-9cb1-479f-8ad3-d1afa9660da5">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0/PINSPaymentStatusUpdate_V2_0PortType/PaymentConfirmRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="77240886-351c-479e-88bf-c37975a32e41" name="PaymentRead">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentRead</con:operation>
+      <con:request name="PaymentRead" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="a85cf60f-da53-4c93-86cd-affc1ad66057">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestSuite#userid}</wsc:userid>
+            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestSuite#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestSuite#orgid}</wsc:orgunit>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestSuite#value1}" key="${#TestSuite#item1}"/>
+            <wsc:item value="${#TestSuite#value2}" key="${#TestSuite#item2}"/>
+            <wsc:item value="${#TestSuite#value3}" key="${#TestSuite#item3}"/>
+            <wsc:item value="${#TestSuite#value4}" key="${#TestSuite#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentReadRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:transactionId>${PaymentCreate#Response#//ns4:transactionId[1]}</urn:transactionId>
+      </urn:PaymentReadRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="502c2d98-0ad6-4076-996b-4bac37fddff5"/>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="5084b8c1-eecf-453d-8461-deb5f29b85ce">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="writeToFile" id="de31a0e5-d5b2-441c-ae39-0345523e14de">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentReadRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="aebba3f9-a2fc-49f4-b76c-6af8a5545910" name="PaymentVerify">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPaymentStatusUpdate_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentVerify</con:operation>
+      <con:request name="PaymentVerify" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="d2ffd987-2373-4d00-b6b7-659566e53110">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPaymentStatusUpdate_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+     <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            <wsc:ip>1.1.1.1</wsc:ip>
+           <wsc:item value="${Properties#PaymentChannel}" key="PaymentChannel"/>
+            <wsc:item value="${Properties#Employee}" key="Employee"/>
+            <wsc:item value="false" key="SelfService"/>
+            <wsc:item value="${Properties#LogRef}" key="LogRef"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentVerifyRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0">
+         <urn:transactionInput>
+            <urn1:transactionId xmlns:urn1="urn:pins.payment.evry.com:domain:payment-status-update:v2_0">${PaymentCreate#Response#//ns4:transactionId[1]}</urn1:transactionId>
+         </urn:transactionInput>
+      </urn:PaymentVerifyRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="fdb0f30c-affd-4889-a276-61cef5335a00"/>
+        <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="1d300947-17d0-4946-9d78-7f850489df36">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" name="writeToFile" id="2d1383dd-d4b2-435c-89d6-feb36528f6db">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentstatusupdate:v2_0/PINSPaymentStatusUpdate_V2_0PortType/PaymentVerifyRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="20c06ed2-964f-4825-b869-7db73fd91bf6" name="PaymentCreate_DE">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentCreate</con:operation>
+      <con:request name="PaymentCreate_DE" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="695c9e85-d2cf-4922-8678-bf6a74d755f7">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://${#Project#pays.url}/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header>
+      <wsc:AutHeader xmlns:wsc="http://edb.com/ws/WSCommon_v22">
+         <wsc:SourceApplication>${#TestSuite#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>PIN Create</wsc:Function>
+         <wsc:Version>V2.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${#TestSuite#userid}</wsc:userid>
+            <wsc:credentials>${#TestSuite#credentials}</wsc:credentials>
+            <wsc:channel>NBA</wsc:channel>
+            <wsc:orgid>${#TestSuite#orgid}</wsc:orgid>
+            <wsc:orgunit>${#TestSuite#orgid}</wsc:orgunit>
+            <wsc:customerid>${#TestSuite#customerid}</wsc:customerid>
+            <wsc:locale>en</wsc:locale>
+            <wsc:ip>1.1.1.1</wsc:ip>
+            <wsc:item value="${#TestSuite#value1}" key="${#TestSuite#item1}"/>
+            <wsc:item value="${#TestSuite#value2}" key="${#TestSuite#item2}"/>
+            <wsc:item value="${#TestSuite#value3}" key="${#TestSuite#item3}"/>
+            <wsc:item value="${#TestSuite#value4}" key="${#TestSuite#item4}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentCreateRequest xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+         <urn:paymentMessage>
+            <urn1:paymentIdentification xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn2:messageIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:messageIdentification>
+               <urn2:endToEndIdentification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${=Math.abs(new Random().nextInt() % 6000000) + 1}</urn2:endToEndIdentification>
+            </urn1:paymentIdentification>
+            <urn1:paymentInfo xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn3:paymentMethod xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">TRF</urn3:paymentMethod>
+               <urn3:requestedExecutionDate xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">${#TestSuite#ReqExnDate}</urn3:requestedExecutionDate>
+               <urn3:debtorAccount xmlns:urn3="urn:pins.payment.evry.com:domain:debtor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${#TestSuite#debitAccount}</urn2:identification>
+                  <urn2:currency xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${#TestSuite#debitAcntccy}</urn2:currency>
+               </urn3:debtorAccount>
+            </urn1:paymentInfo>
+            <urn1:transaction xmlns:urn1="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0">
+               <urn4:amount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:instructedAmount currency="EUR" xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:amount>1</urn2:amount>
+                  </urn2:instructedAmount>
+               </urn4:amount>
+               <urn4:chargeBearer xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">DEBT</urn4:chargeBearer>
+               <urn4:creditorAgent xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:bic xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${#TestSuite#intCredAgentBic}</urn2:bic>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditorAgent>
+               <urn4:creditor xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:name xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">GermanCred</urn2:name>
+                  <urn2:postalAddress xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">
+                     <urn2:country>${#TestSuite#intCredAgentCountry}</urn2:country>
+                  </urn2:postalAddress>
+               </urn4:creditor>
+               <urn4:creditorAccount xmlns:urn4="urn:pins.payment.evry.com:domain:creditor:v2_0">
+                  <urn2:identification xmlns:urn2="urn:pins.payment.evry.com:domain:complex-types:v2_0">${#TestSuite#intCreditAccount}</urn2:identification>
+               </urn4:creditorAccount>
+            </urn1:transaction>
+         </urn:paymentMessage>
+      </urn:PaymentCreateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="SOAP Fault Assertion" id="fa75ef61-279f-412d-9d07-d45104507a41" name="Not SOAP Fault"/>
+        <con:assertion type="Valid HTTP Status Codes" id="ba26a2bb-d518-4c80-a0df-fefa3a758b05" name="Valid HTTP Status Codes">
+          <con:settings/>
+          <con:configuration>
+            <codes>200</codes>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="GroovyScriptAssertion" id="167d9f96-76d2-4bf6-a000-b38923d9cd15" name="writeToFile">
+          <con:configuration>
+            <scriptText>import com.eviware.soapui.support.XmlHolder
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+def path=context.expand( '${projectDir}')
+String curStepName = (String)context.getCurrentStep().getLabel()
+
+def groovyUtils = new com.eviware.soapui.support.GroovyUtils( context ) 
+def response = groovyUtils.getXmlHolder(curStepName + "#Response")
+def errorCode=response.getNodeValue("//*:ErrorCode");
+def testCase = context.getCurrentStep().getTestCase().getLabel()
+def endPoint = messageExchange.getEndpoint()
+
+path=path+"\\results"
+File dir = new File(path);
+if (!dir.exists())
+{
+                log.info 'Creating Directory'
+                dir.mkdir();
+}
+
+Date date = new Date();
+SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a zz");    
+df.setTimeZone(TimeZone.getTimeZone("Europe/Oslo"));
+
+def datetime = df.format(date)
+
+SimpleDateFormat fn = new SimpleDateFormat("dd_M_yyyy_hh_mm_ss_a_zz");    
+def fileName = fn.format(date)
+
+//log.info path 
+def fout = new File(path+"\\"+testCase+" - "+curStepName+"_"+fileName+"_"+errorCode+".txt",)
+
+
+fout.write("Time Submitted		:	"+datetime+"\r\n")
+fout.append("End Point Used		:	"+endPoint+"\r\n")
+fout.append("Time Taken		:	"+messageExchange.timeTaken+"ms\r\n")
+fout.append("Executed in test set	:	"+testCase+" - "+curStepName+"_"+fileName)
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   REQUEST\r\n\r\n","UTF-8")
+fout.append(messageExchange.getRequestHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getRequestContent() ).replace("\n","\r\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")
+fout.append("                                                                                                   RESPONSE\r\n\r\n","UTF-8")
+fout.append(messageExchange.getResponseHeaders())
+fout.append("\n\n")
+fout.append(new String( messageExchange.getResponseContent() ).replace("\n","\n"),"UTF-8")
+fout.append("\r\n\r\n","UTF-8")
+fout.append("=========================================================================================================================\r\n","UTF-8")</scriptText>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentCreateRequest"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>59835206-61eb-4952-bbe6-5fe032e176eb</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2a7a14bd-3df4-4966-b2a1-f761776eaa48</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d7e5830c-da39-49e3-a94a-2cb5e449949b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a0093888-8b60-42e4-9cdb-f1e40cffa9e4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>1c898248-0c39-4def-8cbe-bd1549fb332e</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>3af11c1d-d6eb-4fea-810a-fdac3fb604e9</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>38bc6697-8db4-41da-ae2b-ee1aed385024</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>d3b1e47f-ca96-4992-a364-6aeb08e62e94</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>739c43ab-9362-4507-a8da-9ba64d7f3e24</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>0dce3086-2474-40bc-acb6-af3f72d29c42</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>707f320f-b6d8-403d-a194-46a4af43c17c</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>86d04c29-20b1-4dfb-b8c5-fe84d36d16a2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ec97eb90-c8f9-4038-ad0b-86b5d4ba258b</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tagId>15454858-1063-4860-b877-878381408972</con:tagId>
+</con:testCase>

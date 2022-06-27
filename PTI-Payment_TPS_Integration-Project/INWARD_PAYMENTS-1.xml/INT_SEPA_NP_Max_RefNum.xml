@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="bba2049e-9831-4e17-bd29-c5a9ee43c39a" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="INT_SEPA_NP_Max_RefNum" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="bba2049e-9831-4e17-bd29-c5a9ee43c39afileName">INT_SEPA_NP_Max_RefNum</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="SetProperties" id="63f2591e-4655-408c-9a2e-39593c88b1fa">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+import java.util.UUID
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+
+UUID uuid = UUID.randomUUID();
+def MsgId = uuid.toString().replace("-", "");
+
+def generateAmount(int start, int finish){
+		Random random = new Random();
+		int rndInt = random.nextInt(finish + 1 - start) + start;
+		Double rndDouble = new Double(rndInt)
+		return rndDouble
+	}
+
+def amount = generateAmount(1,30)
+
+def EndtoEndID = "3_REG_SEPAINTNP"+datetime;
+def TxId = datetime+amount.toInteger()
+def InstructionID = "REG"+MsgId;
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgId",MsgId );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndToEndId",EndtoEndID );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxId",TxId );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("InstructionId",InstructionID );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Amount",amount.toString());</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="eddfe935-df03-48ee-882f-2395494da3f8">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>MsgId</con:name>
+          <con:value>cd9f360fb3de4d8fa5c23627e823e082</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreDtTm</con:name>
+          <con:value>${=CommonLibrary.getDate("yyyy-MM-dd")}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>IntrBkSttlmDt</con:name>
+          <con:value>${=CommonLibrary.getDate("yyyy-MM-dd")}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>EndToEndId</con:name>
+          <con:value>3_REG_SEPAINTNP051121033503</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TxId</con:name>
+          <con:value>0511210335038</con:value>
+        </con:property>
+        <con:property>
+          <con:name>InstructionId</con:name>
+          <con:value>REGcd9f360fb3de4d8fa5c23627e823e082</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Amount</con:name>
+          <con:value>8.0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendWithParam</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"> <FIToFICstmrCdtTrf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"> <GrpHdr xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><MsgId>MESSAGEID</MsgId><CreDtTm>CREATEDDATETIME_T_NORWAYTIME</CreDtTm><NbOfTxs>1</NbOfTxs><TtlIntrBkSttlmAmt Ccy="EUR">AMOUNT</TtlIntrBkSttlmAmt><IntrBkSttlmDt>INTERBANKSTTLMNTDT</IntrBkSttlmDt><SttlmInf><SttlmMtd>CLRG</SttlmMtd><ClrSys><Prtry>ST2</Prtry></ClrSys></SttlmInf><InstgAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></InstgAgt><InstdAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></InstdAgt> </GrpHdr> <CdtTrfTxInf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><PmtId><InstrId>INSTRUCTIONIDVALUE</InstrId><EndToEndId>ENDTOENDIDVALUE</EndToEndId><TxId>TRANSACTIONID</TxId></PmtId><PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf><IntrBkSttlmAmt Ccy="EUR">AMOUNT</IntrBkSttlmAmt><ChrgBr>SLEV</ChrgBr><UltmtDbtr><Nm>Nm UltmtDbtr Seventy chars length abcdefghijk ÆØÅöänopqrstuvwxyz abcdef Nm</Nm><PstlAdr><StrtNm>StrtNm UltmtDbtr Seventy chars length abcdefghijklmnoÆØÅöäuvwxy StrtNm</StrtNm><BldgNb>BldgNbÆØÅöätDbtr</BldgNb><PstCd>PstÆØÅöältmtDbtr</PstCd><TwnNm>TwnNm ÆØÅöä E UltmtDbtr Espoo TwnNm</TwnNm><Ctry>FI</Ctry><AdrLine>AdrLine 1ÆØÅöä7890 1234567890 UltmtDbtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 234ÆØÅöä01 1234567890 UltmtDbtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></UltmtDbtr><Dbtr><Nm>Nm aaaaaDbtr Seventy chars length abcdefghijkÆØÅöäqrstuvwxyz abcdef Nm</Nm><PstlAdr><Dept>Dept aaaDbtr Seventy chars length abcdefghijklmÆØÅöästuvwxy abcdf Dept</Dept><SubDept>SubDept aaaDbtr Seventy chars length abcdefghijÆØÅöäpqrstuvwxy SubDept</SubDept><StrtNm>StrtNm aaaaaDbtr Seventy chars length abcdefghijklÆØÅöärstuvwxy StrtNm</StrtNm><BldgNb>BldgNb ÆØÅöäDbtr</BldgNb><PstCd>PstCd ÆØÅöäaDbtr</PstCd><TwnNm>TwnNm ÆØÅöä E aaaaaDbtr Espoo TwnNm</TwnNm><CtrySubDvsn>CtrySubDvsn ÆØÅöäaaDbtr CtrySubDvsn</CtrySubDvsn><Ctry>FI</Ctry><AdrLine>AdrLine 12ÆØÅöä890 1234567890 12345Dbtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 23ÆØÅöä901 1234567890 12345Dbtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></Dbtr><DbtrAcct><Id><IBAN>FROMACCOUNT</IBAN></Id></DbtrAcct><DbtrAgt><FinInstnId><BIC>NDEASESSXXX</BIC></FinInstnId></DbtrAgt><CdtrAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></CdtrAgt><Cdtr><Nm>Nm aaaaaCdtr Seventy chars length abcdefghijklmnoÆØÅöäuvwxyz abcdef Nm</Nm><PstlAdr><Dept>Dept aaaCdtr Seventy chars length abcdefghijÆØÅöäpqrstuvwxy abcdf Dept</Dept><SubDept>SubDept aaaCdtr Seventy chars length abcdefghijklmÆØÅöästuvwxy SubDept</SubDept><StrtNm>StrtNm aaaaaCdtr Seventy chars length abcdefghijklmnÆØÅöätuvwxy StrtNm</StrtNm><BldgNb>BldgNb ÆØÅöäCdtr</BldgNb><PstCd>PstCd ÆØÅöäaCdtr</PstCd><TwnNm>TwnNm Espoo E ÆØÅöäCdtr Espoo TwnNm</TwnNm><CtrySubDvsn>CtrySubDvsn ÆØÅöäaaCdtr CtrySubDvsn</CtrySubDvsn><Ctry>FI</Ctry><AdrLine>AdrLine 1234567890 1234567890 12345Cdtr0 1234567890 12ÆØÅöä890 AdrLine</AdrLine><AdrLine>AdrLine 2345678901 1234567890 12345Cdtr0 1234567890 23ÆØÅöä901 AdrLine</AdrLine></PstlAdr></Cdtr><CdtrAcct><Id><IBAN>TOACCOUNT</IBAN></Id></CdtrAcct><UltmtCdtr><Nm>Nm UltmtCdtr Seventy chars length abcdefghijklmÆØÅöästuvwxyz abcdef Nm</Nm><PstlAdr><StrtNm>StrtNm UltmtCdtr Seventy chars length abcdefghijkÆØÅöäqrstuvwxy StrtNm</StrtNm><BldgNb>BldÆØÅöältmtCdtr</BldgNb><PstCd>PstÆØÅöältmtCdtr</PstCd><TwnNm>TwnNm ÆØÅöä E UltmtCdtr Espoo TwnNm</TwnNm><Ctry>FI</Ctry><AdrLine>AdrLine 12ÆØÅöä890 1234567890 UltmtCdtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 2ÆØÅöä8901 1234567890 UltmtCdtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></UltmtCdtr><Purp><Prtry>NOTDEFINED</Prtry></Purp><RmtInf><Ustrd>Ustrd remittanceInfoUnstru turedStringremittanceInfo remittanceInfoUnsÆØÅöäuredStringremittanceInfo remittanceIn oUnstructuredStringre Ustrd</Ustrd><Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>REGRESSION6410828641082864108286411</Ref></CdtrRefInf></Strd></RmtInf> </CdtTrfTxInf> </FIToFICstmrCdtTrf> </Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendParsed</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"> <FIToFICstmrCdtTrf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"> <GrpHdr xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><MsgId>cd9f360fb3de4d8fa5c23627e823e082</MsgId><CreDtTm>2021-11-05T12:05:04</CreDtTm><NbOfTxs>1</NbOfTxs><TtlIntrBkSttlmAmt Ccy="EUR">8.0</TtlIntrBkSttlmAmt><IntrBkSttlmDt>2021-11-05</IntrBkSttlmDt><SttlmInf><SttlmMtd>CLRG</SttlmMtd><ClrSys><Prtry>ST2</Prtry></ClrSys></SttlmInf><InstgAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></InstgAgt><InstdAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></InstdAgt> </GrpHdr> <CdtTrfTxInf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><PmtId><InstrId>REGcd9f360fb3de4d8fa5c23627e823e082</InstrId><EndToEndId>3_REG_SEPAINTNP051121033503</EndToEndId><TxId>0511210335038</TxId></PmtId><PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl></PmtTpInf><IntrBkSttlmAmt Ccy="EUR">8.0</IntrBkSttlmAmt><ChrgBr>SLEV</ChrgBr><UltmtDbtr><Nm>Nm UltmtDbtr Seventy chars length abcdefghijk ÆØÅöänopqrstuvwxyz abcdef Nm</Nm><PstlAdr><StrtNm>StrtNm UltmtDbtr Seventy chars length abcdefghijklmnoÆØÅöäuvwxy StrtNm</StrtNm><BldgNb>BldgNbÆØÅöätDbtr</BldgNb><PstCd>PstÆØÅöältmtDbtr</PstCd><TwnNm>TwnNm ÆØÅöä E UltmtDbtr Espoo TwnNm</TwnNm><Ctry>FI</Ctry><AdrLine>AdrLine 1ÆØÅöä7890 1234567890 UltmtDbtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 234ÆØÅöä01 1234567890 UltmtDbtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></UltmtDbtr><Dbtr><Nm>Nm aaaaaDbtr Seventy chars length abcdefghijkÆØÅöäqrstuvwxyz abcdef Nm</Nm><PstlAdr><Dept>Dept aaaDbtr Seventy chars length abcdefghijklmÆØÅöästuvwxy abcdf Dept</Dept><SubDept>SubDept aaaDbtr Seventy chars length abcdefghijÆØÅöäpqrstuvwxy SubDept</SubDept><StrtNm>StrtNm aaaaaDbtr Seventy chars length abcdefghijklÆØÅöärstuvwxy StrtNm</StrtNm><BldgNb>BldgNb ÆØÅöäDbtr</BldgNb><PstCd>PstCd ÆØÅöäaDbtr</PstCd><TwnNm>TwnNm ÆØÅöä E aaaaaDbtr Espoo TwnNm</TwnNm><CtrySubDvsn>CtrySubDvsn ÆØÅöäaaDbtr CtrySubDvsn</CtrySubDvsn><Ctry>FI</Ctry><AdrLine>AdrLine 12ÆØÅöä890 1234567890 12345Dbtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 23ÆØÅöä901 1234567890 12345Dbtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></Dbtr><DbtrAcct><Id><IBAN>SE1280000835350037425501</IBAN></Id></DbtrAcct><DbtrAgt><FinInstnId><BIC>NDEASESSXXX</BIC></FinInstnId></DbtrAgt><CdtrAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></CdtrAgt><Cdtr><Nm>Nm aaaaaCdtr Seventy chars length abcdefghijklmnoÆØÅöäuvwxyz abcdef Nm</Nm><PstlAdr><Dept>Dept aaaCdtr Seventy chars length abcdefghijÆØÅöäpqrstuvwxy abcdf Dept</Dept><SubDept>SubDept aaaCdtr Seventy chars length abcdefghijklmÆØÅöästuvwxy SubDept</SubDept><StrtNm>StrtNm aaaaaCdtr Seventy chars length abcdefghijklmnÆØÅöätuvwxy StrtNm</StrtNm><BldgNb>BldgNb ÆØÅöäCdtr</BldgNb><PstCd>PstCd ÆØÅöäaCdtr</PstCd><TwnNm>TwnNm Espoo E ÆØÅöäCdtr Espoo TwnNm</TwnNm><CtrySubDvsn>CtrySubDvsn ÆØÅöäaaCdtr CtrySubDvsn</CtrySubDvsn><Ctry>FI</Ctry><AdrLine>AdrLine 1234567890 1234567890 12345Cdtr0 1234567890 12ÆØÅöä890 AdrLine</AdrLine><AdrLine>AdrLine 2345678901 1234567890 12345Cdtr0 1234567890 23ÆØÅöä901 AdrLine</AdrLine></PstlAdr></Cdtr><CdtrAcct><Id><IBAN>FI7831512000005451</IBAN></Id></CdtrAcct><UltmtCdtr><Nm>Nm UltmtCdtr Seventy chars length abcdefghijklmÆØÅöästuvwxyz abcdef Nm</Nm><PstlAdr><StrtNm>StrtNm UltmtCdtr Seventy chars length abcdefghijkÆØÅöäqrstuvwxy StrtNm</StrtNm><BldgNb>BldÆØÅöältmtCdtr</BldgNb><PstCd>PstÆØÅöältmtCdtr</PstCd><TwnNm>TwnNm ÆØÅöä E UltmtCdtr Espoo TwnNm</TwnNm><Ctry>FI</Ctry><AdrLine>AdrLine 12ÆØÅöä890 1234567890 UltmtCdtr0 1234567890 1234567890 AdrLine</AdrLine><AdrLine>AdrLine 2ÆØÅöä8901 1234567890 UltmtCdtr0 1234567890 2345678901 AdrLine</AdrLine></PstlAdr></UltmtCdtr><Purp><Prtry>NOTDEFINED</Prtry></Purp><RmtInf><Ustrd>Ustrd remittanceInfoUnstru turedStringremittanceInfo remittanceInfoUnsÆØÅöäuredStringremittanceInfo remittanceIn oUnstructuredStringre Ustrd</Ustrd><Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>REGRESSION6410828641082864108286411</Ref></CdtrRefInf></Strd></RmtInf> </CdtTrfTxInf> </FIToFICstmrCdtTrf> </Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreatedTime</con:name>
+          <con:value>${=CommonLibrary.getNorwayTime("HH:mm:ss")}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePACS008" id="3fd31ef6-20e6-4286-ae57-0ba93b15417a">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def msgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgId');
+//log.info msgID;
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#MessageToSendWithParam}' )
+//log.info(messageToSend)
+
+//Parmeters needed in message
+def creDtTm = context.expand( '${Properties#CreDtTm}' )
+def createdTime = context.expand( '${Properties#CreatedTime}' )
+def amount = context.expand( '${Properties#Amount}' )
+def intrBkSttlmDt = context.expand( '${Properties#IntrBkSttlmDt}' )
+def endToEndId = context.expand( '${Properties#EndToEndId}' )
+def txId = context.expand( '${Properties#TxId}' )
+def instructionId = context.expand( '${Properties#InstructionId}' )
+def fromAccount = testRunner.testCase.testSuite.project.getPropertyValue( "fromAccount" )
+def toAccount = testRunner.testCase.testSuite.project.getPropertyValue( "toAccount" )
+def creditorAgntBic = testRunner.testCase.testSuite.project.getPropertyValue( "creditorAgntBIC" )
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("MESSAGEID",msgID) ;
+messageToSend = messageToSend.replaceAll("CREATEDDATETIME_",creDtTm) ;
+messageToSend = messageToSend.replaceAll("_NORWAYTIME",createdTime) ;
+messageToSend = messageToSend.replaceAll("INTERBANKSTTLMNTDT",intrBkSttlmDt) ;
+messageToSend = messageToSend.replaceAll("ENDTOENDIDVALUE",endToEndId) ;
+messageToSend = messageToSend.replaceAll("TRANSACTIONID",txId) ;
+messageToSend = messageToSend.replaceAll("INSTRUCTIONIDVALUE",instructionId) ;
+messageToSend = messageToSend.replaceAll("AMOUNT",amount) ;
+messageToSend = messageToSend.replaceAll("FROMACCOUNT",fromAccount) ;
+messageToSend = messageToSend.replaceAll("TOACCOUNT",toAccount) ;
+messageToSend = messageToSend.replaceAll("CDTRAGNTBIC",creditorAgntBic) ;
+//log.info messageToSend
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MessageToSendParsed",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushPACS008Message" id="2b34d224-b8f5-4b06-b242-cb0598c7e8ec">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#MessageToSendParsed}')
+log.info(filecontent)
+
+// Set MQ properties
+def mQQueuemanager =context.expand( '${#Project#mqManager}' )
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueueSEPA}' )
+def msgId = context.expand( '${Properties#MsgId}' )
+def endToEndId = context.expand('${Properties#EndToEndId}')
+def txId = context.expand( '${Properties#TxId}' )
+def instructionId = context.expand('${Properties#InstructionId}')
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+log.info "End to End ID - " +endToEndId
+log.info "Message ID - " +msgId
+log.info "Transaction ID  - " +txId
+log.info "Instruction ID  - " +instructionId</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>63f2591e-4655-408c-9a2e-39593c88b1fa</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>eddfe935-df03-48ee-882f-2395494da3f8</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>3fd31ef6-20e6-4286-ae57-0ba93b15417a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>2b34d224-b8f5-4b06-b242-cb0598c7e8ec</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tagId>9417c2f0-a10a-480b-95ef-fba8a37b628c</con:tagId>
+</con:testCase>

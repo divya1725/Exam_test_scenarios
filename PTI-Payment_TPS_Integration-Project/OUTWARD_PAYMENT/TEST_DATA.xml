@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="cee423f1-4740-43f0-9618-5882e72b5c7f" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST_DATA" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="cee423f1-4740-43f0-9618-5882e72b5c7ffileName">TEST_DATA</con:setting>
+  </con:settings>
+  <con:testStep type="manualTestStep" name="READ_ME" id="0435d3a3-6770-41c7-83f4-8dba6de85d78">
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+  </con:testStep>
+  <con:testStep type="jdbc" name="GET_TEST_DATA" id="c39894a9-bee4-444a-a8a3-bf1467c48fca">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT USERID,ACCOUNTNUMBER,CURRENCYCODE
+FROM V_AUTH_USERINFO WHERE
+BANKORGID='3625'
+AND ACCOUNTROLENAME IN ('Register')
+FETCH FIRST 1 ROWS ONLY</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="SET_TEST_DATA" id="a7925bcd-f53d-44cd-97e7-90eb19586432">
+    <con:settings/>
+    <con:config>
+      <script>String userid = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/USERID[1]}' );
+String account = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' );
+String currency = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' );
+
+userid= userid.toString().replaceAll("[^a-zA-Z0-9]+","");
+account= account.toString().replaceAll("[^a-zA-Z0-9]+","");
+currency= currency.toString().replaceAll("[^a-zA-Z0-9]+","");
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Customerid",userid);
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Userid",userid);
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid);
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAccount",account);
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntCcy",currency);</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="08a139ae-9fee-48d9-8754-3a11f6c288f9" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Smoketest_InwardPay_INT_CB_NP" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="08a139ae-9fee-48d9-8754-3a11f6c288f9fileName">Smoketest_InwardPay_INT_CB_NP</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="groovy" name="SetProperties" id="42010ff7-2a4c-499c-99f2-db0a2cae54a0">
+    <con:settings/>
+    <con:config>
+      <script>import java.text.SimpleDateFormat
+import java.util.UUID
+
+Date date = new Date();
+SimpleDateFormat fn = new SimpleDateFormat("ddMyyhhmmss");
+def datetime = fn.format(date)
+
+UUID uuid = UUID.randomUUID();
+def MsgId = uuid.toString().replace("-", "");
+
+def generateAmount(int start, int finish){
+		Random random = new Random();
+		int rndInt = random.nextInt(finish + 1 - start) + start;
+		Double rndDouble = new Double(rndInt)
+		return rndDouble
+	}
+
+def amount = generateAmount(1,30)
+
+def EndtoEndID = "INTCBNP"+datetime;
+def TxId = datetime+amount.toInteger()
+
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MsgId",MsgId );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("EndToEndId",EndtoEndID );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("TxId",TxId );
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Amount",amount.toString());</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Properties" id="73a6ba57-ebf3-4f4a-ae14-7cd26b7d27b7">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>MsgId</con:name>
+          <con:value>8cc2a484b30d45ecb424fad22922d674</con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreDtTm</con:name>
+          <con:value>${=CommonLibrary.getDate("yyyy-MM-dd")}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>IntrBkSttlmDt</con:name>
+          <con:value>${=CommonLibrary.getDate("yyyy-MM-dd")}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>EndToEndId</con:name>
+          <con:value>INTCBNP181021022734</con:value>
+        </con:property>
+        <con:property>
+          <con:name>TxId</con:name>
+          <con:value>18102102273417</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Amount</con:name>
+          <con:value>17.0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendWithParam</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><FIToFICstmrCdtTrf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><GrpHdr xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><MsgId>MESSAGEID</MsgId><CreDtTm>CREATEDDATETIME_T_NORWAYTIME</CreDtTm><NbOfTxs>1</NbOfTxs><TtlIntrBkSttlmAmt Ccy="EUR">AMOUNT</TtlIntrBkSttlmAmt><IntrBkSttlmDt>INTERBANKSTTLMNTDT</IntrBkSttlmDt><SttlmInf><SttlmMtd>INDA</SttlmMtd></SttlmInf><InstgAgt><FinInstnId><BIC>HANDSESSXXX</BIC></FinInstnId></InstgAgt><InstdAgt><FinInstnId><BIC>CDTRAGNTBIC</BIC></FinInstnId></InstdAgt></GrpHdr><CdtTrfTxInf><PmtId><InstrId>INSTIDge24</InstrId><EndToEndId>ENDTOENDIDVALUE</EndToEndId><TxId>TRANSACTIONID</TxId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><IntrBkSttlmAmt Ccy="EUR">AMOUNT</IntrBkSttlmAmt><InstdAmt Ccy="EUR">AMOUNT</InstdAmt><ChrgBr>CRED</ChrgBr><Dbtr><Nm>FreePhoneFinland</Nm><PstlAdr><AdrLine>Kaupintie10</AdrLine></PstlAdr></Dbtr><DbtrAcct><Id><IBAN>FROMACCOUNT</IBAN></Id></DbtrAcct><DbtrAgt><FinInstnId><BIC>HANDSESSXXX</BIC></FinInstnId></DbtrAgt><CdtrAgt><FinInstnId><BIC>CDTRAGNTBIC</BIC></FinInstnId></CdtrAgt><Cdtr><Nm>CustName</Nm><PstlAdr><AdrLine>Dusseldorf</AdrLine></PstlAdr></Cdtr><CdtrAcct><Id><IBAN>TOACCOUNT</IBAN></Id></CdtrAcct><Purp><Prtry>NOTDEFINED</Prtry></Purp><RmtInf><Ustrd>remittanceInfoUnstructuredStringremittanceInfo</Ustrd><Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>8641082</Ref></CdtrRefInf></Strd></RmtInf></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>MessageToSendParsed</con:name>
+          <con:value><![CDATA[<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><FIToFICstmrCdtTrf xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><GrpHdr xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.02"><MsgId>8cc2a484b30d45ecb424fad22922d674</MsgId><CreDtTm>2021-10-18T10:57:34</CreDtTm><NbOfTxs>1</NbOfTxs><TtlIntrBkSttlmAmt Ccy="EUR">17.0</TtlIntrBkSttlmAmt><IntrBkSttlmDt>2021-10-18</IntrBkSttlmDt><SttlmInf><SttlmMtd>INDA</SttlmMtd></SttlmInf><InstgAgt><FinInstnId><BIC>HANDSESSXXX</BIC></FinInstnId></InstgAgt><InstdAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></InstdAgt></GrpHdr><CdtTrfTxInf><PmtId><InstrId>INSTIDge24</InstrId><EndToEndId>INTCBNP181021022734</EndToEndId><TxId>18102102273417</TxId></PmtId><PmtTpInf><InstrPrty>NORM</InstrPrty></PmtTpInf><IntrBkSttlmAmt Ccy="EUR">17.0</IntrBkSttlmAmt><InstdAmt Ccy="EUR">17.0</InstdAmt><ChrgBr>CRED</ChrgBr><Dbtr><Nm>FreePhoneFinland</Nm><PstlAdr><AdrLine>Kaupintie10</AdrLine></PstlAdr></Dbtr><DbtrAcct><Id><IBAN>SE1280000835350037425501</IBAN></Id></DbtrAcct><DbtrAgt><FinInstnId><BIC>HANDSESSXXX</BIC></FinInstnId></DbtrAgt><CdtrAgt><FinInstnId><BIC>HANDFIHHXXX</BIC></FinInstnId></CdtrAgt><Cdtr><Nm>CustName</Nm><PstlAdr><AdrLine>Dusseldorf</AdrLine></PstlAdr></Cdtr><CdtrAcct><Id><IBAN>FI4531511000003557</IBAN></Id></CdtrAcct><Purp><Prtry>NOTDEFINED</Prtry></Purp><RmtInf><Ustrd>remittanceInfoUnstructuredStringremittanceInfo</Ustrd><Strd><CdtrRefInf><Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp><Ref>8641082</Ref></CdtrRefInf></Strd></RmtInf></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>CreatedTime</con:name>
+          <con:value>${=CommonLibrary.getNorwayTime("HH:mm:ss")}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PreparePACS008" id="12e59bab-0118-4f36-aaeb-fbc78eb84eab">
+    <con:settings/>
+    <con:config>
+      <script>import com.eviware.soapui.support.GroovyUtils.*
+import java.io.File 
+import java.io.Reader
+
+//MsgID
+def msgID = testRunner.testCase.getTestStepByName("Properties").getPropertyValue('MsgId');
+//log.info msgID;
+
+//Initial Message to send
+def messageToSend = context.expand( '${Properties#MessageToSendWithParam}' )
+//log.info(messageToSend)
+
+//Parmeters needed in message
+def creDtTm = context.expand( '${Properties#CreDtTm}' )
+def createdTime = context.expand( '${Properties#CreatedTime}' )
+def amount = context.expand( '${Properties#Amount}' )
+def intrBkSttlmDt = context.expand( '${Properties#IntrBkSttlmDt}' )
+def endToEndId = context.expand( '${Properties#EndToEndId}' )
+def txId = context.expand( '${Properties#TxId}' )
+def fromAccount = testRunner.testCase.testSuite.project.getPropertyValue( "fromAccount" )
+def toAccount = testRunner.testCase.testSuite.project.getPropertyValue( "toAccount" )
+def creditorAgntBic = testRunner.testCase.testSuite.project.getPropertyValue( "creditorAgntBIC" )
+
+
+//Replace parmaeters in message by respective values
+messageToSend = messageToSend.replaceAll("MESSAGEID",msgID) ;
+messageToSend = messageToSend.replaceAll("CREATEDDATETIME_",creDtTm) ;
+messageToSend = messageToSend.replaceAll("_NORWAYTIME",createdTime) ;
+messageToSend = messageToSend.replaceAll("INTERBANKSTTLMNTDT",intrBkSttlmDt) ;
+messageToSend = messageToSend.replaceAll("ENDTOENDIDVALUE",endToEndId) ;
+messageToSend = messageToSend.replaceAll("TRANSACTIONID",txId) ;
+messageToSend = messageToSend.replaceAll("AMOUNT",amount) ;
+messageToSend = messageToSend.replaceAll("FROMACCOUNT",fromAccount) ;
+messageToSend = messageToSend.replaceAll("TOACCOUNT",toAccount) ;
+messageToSend = messageToSend.replaceAll("CDTRAGNTBIC",creditorAgntBic) ;
+//log.info messageToSend
+
+//Set 'messagetoSend_currentTC  property value with updated message
+def update = testRunner.testCase.getTestStepByName("Properties").setPropertyValue("MessageToSendParsed",messageToSend);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="PushPACS008Message" id="90ca7f50-f267-4f44-bad9-a0ed497cf30a">
+    <con:settings/>
+    <con:config>
+      <script>// File payment content property
+import MQMessageUtils;
+
+def filecontent = context.expand( '${Properties#MessageToSendParsed}')
+log.info(filecontent)
+
+// Set MQ properties
+def mQQueuemanager =context.expand( '${#Project#mqManager}' )
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#sendQueueNonSepa}' )
+def msgId = context.expand( '${Properties#MsgId}' )
+def endToEndId = context.expand('${Properties#EndToEndId}')
+def txId = context.expand( '${Properties#TxId}' )
+
+// Create utility class object, Create MQ connection
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info ("Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,filecontent));
+log.info "End to End ID - " +endToEndId
+log.info "Message ID - " +msgId
+log.info "Transaction ID  - " +txId</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>30b168ca-5a57-40d0-acd6-a750962a5ff2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:environmentSpec>
+    <con:entry environmentId="6bb31554-704f-4532-81b9-f25714e7a700">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+  <con:tagId>2f9ce233-6b5c-4c11-b1c8-d2e9b0c4048b</con:tagId>
+</con:testCase>

@@ -1,0 +1,1004 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="e4d5a391-1865-4caa-8c38-db925cb6e613" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BatchExecution_PAINT" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="4db2e0c9-7919-4d6c-bafa-ad59106b0b46fileName">BatchExecution_PAINT</con:setting>
+    <con:setting id="e4d5a391-1865-4caa-8c38-db925cb6e613fileName">BatchExecution_PAINT</con:setting>
+  </con:settings>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:testStep type="properties" name="Properties" id="09b07653-74bd-44a5-b304-d8fc4de0fba1">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Transaction_Closed</con:name>
+          <con:value>1000169465</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Transaction_Blocked</con:name>
+          <con:value>1000169464</con:value>
+        </con:property>
+        <con:property>
+          <con:name>jobRunType</con:name>
+          <con:value>START_OF_DAY</con:value>
+        </con:property>
+        <con:property>
+          <con:name>processingLine</con:name>
+          <con:value>INT_PAYMENT_TPS</con:value>
+        </con:property>
+        <con:property>
+          <con:name>paymentStatus</con:name>
+          <con:value>RFDD,LAFU</con:value>
+        </con:property>
+        <con:property>
+          <con:name>bankID</con:name>
+          <con:value>3625</con:value>
+        </con:property>
+        <con:property>
+          <con:name>POR1LastModifiedTime</con:name>
+          <con:value>1656585019</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="lowVolumeReservation" id="70d3722d-7f25-48b7-991b-3572cc865372">
+    <con:settings/>
+    <con:config>
+      <script>def strHost = context.expand( '${#Project#EBSHost}' )
+def strUsername = context.expand( '${#Project#UserName}' )
+def strPassword = context.expand( '${#Project#Password}' ) 
+def  intPort = context.expand( '${#Project#Port}' ) 
+
+def marketType = context.expand( '${Properties#marketType}' ) 
+marketType = marketType.toUpperCase()
+def jobRunType = context.expand( '${Properties#jobRunType}' )
+jobRunType = jobRunType.toUpperCase() 
+//jobrun= START_OF_DAY, NORMAL, NORMAL_END_OF_DAY, EXTRA_RUN_AFTER_NORMAL_END_OF_DAY
+def processingLine = context.expand( '${Properties#processingLine}' )
+processingLine = processingLine.toUpperCase() 
+//PROCESSING_LINE=INT_PAYMENT_TPS,SEPA_PAYMENT_TPS
+def paymentStatus = context.expand( '${Properties#paymentStatus}' )
+paymentStatus = paymentStatus.toUpperCase()
+def bankID = context.expand( '${Properties#bankID}' )
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase() 
+env = env.toString().substring(2)
+log.info ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) 
+
+if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
+assert false," Failed to conenct to linux server!!" 
+else  
+log.info "Connected to the server successfully!!" 
+log.info "Running the batch...." 
+
+def nextDate =  new Date() ; 
+nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd')) 
+
+def runId = new Date() 
+
+runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))  
+
+
+String shParameter = "lowVolumeReservationLauncher.sh processLine=$processingLine  paymentStatuses=$paymentStatus releaseDate=${nextDate} jobRunType=$jobRunType bankIds=$bankID runId=$runId"
+
+String CommandOutPut = ServerConnect.execBatchCommand(env,"pin",shParameter)
+log.info "shParameter : "+shParameter
+log.info "CommandOutput returned-->" + CommandOutPut
+
+ServerConnect.closeConnection() 
+
+def porSuccessMessage1 = 'LOW_VOLUME_RESERVATION_JOB completed, nothing to do'
+def porSuccessMessage2 ='LOW_VOLUME_RESERVATION_JOB went OK' 
+assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut  
+String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10)
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime")</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Transaction_Blocked" id="83f1807c-d9fd-4b33-8c46-827e0b9bf594">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel,T.Riskstatus, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid and transactionsid in ('${Properties#Transaction_Blocked}')</con:query>
+      <con:assertion type="DataAndMetadataAssertion" id="cb7412fe-0f1b-4ec6-a982-beda6a0c0f88" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:path>
+            <con:element>MESSAGEID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>190138</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:path>
+            <con:element>AGREEMENTID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>13016007026</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:path>
+            <con:element>MARKETTYPE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PM</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTEDAMOUNT[1]</con:path>
+            <con:element>INSTRUCTEDAMOUNT</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>6</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/EQUIVALENTAMOUNT[1]</con:path>
+            <con:element>EQUIVALENTAMOUNT</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>745076</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:path>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169464</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:path>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:path>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>33050130822</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:path>
+            <con:element>RELEASEDATE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-06-30 00:00:00.0</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:path>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>101,102</con:expectedValue>
+            <con:caseSensitive>true</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:path>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-06-30 00:00:00.0</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/BOOKINGLEVEL[1]</con:path>
+            <con:element>BOOKINGLEVEL</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>T</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:path>
+            <con:element>RISKSTATUS</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue xsi:nil="true"/>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/PEPROCESSINGLINE[1]</con:path>
+            <con:element>PEPROCESSINGLINE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TPS_INT_OUT</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>190138</MESSAGEID>
+         <AGREEMENTID>13016007026</AGREEMENTID>
+         <MARKETTYPE>PM</MARKETTYPE>
+         <INSTRUCTEDAMOUNT>6</INSTRUCTEDAMOUNT>
+         <EQUIVALENTAMOUNT/>
+         <FK_PAYMENTINFOID>745076</FK_PAYMENTINFOID>
+         <TRANSACTIONSID>1000169464</TRANSACTIONSID>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
+         <DEBETACCOUNTNO>33050130822</DEBETACCOUNTNO>
+         <RELEASEDATE>2022-06-30 00:00:00.0</RELEASEDATE>
+         <FK_PROCESSINGLINEID>102</FK_PROCESSINGLINEID>
+         <REQUESTEDEXECUTIONDATE>2022-06-30 00:00:00.0</REQUESTEDEXECUTIONDATE>
+         <BOOKINGLEVEL>T</BOOKINGLEVEL>
+         <RISKSTATUS/>
+         <PEPROCESSINGLINE>TPS_INT_OUT</PEPROCESSINGLINE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Statusreason_Blocked" id="946a8df9-a3d5-4b5e-8a1d-219ce2b6ec20">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${Properties#Transaction_Blocked}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:assertion type="DataAndMetadataAssertion" id="cda05de7-0f3f-4375-b34d-b5f4da2b43e4" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONID[1]</con:path>
+            <con:element>STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620196</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/CODE[1]</con:path>
+            <con:element>CODE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC06</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/SOURCESYSTEM[1]</con:path>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>FTSS</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_MESSAGEID[1]</con:path>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONID[1]</con:path>
+            <con:element>FK_TRANSACTIONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169464</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONADDTINFID[1]</con:path>
+            <con:element>STATUSREASONADDTINFID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>484996</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_STATUSREASONID[1]</con:path>
+            <con:element>FK_STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620196</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/ADDITIONALINFORMATION[1]</con:path>
+            <con:element>ADDITIONALINFORMATION</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>ACCOUNT_BLOCKED_LIMITED_WITHDRAWALS</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/STATUSREASONID[1]</con:path>
+            <con:element>STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620196</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/CODE[1]</con:path>
+            <con:element>CODE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC06</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/SOURCESYSTEM[1]</con:path>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>FTSS</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_MESSAGEID[1]</con:path>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_TRANSACTIONID[1]</con:path>
+            <con:element>FK_TRANSACTIONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169464</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/STATUSREASONADDTINFID[1]</con:path>
+            <con:element>STATUSREASONADDTINFID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>484995</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_STATUSREASONID[1]</con:path>
+            <con:element>FK_STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620196</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/ADDITIONALINFORMATION[1]</con:path>
+            <con:element>ADDITIONALINFORMATION</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>RTS: KONTO ER BLOKKERT</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <STATUSREASONID>620196</STATUSREASONID>
+         <CODE>AC06</CODE>
+         <SOURCESYSTEM>FTSS</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>1000169464</FK_TRANSACTIONID>
+         <STATUSREASONADDTINFID>484996</STATUSREASONADDTINFID>
+         <FK_STATUSREASONID>620196</FK_STATUSREASONID>
+         <ADDITIONALINFORMATION>ACCOUNT_BLOCKED_LIMITED_WITHDRAWALS</ADDITIONALINFORMATION>
+      </Row>
+      <Row rowNumber="2">
+         <STATUSREASONID>620196</STATUSREASONID>
+         <CODE>AC06</CODE>
+         <SOURCESYSTEM>FTSS</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>1000169464</FK_TRANSACTIONID>
+         <STATUSREASONADDTINFID>484995</STATUSREASONADDTINFID>
+         <FK_STATUSREASONID>620196</FK_STATUSREASONID>
+         <ADDITIONALINFORMATION>RTS: KONTO ER BLOKKERT</ADDITIONALINFORMATION>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Transaction_Closed" id="cdee02d9-7ae7-4641-b988-389e6d6fb1be">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel,T.riskstatus, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid  and transactionsid in ('${Properties#Transaction_Closed}')</con:query>
+      <con:assertion type="DataAndMetadataAssertion" id="f23d14d4-a971-4f4e-b28e-e431e871f00e" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/MESSAGEID[1]</con:path>
+            <con:element>MESSAGEID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>190139</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/AGREEMENTID[1]</con:path>
+            <con:element>AGREEMENTID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>13016007026</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/MARKETTYPE[1]</con:path>
+            <con:element>MARKETTYPE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>PM</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/INSTRUCTEDAMOUNT[1]</con:path>
+            <con:element>INSTRUCTEDAMOUNT</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>6</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/EQUIVALENTAMOUNT[1]</con:path>
+            <con:element>EQUIVALENTAMOUNT</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>745077</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/TRANSACTIONSID[1]</con:path>
+            <con:element>TRANSACTIONSID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169465</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/PAYMENTSTATUS[1]</con:path>
+            <con:element>PAYMENTSTATUS</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>REJC</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/DEBETACCOUNTNO[1]</con:path>
+            <con:element>DEBETACCOUNTNO</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>33050006319</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/RELEASEDATE[1]</con:path>
+            <con:element>RELEASEDATE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-06-30 00:00:00.0</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PROCESSINGLINEID[1]</con:path>
+            <con:element>FK_PROCESSINGLINEID</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>101,102</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/REQUESTEDEXECUTIONDATE[1]</con:path>
+            <con:element>REQUESTEDEXECUTIONDATE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2022-06-30 00:00:00.0</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/BOOKINGLEVEL[1]</con:path>
+            <con:element>BOOKINGLEVEL</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>T</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/RISKSTATUS[1]</con:path>
+            <con:element>RISKSTATUS</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/PEPROCESSINGLINE[1]</con:path>
+            <con:element>PEPROCESSINGLINE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>TPS_INT_OUT</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <MESSAGEID>190139</MESSAGEID>
+         <AGREEMENTID>13016007026</AGREEMENTID>
+         <MARKETTYPE>PM</MARKETTYPE>
+         <INSTRUCTEDAMOUNT>6</INSTRUCTEDAMOUNT>
+         <EQUIVALENTAMOUNT/>
+         <FK_PAYMENTINFOID>745077</FK_PAYMENTINFOID>
+         <TRANSACTIONSID>1000169465</TRANSACTIONSID>
+         <PAYMENTSTATUS>REJC</PAYMENTSTATUS>
+         <DEBETACCOUNTNO>33050006319</DEBETACCOUNTNO>
+         <RELEASEDATE>2022-06-30 00:00:00.0</RELEASEDATE>
+         <FK_PROCESSINGLINEID>102</FK_PROCESSINGLINEID>
+         <REQUESTEDEXECUTIONDATE>2022-06-30 00:00:00.0</REQUESTEDEXECUTIONDATE>
+         <BOOKINGLEVEL>T</BOOKINGLEVEL>
+         <RISKSTATUS/>
+         <PEPROCESSINGLINE>TPS_INT_OUT</PEPROCESSINGLINE>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="Statusreason_Closed" id="b84b8de8-1171-42b1-813b-9ba3a1bbf193">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>Database</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${Properties#Transaction_Closed}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:assertion type="DataAndMetadataAssertion" id="7a0846f7-495b-425b-82ea-9659b31a04a4" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
+            <con:element>@fetchSize</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>10</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONID[1]</con:path>
+            <con:element>STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620197</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/CODE[1]</con:path>
+            <con:element>CODE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC04</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/SOURCESYSTEM[1]</con:path>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>FTSS,FND</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_MESSAGEID[1]</con:path>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_TRANSACTIONID[1]</con:path>
+            <con:element>FK_TRANSACTIONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169465</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/STATUSREASONADDTINFID[1]</con:path>
+            <con:element>STATUSREASONADDTINFID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>484998</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/FK_STATUSREASONID[1]</con:path>
+            <con:element>FK_STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620197</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[1]/ADDITIONALINFORMATION[1]</con:path>
+            <con:element>ADDITIONALINFORMATION</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>ACCOUNT_CLOSING</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/@rowNumber</con:path>
+            <con:element>@rowNumber</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>2</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/STATUSREASONID[1]</con:path>
+            <con:element>STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620197</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/CODE[1]</con:path>
+            <con:element>CODE</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>AC04</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/SOURCESYSTEM[1]</con:path>
+            <con:element>SOURCESYSTEM</con:element>
+            <con:operatorId>3</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>FTSS,FND</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_MESSAGEID[1]</con:path>
+            <con:element>FK_MESSAGEID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_PAYMENTINFOID[1]</con:path>
+            <con:element>FK_PAYMENTINFOID</con:element>
+            <con:operatorId>9</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_TRANSACTIONID[1]</con:path>
+            <con:element>FK_TRANSACTIONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>1000169465</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/STATUSREASONADDTINFID[1]</con:path>
+            <con:element>STATUSREASONADDTINFID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>484997</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/FK_STATUSREASONID[1]</con:path>
+            <con:element>FK_STATUSREASONID</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>620197</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:elements>
+            <con:path>//Results[1]/ResultSet[1]/Row[2]/ADDITIONALINFORMATION[1]</con:path>
+            <con:element>ADDITIONALINFORMATION</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>false</con:enabled>
+            <con:expectedValue>RTS: KONTO ER AVSLUTTET</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage><![CDATA[<Results>
+   <ResultSet fetchSize="10">
+      <Row rowNumber="1">
+         <STATUSREASONID>620197</STATUSREASONID>
+         <CODE>AC04</CODE>
+         <SOURCESYSTEM>FTSS</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>1000169465</FK_TRANSACTIONID>
+         <STATUSREASONADDTINFID>484998</STATUSREASONADDTINFID>
+         <FK_STATUSREASONID>620197</FK_STATUSREASONID>
+         <ADDITIONALINFORMATION>ACCOUNT_CLOSING</ADDITIONALINFORMATION>
+      </Row>
+      <Row rowNumber="2">
+         <STATUSREASONID>620197</STATUSREASONID>
+         <CODE>AC04</CODE>
+         <SOURCESYSTEM>FTSS</SOURCESYSTEM>
+         <FK_MESSAGEID/>
+         <FK_PAYMENTINFOID/>
+         <FK_TRANSACTIONID>1000169465</FK_TRANSACTIONID>
+         <STATUSREASONADDTINFID>484997</STATUSREASONADDTINFID>
+         <FK_STATUSREASONID>620197</FK_STATUSREASONID>
+         <ADDITIONALINFORMATION>RTS: KONTO ER AVSLUTTET</ADDITIONALINFORMATION>
+      </Row>
+   </ResultSet>
+</Results>]]></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:setupScript>testCase.getTestStepByName("Properties").setPropertyValue("POR1OutputFile", "")
+testCase.getTestStepByName("Properties").setPropertyValue("FTSLastModifiedDate", "")
+testCase.getTestStepByName("Properties").setPropertyValue("FTSResponseFile", "")
+testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime", "")</con:setupScript>
+  <con:properties>
+    <con:property>
+      <con:name>map</con:name>
+      <con:value>[a:a1, b:b2]</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+  <con:breakPoints>
+    <con:testStepId>5381cf85-0f4b-4cb3-908b-fd81d738c6da</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72ba828d-d1a7-48f8-b672-71288be2ad10</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>94085c43-2faf-427c-afc8-e1f78c1d1285</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>cdcb5c32-dac5-4bb7-b37e-e89f6dc868b2</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>f1cca34d-7c16-487f-a2bb-4a706de3531a</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>54c926c4-5073-4beb-b8b2-ba4628702ae4</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>a539de08-b666-4fe9-9636-fb9b9eabba66</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>72c9e7e6-b833-4294-abcd-6c0481b897cd</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>4f6afbce-b605-4838-a5fc-8d48dde99963</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>18f7d99a-6a92-4f29-bfbf-825cc01087fe</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>e4a54adb-f6f0-4532-9c90-3f755a97e3db</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>ce642f55-9aab-4401-9507-7846f445c6d0</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+  <con:breakPoints>
+    <con:testStepId>392ae598-956c-4426-8253-543059469364</con:testStepId>
+    <con:status>NONE</con:status>
+    <con:properties/>
+  </con:breakPoints>
+</con:testCase>

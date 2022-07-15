@@ -33,7 +33,7 @@
         </con:property>
         <con:property>
           <con:name>POR1LastModifiedTime</con:name>
-          <con:value>1657870794</con:value>
+          <con:value>1657889486</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -425,7 +425,7 @@ testRunner.testCase.testSuite.setPropertyValue("DataSourcePath",dir)</script>
          <urn:paymentMessage>
             <urn1:paymentIdentification>
                <urn2:messageIdentification>${DataSource#messageIdentification}</urn2:messageIdentification>
-               <urn2:endToEndIdentification>${DataSource#endToEndIdentification}_${DataSource#messageIdentification}</urn2:endToEndIdentification>
+               <urn2:endToEndIdentification>${DataSource#endToEndIdentification}</urn2:endToEndIdentification>
                <!--Optional:-->
             </urn1:paymentIdentification>
             <urn1:paymentInfo>
@@ -2057,7 +2057,15 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid  and transactionsid in ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
+      <con:query>SELECT M.MESSAGEID, M.AGREEMENTID, M.MARKETTYPE,
+T.INSTRUCTEDAMOUNT,T.EQUIVALENTAMOUNT,T.FK_PAYMENTINFOID,
+T.TRANSACTIONSID,T.PAYMENTSTATUS,T.DEBETACCOUNTNO,
+T.RELEASEDATE,T.FK_PROCESSINGLINEID,T.REQUESTEDEXECUTIONDATE,
+T.BOOKINGLEVEL,T.PEPROCESSINGLINE 
+FROM TRANSACTIONS T, MESSAGE M , PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID 
+AND P.PAYMENTINFOID = T.FK_PAYMENTINFOID  
+AND TRANSACTIONSID IN ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
       <con:assertion type="MessageContentAssertion" id="c26b266d-cab6-41c3-8233-a255ab457c7a" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -2267,7 +2275,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:payment-status-update:v2
             <wsc:userid>SYSTEM</wsc:userid>
             <wsc:credentials>03111013010400425BMOBfBdK0SRrzhWe/Wx1eintHT5YrYhwi9NNpog1D3QTmuxUR4+q4mXEz9BUfXM/jrSIpQnXuqKD/MjoNuGS8cNBTnQSYOXYsSUOMYGLg+n8opWKzwkfG4o/zp8u+eYRV3h5QTBrAFEZ+t9uh8S4b460iKUJ17qig/zI6DbhkvGOtIilCde6ooP8yOg24ZLxvVmCPT+hSeuu3PPAmkIda2HfYyOj+e9z4J9MdXOJn34=pBZusa0SQDNIW6rn4wdjYsqHGP65r3dkffBM05J9EOtAAll7j8Ajy+CMVflHAjepn8y6UH13fq9xPAYOoymfVTD4/i+jPm6CcYD1u5TZnK37blbNhpUzYh4Aww3QGRWxYGA1C+2+QpcfmyMrcjlpI90DEe23rFU4Jg+q1tPT1Ng=</wsc:credentials>
             <wsc:channel>BRA</wsc:channel>
-            <wsc:orgid>3625</wsc:orgid>
+            <wsc:orgid>${DataSource#orgid}</wsc:orgid>
             <!--Optional:-->
             <wsc:orgunit xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
             <!--Optional:-->
@@ -4527,52 +4535,35 @@ declare namespace ns1='urn:srv.pbd.fs.edb.com:domain:paymentparameters:v4_5';
   <con:testStep type="groovy" name="lowVolumeReservation" id="4c4451a0-6b4c-4af3-885e-3dcf62c1e605">
     <con:settings/>
     <con:config>
-      <script>def strHost = context.expand( '${#Project#EBSHost}' )
-def strUsername = context.expand( '${#Project#UserName}' )
-def strPassword = context.expand( '${#Project#Password}' ) 
-def  intPort = context.expand( '${#Project#Port}' ) 
+      <script>connectToServer();
+public void connectToServer(){
+	def strHost = context.expand( '${#Project#EBSHost}');
+	def  intPort = context.expand( '${#Project#Port}');
+	def strUsername = context.expand( '${#Project#UserName}');
+	def strPassword = context.expand( '${#Project#Password}');
+	def date =  java.time.LocalDateTime.now();
+	def jobRunType = context.expand( '${Properties#jobRunType}').toUpperCase();
+	def processingLine = context.expand( '${Properties#processingLine}').toUpperCase();
+	def paymentStatus = context.expand( '${Properties#paymentStatus}').toUpperCase()
+	def bankID = context.expand( '${Properties#bankID}');
+	def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase().toString().substring(2);
 
-def marketType = context.expand( '${Properties#marketType}' ) 
-marketType = marketType.toUpperCase()
-def jobRunType = context.expand( '${Properties#jobRunType}' )
-jobRunType = jobRunType.toUpperCase() 
-//jobrun= START_OF_DAY, NORMAL, NORMAL_END_OF_DAY, EXTRA_RUN_AFTER_NORMAL_END_OF_DAY
-def processingLine = context.expand( '${Properties#processingLine}' )
-processingLine = processingLine.toUpperCase() 
-//PROCESSING_LINE=INT_PAYMENT_TPS,SEPA_PAYMENT_TPS
-def paymentStatus = context.expand( '${Properties#paymentStatus}' )
-paymentStatus = paymentStatus.toUpperCase()
-def bankID = context.expand( '${Properties#bankID}' )
-
-String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase() 
-env = env.toString().substring(2)
-
-if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
-assert false," Failed to conenct to linux server!!" 
-else  
-log.info "Connected to the server successfully!!" 
-log.info "Running the batch...." 
-
-def nextDate =  new Date() ; 
-nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd')) 
-
-def runId = new Date() 
-
-runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))  
-
-String shParameter = "lowVolumeReservationLauncher.sh processLine=$processingLine  paymentStatuses=$paymentStatus releaseDate=${nextDate} jobRunType=$jobRunType bankIds=$bankID runId=$runId"
-
-String CommandOutPut = ServerConnect.execBatchCommand(env,"pin",shParameter)
-log.info "shParameter : "+shParameter
-log.info "CommandOutput returned-->" + CommandOutPut
-
-ServerConnect.closeConnection() 
-
-def porSuccessMessage1 = 'LOW_VOLUME_RESERVATION_JOB completed, nothing to do'
-def porSuccessMessage2 ='LOW_VOLUME_RESERVATION_JOB went OK' 
-assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut  
-String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10)
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime")</script>
+	if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS")) { assert false," Failed to conenct to linux server!!";} else
+	{	log.info "Connected to the server successfully!!  Running the batch.... : "+env+"__"+date;
+		def nextDate = date.format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+		def runId = date.format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"));
+		String shParameter = "lowVolumeReservationLauncher.sh processLine=$processingLine  paymentStatuses=$paymentStatus releaseDate=${nextDate} jobRunType=$jobRunType bankIds=$bankID runId=$runId";
+		String CommandOutPut = ServerConnect.execBatchCommand(env,"pin",shParameter);
+		log.info "shParameter : "+shParameter;
+		log.info "CommandOutput returned-->" + CommandOutPut;
+		ServerConnect.closeConnection();
+		def porSuccessMessage1 = 'LOW_VOLUME_RESERVATION_JOB completed, nothing to do';
+		def porSuccessMessage2 ='LOW_VOLUME_RESERVATION_JOB went OK';
+		assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut;
+		String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime");
+	}
+}</script>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="Validate_LAFU/STOL" id="7dca734b-464a-4f77-94e6-7a23c93378af">
@@ -4585,7 +4576,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid and transactionsid in ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
+      <con:query>SELECT M.MESSAGEID, M.AGREEMENTID, M.MARKETTYPE,
+T.INSTRUCTEDAMOUNT,T.EQUIVALENTAMOUNT,T.FK_PAYMENTINFOID,
+T.TRANSACTIONSID,T.PAYMENTSTATUS,T.DEBETACCOUNTNO,
+T.RELEASEDATE,T.FK_PROCESSINGLINEID,T.REQUESTEDEXECUTIONDATE,
+T.BOOKINGLEVEL,T.PEPROCESSINGLINE 
+FROM TRANSACTIONS T, MESSAGE M , PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID 
+AND P.PAYMENTINFOID = T.FK_PAYMENTINFOID 
+AND TRANSACTIONSID IN ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="51e0580f-3fcd-4d53-9fff-db145850ebfc" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -4767,7 +4766,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA 
+WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID 
+AND SR.FK_TRANSACTIONID IN 
+'${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}' 
+ORDER BY SR.STATUSREASONID DESC</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="f20175c3-453b-4bee-abc6-faa790ccc495" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -5195,7 +5198,8 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select * from lackoffundstransactions where fk_transactionsid in '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
+      <con:query>SELECT * FROM LACKOFFUNDSTRANSACTIONS 
+WHERE FK_TRANSACTIONSID IN '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
       <con:assertion type="MessageContentAssertion" id="66ae3fb6-6893-4714-9bbf-136271b4dddb" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -5287,7 +5291,15 @@ else testRunner.gotoStepByName("lowVolumeReservation")</script>
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid  and transactionsid in ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
+      <con:query>SELECT M.MESSAGEID, M.AGREEMENTID, M.MARKETTYPE,
+T.INSTRUCTEDAMOUNT,T.EQUIVALENTAMOUNT,T.FK_PAYMENTINFOID,
+T.TRANSACTIONSID,T.PAYMENTSTATUS,T.DEBETACCOUNTNO,
+T.RELEASEDATE,T.FK_PROCESSINGLINEID,T.REQUESTEDEXECUTIONDATE,
+T.BOOKINGLEVEL,T.PEPROCESSINGLINE 
+FROM TRANSACTIONS T, MESSAGE M , PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID 
+AND P.PAYMENTINFOID = T.FK_PAYMENTINFOID  
+AND TRANSACTIONSID IN ('${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}')</con:query>
       <con:assertion type="MessageContentAssertion" id="66ae3fb6-6893-4714-9bbf-136271b4dddb" name="Message Content Assertion">
         <con:configuration xsi:type="con:MessageContentAssertion">
           <con:elements>
@@ -5355,7 +5367,11 @@ else testRunner.gotoStepByName("lowVolumeReservation")</script>
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA 
+WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID 
+AND SR.FK_TRANSACTIONID IN 
+'${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}' 
+ORDER BY SR.STATUSREASONID DESC</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="f20175c3-453b-4bee-abc6-faa790ccc495" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -5783,7 +5799,8 @@ else testRunner.gotoStepByName("lowVolumeReservation")</script>
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>select * from failedreservation where fk_transactionid in '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
+      <con:query>SELECT * FROM FAILEDRESERVATION 
+WHERE FK_TRANSACTIONID IN '${PaymentCreate#Response#declare namespace ns4='urn:pins.payment.evry.com:domain:paymentinitiation:v2_0'; declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0'; //ns2:PaymentCreateResponse[1]/ns2:paymentResult[1]/ns4:transactionId[1]}'</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="e3dab1ce-175a-48b2-81fe-0f897674fe32" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>

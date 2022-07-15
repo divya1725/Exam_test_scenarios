@@ -11,11 +11,11 @@
       <con:properties>
         <con:property>
           <con:name>Transaction_Closed</con:name>
-          <con:value>1000169465</con:value>
+          <con:value>1000170813</con:value>
         </con:property>
         <con:property>
           <con:name>Transaction_Blocked</con:name>
-          <con:value>1000169464</con:value>
+          <con:value>1000170812</con:value>
         </con:property>
         <con:property>
           <con:name>jobRunType</con:name>
@@ -35,7 +35,19 @@
         </con:property>
         <con:property>
           <con:name>POR1LastModifiedTime</con:name>
-          <con:value>1656585019</con:value>
+          <con:value>1657889149</con:value>
+        </con:property>
+        <con:property>
+          <con:name>POR1OutputFile</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>FTSLastModifiedDate</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>FTSResponseFile</con:name>
+          <con:value/>
         </con:property>
       </con:properties>
     </con:config>
@@ -43,53 +55,35 @@
   <con:testStep type="groovy" name="lowVolumeReservation" id="70d3722d-7f25-48b7-991b-3572cc865372">
     <con:settings/>
     <con:config>
-      <script>def strHost = context.expand( '${#Project#EBSHost}' )
-def strUsername = context.expand( '${#Project#UserName}' )
-def strPassword = context.expand( '${#Project#Password}' ) 
-def  intPort = context.expand( '${#Project#Port}' ) 
+      <script>connectToServer();
+public void connectToServer(){
+	def strHost = context.expand( '${#Project#EBSHost}');
+	def  intPort = context.expand( '${#Project#Port}');
+	def strUsername = context.expand( '${#Project#UserName}');
+	def strPassword = context.expand( '${#Project#Password}');
+	def date =  java.time.LocalDateTime.now();
+	def jobRunType = context.expand( '${Properties#jobRunType}').toUpperCase();
+	def processingLine = context.expand( '${Properties#processingLine}').toUpperCase();
+	def paymentStatus = context.expand( '${Properties#paymentStatus}').toUpperCase()
+	def bankID = context.expand( '${Properties#bankID}');
+	def env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase().toString().substring(2);
 
-def marketType = context.expand( '${Properties#marketType}' ) 
-marketType = marketType.toUpperCase()
-def jobRunType = context.expand( '${Properties#jobRunType}' )
-jobRunType = jobRunType.toUpperCase() 
-//jobrun= START_OF_DAY, NORMAL, NORMAL_END_OF_DAY, EXTRA_RUN_AFTER_NORMAL_END_OF_DAY
-def processingLine = context.expand( '${Properties#processingLine}' )
-processingLine = processingLine.toUpperCase() 
-//PROCESSING_LINE=INT_PAYMENT_TPS,SEPA_PAYMENT_TPS
-def paymentStatus = context.expand( '${Properties#paymentStatus}' )
-paymentStatus = paymentStatus.toUpperCase()
-def bankID = context.expand( '${Properties#bankID}' )
-
-String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase() 
-env = env.toString().substring(2)
-
-if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS"))
-assert false," Failed to conenct to linux server!!" 
-else  
-log.info "Connected to the server successfully!!" 
-log.info "Running the batch...." 
-
-def nextDate =  new Date() ; 
-nextDate =java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd')) 
-
-def runId = new Date() 
-
-runId=java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"))  
-
-
-String shParameter = "lowVolumeReservationLauncher.sh processLine=$processingLine  paymentStatuses=$paymentStatus releaseDate=${nextDate} jobRunType=$jobRunType bankIds=$bankID runId=$runId"
-
-String CommandOutPut = ServerConnect.execBatchCommand(env,"pin",shParameter)
-log.info "shParameter : "+shParameter
-log.info "CommandOutput returned-->" + CommandOutPut
-
-ServerConnect.closeConnection() 
-
-def porSuccessMessage1 = 'LOW_VOLUME_RESERVATION_JOB completed, nothing to do'
-def porSuccessMessage2 ='LOW_VOLUME_RESERVATION_JOB went OK' 
-assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut  
-String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10)
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime")</script>
+	if (!(ServerConnect.Connect(strHost ,strUsername, strPassword, Integer.parseInt(intPort)) == "PASS")) { assert false," Failed to conenct to linux server!!";} else
+	{	log.info "Connected to the server successfully!!  Running the batch.... : "+env+"__"+date;
+		def nextDate = date.format(java.time.format.DateTimeFormatter.ofPattern('yyyy/MM/dd'));
+		def runId = date.format(java.time.format.DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSSSSSSSS"));
+		String shParameter = "lowVolumeReservationLauncher.sh processLine=$processingLine  paymentStatuses=$paymentStatus releaseDate=${nextDate} jobRunType=$jobRunType bankIds=$bankID runId=$runId";
+		String CommandOutPut = ServerConnect.execBatchCommand(env,"pin",shParameter);
+		log.info "shParameter : "+shParameter;
+		log.info "CommandOutput returned-->" + CommandOutPut;
+		ServerConnect.closeConnection();
+		def porSuccessMessage1 = 'LOW_VOLUME_RESERVATION_JOB completed, nothing to do';
+		def porSuccessMessage2 ='LOW_VOLUME_RESERVATION_JOB went OK';
+		assert (CommandOutPut.trim() != "" &amp;&amp; (CommandOutPut.contains(porSuccessMessage1) ||  CommandOutPut.contains(porSuccessMessage2))), "CommandLine OutPut having error!!, Executed command :" + CommandOutPut;
+		String POR1LastModifiedTime = System.currentTimeMillis().toString().substring(0,10);
+		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastModifiedTime","$POR1LastModifiedTime");
+	}
+}</script>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="Transaction_Blocked" id="83f1807c-d9fd-4b33-8c46-827e0b9bf594">
@@ -102,7 +96,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel,T.Riskstatus, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid and transactionsid in ('${Properties#Transaction_Blocked}')</con:query>
+      <con:query>SELECT M.MESSAGEID, M.AGREEMENTID, M.MARKETTYPE,
+T.INSTRUCTEDAMOUNT,T.EQUIVALENTAMOUNT,T.FK_PAYMENTINFOID,
+T.TRANSACTIONSID,T.PAYMENTSTATUS,T.DEBETACCOUNTNO,
+T.RELEASEDATE,T.FK_PROCESSINGLINEID,T.REQUESTEDEXECUTIONDATE,
+T.BOOKINGLEVEL,T.RISKSTATUS,T.PEPROCESSINGLINE 
+FROM TRANSACTIONS T, MESSAGE M , PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID 
+AND P.PAYMENTINFOID = T.FK_PAYMENTINFOID 
+AND TRANSACTIONSID IN ('${Properties#Transaction_Blocked}')</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="cb7412fe-0f1b-4ec6-a982-beda6a0c0f88" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -293,7 +295,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${Properties#Transaction_Blocked}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA 
+WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID 
+AND SR.FK_TRANSACTIONID IN 
+'${Properties#Transaction_Blocked}' 
+ORDER BY SR.STATUSREASONID DESC</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="cda05de7-0f3f-4375-b34d-b5f4da2b43e4" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -523,7 +529,15 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>selecT M.MessageID, M.agreemenTid, M.MarkeTType,T.instructedamount,T.Equivalentamount , T.fk_paymenTinfoid, T.TransacTionsid, T.paymenTsTaTus, T.debeTaccounTno, T.releasedaTe,T.fk_processinglineid, T.requesTedexecuTiondaTe,T.Bookinglevel,T.riskstatus, T.PEprocessingline from TransacTions T, message M , paymenTinfo P where M.messageid = P.fk_messageid and P.PaymenTinfoid = T.fk_paymenTinfoid  and transactionsid in ('${Properties#Transaction_Closed}')</con:query>
+      <con:query>SELECT M.MESSAGEID, M.AGREEMENTID, M.MARKETTYPE,
+T.INSTRUCTEDAMOUNT,T.EQUIVALENTAMOUNT,T.FK_PAYMENTINFOID,
+T.TRANSACTIONSID,T.PAYMENTSTATUS,T.DEBETACCOUNTNO,
+T.RELEASEDATE,T.FK_PROCESSINGLINEID,T.REQUESTEDEXECUTIONDATE,
+T.BOOKINGLEVEL,T.RISKSTATUS,T.PEPROCESSINGLINE 
+FROM TRANSACTIONS T, MESSAGE M , PAYMENTINFO P 
+WHERE M.MESSAGEID = P.FK_MESSAGEID 
+AND P.PAYMENTINFOID = T.FK_PAYMENTINFOID  
+AND TRANSACTIONSID IN ('${Properties#Transaction_Closed}')</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="f23d14d4-a971-4f4e-b28e-e431e871f00e" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>
@@ -714,7 +728,11 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("POR1LastMo
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
-      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID and sr.fk_transactionid in '${Properties#Transaction_Closed}' ORDER BY SR.STATUSREASONID DESC</con:query>
+      <con:query>SELECT * FROM STATUSREASON SR, STATUSREASON_ADDT_INF SA 
+WHERE SR.STATUSREASONID = SA.FK_STATUSREASONID 
+AND SR.FK_TRANSACTIONID IN 
+'${Properties#Transaction_Closed}' 
+ORDER BY SR.STATUSREASONID DESC</con:query>
       <con:assertion type="DataAndMetadataAssertion" id="7a0846f7-495b-425b-82ea-9659b31a04a4" name="Smart Assertion">
         <con:configuration xsi:type="con:DataAndMetadataAssertion">
           <con:mode>Received Data</con:mode>

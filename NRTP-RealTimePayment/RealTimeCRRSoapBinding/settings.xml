@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:interface xsi:type="con:WsdlInterface" id="1d9ba000-deb1-4b02-93ce-3375f0772ac9" wsaVersion="NONE" name="RealTimeCRRSoapBinding" type="wsdl" bindingName="{http://realtime247.eu/realtime247/crr}RealTimeCRRSoapBinding" soapVersion="1_1" anonymous="optional" definition="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeCRR?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="1d9ba000-deb1-4b02-93ce-3375f0772ac9fileName">RealTimeCRRSoapBinding</con:setting>
+  </con:settings>
+  <con:definitionCache type="TEXT" rootPart="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeCRR?wsdl">
+    <con:part>
+      <con:url>https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeCRR?wsdl</con:url>
+      <con:content><![CDATA[<wsdl:definitions name="RealTimeCRR" targetNamespace="http://realtime247.eu/realtime247/crr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://realtime247.eu/realtime247/crr" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:eu:nets:realtime247:crr:core.2015.10.14">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:eu:nets:realtime247:crr:core.2015.10.14" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:eu:nets:realtime247:crr:core.2015.10.14">
+      <xs:element name="ReportFault">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="ReasonCode" type="xs:string"/>
+            <xs:element minOccurs="0" name="OriginalMessage" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SendCycleReconciliationReportRequest" type="tns:CycleReconciliationReport"/>
+      <xs:element name="SendCycleReconciliationReportResponse" type="tns:CycleReconciliationReportReceipt"/>
+      <xs:complexType name="CycleReconciliationReport">
+        <xs:sequence>
+          <xs:element name="MessageId" type="xs:string"/>
+          <xs:element name="SendingId" type="xs:string"/>
+          <xs:element name="ReceivingId" type="xs:string"/>
+          <xs:element name="ServiceId" type="xs:string"/>
+          <xs:element name="TestCode" type="xs:string"/>
+          <xs:element name="ClearingDate" type="xs:date"/>
+          <xs:element minOccurs="0" name="CycleName" type="xs:string"/>
+          <xs:element name="AccumulatedNumberOfPositions" type="xs:integer"/>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="ReportForFinancialInstitution" type="tns:ReportForFinancialInstitution"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ActiveCurrencyAndAmount">
+        <xs:simpleContent>
+          <xs:extension base="xs:decimal">
+            <xs:attribute name="Ccy" type="xs:string" use="required"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="ReportForFinancialInstitution">
+        <xs:sequence>
+          <xs:element name="AccumulatedNumberOfPositions" type="xs:integer"/>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+          <xs:element minOccurs="0" name="AsDebtorAgent" type="tns:ReportForDebtorAgent"/>
+          <xs:element minOccurs="0" name="AsCreditorAgent" type="tns:ReportForCreditorAgent"/>
+        </xs:sequence>
+        <xs:attribute name="financialInstitutionId" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="tns:ReportType"/>
+      </xs:complexType>
+      <xs:complexType name="ReportForDebtorAgent">
+        <xs:sequence>
+          <xs:element name="NumberOfPositions" type="xs:integer"/>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="ReportForDebtorAgentCounterParty" type="tns:ReportForDebtorAgentCounterParty"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReportForDebtorAgentCounterParty">
+        <xs:sequence>
+          <xs:element name="DirectClearingParticipantId" type="xs:string"/>
+          <xs:element name="FinInstId" type="xs:string"/>
+          <xs:element name="Pacs004Total" type="tns:TransactionTotal"/>
+          <xs:element name="Pacs008Total" type="tns:TransactionTotal"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TransactionTotal">
+        <xs:sequence>
+          <xs:element name="SettledTotal" type="tns:AccumulatedTotal"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AccumulatedTotal">
+        <xs:sequence>
+          <xs:element name="TotalNumber" type="xs:integer"/>
+          <xs:element name="TotalAmount" type="tns:ActiveCurrencyAndAmount"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReportForCreditorAgent">
+        <xs:sequence>
+          <xs:element name="NumberOfPositions" type="xs:integer"/>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="ReportForCreditorAgentCounterParty" type="tns:ReportForCreditorAgentCounterParty"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReportForCreditorAgentCounterParty">
+        <xs:sequence>
+          <xs:element name="DirectClearingParticipantId" type="xs:string"/>
+          <xs:element name="FinInstId" type="xs:string"/>
+          <xs:element name="Pacs004Total" type="tns:TransactionTotal"/>
+          <xs:element name="Pacs008Total" type="tns:TransactionTotal"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CycleReconciliationReportReceipt">
+        <xs:sequence>
+          <xs:element name="OriginalMessageId" type="xs:string"/>
+          <xs:element name="SendingId" type="xs:string"/>
+          <xs:element name="ReceivingId" type="xs:string"/>
+          <xs:element name="TestCode" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="TestCodeType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Test"/>
+          <xs:enumeration value="Prod"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ReportType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="INST"/>
+          <xs:enumeration value="BULK"/>
+          <xs:enumeration value="EBA"/>
+          <xs:enumeration value="TIPS"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="FailureReasonCodeType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="InvalidContent"/>
+          <xs:enumeration value="InternalError"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="SendCycleReconciliationReport">
+    <wsdl:part element="ns1:SendCycleReconciliationReportRequest" name="sendCycleReconciliationReportRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SendCycleReconciliationReportResponse">
+    <wsdl:part element="ns1:SendCycleReconciliationReportResponse" name="sendCycleReconciliationReportResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="RealTimeCRRPortType">
+    <wsdl:operation name="SendCycleReconciliationReport">
+      <wsdl:input message="tns:SendCycleReconciliationReport" name="SendCycleReconciliationReport"></wsdl:input>
+      <wsdl:output message="tns:SendCycleReconciliationReportResponse" name="SendCycleReconciliationReportResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RealTimeCRRSoapBinding" type="tns:RealTimeCRRPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SendCycleReconciliationReport">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="SendCycleReconciliationReport">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SendCycleReconciliationReportResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RealTimeCRR">
+    <wsdl:port binding="tns:RealTimeCRRSoapBinding" name="RealTimeCRRPortType">
+      <soap:address location="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeCRR"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content>
+      <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+    </con:part>
+  </con:definitionCache>
+  <con:endpoints>
+    <con:endpoint>https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeCRR</con:endpoint>
+  </con:endpoints>
+  <con:environmentSpec>
+    <con:entry environmentId="91fc5bbb-38af-4ede-9346-db374adc1e5a">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:interface>

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="d8d82cbf-3384-43f6-90af-f9d2543b72c1" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="NIC_CRR_REPORTS" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="91e2281c-2dda-4c8a-ba73-e4ff0a0f7910fileName">REPORTS</con:setting>
+    <con:setting id="4b24458a-26f0-4275-8d1c-dbf3ff5eb8e0fileName">NIC_CRR_REPORTS</con:setting>
+    <con:setting id="d8d82cbf-3384-43f6-90af-f9d2543b72c1fileName">NIC_CRR_REPORTS</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="c812d65c-df21-451e-a457-66c1231671bc">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Bic_1802</con:name>
+          <con:value>SHEDNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_2544</con:name>
+          <con:value>VEFONO21</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_3201</con:name>
+          <con:value>SPRONO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_3625</con:name>
+          <con:value>SPAVNOBB</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_4201</con:name>
+          <con:value>SPTRNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_9021</con:name>
+          <con:value>BNPANOK0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="a1519533-2550-4206-8a6e-e06d5529a858" name="CRR_REPORTS">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>RealTimeCRRSoapBinding</con:interface>
+      <con:operation>SendCycleReconciliationReport</con:operation>
+      <con:request name="CRR_REPORTS" id="7f16b76f-9b18-4695-a8b7-fd76fbcb306a">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeCRR</con:endpoint>
+        <con:request><![CDATA[<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:CRR="urn:eu:nets:realtime247:crr:core.2015.10.14">
+   <SOAP-ENV:Body>
+      <CRR:SendCycleReconciliationReportRequest>
+         <CRR:MessageId>${Properties#LogRef}</CRR:MessageId>
+         <CRR:SendingId>NETS-RTC</CRR:SendingId>
+         <CRR:ReceivingId>${Properties#Bic_1802}</CRR:ReceivingId>
+         <CRR:ServiceId>RTC</CRR:ServiceId>
+         <CRR:TestCode>Test</CRR:TestCode>
+         <CRR:ClearingDate>${Properties#ReqExnDate}</CRR:ClearingDate>
+         <CRR:CycleName>NR-1135</CRR:CycleName>
+         <CRR:AccumulatedNumberOfPositions>1</CRR:AccumulatedNumberOfPositions>
+         <CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+         <CRR:ReportForFinancialInstitution financialInstitutionId="${Properties#Bic_1802}" type="INST">
+            <CRR:AccumulatedNumberOfPositions>2</CRR:AccumulatedNumberOfPositions>
+            <CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+            <CRR:AsDebtorAgent>
+               <CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+               <CRR:AccumulatedAmountSettled Ccy="NOK">-1000.00</CRR:AccumulatedAmountSettled>
+               <CRR:ReportForDebtorAgentCounterParty>
+                  <CRR:DirectClearingParticipantId>${Properties#Bic_3201}</CRR:DirectClearingParticipantId>
+                  <CRR:FinInstId>SR-BANK</CRR:FinInstId>
+                  <CRR:Pacs004Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>0</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs004Total>
+                  <CRR:Pacs008Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>1</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">-1000.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs008Total>
+               </CRR:ReportForDebtorAgentCounterParty>
+            </CRR:AsDebtorAgent>
+            <CRR:AsCreditorAgent>
+               <CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+               <CRR:AccumulatedAmountSettled Ccy="NOK">1000.00</CRR:AccumulatedAmountSettled>
+               <CRR:ReportForCreditorAgentCounterParty>
+                  <CRR:DirectClearingParticipantId>${Properties#Bic_4201}</CRR:DirectClearingParticipantId>
+                  <CRR:FinInstId>${Properties#Bic_4201}</CRR:FinInstId>
+                  <CRR:Pacs004Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>0</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs004Total>
+                  <CRR:Pacs008Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>1</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">1000.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs008Total>
+               </CRR:ReportForCreditorAgentCounterParty>
+            </CRR:AsCreditorAgent>
+         </CRR:ReportForFinancialInstitution>
+      </CRR:SendCycleReconciliationReportRequest>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="5bbacadb-b355-4e4d-804b-153ceca73c23" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+              <con:element>OriginalMessageId</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>50722113758</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+              <con:element>SendingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${CRR_REPORTS#RawRequest#declare namespace CRR='urn:eu:nets:realtime247:crr:core.2015.10.14'; //CRR:SendCycleReconciliationReportRequest[1]/CRR:ReceivingId[1]}</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:ReceivingId[1]</con:path>
+              <con:element>ReceivingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NETS-RTC</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:TestCode[1]</con:path>
+              <con:element>TestCode</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Test</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendCycleReconciliationReportResponse xmlns="urn:eu:nets:realtime247:crr:core.2015.10.14">
+         <OriginalMessageId>50722113758</OriginalMessageId>
+         <SendingId>SHEDNO22</SendingId>
+         <ReceivingId>NETS-RTC</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendCycleReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="http://realtime247.eu/realtime247/crr/RealTimeCRRPortType/SendCycleReconciliationReport" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="bbba166b-332f-4c6e-a577-cda908ad35ba" name="CRR_REPORTS_BNPP">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>RealTimeCRRSoapBinding</con:interface>
+      <con:operation>SendCycleReconciliationReport</con:operation>
+      <con:request name="CRR_REPORTS_BNPP" id="7f16b76f-9b18-4695-a8b7-fd76fbcb306a">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeCRR</con:endpoint>
+        <con:request><![CDATA[<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:CRR="urn:eu:nets:realtime247:crr:core.2015.10.14">
+   <SOAP-ENV:Body>
+      <CRR:SendCycleReconciliationReportRequest>
+         <CRR:MessageId>${Properties#LogRef}</CRR:MessageId>
+         <CRR:SendingId>NETS-RTC</CRR:SendingId>
+         <CRR:ReceivingId>${Properties#Bic_9021}</CRR:ReceivingId>
+         <CRR:ServiceId>RTC</CRR:ServiceId>
+         <CRR:TestCode>Test</CRR:TestCode>
+         <CRR:ClearingDate>${Properties#ReqExnDate}</CRR:ClearingDate>
+         <CRR:CycleName>NR-1135</CRR:CycleName>
+         <CRR:AccumulatedNumberOfPositions>1</CRR:AccumulatedNumberOfPositions>
+         <CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+         <CRR:ReportForFinancialInstitution financialInstitutionId="${Properties#Bic_1802}" type="INST">
+            <CRR:AccumulatedNumberOfPositions>2</CRR:AccumulatedNumberOfPositions>
+            <CRR:AccumulatedAmountSettled Ccy="NOK">0.00</CRR:AccumulatedAmountSettled>
+            <CRR:AsDebtorAgent>
+               <CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+               <CRR:AccumulatedAmountSettled Ccy="NOK">-1000.00</CRR:AccumulatedAmountSettled>
+               <CRR:ReportForDebtorAgentCounterParty>
+                  <CRR:DirectClearingParticipantId>${Properties#Bic_3201}</CRR:DirectClearingParticipantId>
+                  <CRR:FinInstId>${Properties#Bic_3201}</CRR:FinInstId>
+                  <CRR:Pacs004Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>0</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs004Total>
+                  <CRR:Pacs008Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>1</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">-1000.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs008Total>
+               </CRR:ReportForDebtorAgentCounterParty>
+            </CRR:AsDebtorAgent>
+            <CRR:AsCreditorAgent>
+               <CRR:NumberOfPositions>1</CRR:NumberOfPositions>
+               <CRR:AccumulatedAmountSettled Ccy="NOK">1000.00</CRR:AccumulatedAmountSettled>
+               <CRR:ReportForCreditorAgentCounterParty>
+                  <CRR:DirectClearingParticipantId>${Properties#Bic_4201}</CRR:DirectClearingParticipantId>
+                  <CRR:FinInstId>${Properties#Bic_4201}</CRR:FinInstId>
+                  <CRR:Pacs004Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>0</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">0.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs004Total>
+                  <CRR:Pacs008Total>
+                     <CRR:SettledTotal>
+                        <CRR:TotalNumber>1</CRR:TotalNumber>
+                        <CRR:TotalAmount Ccy="NOK">1000.00</CRR:TotalAmount>
+                     </CRR:SettledTotal>
+                  </CRR:Pacs008Total>
+               </CRR:ReportForCreditorAgentCounterParty>
+            </CRR:AsCreditorAgent>
+         </CRR:ReportForFinancialInstitution>
+      </CRR:SendCycleReconciliationReportRequest>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="5bbacadb-b355-4e4d-804b-153ceca73c23" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+              <con:element>OriginalMessageId</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>50722113758</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+              <con:element>SendingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${CRR_REPORTS_BNPP#RawRequest#declare namespace CRR='urn:eu:nets:realtime247:crr:core.2015.10.14'; //CRR:SendCycleReconciliationReportRequest[1]/CRR:ReceivingId[1]}</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:ReceivingId[1]</con:path>
+              <con:element>ReceivingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>NETS-RTC</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:crr:core.2015.10.14';
+//ns1:SendCycleReconciliationReportResponse[1]/ns1:TestCode[1]</con:path>
+              <con:element>TestCode</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>Test</con:expectedValue>
+              <con:caseSensitive>false</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendCycleReconciliationReportResponse xmlns="urn:eu:nets:realtime247:crr:core.2015.10.14">
+         <OriginalMessageId>50722113758</OriginalMessageId>
+         <SendingId>SHEDNO22</SendingId>
+         <ReceivingId>NETS-RTC</ReceivingId>
+         <TestCode>Test</TestCode>
+      </SendCycleReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="http://realtime247.eu/realtime247/crr/RealTimeCRRPortType/SendCycleReconciliationReport" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

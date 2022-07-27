@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="fa48a90d-aa54-40ce-a191-19cd35d219fb" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="NIC_TRR_REPORTS" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="fa48a90d-aa54-40ce-a191-19cd35d219fbfileName">NIC_TRR_REPORTS</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="b1e5260c-dca4-444f-a282-f0785b8948b6">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Bic_4201</con:name>
+          <con:value>SPTRNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_3625</con:name>
+          <con:value>SPAVNOBB</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_2544</con:name>
+          <con:value>VEFONO21</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_1802</con:name>
+          <con:value>SHEDNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_9021</con:name>
+          <con:value>BNPANOK0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Path</con:name>
+          <con:value>C:\GITHUB_REPOSITORY\pm-regression-valuechain\NRTP_RealTimePayment\data\</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="84a7516b-9331-4755-9015-5f0d9c7ae105" name="TRR_REPORTS">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>RealTimeTRRSoapBinding</con:interface>
+      <con:operation>SendTransactionReconciliationReport</con:operation>
+      <con:request name="TRR_REPORTS" id="5a2d6a35-1d52-44ff-a9fc-d6d8ed0472f5">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="WsdlSettings@enable-mtom">true</con:setting>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeTRR</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:eu:nets:realtime247:trr:core.2015.10.14">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:SendTransactionReconciliationReportRequest>
+         <urn:MessageId>${Properties#LogRef}</urn:MessageId>
+         <urn:FinInstId>${Properties#Bic_4201}</urn:FinInstId>
+         <urn:trr-file>cid:TRR_SPTRNO20_04072022.zip</urn:trr-file>
+      </urn:SendTransactionReconciliationReportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="2252a493-71a9-41b1-899c-006c99b86491" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+              <con:element>OriginalMessageId</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>50722115150</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+              <con:element>SendingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${TRR_REPORTS#RawRequest#declare namespace urn='urn:eu:nets:realtime247:trr:core.2015.10.14'; //urn:SendTransactionReconciliationReportRequest[1]/urn:FinInstId[1]}</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendTransactionReconciliationReportResponse xmlns="urn:eu:nets:realtime247:trr:core.2015.10.14" xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+         <OriginalMessageId>50722115150</OriginalMessageId>
+         <SendingId>SPTRNO22</SendingId>
+      </SendTransactionReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:attachment>
+          <con:name>TRR_SPTRNO20_04072022.zip</con:name>
+          <con:contentType>application/zip</con:contentType>
+          <con:contentId>TRR_SPTRNO20_04072022.zip</con:contentId>
+          <con:url>${Properties#Path}TRR_SPTRNO20_04072022.zip</con:url>
+          <con:id>e2568126-6c4d-4b52-83ba-414f79e8e62d</con:id>
+        </con:attachment>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="http://realtime247.eu/realtime247/trr/RealTimeTRRPortType/SendTransactionReconciliationReport" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="39e701a7-852d-457c-905d-d0d87c1ba6d8" name="TRR_REPORTS_BNPP">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>RealTimeTRRSoapBinding</con:interface>
+      <con:operation>SendTransactionReconciliationReport</con:operation>
+      <con:request name="TRR_REPORTS_BNPP" id="5a2d6a35-1d52-44ff-a9fc-d6d8ed0472f5">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="WsdlSettings@enable-mtom">true</con:setting>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">false</con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeTRR</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:eu:nets:realtime247:trr:core.2015.10.14">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:SendTransactionReconciliationReportRequest>
+         <urn:MessageId>${Properties#LogRef}</urn:MessageId>
+         <urn:FinInstId>${Properties#Bic_9021}</urn:FinInstId>
+         <urn:trr-file>cid:TRR_BNPANOK0_29062022.zip</urn:trr-file>
+      </urn:SendTransactionReconciliationReportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="07d9639a-fea0-4274-af31-b85d02b8f07d" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+              <con:element>OriginalMessageId</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>50722115153</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+              <con:element>SendingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${TRR_REPORTS_BNPP#RawRequest#declare namespace urn='urn:eu:nets:realtime247:trr:core.2015.10.14'; //urn:SendTransactionReconciliationReportRequest[1]/urn:FinInstId[1]}</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendTransactionReconciliationReportResponse xmlns="urn:eu:nets:realtime247:trr:core.2015.10.14" xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+         <OriginalMessageId>50722115153</OriginalMessageId>
+         <SendingId>BNPANOK0</SendingId>
+      </SendTransactionReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:attachment>
+          <con:name>TRR_BNPANOK0_29062022.zip</con:name>
+          <con:contentType>application/zip</con:contentType>
+          <con:contentId>TRR_BNPANOK0_29062022.zip</con:contentId>
+          <con:url>${Properties#Path}TRR_BNPANOK0_29062022.zip</con:url>
+          <con:id>bd301877-336f-4dae-a390-aeb8379743f7</con:id>
+        </con:attachment>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="http://realtime247.eu/realtime247/trr/RealTimeTRRPortType/SendTransactionReconciliationReport" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

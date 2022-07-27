@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:interface xsi:type="con:WsdlInterface" id="46ce595d-f47c-48d0-90ff-b21f3030f366" wsaVersion="NONE" name="RealTimeDSRSoapBinding" type="wsdl" bindingName="{http://realtime247.eu/realtime247/dsr}RealTimeDSRSoapBinding" soapVersion="1_1" anonymous="optional" definition="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeDSR?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="46ce595d-f47c-48d0-90ff-b21f3030f366fileName">RealTimeDSRSoapBinding</con:setting>
+  </con:settings>
+  <con:definitionCache type="TEXT" rootPart="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeDSR?wsdl">
+    <con:part>
+      <con:url>https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeDSR?wsdl</con:url>
+      <con:content><![CDATA[<wsdl:definitions name="RealTimeDSR" targetNamespace="http://realtime247.eu/realtime247/dsr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://realtime247.eu/realtime247/dsr" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:eu:nets:realtime247:dsr:real.2021.03.01" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:eu:nets:realtime247:dsr:real.2021.03.01">
+      <xs:element name="SendDirectSettlementReportRequest" type="tns:DirectSettlementReport"/>
+      <xs:element name="SendDirectSettlementReportResponse" type="tns:DirectSettlementReportReceipt"/>
+      <xs:complexType name="DirectSettlementReport">
+        <xs:sequence>
+          <xs:element name="MessageId" type="xs:string"/>
+          <xs:element name="SendingId" type="xs:string"/>
+          <xs:element name="ReceivingId" type="xs:string"/>
+          <xs:element name="ServiceId" type="xs:string"/>
+          <xs:element name="TestCode" type="xs:string"/>
+          <xs:element name="ClearingDate" type="xs:date"/>
+          <xs:element minOccurs="0" name="CycleName" type="xs:string"/>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="ReportForFinancialInstitution" type="tns:ReportForFinancialInstitution"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ActiveCurrencyAndAmount">
+        <xs:simpleContent>
+          <xs:extension base="xs:decimal">
+            <xs:attribute name="Ccy" type="xs:string" use="required"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="ReportForFinancialInstitution">
+        <xs:sequence>
+          <xs:element name="AccumulatedAmountSettled" type="tns:ActiveCurrencyAndAmount"/>
+        </xs:sequence>
+        <xs:attribute name="financialInstitutionId" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="tns:ReportType"/>
+      </xs:complexType>
+      <xs:complexType name="DirectSettlementReportReceipt">
+        <xs:sequence>
+          <xs:element name="OriginalMessageId" type="xs:string"/>
+          <xs:element name="SendingId" type="xs:string"/>
+          <xs:element name="ReceivingId" type="xs:string"/>
+          <xs:element name="TestCode" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="TestCodeType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Test"/>
+          <xs:enumeration value="Prod"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ReportType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="INST"/>
+          <xs:enumeration value="BULK"/>
+          <xs:enumeration value="EBA"/>
+          <xs:enumeration value="TIPS"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="SendDirectSettlementReport">
+    <wsdl:part element="ns1:SendDirectSettlementReportRequest" name="sendDirectSettlementReportRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SendDirectSettlementReportResponse">
+    <wsdl:part element="ns1:SendDirectSettlementReportResponse" name="sendDirectSettlementReportResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="RealTimeDSRPortType">
+    <wsdl:operation name="SendDirectSettlementReport">
+      <wsdl:input message="tns:SendDirectSettlementReport" name="SendDirectSettlementReport"></wsdl:input>
+      <wsdl:output message="tns:SendDirectSettlementReportResponse" name="SendDirectSettlementReportResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RealTimeDSRSoapBinding" type="tns:RealTimeDSRPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SendDirectSettlementReport">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="SendDirectSettlementReport">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SendDirectSettlementReportResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RealTimeDSR">
+    <wsdl:port binding="tns:RealTimeDSRSoapBinding" name="RealTimeDSRPortType">
+      <soap:address location="https://ebs-nic-srv-daemon-s1.apps.os-global.finods.com/nic/services/RealTimeDSR"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content>
+      <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+    </con:part>
+  </con:definitionCache>
+  <con:endpoints>
+    <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeDSR</con:endpoint>
+  </con:endpoints>
+</con:interface>

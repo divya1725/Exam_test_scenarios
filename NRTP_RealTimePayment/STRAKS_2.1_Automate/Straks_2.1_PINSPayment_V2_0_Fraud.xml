@@ -3,16 +3,6 @@
   <con:settings>
     <con:setting id="4ee13b79-3028-44ee-a246-666e614db59cfileName">Straks_2.1_PINSPayment_V2_0_Fraud</con:setting>
   </con:settings>
-  <con:testStep type="manualTestStep" name="PINSPayment_V2_0" id="e2aefd74-5994-4d55-85ca-246a0f6f4a27" disabled="true">
-    <con:description>This test case perform below operations
-	Take test data from V_AUTH_USERINFO.
-	Perform Straks 2.1 Payment CREATE using PINSPayment_V2_0.
-	Verify Payment is not created and stopped because of FRAUD in RBS</con:description>
-    <con:settings/>
-    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:expectedResult/>
-    </con:config>
-  </con:testStep>
   <con:testStep type="properties" name="Properties" id="90344134-31c4-49da-bda6-63ec3e2cb20b">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -106,104 +96,6 @@
           <con:value>true</con:value>
         </con:property>
       </con:properties>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="jdbc" name="PWH V_AUTH_USERINFO_NOK" id="c0e3d726-dd8f-4507-a9bf-a11860493279" disabled="true">
-    <con:settings>
-      <con:setting id="prettyPrintResponse">true</con:setting>
-    </con:settings>
-    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
-      <con:password/>
-      <con:connectionProperties/>
-      <con:query>SELECT USERID,ACCOUNTNUMBER,ACCOUNTTYPENAME,
-CURRENCYCODE,ACCOUNTROLENAME FROM V_AUTH_USERINFO WHERE
-BANKORGID IN ('${Properties#orgid}') AND MARKETTYPE='PM'
-AND CHANNEL = '${Properties#PaymentChannel}' AND
-ACCOUNTROLENAME IN ('Register') FETCH FIRST 1 ROWS ONLY</con:query>
-      <con:assertion type="JDBC Status" id="266efb75-b6f0-4041-abb8-b71379cf3d0a" name="JDBC Status"/>
-      <con:assertion type="DataAndMetadataAssertion" id="9c8147b5-ba49-4fd1-9e88-7d5fff08e637" name="Smart Assertion">
-        <con:configuration xsi:type="con:DataAndMetadataAssertion">
-          <con:mode>Received Data</con:mode>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/@fetchSize</con:path>
-            <con:element>@fetchSize</con:element>
-            <con:operatorId>8</con:operatorId>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>true</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/@rowNumber</con:path>
-            <con:element>@rowNumber</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>true</con:enabled>
-            <con:expectedValue>1</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/USERID[1]</con:path>
-            <con:element>USERID</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>19054210828</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]</con:path>
-            <con:element>ACCOUNTNUMBER</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>42024493606</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTTYPENAME[1]</con:path>
-            <con:element>ACCOUNTTYPENAME</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>CoreAccount</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]</con:path>
-            <con:element>CURRENCYCODE</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>NOK</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:elements>
-            <con:path>//Results[1]/ResultSet[1]/Row[1]/ACCOUNTROLENAME[1]</con:path>
-            <con:element>ACCOUNTROLENAME</con:element>
-            <con:operatorId>1</con:operatorId>
-            <con:enabled>false</con:enabled>
-            <con:expectedValue>Register</con:expectedValue>
-            <con:caseSensitive>false</con:caseSensitive>
-            <con:numberType>false</con:numberType>
-          </con:elements>
-          <con:originalMessage><![CDATA[<Results>
-   <ResultSet fetchSize="10">
-      <Row rowNumber="1">
-         <USERID>19054210828</USERID>
-         <ACCOUNTNUMBER>42024493606</ACCOUNTNUMBER>
-         <ACCOUNTTYPENAME>CoreAccount</ACCOUNTTYPENAME>
-         <CURRENCYCODE>NOK</CURRENCYCODE>
-         <ACCOUNTROLENAME>Register</ACCOUNTROLENAME>
-      </Row>
-   </ResultSet>
-</Results>]]></con:originalMessage>
-        </con:configuration>
-      </con:assertion>
-      <con:properties/>
     </con:config>
   </con:testStep>
   <con:testStep type="request" id="2739422b-6cfd-4bfb-bfe5-86060a2cb9c2" name="PAYMENT_CREATE_PFIP">
@@ -1701,7 +1593,7 @@ FROM TRANSACTIONS WHERE TRANSACTIONSID = '${PAYMENT_CREATE_EFIP#Response#declare
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:driver>oracle.jdbc.driver.OracleDriver - JDBCDriver</con:driver>
       <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
       <con:password/>
       <con:connectionProperties/>

@@ -5,11 +5,6 @@
     <con:setting id="a0486491-578d-49a8-a8ce-e4e066aa4fc6fileName">TransferSettlementBatchValidation</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="manualTestStep" name="ReadMe" id="699a7a10-95d1-423f-b1f3-6adb48d9cb45" disabled="true">
-    <con:description>Make sure that  HST_TRANSACTIONS table has pastdate data(BM &amp; EVRYCPS &amp; COMP) with additional service.</con:description>
-    <con:settings/>
-    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
-  </con:testStep>
   <con:testStep type="properties" name="PreCondition" id="4ae066e1-ea93-41df-9af5-c8c75f310a4a">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -40,7 +35,15 @@
         </con:property>
         <con:property>
           <con:name>TransferSettlement_Log</con:name>
-          <con:value/>
+          <con:value><![CDATA[<settlement>
+        <transactionId>261534018</transactionId>
+        <bookingDate>2022-07-26+02:00</bookingDate>
+        <agreementId>917045607</agreementId>
+        <debitAccount>42022456746</debitAccount>
+        <IPC>PAYCTDOMOUPKID</IPC>
+        <originalFormat>CLGE</originalFormat>
+        <settlementReturnedDate>2022-07-26+02:00</settlementReturnedDate>
+    </settlement>]]></con:value>
         </con:property>
         <con:property>
           <con:name>DueDate</con:name>
@@ -60,7 +63,7 @@
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>select HT.TRANSACTIONSID,HT.PAYMENTTYPE,HT.PAYMENTSTATUS,M.SOURCEAPPLICATION,M.MARKETTYPE,HT.ISPC,HT.INITIATORBANKID,HT.RELEASEDATE,HA.NAME as ADDITIONALSERVICE,HA.CHARGEAMT, HA.ISPC as ADDSERVICEISPC
@@ -241,7 +244,7 @@ testRunner.testCase.testSteps['PreCondition'].setPropertyValue('TransferSettleme
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDB</con:dbConnectionName>
       <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:pwhdata/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
       <con:password>sdfs</con:password>
       <con:connectionProperties/>
       <con:query>SELECT T.TRANSACTIONSID, HS.BOOKINGDATE,M.AGREEMENTID,T.DEBETACCOUNTNO,T.ISPC,M.ORIGINALFORMAT,HS.SETTLEMENTRETURNEDDATE 
@@ -375,6 +378,11 @@ assert settlementReturnedDate == ExpectedSettlementReturnedDate, "settlementRetu
       </con:assertion>
       <con:properties/>
     </con:config>
+  </con:testStep>
+  <con:testStep type="manualTestStep" name="ReadMe" id="699a7a10-95d1-423f-b1f3-6adb48d9cb45" disabled="true">
+    <con:description>Make sure that  HST_TRANSACTIONS table has pastdate data(BM &amp; EVRYCPS &amp; COMP) with additional service.</con:description>
+    <con:settings/>
+    <con:config xsi:type="con:ManualTestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
   </con:testStep>
   <con:setupScript>assert (testCase.testSuite.getPropertyValue("TestSuiteResult") != "FAIL")
 testRunner.testCase.testSteps['PreCondition'].setPropertyValue('TransferSettlement_Log','')</con:setupScript>

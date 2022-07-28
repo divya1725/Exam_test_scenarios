@@ -16,7 +16,9 @@ def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
 //def slackChannelName = "#slackmessgetest"
 def slackChannelName = "#regressiontestresults"
-def wsReportFolder = "https://jenkins.finods.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
+//def wsReportFolder = "https://jenkins.finods.com/job/payment/job/automation/job/pr-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/execution/node/3/ws/project/${params.SuiteName}/"
+def wsReportFolder = "https://jenkins.finods.com/job/payment/job/automation/job/pm-regression-valuechain/job/pm-regression-valuechain/job/${env.BRANCH_NAME}/${currentBuild.number}/artifact/project/${params.SuiteName}/"
+
 def PROJECT_FOLDER="/usr/local/SmartBear/project"
 
 pipeline {

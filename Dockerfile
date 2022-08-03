@@ -1,4 +1,5 @@
-FROM smartbear/ready-api-soapui-testrunner:latest
+FROM smartbear/ready-api-soapui-testrunner:3.30.0
+#FROM smartbear/ready-api-soapui-testrunner:latest
 RUN mkdir -p $PROJECT_FOLDER && \
    echo "$PROJECT_FOLDER"
 COPY ./ $PROJECT_FOLDER

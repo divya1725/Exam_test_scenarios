@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="cbd21126-3f5a-4b58-b2fc-912d62644dc6" created="3.40.2" activeEnvironment="G-D2" name="notify-subscribe" compositeProjectFormat="1.3" updated="3.40.2" encryptionMode="Not encrypted" resourceRoot="" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="cbd21126-3f5a-4b58-b2fc-912d62644dc6" created="3.40.2" activeEnvironment="G-D2" name="notify-subscribe" compositeProjectFormat="1.3" updated="3.40.2" encryptionMode="Not encrypted" resourceRoot="" scriptLibrary="C:\sunil\automation\regresssion\pm-regression-valuechain\notify-subscribe\scripts" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
     <con:setting id="cbd21126-3f5a-4b58-b2fc-912d62644dc6fileName">notify-subscribe</con:setting>
   </con:settings>
@@ -69,6 +69,11 @@
   <con:jmsConnectionContainer/>
   <con:oAuth2ProfileContainer/>
   <con:oAuth1ProfileContainer/>
+  <con:beforeRunScript>def objProject = context.getProject()
+def projPath = objProject.getPath()
+objProject.setScriptLibrary(projPath + File.separator + "scripts")
+log.info "Project setUp script!!"
+//try{System.sleep(15000)}catch(Exception e){}</con:beforeRunScript>
   <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
     <con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
 // This code is often used for adding custom authentication to ReadyAPI functional tests
@@ -88,40 +93,38 @@
   </con:eventHandlers>
   <con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep">
     <con:script>import com.eviware.soapui.impl.wsdl.teststeps.JdbcRequestTestStep
-	import com.eviware.soapui.impl.wsdl.teststeps.DebuggableWsdlGroovyScriptTestStep
-	import com.eviware.soapui.model.testsuite.TestStepResult
-	
-	def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
-	def date1 = CommonLibrary.getDate('yyyyMMdd')
-	
-	def objProject = testRunner.getTestCase().getTestSuite().getProject()
-	def projPath = objProject.getPath()
-	
-	filePath =projPath + File.separator + "results"
-	new File(filePath).mkdir()
-	filePathDate =filePath + File.separator +date1 + File.separator
-	new File(filePathDate).mkdir()
-	def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
-	filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
-//	filePathCaseName = filePathSuite + testRunner.testCase.name + File.separator
-	new File(filePathSuite).mkdir()
-	
-//	new File(filePathCaseName).mkdir()
-	 fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
-	 pw = new PrintWriter(fos)
-	 def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
-	def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
-	log.info "After step-->"+CurrentStep
-	testStepResult.writeTo(pw)
-	if ( testStep instanceof JdbcRequestTestStep )
-	{
-		def lineSeperator =  "\n ****************************************************************************\n " 
-		def rawRequest = new String(testStep.testRequest.response.getRawRequestData())
-		def res = 	lineSeperator + rawRequest+ lineSeperator +  testStep.testRequest.response.responseContent	
-		pw.write(res)
-	}
-	 pw.close()
-	 fos.close()</con:script>
+import com.eviware.soapui.impl.wsdl.teststeps.DebuggableWsdlGroovyScriptTestStep
+import com.eviware.soapui.model.testsuite.TestStepResult
+
+def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
+def date1 = CommonLibrary.getDate('yyyyMMdd')
+
+def objProject = testRunner.getTestCase().getTestSuite().getProject()
+def projPath = objProject.getPath()
+
+filePath =projPath + File.separator + "results"
+new File(filePath).mkdir()
+filePathDate =filePath + File.separator +date1 + File.separator
+new File(filePathDate).mkdir()
+def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
+filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
+new File(filePathSuite).mkdir()
+
+fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+pw = new PrintWriter(fos)
+def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
+def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)
+log.info "After step-->"+CurrentStep
+testStepResult.writeTo(pw)
+if ( testStep instanceof JdbcRequestTestStep )
+{
+	def lineSeperator =  "\n ****************************************************************************\n " 
+	def rawRequest = new String(testStep.testRequest.response.getRawRequestData())
+	def res = 	lineSeperator + rawRequest+ lineSeperator +  testStep.testRequest.response.responseContent	
+	pw.write(res)
+}
+pw.close()
+fos.close()</con:script>
   </con:eventHandlers>
   <con:environment id="2f5c07b7-b610-4516-bfea-e7cbc9fc4ec7" name="G-D2" index="0">
     <con:property>

@@ -1,6 +1,6 @@
 #!groovy
-def failed_email_to ='ullasa.srinivasa@tietoevry.com'
-def success_email_to ='ullasa.srinivasa@tietoevry.com'
+def failed_email_to ='ullasa.srinivasa1@tietoevry.com'
+def success_email_to ='ullasa.srinivasa1@tietoevry.com'
 
 def emailNotification( email) {
 	emailext to: email,
@@ -14,8 +14,8 @@ def emailNotification( email) {
 
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
-//def slackChannelName = "#slackmessgetest"
-def slackChannelName = "#regressiontestresults"
+def slackChannelName = "#slackmessgetest"
+//def slackChannelName = "#regressiontestresults"
 def wsReportFolder = "https://jenkins.finods.com/job/payment/job/automation/job/pm-regression-valuechain/job/pm-regression-valuechain/job/${env.BRANCH_NAME.replaceAll("/","%252F")}/${currentBuild.number}/artifact/project/${params.SuiteName}/"
 def PROJECT_FOLDER="/usr/local/SmartBear/project"
 
@@ -39,7 +39,7 @@ pipeline {
         )
 	   choice(
             name: 'SuiteName',
-            choices: ['','Bank Internal Comment','Pain002Codes','Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','BusinessEvntlog','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','WarningAndBlckng','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','VIP_Regre','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project','NRTP_RealTimePayment'],
+            choices: ['','Bank Internal Comment','Pain002Codes','Camt054_Advice','CAVA-PTI-readyapi-project','CPSEventLog','EditAndRetry','FilePaymentISPCAll','FiskPayments','BusinessEvntlog','ForeignAccountPayments','FraudPayments','FraudSecanaPayments','FraudRevalidationBatch','InspectionLogging','KYCandAmountLimitValidation','OnlineReservation','WarningAndBlckng','PaymentStatusUpdateAsyncApprove','PaymentStatusUpdate-Project','PAIN002-Advice','PaymentCreateAllISPC','PINActions','PINSearches','VIP_Regre','PINValueChainSuite','PORBatchSuite','PreDefined-Creditor','PreAppr-Pain001','PredefinedCreditorCAVA','PaymentCreateAllISPCSmokeTest','PreDefined-CreditorSmokeTest','PwhToRbsCopy','ReceiptOrder','Regulatory-Reporting','ReceiptOrderSmokeTest','SkkoPayments','StandingOrder','SO NewCore','STOLBatchExecution','SettlementChargesAndInterest','TransferSettlementBatch','VIP','EnvironmentTestProject','PRM_1881_ProductSubTypes','PaymentUtil','PRM-4601-Approve-Project','NRTP_RealTimePayment','notify-subscribe'],
             description: 'Select a project to run'
         )
 		booleanParam(

@@ -91,9 +91,8 @@
 	import com.eviware.soapui.impl.wsdl.teststeps.DebuggableWsdlGroovyScriptTestStep
 	import com.eviware.soapui.model.testsuite.TestStepResult
 	
-	def now = new Date()
-	def time =  java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmssSSS'))
-	def date1 = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd')) 
+	def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
+	def date1 = CommonLibrary.getDate('yyyyMMdd')
 	
 	def objProject = testRunner.getTestCase().getTestSuite().getProject()
 	def projPath = objProject.getPath()
@@ -104,10 +103,11 @@
 	new File(filePathDate).mkdir()
 	def suiteName = testRunner.testCase.testSuite.name.replaceAll("[^a-zA-Z0-9]+","");
 	filePathSuite = filePath + File.separator +date1 + File.separator + suiteName + File.separator 
-	filePathCaseName = filePathSuite + testRunner.testCase.name + File.separator
+//	filePathCaseName = filePathSuite + testRunner.testCase.name + File.separator
 	new File(filePathSuite).mkdir()
-	new File(filePathCaseName).mkdir()
-	 fos = new FileOutputStream(filePathCaseName + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
+	
+//	new File(filePathCaseName).mkdir()
+	 fos = new FileOutputStream(filePathSuite + testRunner.testCase.name + "_"+ testStepResult.testStep.label + time + '.txt', true)
 	 pw = new PrintWriter(fos)
 	 def CurrentStep = testRunner.testCase.getTestStepAt(context.getCurrentStepIndex()).getLabel()
 	def testStep =  testRunner.testCase.getTestStepByName(CurrentStep)

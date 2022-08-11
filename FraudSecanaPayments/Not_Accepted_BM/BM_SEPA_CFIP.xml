@@ -1,104 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:testCase id="3af62078-d8a9-4f31-bcd5-cc252a7946b6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BM_SEPA_CFIP" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+<con:testCase id="3af62078-d8a9-4f31-bcd5-cc252a7946b6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="BM_SEPA_CFIP" searchProperties="true" timeout="0" disabled="true" xmlns:con="http://eviware.com/soapui/config">
   <con:settings>
     <con:setting id="3af62078-d8a9-4f31-bcd5-cc252a7946b6fileName">BM_SEPA_CFIP</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="groovy" name="Groovy Script-FetchTestEnv" id="d83dc820-5550-42bf-b67d-ba869f70959b">
-    <con:settings/>
-    <con:config>
-      <script>import groovy.sql.Sql;
-
-identifyTestCase();
-//fetchDetails();
-//connectPwh("true");
-
-log.info "Test Data setting Done.!"
-
-public void connectPwh(status)
-{
-	resultSet = ""
-	currency = "NOK";
-	if(sepa) {
-		currency = "EUR"
-	}
-
-	query1 = "SELECT CUSTOMERID,ACCOUNTNUMBER,CURRENCY FROM V_AUTHORISATION WHERE ROLETYPE='EIER' AND LENGTH(CUSTOMERID) = '11' "
-	query2 = "AND CUSTBANKID = "+orgid+" AND CURRENCY = '"+currency+"'  AND CUSTOMERID NOT LIKE '%000%' "
-	query3 = "AND ROWNUM = 1"
-	sqlQuery = query1+query2+query3
-	
-	if (status == 'true')
-	{
-		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
-		resultSet		=	connection.rows(sqlQuery)
-		connection.close();
-	}
-	if (!resultSet.isEmpty())
-	{
-		customer_1	=	resultSet.CUSTOMERID[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		account_1	= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		currency_1	= 	resultSet.CURRENCY[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		userid_1		= 	customer_1;
-	
-		if(marketType == 'BM' &amp;&amp; customer_1.length() > 8)
-		{
-			userid_1	= 	(customer_1.substring(5) as int).toString().replaceAll("[^a-zA-Z0-9]+","")
-			testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid_1);
-		}
-		
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customer_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency_1);
-	}
-}
-
-public void identifyTestCase()
-{
-	testCaseName	=	context.getCurrentStep().getTestCase().getLabel();
-	testCaseName	= 	testCaseName.toLowerCase();
-	marketType	= null;
-	sepa = null;
-
-	if (testCaseName.contains("bm"))
-	{
-		marketType = "BM"
-		payChannel = "BES";
-	}
-	else if (testCaseName.contains("pm"))
-	{
-		marketType = "PM"
-		payChannel = "INT";
-	}
-
-	if (testCaseName.contains("sepa"))
-	{
-		sepa = true;
-	}
-}
-
-public void fetchDetails()
-{
-	orgid = context.expand( '${Properties#orgid}' );
-	envDetails		=	DetectTestEnvironment.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
-	orgidDetails	=	DetectTestEnvironment.getBankDetailsOf(orgid);
-
-	connect	=	envDetails[3];
-	pwhString = envDetails[4];
-	schema	=	"pwhdata"
-	paswd	=	"pwh"
-	
-	credentials = orgidDetails[2];
-	debtorAgent = orgidDetails[3];
-
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhString);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent",debtorAgent);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
-}</script>
-    </con:config>
-  </con:testStep>
   <con:testStep type="properties" name="Properties" id="6f38bfdd-38bd-4405-978f-d8fef925d474">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -538,6 +443,12 @@ declare namespace ns4='urn:pays.payment.edb.com:ws:paymentauthorization:v1_2';
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -1771,6 +1682,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -2158,6 +2075,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -2680,6 +2603,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
         <con:wsrmConfig version="1.2"/>
         <con:environmentSpec>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -3745,6 +3674,12 @@ declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -4814,6 +4749,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -5861,6 +5802,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -6918,6 +6865,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -7287,6 +7240,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -7297,8 +7256,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:driver>${#Project#JDBCDriver}</con:driver>
+      <con:connectionString>${#Project#PWHDbString}</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select TRANSACTIONSID,PAYMENTSTATUS,RISKSTATUS
@@ -8423,6 +8382,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -9689,6 +9654,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -10211,6 +10182,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -10372,6 +10349,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
     <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>

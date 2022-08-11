@@ -15,10 +15,49 @@ Users can also independently execute individual test cases with prior executing 
       <con:expectedResult/>
     </con:config>
   </con:testStep>
+  <con:testStep type="jdbc" name="UPDATE_BANK_TO_Straks-2.1" id="d0b8ae8d-246f-4a43-a048-3a2445502295">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWHDATA</con:dbConnectionName>
+      <con:driver>${#Project#JDBCDriver}</con:driver>
+      <con:connectionString>${#Project#PWHDbString}</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>UPDATE PRODUCT_FEATURE 
+SET PRODUCT = 'Straks-2.1' WHERE 
+INITIATORBANKID IN ('${Properties#orgid}')</con:query>
+      <con:storedProcedure>false</con:storedProcedure>
+      <con:assertion type="JDBC Status" id="266efb75-b6f0-4041-abb8-b71379cf3d0a" name="JDBC Status"/>
+      <con:assertion type="DataAndMetadataAssertion" id="9c8147b5-ba49-4fd1-9e88-7d5fff08e637" name="Smart Assertion">
+        <con:configuration xsi:type="con:DataAndMetadataAssertion">
+          <con:mode>Received Data</con:mode>
+          <con:elements>
+            <con:path>//Results[1]/UpdateCount[1]</con:path>
+            <con:element>UpdateCount</con:element>
+            <con:operatorId>1</con:operatorId>
+            <con:enabled>true</con:enabled>
+            <con:expectedValue>1</con:expectedValue>
+            <con:caseSensitive>false</con:caseSensitive>
+            <con:numberType>false</con:numberType>
+          </con:elements>
+          <con:originalMessage>&lt;Results>
+   &lt;UpdateCount>1&lt;/UpdateCount>
+&lt;/Results></con:originalMessage>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
   <con:testStep type="properties" name="Properties" id="2f17faa8-a4c5-4df5-bc34-c3ac3a44ac0c">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
+        <con:property>
+          <con:name>Test Data From</con:name>
+          <con:value>G-D2</con:value>
+        </con:property>
         <con:property>
           <con:name>orgid</con:name>
           <con:value>4201</con:value>
@@ -49,19 +88,19 @@ Users can also independently execute individual test cases with prior executing 
         </con:property>
         <con:property>
           <con:name>AgreementId</con:name>
-          <con:value>19060439004</con:value>
+          <con:value>01060425066</con:value>
         </con:property>
         <con:property>
           <con:name>Customerid</con:name>
-          <con:value>19060439004</con:value>
+          <con:value>01060425066</con:value>
         </con:property>
         <con:property>
           <con:name>Userid</con:name>
-          <con:value>19060439004</con:value>
+          <con:value>01060425066</con:value>
         </con:property>
         <con:property>
           <con:name>DebitAccount</con:name>
-          <con:value>44400268506</con:value>
+          <con:value>44510145787</con:value>
         </con:property>
         <con:property>
           <con:name>DebitAcntCcy</con:name>
@@ -110,7 +149,7 @@ Users can also independently execute individual test cases with prior executing 
       </con:properties>
     </con:config>
   </con:testStep>
-  <con:testStep type="jdbc" name="PWH V_AUTH_USERINFO_NOK" id="23d261a4-fa64-4f1e-9cab-fc5b3490829e">
+  <con:testStep type="jdbc" name="V_AUTH_USERINFO" id="23d261a4-fa64-4f1e-9cab-fc5b3490829e">
     <con:settings>
       <con:setting id="prettyPrintResponse">true</con:setting>
     </con:settings>
@@ -212,10 +251,10 @@ FETCH FIRST 1 ROWS ONLY</con:query>
   <con:testStep type="groovy" name="SET_TEST_DATA" id="f7e21a9b-fecb-42d7-add7-d928addcebc6">
     <con:settings/>
     <con:config>
-      <script>String userid = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/USERID[1]}' );
-String account = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' );
-String currency = context.expand( '${PWH V_AUTH_USERINFO_NOK#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' );
-
+      <script>String environment = context.testCase.testSuite.project.getActiveEnvironment().getName();
+String userid = context.expand( '${V_AUTH_USERINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/USERID[1]}' );
+String account = context.expand( '${V_AUTH_USERINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/ACCOUNTNUMBER[1]}' );
+String currency = context.expand( '${V_AUTH_USERINFO#ResponseAsXml#//Results[1]/ResultSet[1]/Row[1]/CURRENCYCODE[1]}' );
 userid= userid.toString().replaceAll("[^a-zA-Z0-9]+","");
 account= account.toString().replaceAll("[^a-zA-Z0-9]+","");
 currency= currency.toString().replaceAll("[^a-zA-Z0-9]+","");
@@ -225,8 +264,8 @@ testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Userid",us
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid);
 
 testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAccount",account);
-
-testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntCcy",currency);</script>
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntCcy",currency);
+testRunner.testCase.getTestStepByName("Properties").setPropertyValue("Test Data From",environment);</script>
     </con:config>
   </con:testStep>
   <con:properties/>

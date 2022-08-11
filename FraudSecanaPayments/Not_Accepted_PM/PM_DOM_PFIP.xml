@@ -4,194 +4,93 @@
     <con:setting id="bb4029af-231d-430d-a826-5f9fa69191b9fileName">PM_DOM_PFIP</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="groovy" name="Groovy Script-FetchTestEnv" id="565b74c1-7bde-4ac4-82e7-06addf3e8d40">
-    <con:settings/>
-    <con:config>
-      <script>import groovy.sql.Sql;
-
-identifyTestCase();
-//fetchDetails();
-//connectPwh("true");
-
-log.info "Test Data setting Done.!"
-
-public void connectPwh(status)
-{
-	resultSet = ""
-	currency = "NOK";
-	if(sepa) {
-		currency = "EUR"
-	}
-
-	query1 = " SELECT USERID, ACCOUNTNUMBER,CURRENCYCODE FROM V_AUTH_USERINFO WHERE LENGTH(USERID) = '11' AND ACCOUNTROLENAME = 'Register' "
-	query2 = " AND MARKETTYPE = '"+marketType+"' AND BANKORGID = "+orgid+" AND CURRENCYCODE = '"+currency+"' "
-	query3 = " AND ROWNUM = 1"
-	sqlQuery = query1+query2+query3
-	
-	if (status == 'true')
-	{
-		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
-		resultSet		=	connection.rows(sqlQuery)
-		connection.close();
-		log.info resultSet
-	}
-	if (!resultSet.isEmpty())
-	{
-		customer_1	=	resultSet.USERID[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		account_1		= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		currency_1	= 	resultSet.CURRENCYCODE[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		userid_1		= 	customer_1;
-	
-		if(marketType == 'BM' &amp;&amp; customer_1.length() > 8)
-		{
-			userid_1	= 	(customer_1.substring(5) as int).toString().replaceAll("[^a-zA-Z0-9]+","")
-			testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid_1);
-		}
-		
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customer_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency_1);
-	}
-}
-
-public void identifyTestCase()
-{
-	testCaseName	=	context.getCurrentStep().getTestCase().getLabel();
-	testCaseName	= 	testCaseName.toLowerCase();
-	marketType	= null;
-	sepa = null;
-
-	if (testCaseName.contains("bm"))
-	{
-		marketType = "BM"
-		payChannel = "BES";
-	}
-	else if (testCaseName.contains("pm"))
-	{
-		marketType = "PM"
-		payChannel = "INT";
-	}
-
-	if (testCaseName.contains("sepa"))
-	{
-		sepa = true;
-	}
-}
-
-public void fetchDetails()
-{
-	orgid = context.expand( '${Properties#orgid}' );
-	envDetails		=	DetectTestEnvironment.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
-	orgidDetails	=	DetectTestEnvironment.getBankDetailsOf(orgid);
-
-	connect	=	envDetails[3];
-	pwhString = envDetails[4];
-	schema	=	"pwhdata"
-	paswd	=	"pwh"
-	
-	credentials = orgidDetails[2];
-	debtorAgent = orgidDetails[3];
-
-	testRunner.testCase.testSuite.project.setPropertyValue("pwhConnectionString", pwhString)
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhString);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent",debtorAgent);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
-}</script>
-    </con:config>
-  </con:testStep>
   <con:testStep type="properties" name="Properties" id="7d63ee12-02c8-4ce4-bb53-0dfa3d0f4a23">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
         <con:property>
           <con:name>SourceApplication</con:name>
-          <con:value>EVRYINT</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SourceApplication}</con:value>
         </con:property>
         <con:property>
           <con:name>orgid</con:name>
-          <con:value>4201</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#orgid}</con:value>
         </con:property>
         <con:property>
           <con:name>credentials</con:name>
-          <con:value>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#credentials}</con:value>
         </con:property>
         <con:property>
           <con:name>PaymentChannel</con:name>
-          <con:value>INT</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#PaymentChannel}</con:value>
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>07089522735</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Customerid}</con:value>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
-          <con:value>07089522735</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Userid}</con:value>
         </con:property>
         <con:property>
           <con:name>debitAccount</con:name>
-          <con:value>42023706975</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebitAccount}</con:value>
         </con:property>
         <con:property>
           <con:name>DebitAcntccy</con:name>
-          <con:value>NOK</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebitAcntCcy}</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAgent</con:name>
-          <con:value>SPTRNO22XXX</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebtorAgentBic}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorAgent</con:name>
-          <con:value>SPTRNO22XXX</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditorAgent}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorCountry</con:name>
-          <con:value>NO</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditorCountry}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditAccount</con:name>
-          <con:value>42010255281</con:value>
-        </con:property>
-        <con:property>
-          <con:name>SelfService_Emp</con:name>
-          <con:value>false</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditAccount}</con:value>
         </con:property>
         <con:property>
           <con:name>Employee</con:name>
-          <con:value>E600685</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Employee}</con:value>
         </con:property>
         <con:property>
           <con:name>UniqueID</con:name>
-          <con:value>${=Math.abs(new Random().nextInt() % 6000000) + 1}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
           <con:name>EndToEndID</con:name>
-          <con:value>${=context.getCurrentStep().getTestCase().getLabel().substring(0, Math.min(11, ${=context.getCurrentStep().getLabel().length()}))}.${=context.getCurrentStep().getLabel().substring(0, Math.min(21, ${=context.getCurrentStep().getLabel().length()}))}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
           <con:name>ReqExnDate</con:name>
-          <con:value>${= java.time.LocalDate.now()+1}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#ReqExnDate}</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>600685_${=java.util.UUID.randomUUID().toString().substring(0,28)}</con:value>
-        </con:property>
-        <con:property>
-          <con:name>SCAPerformed_T</con:name>
-          <con:value>signed</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
           <con:name>SCALastPerformed</con:name>
-          <con:value>${= java.time.LocalDate.now()-1}T13:47:21.443376+05:30</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCALastPerformed}</con:value>
         </con:property>
         <con:property>
           <con:name>SCAExemptionType</con:name>
-          <con:value>7513</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCAExemptionType}</con:value>
         </con:property>
         <con:property>
-          <con:name>pwhURL</con:name>
-          <con:value>jdbc:oracle:thin:pwhdata/pwh@//(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:value>
+          <con:name>SelfService_Employee</con:name>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SelfService_Employee}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>SCAPerformed</con:name>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCAPerformed}</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -202,59 +101,59 @@ public void fetchDetails()
       <con:properties>
         <con:property>
           <con:name>RBS_IP_ADRESSE</con:name>
-          <con:value>10.10.10.10</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_IP_ADRESSE}</con:value>
         </con:property>
         <con:property>
           <con:name>RBS_Message</con:name>
-          <con:value>Fraud</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>RBS_CreditorName</con:name>
-          <con:value>Albrekt</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_CreditorName}</con:value>
         </con:property>
         <con:property>
           <con:name>SECANA_IP_ADRESSE</con:name>
-          <con:value>11.11.11.11</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SECANA_IP_ADRESSE}</con:value>
         </con:property>
         <con:property>
           <con:name>SECANA_Message</con:name>
-          <con:value>Transfer To China</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SECANA_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>SOURCE_IP</con:name>
-          <con:value>11.12.13.77</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SOURCE_IP}</con:value>
         </con:property>
         <con:property>
           <con:name>Unstructured_Message</con:name>
-          <con:value>Payment To Self</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#Unstructured_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>article_12_ParkingFee</con:name>
-          <con:value>7512</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_12_ParkingFee}</con:value>
         </con:property>
         <con:property>
           <con:name>article_13_TrustedBenificiery</con:name>
-          <con:value>7513</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_13_TrustedBenificiery}</con:value>
         </con:property>
         <con:property>
           <con:name>article_14_RecurringTransaction</con:name>
-          <con:value>7514</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_14_RecurringTransaction}</con:value>
         </con:property>
         <con:property>
           <con:name>article_15_PaymentToSelf</con:name>
-          <con:value>7515</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_15_PaymentToSelf}</con:value>
         </con:property>
         <con:property>
           <con:name>article_16_LowValueTransaction</con:name>
-          <con:value>7516</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_16_LowValueTransaction}</con:value>
         </con:property>
         <con:property>
           <con:name>article_17_SecureProtocol</con:name>
-          <con:value>7517</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_17_SecureProtocol}</con:value>
         </con:property>
         <con:property>
           <con:name>article_18_TransactionRiskAnalysis</con:name>
-          <con:value>7518</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_18_TransactionRiskAnalysis}</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -288,7 +187,7 @@ public void fetchDetails()
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -1609,6 +1508,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -1642,7 +1547,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -1997,6 +1902,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -2030,7 +1941,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -2518,6 +2429,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -2551,7 +2468,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -3734,6 +3651,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -3768,7 +3691,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="Employee" value="${Properties#Employee}"/>
-            <wsc:item key="SelfService" value="${Properties#SelfService_Emp}"/>
+            <wsc:item key="SelfService" value="${Properties#SelfService_Employee}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -4901,6 +4824,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -4934,7 +4863,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -5992,6 +5921,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -6026,7 +5961,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="Employee" value="${Properties#Employee}"/>
-            <wsc:item key="SelfService" value="${Properties#SelfService_Emp}"/>
+            <wsc:item key="SelfService" value="${Properties#SelfService_Employee}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -7051,6 +6986,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -7085,7 +7026,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="Employee" value="${Properties#Employee}"/>
-            <wsc:item key="SelfService" value="${Properties#SelfService_Emp}"/>
+            <wsc:item key="SelfService" value="${Properties#SelfService_Employee}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -7420,6 +7361,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -7430,8 +7377,8 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
     </con:settings>
     <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:dbConnectionName>PWHDATA</con:dbConnectionName>
-      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
-      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_s1_19c)))</con:connectionString>
+      <con:driver>${#Project#JDBCDriver}</con:driver>
+      <con:connectionString>${#Project#PWHDbString}</con:connectionString>
       <con:password/>
       <con:connectionProperties/>
       <con:query>select TRANSACTIONSID,PAYMENTSTATUS,RISKSTATUS from transactions where transactionsid = ${Create#Response#declare namespace urn='urn:pins.payment.evry.com:ws:paymentinitiation:v1_9'; declare namespace urn2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9'; //urn:PaymentCreateResponse[1]/urn:paymentResult[1]/urn2:transactionId[1]}</con:query>
@@ -8686,7 +8633,7 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="Employee" value="${Properties#Employee}"/>
-            <wsc:item key="SelfService" value="${Properties#SelfService_Emp}"/>
+            <wsc:item key="SelfService" value="${Properties#SelfService_Employee}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -9712,6 +9659,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -9745,7 +9698,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:sepa-complex-types:v8';
             <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -11066,6 +11019,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -11099,7 +11058,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:ip>${Fraud_Criteria#SECANA_IP_ADRESSE}</wsc:ip>
             <wsc:item key="SCAExemptionType" value="${Fraud_Criteria#article_13_TrustedBenificiery}"/>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
          </wsc:ClientContext>
@@ -11587,6 +11546,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -11748,6 +11713,12 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
     <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>

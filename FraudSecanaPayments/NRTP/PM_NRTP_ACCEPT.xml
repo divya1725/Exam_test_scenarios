@@ -4,194 +4,93 @@
     <con:setting id="52c0653b-8eae-4321-8825-7559c13cf70dfileName">PM_NRTP_ACCEPT</con:setting>
   </con:settings>
   <con:savedRecentRuns>1</con:savedRecentRuns>
-  <con:testStep type="groovy" name="Groovy Script-FetchTestEnv" id="fac4efb6-7770-4c1c-a68a-6e60cbd3fae6">
-    <con:settings/>
-    <con:config>
-      <script>import groovy.sql.Sql;
-
-identifyTestCase();
-//fetchDetails();
-//connectPwh("true");
-
-log.info "Test Data setting Done.!"
-
-public void connectPwh(status)
-{
-	resultSet = ""
-	currency = "NOK";
-	if(sepa) {
-		currency = "EUR"
-	}
-
-	query1 = " SELECT USERID, ACCOUNTNUMBER,CURRENCYCODE FROM V_AUTH_USERINFO WHERE LENGTH(USERID) = '11' AND ACCOUNTROLENAME = 'Register' "
-	query2 = " AND MARKETTYPE = '"+marketType+"' AND BANKORGID = "+orgid+" AND CURRENCYCODE = '"+currency+"' "
-	query3 = " AND ROWNUM = 1"
-	sqlQuery = query1+query2+query3
-	
-	if (status == 'true')
-	{
-		connection	=	Sql.newInstance(connect, schema, paswd, "oracle.jdbc.driver.OracleDriver");
-		resultSet		=	connection.rows(sqlQuery)
-		connection.close();
-		log.info resultSet
-	}
-	if (!resultSet.isEmpty())
-	{
-		customer_1	=	resultSet.USERID[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		account_1		= 	resultSet.ACCOUNTNUMBER[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		currency_1	= 	resultSet.CURRENCYCODE[0].toString().replaceAll("[^a-zA-Z0-9]+","")
-		userid_1		= 	customer_1;
-	
-		if(marketType == 'BM' &amp;&amp; customer_1.length() > 8)
-		{
-			userid_1	= 	(customer_1.substring(5) as int).toString().replaceAll("[^a-zA-Z0-9]+","")
-			testRunner.testCase.getTestStepByName("Properties").setPropertyValue("AgreementId",userid_1);
-		}
-		
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("customerid",customer_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("userid",userid_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("debitAccount",account_1);
-		testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebitAcntccy",currency_1);
-	}
-}
-
-public void identifyTestCase()
-{
-	testCaseName	=	context.getCurrentStep().getTestCase().getLabel();
-	testCaseName	= 	testCaseName.toLowerCase();
-	marketType	= null;
-	sepa = null;
-
-	if (testCaseName.contains("bm"))
-	{
-		marketType = "BM"
-		payChannel = "BES";
-	}
-	else if (testCaseName.contains("pm"))
-	{
-		marketType = "PM"
-		payChannel = "INT";
-	}
-
-	if (testCaseName.contains("sepa"))
-	{
-		sepa = true;
-	}
-}
-
-public void fetchDetails()
-{
-	orgid = context.expand( '${Properties#orgid}' );
-	envDetails		=	DetectTestEnvironment.getDetailsOf(context.testCase.testSuite.project.getActiveEnvironment().getName());
-	orgidDetails	=	DetectTestEnvironment.getBankDetailsOf(orgid);
-
-	connect	=	envDetails[3];
-	pwhString = envDetails[4];
-	schema	=	"pwhdata"
-	paswd	=	"pwh"
-	
-	credentials = orgidDetails[2];
-	debtorAgent = orgidDetails[3];
-
-	testRunner.testCase.testSuite.project.setPropertyValue("pwhConnectionString", pwhString)
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("credentials",credentials);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("pwhURL",pwhString);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("DebtorAgent",debtorAgent);
-	testRunner.testCase.getTestStepByName("Properties").setPropertyValue("PaymentChannel",payChannel);
-}</script>
-    </con:config>
-  </con:testStep>
   <con:testStep type="properties" name="Properties" id="9a2f7514-abd0-4896-bafe-43bde3a9a6e2">
     <con:settings/>
     <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <con:properties>
         <con:property>
           <con:name>SourceApplication</con:name>
-          <con:value>EVRYINT</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SourceApplication}</con:value>
         </con:property>
         <con:property>
           <con:name>orgid</con:name>
-          <con:value>4201</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#orgid}</con:value>
         </con:property>
         <con:property>
           <con:name>credentials</con:name>
-          <con:value>03110012010400425kglPboRi3h16OVtVL1neI9CfuAtjCBO603eS0IgWm1WWIO7EfpSL4DE%2FlDFi69n1sSaabKNt2t%2BxJppso23a37EmmmyjbdrfutbV53%2FUXGOxjDkLmirISLEmmmyjbdrfsSaabKNt2t%2FXzlyjxYnxhcG46wcbIKp%2FsSaabKNt2t9wBUG0SyIoqFfig80Gq4uXVBtimDzTiu2xJppso23a37Emmmyjbdrf8wP73CNrvpw%3DH5LS2JD%2BVebr3PytlKAocCy8%2FCcrl7tRSepyb0jhKW8A8k07nuvorl7Xoscy%2BybGjXIr2Zj%2Fvprt%2BD1IueT5rqEcvxyyr%2FYELRuLkDS94SfjVw%2FszcGGYfeWnI2Z1NwXorQAZPvT5U6Edafp2sbvWiNKkrzCmFJ4YcuHbGSJCYk%3D</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#credentials}</con:value>
         </con:property>
         <con:property>
           <con:name>PaymentChannel</con:name>
-          <con:value>INT</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#PaymentChannel}</con:value>
         </con:property>
         <con:property>
           <con:name>customerid</con:name>
-          <con:value>14105122579</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Customerid}</con:value>
         </con:property>
         <con:property>
           <con:name>userid</con:name>
-          <con:value>14105122579</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Userid}</con:value>
         </con:property>
         <con:property>
           <con:name>debitAccount</con:name>
-          <con:value>96500487736</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebitAccount}</con:value>
         </con:property>
         <con:property>
           <con:name>DebitAcntccy</con:name>
-          <con:value>NOK</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebitAcntCcy}</con:value>
         </con:property>
         <con:property>
           <con:name>DebtorAgent</con:name>
-          <con:value>SPTRNO22XXX</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#DebtorAgentBic}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorAgent</con:name>
-          <con:value>SPTRNO22XXX</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditorAgent}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditorCountry</con:name>
-          <con:value>NO</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditorCountry}</con:value>
         </con:property>
         <con:property>
           <con:name>CreditAccount</con:name>
-          <con:value>36250103381</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#CreditAccount}</con:value>
         </con:property>
         <con:property>
-          <con:name>SelfService_Emp</con:name>
-          <con:value>false</con:value>
+          <con:name>SelfService_Employee</con:name>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SelfService_Employee}</con:value>
         </con:property>
         <con:property>
           <con:name>Employee</con:name>
-          <con:value>E600685</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#Employee}</con:value>
         </con:property>
         <con:property>
           <con:name>UniqueID</con:name>
-          <con:value>${=Math.abs(new Random().nextInt() % 6000000) + 1}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
           <con:name>EndToEndID</con:name>
-          <con:value>${=context.getCurrentStep().getTestCase().getLabel().substring(0, Math.min(12, ${=context.getCurrentStep().getLabel().length()}))}.${=context.getCurrentStep().getLabel().substring(0, Math.min(22, ${=context.getCurrentStep().getLabel().length()}))}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
           <con:name>ReqExnDate</con:name>
-          <con:value>${= java.time.LocalDate.now()}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#ReqExnDate}</con:value>
         </con:property>
         <con:property>
           <con:name>LogRef</con:name>
-          <con:value>600685_${=java.util.UUID.randomUUID().toString().substring(0,28)}</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#LogRef}</con:value>
         </con:property>
         <con:property>
-          <con:name>SCAPerformed_T</con:name>
-          <con:value>true</con:value>
+          <con:name>SCAPerformed</con:name>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCAPerformed}</con:value>
         </con:property>
         <con:property>
           <con:name>SCALastPerformed</con:name>
-          <con:value>${= java.time.LocalDate.now()-1}T13:47:21.443376+05:30</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCALastPerformed}</con:value>
         </con:property>
         <con:property>
           <con:name>SCAExemptionType</con:name>
-          <con:value>7513</con:value>
-        </con:property>
-        <con:property>
-          <con:name>pwhURL</con:name>
-          <con:value>jdbc:oracle:thin:pwhdata/pwh@//(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d4)))</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#PM_Properties]#SCAExemptionType}</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -202,59 +101,59 @@ public void fetchDetails()
       <con:properties>
         <con:property>
           <con:name>RBS_IP_ADRESSE</con:name>
-          <con:value>10.10.10.10</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_IP_ADRESSE}</con:value>
         </con:property>
         <con:property>
           <con:name>RBS_Message</con:name>
-          <con:value>Fraud</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>RBS_CreditorName</con:name>
-          <con:value>Albrekt</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#RBS_CreditorName}</con:value>
         </con:property>
         <con:property>
           <con:name>SECANA_IP_ADRESSE</con:name>
-          <con:value>10.10.10.10</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SECANA_IP_ADRESSE}</con:value>
         </con:property>
         <con:property>
           <con:name>SECANA_Message</con:name>
-          <con:value>Transfer To China</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SECANA_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>SOURCE_IP</con:name>
-          <con:value>12.13.13.15</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#SOURCE_IP}</con:value>
         </con:property>
         <con:property>
           <con:name>Unstructured_Message</con:name>
-          <con:value>Payment To Self</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#Unstructured_Message}</con:value>
         </con:property>
         <con:property>
           <con:name>article_12_ParkingFee</con:name>
-          <con:value>7512</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_12_ParkingFee}</con:value>
         </con:property>
         <con:property>
           <con:name>article_13_TrustedBenificiery</con:name>
-          <con:value>7513</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_13_TrustedBenificiery}</con:value>
         </con:property>
         <con:property>
           <con:name>article_14_RecurringTransaction</con:name>
-          <con:value>7514</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_14_RecurringTransaction}</con:value>
         </con:property>
         <con:property>
           <con:name>article_15_PaymentToSelf</con:name>
-          <con:value>7515</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_15_PaymentToSelf}</con:value>
         </con:property>
         <con:property>
           <con:name>article_16_LowValueTransaction</con:name>
-          <con:value>7516</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_16_LowValueTransaction}</con:value>
         </con:property>
         <con:property>
           <con:name>article_17_SecureProtocol</con:name>
-          <con:value>7517</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_17_SecureProtocol}</con:value>
         </con:property>
         <con:property>
           <con:name>article_18_TransactionRiskAnalysis</con:name>
-          <con:value>7518</con:value>
+          <con:value>${#[TEST_DATA#TESTDATA#FraudCriteria]#article_18_TransactionRiskAnalysis}</con:value>
         </con:property>
       </con:properties>
     </con:config>
@@ -285,11 +184,11 @@ public void fetchDetails()
             <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
             <wsc:customerid>${Properties#customerid}</wsc:customerid>
             <wsc:locale>no_NO.UTF-8</wsc:locale>
-            <wsc:ip>2.2.2.2</wsc:ip>
+            <wsc:ip>1.2.3.4</wsc:ip>
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -1250,6 +1149,289 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="e1a161ec-7e1f-44b1-ad03-7bc0c7142525" name="Read -EndUser" disabled="true">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
+      <con:operation>PaymentRead</con:operation>
+      <con:request name="Read -EndUser" id="e3e3d974-3c49-4dff-b01f-78530270cce5">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://ald-eos-g-app04.unix.cosng.net:29241/pin/services/PINSPayment_V2_0</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
+   <soapenv:Header>
+      <wsc:AutHeader>
+         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
+         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
+         <wsc:Function>FraudPayment</wsc:Function>
+         <wsc:Version>1.0</wsc:Version>
+         <wsc:ClientContext>
+            <wsc:userid>${Properties#userid}</wsc:userid>
+            <wsc:credentials>${Properties#credentials}</wsc:credentials>
+            <wsc:channel>INT</wsc:channel>
+            <wsc:orgid>${Properties#orgid}</wsc:orgid>
+            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
+            <wsc:customerid>${Properties#customerid}</wsc:customerid>
+            <wsc:locale>no_NO.UTF-8</wsc:locale>
+            <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
+            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
+            <wsc:item key="LogRef" value="${Properties#LogRef}"/>
+            <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
+            <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
+         </wsc:ClientContext>
+      </wsc:AutHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:PaymentReadRequest>
+         <urn:paymentReference>${Create#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentinitiation:v1_9'; declare namespace ns2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9'; //ns5:PaymentCreateResponse[1]/ns5:paymentResult[1]/ns2:paymentReference[1]}</urn:paymentReference>
+      </urn:PaymentReadRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="MessageContentAssertion" id="2ef7d4ff-a8a9-49e8-95d4-1c4dec04702b" name="Message Content Assertion">
+          <con:configuration xsi:type="con:MessageContentAssertion">
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
+              <con:element>ErrorCode</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
+              <con:element>Severity</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>0</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
+              <con:element>ComponentId</con:element>
+              <con:type>XmlInt</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>111</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
+              <con:element>Message</con:element>
+              <con:type>XmlString</con:type>
+              <con:operator>=</con:operator>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>OK</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
+declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
+              <con:element>LogSequence</con:element>
+              <con:type>XmlLong</con:type>
+              <con:operator>exists</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue xsi:nil="true"/>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>true</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
+declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
+declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
+declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
+//ns4:PaymentReadResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
+              <con:element>@xsi:nil</con:element>
+              <con:type/>
+              <con:operator>=</con:operator>
+              <con:enabled>false</con:enabled>
+              <con:expectedValue>true</con:expectedValue>
+              <con:hasValue>false</con:hasValue>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <ns2:PaymentReadResponse xmlns:ns10="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns9="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:creditor:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
+         <ns3:ResponseState>
+            <ErrorCode>0</ErrorCode>
+            <Severity>0</Severity>
+            <ComponentId>111</ComponentId>
+            <Message>OK</Message>
+            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+         </ns3:ResponseState>
+         <ns2:paymentResult>
+            <ns4:result>
+               <ns4:paymentReference>260798474</ns4:paymentReference>
+               <ns4:transactionId>260798474</ns4:transactionId>
+               <ns4:messageId>934031</ns4:messageId>
+               <ns4:paymentInfoId>1026016</ns4:paymentInfoId>
+               <ns4:initiatorIdentifier>14105122579</ns4:initiatorIdentifier>
+               <ns4:paymentStatus>PROCESSING</ns4:paymentStatus>
+               <ns4:prioritized>false</ns4:prioritized>
+               <ns4:originalFormat>CLIENT_GENERATED</ns4:originalFormat>
+               <ns4:releaseDate>2021-07-09+02:00</ns4:releaseDate>
+               <ns4:internalProductCode>PAYCTDOMOUEXRTP</ns4:internalProductCode>
+               <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
+               <ns4:transactionFee currency="NOK">
+                  <ns5:amount>25.00</ns5:amount>
+               </ns4:transactionFee>
+               <ns4:additionalServiceCharge>
+                  <ns5:serviceName>Outward OUR</ns5:serviceName>
+                  <ns5:charge currency="NOK">
+                     <ns5:amount>3.00</ns5:amount>
+                  </ns5:charge>
+               </ns4:additionalServiceCharge>
+               <ns4:paymentIdentification>
+                  <ns5:messageIdentification>550672</ns5:messageIdentification>
+                  <ns5:endToEndIdentification>PM_NRT.Create</ns5:endToEndIdentification>
+               </ns4:paymentIdentification>
+               <ns4:groupHeader>
+                  <ns5:creationDateTime>2021-07-09T12:30:49.000+02:00</ns5:creationDateTime>
+               </ns4:groupHeader>
+               <ns4:paymentInfo>
+                  <ns6:paymentMethod>TRF</ns6:paymentMethod>
+                  <ns6:paymentTypeInformation>
+                     <ns6:instructionPriority>NORM</ns6:instructionPriority>
+                     <ns6:serviceLevel>NRTP</ns6:serviceLevel>
+                  </ns6:paymentTypeInformation>
+                  <ns6:requestedExecutionDate>2021-07-09+02:00</ns6:requestedExecutionDate>
+                  <ns6:debtorAccount>
+                     <ns5:identification>96500487736</ns5:identification>
+                     <ns5:currency>NOK</ns5:currency>
+                  </ns6:debtorAccount>
+                  <ns6:debtorAgentBIC>SPTRNO22XXX</ns6:debtorAgentBIC>
+                  <ns6:debtor>
+                     <ns5:name>Kabel rep. &amp; co..</ns5:name>
+                     <ns5:postalAddress>
+                        <ns5:postCode>4863</ns5:postCode>
+                        <ns5:townName>NELAUG</ns5:townName>
+                        <ns5:country>NO</ns5:country>
+                        <ns5:addressLine>BJØRNSGATE 1</ns5:addressLine>
+                     </ns5:postalAddress>
+                  </ns6:debtor>
+               </ns4:paymentInfo>
+               <ns4:transaction>
+                  <ns7:amount>
+                     <ns5:instructedAmount currency="NOK">
+                        <ns5:amount>0.12</ns5:amount>
+                     </ns5:instructedAmount>
+                  </ns7:amount>
+                  <ns7:chargeBearer>DEBT</ns7:chargeBearer>
+                  <ns7:creditorAgent>
+                     <ns5:bic>SPAVNOBBXXX</ns5:bic>
+                     <ns5:name>SPAREBANKEN VEST</ns5:name>
+                     <ns5:postalAddress>
+                        <ns5:postCode>5011</ns5:postCode>
+                        <ns5:townName>BERGEN</ns5:townName>
+                        <ns5:country>NO</ns5:country>
+                        <ns5:addressLine>JONSVOLLSGATEN 2</ns5:addressLine>
+                        <ns5:addressLine>POB 7999, 5020</ns5:addressLine>
+                        <ns5:addressLine>NORWAY</ns5:addressLine>
+                     </ns5:postalAddress>
+                  </ns7:creditorAgent>
+                  <ns7:creditor>
+                     <ns5:name>YK-ABC</ns5:name>
+                     <ns5:postalAddress>
+                        <ns5:addressType>ADDR</ns5:addressType>
+                        <ns5:townName>city</ns5:townName>
+                        <ns5:country>NO</ns5:country>
+                        <ns5:addressLine>Address</ns5:addressLine>
+                     </ns5:postalAddress>
+                  </ns7:creditor>
+                  <ns7:creditorAccount>
+                     <ns5:identification>36250103381</ns5:identification>
+                  </ns7:creditorAccount>
+                  <ns7:confidential>false</ns7:confidential>
+                  <ns7:uetrId>07347684-c8c7-4714-b871-72215a148f3e</ns7:uetrId>
+                  <ns4:nationalSpecificPaymentInformation xsi:type="ns8:NorwegianNationalPaymentInformation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                     <ns8:receiptOrder>NONE</ns8:receiptOrder>
+                  </ns4:nationalSpecificPaymentInformation>
+               </ns4:transaction>
+               <ns4:marketType>PM</ns4:marketType>
+               <ns4:originalChannel>INT</ns4:originalChannel>
+               <ns4:paymentAdditionalInfo>
+                  <ns5:debitValueDate>DAY0</ns5:debitValueDate>
+                  <ns5:creditValueDate>CUT0</ns5:creditValueDate>
+               </ns4:paymentAdditionalInfo>
+            </ns4:result>
+            <ns4:paymentAmounts>
+               <ns5:debitAmount currency="NOK">
+                  <ns5:amount>0.12</ns5:amount>
+               </ns5:debitAmount>
+               <ns5:creditAmount currency="NOK">
+                  <ns5:amount>0.12</ns5:amount>
+               </ns5:creditAmount>
+               <ns5:debitCounterValue currency="NOK">
+                  <ns5:amount>0.12</ns5:amount>
+               </ns5:debitCounterValue>
+               <ns5:creditCounterValue currency="NOK">
+                  <ns5:amount>0.12</ns5:amount>
+               </ns5:creditCounterValue>
+               <ns5:conversionRateInfo>
+                  <ns5:rate>1</ns5:rate>
+                  <ns5:type>NONE</ns5:type>
+                  <ns5:unitNumber>1</ns5:unitNumber>
+               </ns5:conversionRateInfo>
+            </ns4:paymentAmounts>
+            <ns4:operationsArray>VIEW_PAYMENT</ns4:operationsArray>
+         </ns2:paymentResult>
+      </ns2:PaymentReadResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentReadRequest" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -1284,7 +1466,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -1638,275 +1820,10 @@ declare namespace ns2='urn:pins.payment.evry.com:ws:paymentstatusupdate:v1_5';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-        </con:environmentSpec>
-      </con:request>
-    </con:config>
-  </con:testStep>
-  <con:testStep type="request" id="e1a161ec-7e1f-44b1-ad03-7bc0c7142525" name="Read -EndUser" disabled="true">
-    <con:settings/>
-    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <con:interface>PINSPayment_V2_0PortTypeSoap11</con:interface>
-      <con:operation>PaymentRead</con:operation>
-      <con:request name="Read -EndUser" id="e3e3d974-3c49-4dff-b01f-78530270cce5">
-        <con:settings>
-          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-        </con:settings>
-        <con:encoding>UTF-8</con:encoding>
-        <con:endpoint>http://ald-eos-g-app04.unix.cosng.net:29241/pin/services/PINSPayment_V2_0</con:endpoint>
-        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://edb.com/ws/WSCommon_v22" xmlns:urn="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0">
-   <soapenv:Header>
-      <wsc:AutHeader>
-         <wsc:SourceApplication>${Properties#SourceApplication}</wsc:SourceApplication>
-         <wsc:DestinationApplication>PIN</wsc:DestinationApplication>
-         <wsc:Function>FraudPayment</wsc:Function>
-         <wsc:Version>1.0</wsc:Version>
-         <wsc:ClientContext>
-            <wsc:userid>${Properties#userid}</wsc:userid>
-            <wsc:credentials>${Properties#credentials}</wsc:credentials>
-            <wsc:channel>INT</wsc:channel>
-            <wsc:orgid>${Properties#orgid}</wsc:orgid>
-            <wsc:orgunit>${Properties#orgid}</wsc:orgunit>
-            <wsc:customerid>${Properties#customerid}</wsc:customerid>
-            <wsc:locale>no_NO.UTF-8</wsc:locale>
-            <wsc:ip>${Fraud_Criteria#SOURCE_IP}</wsc:ip>
-            <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
-            <wsc:item key="LogRef" value="${Properties#LogRef}"/>
-            <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
-            <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
-         </wsc:ClientContext>
-      </wsc:AutHeader>
-   </soapenv:Header>
-   <soapenv:Body>
-      <urn:PaymentReadRequest>
-         <urn:paymentReference>${Create#Response#declare namespace ns5='urn:pins.payment.evry.com:ws:paymentinitiation:v1_9'; declare namespace ns2='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9'; //ns5:PaymentCreateResponse[1]/ns5:paymentResult[1]/ns2:paymentReference[1]}</urn:paymentReference>
-      </urn:PaymentReadRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request>
-        <con:assertion type="MessageContentAssertion" id="2ef7d4ff-a8a9-49e8-95d4-1c4dec04702b" name="Message Content Assertion">
-          <con:configuration xsi:type="con:MessageContentAssertion">
-            <con:elements>
-              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ErrorCode[1]</con:xpath>
-              <con:element>ErrorCode</con:element>
-              <con:type>XmlInt</con:type>
-              <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>true</con:numberType>
-            </con:elements>
-            <con:elements>
-              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Severity[1]</con:xpath>
-              <con:element>Severity</con:element>
-              <con:type>XmlInt</con:type>
-              <con:operator>=</con:operator>
-              <con:enabled>false</con:enabled>
-              <con:expectedValue>0</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>true</con:numberType>
-            </con:elements>
-            <con:elements>
-              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:ComponentId[1]</con:xpath>
-              <con:element>ComponentId</con:element>
-              <con:type>XmlInt</con:type>
-              <con:operator>=</con:operator>
-              <con:enabled>false</con:enabled>
-              <con:expectedValue>111</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>true</con:numberType>
-            </con:elements>
-            <con:elements>
-              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:Message[1]</con:xpath>
-              <con:element>Message</con:element>
-              <con:type>XmlString</con:type>
-              <con:operator>=</con:operator>
-              <con:enabled>true</con:enabled>
-              <con:expectedValue>OK</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>false</con:numberType>
-            </con:elements>
-            <con:elements>
-              <con:xpath>declare namespace ns1='http://edb.com/ws/WSCommon_v22';
-declare namespace ns3='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns2='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns3:PaymentReadResponse[1]/ns2:ResponseState[1]/ns1:LogSequence[1]</con:xpath>
-              <con:element>LogSequence</con:element>
-              <con:type>XmlLong</con:type>
-              <con:operator>exists</con:operator>
-              <con:enabled>false</con:enabled>
-              <con:expectedValue xsi:nil="true"/>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>true</con:numberType>
-            </con:elements>
-            <con:elements>
-              <con:xpath>declare namespace ns2='http://edb.com/ws/WSCommon_v22';
-declare namespace ns1='http://www.w3.org/2001/XMLSchema-instance';
-declare namespace ns4='urn:pins.payment.evry.com:ws:paymentinitiation:v2_0';
-declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
-//ns4:PaymentReadResponse[1]/ns3:ResponseState[1]/ns2:LogSequence[1]/@ns1:nil</con:xpath>
-              <con:element>@xsi:nil</con:element>
-              <con:type/>
-              <con:operator>=</con:operator>
-              <con:enabled>false</con:enabled>
-              <con:expectedValue>true</con:expectedValue>
-              <con:hasValue>false</con:hasValue>
-              <con:numberType>false</con:numberType>
-            </con:elements>
-            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-   <soap:Body>
-      <ns2:PaymentReadResponse xmlns:ns10="urn:pins.payment.evry.com:ws:paymentutil:v2_0" xmlns:ns9="urn:pins.payment.evry.com:domain:paymentutil:v2_0" xmlns:ns8="urn:pins.payment.evry.com:domain:nationalinformation-nor:v2_0" xmlns:ns7="urn:pins.payment.evry.com:domain:creditor:v2_0" xmlns:ns6="urn:pins.payment.evry.com:domain:debtor:v2_0" xmlns:ns5="urn:pins.payment.evry.com:domain:complex-types:v2_0" xmlns:ns4="urn:pins.payment.evry.com:domain:paymentinitiation:v2_0" xmlns:ns3="urn:pins.payment.evry.com:domain:common:v2_0" xmlns:ns2="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0" xmlns="http://edb.com/ws/WSCommon_v22">
-         <ns3:ResponseState>
-            <ErrorCode>0</ErrorCode>
-            <Severity>0</Severity>
-            <ComponentId>111</ComponentId>
-            <Message>OK</Message>
-            <LogSequence xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
-         </ns3:ResponseState>
-         <ns2:paymentResult>
-            <ns4:result>
-               <ns4:paymentReference>260798474</ns4:paymentReference>
-               <ns4:transactionId>260798474</ns4:transactionId>
-               <ns4:messageId>934031</ns4:messageId>
-               <ns4:paymentInfoId>1026016</ns4:paymentInfoId>
-               <ns4:initiatorIdentifier>14105122579</ns4:initiatorIdentifier>
-               <ns4:paymentStatus>PROCESSING</ns4:paymentStatus>
-               <ns4:prioritized>false</ns4:prioritized>
-               <ns4:originalFormat>CLIENT_GENERATED</ns4:originalFormat>
-               <ns4:releaseDate>2021-07-09+02:00</ns4:releaseDate>
-               <ns4:internalProductCode>PAYCTDOMOUEXRTP</ns4:internalProductCode>
-               <ns4:paymentProduct>PI Domestic</ns4:paymentProduct>
-               <ns4:transactionFee currency="NOK">
-                  <ns5:amount>25.00</ns5:amount>
-               </ns4:transactionFee>
-               <ns4:additionalServiceCharge>
-                  <ns5:serviceName>Outward OUR</ns5:serviceName>
-                  <ns5:charge currency="NOK">
-                     <ns5:amount>3.00</ns5:amount>
-                  </ns5:charge>
-               </ns4:additionalServiceCharge>
-               <ns4:paymentIdentification>
-                  <ns5:messageIdentification>550672</ns5:messageIdentification>
-                  <ns5:endToEndIdentification>PM_NRT.Create</ns5:endToEndIdentification>
-               </ns4:paymentIdentification>
-               <ns4:groupHeader>
-                  <ns5:creationDateTime>2021-07-09T12:30:49.000+02:00</ns5:creationDateTime>
-               </ns4:groupHeader>
-               <ns4:paymentInfo>
-                  <ns6:paymentMethod>TRF</ns6:paymentMethod>
-                  <ns6:paymentTypeInformation>
-                     <ns6:instructionPriority>NORM</ns6:instructionPriority>
-                     <ns6:serviceLevel>NRTP</ns6:serviceLevel>
-                  </ns6:paymentTypeInformation>
-                  <ns6:requestedExecutionDate>2021-07-09+02:00</ns6:requestedExecutionDate>
-                  <ns6:debtorAccount>
-                     <ns5:identification>96500487736</ns5:identification>
-                     <ns5:currency>NOK</ns5:currency>
-                  </ns6:debtorAccount>
-                  <ns6:debtorAgentBIC>SPTRNO22XXX</ns6:debtorAgentBIC>
-                  <ns6:debtor>
-                     <ns5:name>Kabel rep. &amp; co..</ns5:name>
-                     <ns5:postalAddress>
-                        <ns5:postCode>4863</ns5:postCode>
-                        <ns5:townName>NELAUG</ns5:townName>
-                        <ns5:country>NO</ns5:country>
-                        <ns5:addressLine>BJØRNSGATE 1</ns5:addressLine>
-                     </ns5:postalAddress>
-                  </ns6:debtor>
-               </ns4:paymentInfo>
-               <ns4:transaction>
-                  <ns7:amount>
-                     <ns5:instructedAmount currency="NOK">
-                        <ns5:amount>0.12</ns5:amount>
-                     </ns5:instructedAmount>
-                  </ns7:amount>
-                  <ns7:chargeBearer>DEBT</ns7:chargeBearer>
-                  <ns7:creditorAgent>
-                     <ns5:bic>SPAVNOBBXXX</ns5:bic>
-                     <ns5:name>SPAREBANKEN VEST</ns5:name>
-                     <ns5:postalAddress>
-                        <ns5:postCode>5011</ns5:postCode>
-                        <ns5:townName>BERGEN</ns5:townName>
-                        <ns5:country>NO</ns5:country>
-                        <ns5:addressLine>JONSVOLLSGATEN 2</ns5:addressLine>
-                        <ns5:addressLine>POB 7999, 5020</ns5:addressLine>
-                        <ns5:addressLine>NORWAY</ns5:addressLine>
-                     </ns5:postalAddress>
-                  </ns7:creditorAgent>
-                  <ns7:creditor>
-                     <ns5:name>YK-ABC</ns5:name>
-                     <ns5:postalAddress>
-                        <ns5:addressType>ADDR</ns5:addressType>
-                        <ns5:townName>city</ns5:townName>
-                        <ns5:country>NO</ns5:country>
-                        <ns5:addressLine>Address</ns5:addressLine>
-                     </ns5:postalAddress>
-                  </ns7:creditor>
-                  <ns7:creditorAccount>
-                     <ns5:identification>36250103381</ns5:identification>
-                  </ns7:creditorAccount>
-                  <ns7:confidential>false</ns7:confidential>
-                  <ns7:uetrId>07347684-c8c7-4714-b871-72215a148f3e</ns7:uetrId>
-                  <ns4:nationalSpecificPaymentInformation xsi:type="ns8:NorwegianNationalPaymentInformation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                     <ns8:receiptOrder>NONE</ns8:receiptOrder>
-                  </ns4:nationalSpecificPaymentInformation>
-               </ns4:transaction>
-               <ns4:marketType>PM</ns4:marketType>
-               <ns4:originalChannel>INT</ns4:originalChannel>
-               <ns4:paymentAdditionalInfo>
-                  <ns5:debitValueDate>DAY0</ns5:debitValueDate>
-                  <ns5:creditValueDate>CUT0</ns5:creditValueDate>
-               </ns4:paymentAdditionalInfo>
-            </ns4:result>
-            <ns4:paymentAmounts>
-               <ns5:debitAmount currency="NOK">
-                  <ns5:amount>0.12</ns5:amount>
-               </ns5:debitAmount>
-               <ns5:creditAmount currency="NOK">
-                  <ns5:amount>0.12</ns5:amount>
-               </ns5:creditAmount>
-               <ns5:debitCounterValue currency="NOK">
-                  <ns5:amount>0.12</ns5:amount>
-               </ns5:debitCounterValue>
-               <ns5:creditCounterValue currency="NOK">
-                  <ns5:amount>0.12</ns5:amount>
-               </ns5:creditCounterValue>
-               <ns5:conversionRateInfo>
-                  <ns5:rate>1</ns5:rate>
-                  <ns5:type>NONE</ns5:type>
-                  <ns5:unitNumber>1</ns5:unitNumber>
-               </ns5:conversionRateInfo>
-            </ns4:paymentAmounts>
-            <ns4:operationsArray>VIEW_PAYMENT</ns4:operationsArray>
-         </ns2:paymentResult>
-      </ns2:PaymentReadResponse>
-   </soap:Body>
-</soap:Envelope>]]></con:originalMessage>
-          </con:configuration>
-        </con:assertion>
-        <con:credentials>
-          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
-          <con:authType>No Authorization</con:authType>
-        </con:credentials>
-        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
-        <con:wsaConfig action="urn:pins.payment.evry.com:ws:paymentinitiation:v2_0/PINSPayment_V2_0PortType/PaymentReadRequest" mustUnderstand="NONE" version="200508"/>
-        <con:wsrmConfig version="1.2"/>
-        <con:environmentSpec>
-          <con:entry environmentId="f3539605-f8ba-4d7b-9e40-3f25f7d2b211">
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
-          <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
         </con:environmentSpec>
@@ -1949,7 +1866,7 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:common:v2_0';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -2891,6 +2808,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -2925,7 +2848,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="Employee" value="${Properties#Employee}"/>
-            <wsc:item key="SelfService" value="${Properties#SelfService_Emp}"/>
+            <wsc:item key="SelfService" value="${Properties#SelfService_Employee}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
    </soapenv:Header>
@@ -3853,6 +3776,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -3887,7 +3816,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -4840,6 +4769,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -4874,7 +4809,7 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -5082,6 +5017,12 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -5116,7 +5057,7 @@ declare namespace ns3='urn:pins.payment.evry.com:domain:sepa-complex-types:v7';
             <wsc:item key="PaymentChannel" value="${Properties#PaymentChannel}"/>
             <wsc:item key="LogRef" value="${Properties#LogRef}"/>
             <wsc:item key="SCAExemptionType" value="${Properties#SCAExemptionType}"/>
-            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed_T}"/>
+            <wsc:item key="SCAPerformed" value="${Properties#SCAPerformed}"/>
             <wsc:item key="SCALastPerformed" value="${Properties#SCALastPerformed}"/>
          </wsc:ClientContext>
       </wsc:AutHeader>
@@ -6109,6 +6050,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
           <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
             <con:authProfile>Inherit From Parent</con:authProfile>
           </con:entry>
+          <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
+          <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
+            <con:authProfile>Inherit From Parent</con:authProfile>
+          </con:entry>
         </con:environmentSpec>
       </con:request>
     </con:config>
@@ -6295,6 +6242,12 @@ declare namespace ns1='urn:pins.payment.evry.com:domain:paymentinitiation:v1_9';
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
     <con:entry environmentId="c57aea96-d15f-46e4-bfa2-4b8ef33c6b0e">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="22adbf41-a442-4274-b728-3c41ae7ef741">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="f6c107c2-9839-447e-80f7-3a3e9a74317c">
       <con:authProfile>Inherit From Parent</con:authProfile>
     </con:entry>
   </con:environmentSpec>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="a348803c-0779-4f48-bd6a-8267ac27e381" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="test" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="a348803c-0779-4f48-bd6a-8267ac27e381fileName">test</con:setting>
+  </con:settings>
+  <con:testStep type="jdbc" name="testJDBC" id="fcce9390-7aa4-41f4-9c6c-290b4ffeef96">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d2)))</con:connectionString>
+      <con:password>PWED</con:password>
+      <con:connectionProperties/>
+      <con:query>select * from transactions fetch first 1 rows only</con:query>
+      <con:assertion type="JDBC Status" id="4c879d11-cf2e-4b3f-821b-e76dfb4ce25d" name="JDBC Status"/>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="smoketest" id="fa8a27ff-d264-4df2-9d71-818306721e08">
+    <con:settings/>
+    <con:config>
+      <script>def project=context.getTestCase().testSuite.project
+def map = project.getProperties()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+//env = env.toString().substring(2)
+log.info "Environmnet : $env"
+resultLog="Environmnet : $env \n"
+map.each{entry ->  
+	resultLog+= "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)+"\n"
+	log.info "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)
+}
+return resultLog</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+</con:testCase>

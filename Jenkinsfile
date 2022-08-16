@@ -1,6 +1,6 @@
 #!groovy
-def failed_email_to ='ullasa.srinivasa1@tietoevry.com'
-def success_email_to ='ullasa.srinivasa1@tietoevry.com'
+def failed_email_to ='ullasa.srinivasa@tietoevry.com'
+def success_email_to ='ullasa.srinivasa@tietoevry.com'
 
 def emailNotification( email) {
 	emailext to: email,
@@ -14,8 +14,8 @@ def emailNotification( email) {
 
 def containerTemp = "soapucontainerRegressionTag${currentBuild.displayName}"
 def containername = (containerTemp.contains('#'))?(containerTemp.replace('#','')):containerTemp
-def slackChannelName = "#slackmessgetest"
-//def slackChannelName = "#regressiontestresults"
+//def slackChannelName = "#slackmessgetest"
+def slackChannelName = "#regressiontestresults"
 def wsReportFolder = "https://jenkins.finods.com/job/payment/job/automation/job/pm-regression-valuechain/job/pm-regression-valuechain/job/${env.BRANCH_NAME.replaceAll("/","%252F")}/${currentBuild.number}/artifact/project/${params.SuiteName}/"
 def PROJECT_FOLDER="/usr/local/SmartBear/project"
 

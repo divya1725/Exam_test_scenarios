@@ -17,10 +17,7 @@ map.each{entry ->
 	resultLog+= "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)+"\n"
 	log.info "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)
 }
-//return resultLog
-
-def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
-def date1 = CommonLibrary.getDate('yyyyMMdd')</script>
+return resultLog</script>
     </con:config>
   </con:testStep>
   <con:testStep type="jdbc" name="getSomeDataFromCIGTables" id="fcce9390-7aa4-41f4-9c6c-290b4ffeef96">
@@ -36,7 +33,7 @@ def date1 = CommonLibrary.getDate('yyyyMMdd')</script>
       <con:query>select distinct cigr.rolebankid,cigr.CUSTOMERNUMBER,cigr.CUSTOMERID,ciga.accountnumber,ciga.IBANACCOUNTNUMBER from AUTH_CUSTOMERDATA_CIG cigc
 left outer join AUTH_ROLEDATA_CIG cigr on cigr.CUSTOMERNUMBER=cigc.CUSTOMERNUMBER
 left outer join AUTH_ACCOUNTDATA_CIG ciga on cigr.accountnumber=ciga.accountnumber
-fetch first 4 rows only</con:query>
+fetch first 7 rows only</con:query>
       <con:assertion type="JDBC Status" id="4c879d11-cf2e-4b3f-821b-e76dfb4ce25d" name="JDBC Status"/>
       <con:assertion type="XPath Match" id="4060e2a2-d1b4-4c0a-ae4b-a71ed82740eb" name="Match content of [@rowNumber]">
         <con:configuration>
@@ -53,21 +50,35 @@ fetch first 4 rows only</con:query>
   <con:testStep type="groovy" name="pushDataToTestCases" id="fa8a27ff-d264-4df2-9d71-818306721e08">
     <con:settings/>
     <con:config>
-      <script>def project=context.getTestCase().testSuite.project
-def map = project.getProperties()
+      <script>//Get total number of record in XML file
+def Result = context.expand( '${getSomeDataFromCIGTables#ResponseAsXml#//Results[1]}' )
+def bodyNode = new XmlSlurper().parseText(Result)
+def count = bodyNode.ResultSet.Row.size();
+log.info "Fetched $count auth CIG records from PWH"
+result=''
+for ( def i=0;i&lt;count;i++){
+		def tc = context.testCase.testSuite.getTestCaseAt(i+1).getTestStepByName("Properties")
+		log.info "Updating propertiest of testCase :"+	 tc.getTestCase().name 
+		tc.setPropertyValue("orgId",bodyNode.ResultSet.Row.ROLEBANKID[i].toString().toString())
+		tc.setPropertyValue("customerNumber",bodyNode.ResultSet.Row.CUSTOMERNUMBER[i].toString())
+		tc.setPropertyValue("customerIntId",bodyNode.ResultSet.Row.CUSTOMERID[i].toString())
+		tc.setPropertyValue("accountNumber",bodyNode.ResultSet.Row.ACCOUNTNUMBER[i].toString())
+		tc.setPropertyValue("IBAN",bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i].toString())
+		log.info "rolebankid to : "+bodyNode.ResultSet.Row.ROLEBANKID[i]
+		log.info "customernumber to : "+bodyNode.ResultSet.Row.CUSTOMERNUMBER[i]
+		log.info "customerid to : "+bodyNode.ResultSet.Row.CUSTOMERID[i]
+		log.info "accountnumber to : "+bodyNode.ResultSet.Row.ACCOUNTNUMBER[i]
+		log.info "ibanaccountnumber to : "+bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i]
 
-String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
-//env = env.toString().substring(2)
-log.info "Environmnet : $env"
-resultLog="Environmnet : $env \n"
-map.each{entry ->  
-	resultLog+= "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)+"\n"
-	log.info "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)
-}
-//return resultLog
+		result += "\n Updating properties of testCase : "+	 tc.getTestCase().name 
+		result += "\n rolebankid to : "+bodyNode.ResultSet.Row.ROLEBANKID[i]
+		result += "\n customernumber to : "+bodyNode.ResultSet.Row.CUSTOMERNUMBER[i]
+		result += "\n customerid to : "+bodyNode.ResultSet.Row.CUSTOMERID[i]
+		result += "\n accountnumber to : "+bodyNode.ResultSet.Row.ACCOUNTNUMBER[i]
+		result += "\n ibanaccountnumber to : "+bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i]
+	}
 
-def time =  CommonLibrary.getDate('yyyyMMddHHmmssSSS')
-def date1 = CommonLibrary.getDate('yyyyMMdd')</script>
+	return result</script>
     </con:config>
   </con:testStep>
   <con:properties/>

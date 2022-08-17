@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="ad39c64d-b53c-4ff6-b086-c8e58442ebc6" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="AgreementTerminate" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="ad39c64d-b53c-4ff6-b086-c8e58442ebc6fileName">AgreementTerminate</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="b2bfe5e1-921d-4408-9da2-870c552efffb">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>messageType</con:name>
+          <con:value>AgreementTerminate</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgId</con:name>
+          <con:value>3240</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerNumber</con:name>
+          <con:value>07088910383</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerIntId</con:name>
+          <con:value>43285171000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>32408458551</con:value>
+        </con:property>
+        <con:property>
+          <con:name>IBAN</con:name>
+          <con:value>NO0732408458551</con:value>
+        </con:property>
+        <con:property>
+          <con:name>template_message</con:name>
+          <con:value><![CDATA[<?xml version="1.0"?><notify_subscriber sender="EVRY"><messageType>${Properties#messageType}</messageType><productType>CASA</productType><versionNo>2</versionNo><sourceApplication>AGR</sourceApplication><functionId>KFCDN</functionId><orgId>${Properties#orgId}</orgId><financeInstituteId>423883334365999458</financeInstituteId><batchMassUpdating>${Properties#orgId}</batchMassUpdating><userId>Z2714AR</userId><systemDate>2021-01-07</systemDate><dateTime>2021-01-07T15:51:38</dateTime><messageTypeDataString><agreementIntId>561995711509165453</agreementIntId><keyFields><customerNumber>${Properties#customerNumber}</customerNumber><customerIntId>${Properties#customerIntId}</customerIntId><accountNumber>${Properties#accountNumber}</accountNumber><IBAN>${Properties#IBAN}</IBAN><roleType>DISP</roleType></keyFields><supplementaryDataString><productType>CASA</productType><productIntId>512481518909370948</productIntId><agreementValidFromDate>2020-08-06</agreementValidFromDate><agreementValidToDate>2020-12-01</agreementValidToDate><endTime>08:17:21</endTime></supplementaryDataString></messageTypeDataString></notify_subscriber>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>generatedMessage</con:name>
+          <con:value><![CDATA[<?xml version="1.0"?><notify_subscriber sender="EVRY"><messageType>AgreementTerminate</messageType><productType>CASA</productType><versionNo>2</versionNo><sourceApplication>AGR</sourceApplication><functionId>KFCDN</functionId><orgId>3240</orgId><financeInstituteId>423883334365999458</financeInstituteId><batchMassUpdating>3240</batchMassUpdating><userId>Z2714AR</userId><systemDate>2021-01-07</systemDate><dateTime>2021-01-07T15:51:38</dateTime><messageTypeDataString><agreementIntId>561995711509165453</agreementIntId><keyFields><customerNumber>07088910383</customerNumber><customerIntId>43285171000</customerIntId><accountNumber>32408458551</accountNumber><IBAN>NO0732408458551</IBAN><roleType>DISP</roleType></keyFields><supplementaryDataString><productType>CASA</productType><productIntId>512481518909370948</productIntId><agreementValidFromDate>2020-08-06</agreementValidFromDate><agreementValidToDate>2020-12-01</agreementValidToDate><endTime>08:17:21</endTime></supplementaryDataString></messageTypeDataString></notify_subscriber>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>batchMode</con:name>
+          <con:value>N</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="pushMessageToMQ" id="447cf40a-48e2-4404-a7b9-1bfbd73a1c88">
+    <con:settings/>
+    <con:config>
+      <script>import MQMessageUtils;
+
+// Set MQ properties
+def mQQueuemanager =context.expand( '${#Project#mqManager}' )
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#receiveQNotifySubsOnline}' )
+def messageType = context.expand( '${Properties#messageType}' )
+def messageToSend = context.expand( '${Properties#template_message}' )
+context.testCase.getTestStepByName("Properties").setPropertyValue("generatedMessage",messageToSend)
+
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info "messageToSend ->  $messageToSend"
+def sendingResult = "Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,messageToSend)
+
+return "messageToSend ->  $messageToSend \n Message Sent : \t" + mqMessageUtils.sendMessage(mQMessageQueueSend,messageToSend) +  " ; to mq : "+mQMessageQueueSend</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="waitForDaemonToPickMessage" id="c0d62862-e2d3-421d-ba9f-cdc14c802832">
+    <con:settings/>
+    <con:config>
+      <delay>60000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="checkAnnouncementTable" id="0042ee9a-fffd-45c5-8fbc-3be0f42c7d03">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from PWH_AUTH_COREANNOUNCEMENT
+order by CREATED_TIME
+fetch first 2 rows only</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="checkCIGTables" id="05786bff-618b-4dfa-a691-e9ff3e2eecd9">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from AUTH_CUSTOMERDATA_CIG cigc
+left outer join AUTH_ROLEDATA_CIG cigr on cigr.CUSTOMERNUMBER=cigc.CUSTOMERNUMBER
+left outer join AUTH_ACCOUNTDATA_CIG ciga on cigr.accountnumber=ciga.accountnumber
+where cigr.CUSTOMERNUMBER in ('${Properties#customerNumber}')
+and cigr.ACCOUNTNUMBER in ('${Properties#accountNumber}')</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>messageType</con:name>
+      <con:value>AgreementCreate</con:value>
+    </con:property>
+    <con:property>
+      <con:name>orgId</con:name>
+      <con:value>3240</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerNumber</con:name>
+      <con:value>19095908309</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerIntId</con:name>
+      <con:value>82898311000</con:value>
+    </con:property>
+    <con:property>
+      <con:name>accountNumber</con:name>
+      <con:value>32400414598</con:value>
+    </con:property>
+    <con:property>
+      <con:name>IBAN</con:name>
+      <con:value>NO5232400414598</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+</con:testCase>

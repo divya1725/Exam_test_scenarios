@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="833149d5-2577-49f6-9364-50ecc245aaca" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="CUS.Address" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Address info like street address, PO box, email, phone</con:description>
+  <con:settings>
+    <con:setting id="833149d5-2577-49f6-9364-50ecc245aacafileName">CUS.Address</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="100e0d45-4318-4709-a277-323ee28fb504">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>messageType</con:name>
+          <con:value>CUS.Address</con:value>
+        </con:property>
+        <con:property>
+          <con:name>orgId</con:name>
+          <con:value>3240</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerNumber</con:name>
+          <con:value>27059601747</con:value>
+        </con:property>
+        <con:property>
+          <con:name>customerIntId</con:name>
+          <con:value>1745290000</con:value>
+        </con:property>
+        <con:property>
+          <con:name>accountNumber</con:name>
+          <con:value>32407912364</con:value>
+        </con:property>
+        <con:property>
+          <con:name>IBAN</con:name>
+          <con:value>NO4932407912364</con:value>
+        </con:property>
+        <con:property>
+          <con:name>template_message</con:name>
+          <con:value><![CDATA[<?xml version="1.0"?><notify_subscriber sender="EVRY"><messageType>${Properties#messageType}</messageType><versionNo>2</versionNo><sourceApplication>CUS</sourceApplication><functionId>KFCGE</functionId><orgId>${Properties#orgId}</orgId><financeInstituteId>049890976672311252</financeInstituteId><batchMassUpdating>${Properties#batchMode}</batchMassUpdating><userId>Z2837HS</userId><systemDate>2021-01-20</systemDate><dateTime>2021-01-20T16:22:01</dateTime><messageTypeDataString><customerIntId>${Properties#customerIntId}</customerIntId><customerNumber>${Properties#customerNumber}</customerNumber><actionType>Create</actionType><keyFields><Type>HOVED</Type><supplemtaryType>POST</supplemtaryType></keyFields><supplementaryDataString/></messageTypeDataString></notify_subscriber>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>generatedMessage</con:name>
+          <con:value><![CDATA[<?xml version="1.0"?><notify_subscriber sender="EVRY"><messageType>CUS.Address</messageType><versionNo>2</versionNo><sourceApplication>CUS</sourceApplication><functionId>KFCGE</functionId><orgId>3240</orgId><financeInstituteId>049890976672311252</financeInstituteId><batchMassUpdating>N</batchMassUpdating><userId>Z2837HS</userId><systemDate>2021-01-20</systemDate><dateTime>2021-01-20T16:22:01</dateTime><messageTypeDataString><customerIntId>1745290000</customerIntId><customerNumber>27059601747</customerNumber><actionType>Create</actionType><keyFields><Type>HOVED</Type><supplemtaryType>POST</supplemtaryType></keyFields><supplementaryDataString/></messageTypeDataString></notify_subscriber>]]></con:value>
+        </con:property>
+        <con:property>
+          <con:name>batchMode</con:name>
+          <con:value>N</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="deleteCIGRoleDataFromPWH" id="2db85be1-3949-4419-901e-1cc9c6b0efe1" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>delete from AUTH_ROLEDATA_CIG where accountnumber in ('${Properties#accountNumber}')</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="deleteCIGAccountDataFromPWH" id="cf8569c2-4ad5-47d1-a1da-73e3c67cba0e" disabled="true">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>delete from AUTH_ACCOUNTDATA_CIG where ACCOUNTNUMBER in ('${Properties#accountNumber}')</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="updateCIGCustomerAddressInPWH" id="d60fe6c6-10c2-4c25-a5fd-5b4ab6066da8">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>update AUTH_CUSTOMERDATA_CIG set ADDRESS1='add1Test', ZIPCODE='1234'  where CUSTOMERNUMBER in ('${Properties#customerNumber}')</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="pushMessageToMQ" id="34398b97-337f-4eed-855d-e38b8e32da1b">
+    <con:settings/>
+    <con:config>
+      <script>import MQMessageUtils;
+
+// Set MQ properties
+def mQQueuemanager =context.expand( '${#Project#mqManager}' )
+def mQHostName = context.expand( '${#Project#mqHostname}' )
+def int mQPort = context.expand( '${#Project#mqPort}' ) as Integer
+def mQChannelAuth = context.expand( '${#Project#mqChannelAuth}' )
+def mQMessageQueueSend = context.expand( '${#Project#receiveQNotifySubsOnline}' )
+def messageType = context.expand( '${Properties#messageType}' )
+def messageToSend = context.expand( '${Properties#template_message}' )
+context.testCase.getTestStepByName("Properties").setPropertyValue("generatedMessage",messageToSend)
+
+MQMessageUtils mqMessageUtils = new MQMessageUtils(mQQueuemanager,mQHostName,mQPort,mQChannelAuth,log);
+// Send Message to MQ
+log.info "messageToSend ->  $messageToSend"
+def sendingResult = "Message Sent :" + mqMessageUtils.sendMessage(mQMessageQueueSend,messageToSend)
+
+return "messageToSend ->  $messageToSend \n Message Sent : " + mqMessageUtils.sendMessage(mQMessageQueueSend,messageToSend) +  "   to mq : "+mQMessageQueueSend</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="waitForDaemonToPickMessage" id="59fa2693-b888-491c-81dc-8ec3ad1c84d0">
+    <con:settings/>
+    <con:config>
+      <delay>60000</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="checkAnnouncementTable" id="5d2b9768-4c4e-4dfe-b966-b362f97f8e99">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from PWH_AUTH_COREANNOUNCEMENT
+order by CREATED_TIME
+fetch first 2 rows only</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="checkCIGTables" id="c2c29e7f-2d3e-44ad-b370-9ef6fd6f9e54">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select * from AUTH_CUSTOMERDATA_CIG cigc
+left outer join AUTH_ROLEDATA_CIG cigr on cigr.CUSTOMERNUMBER=cigc.CUSTOMERNUMBER
+left outer join AUTH_ACCOUNTDATA_CIG ciga on cigr.accountnumber=ciga.accountnumber
+where cigr.CUSTOMERNUMBER in ('${Properties#customerNumber}')
+and cigr.ACCOUNTNUMBER in ('${Properties#accountNumber}')</con:query>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:properties>
+    <con:property>
+      <con:name>messageType</con:name>
+      <con:value>AgreementCreate</con:value>
+    </con:property>
+    <con:property>
+      <con:name>orgId</con:name>
+      <con:value>3240</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerNumber</con:name>
+      <con:value>19095908309</con:value>
+    </con:property>
+    <con:property>
+      <con:name>customerIntId</con:name>
+      <con:value>82898311000</con:value>
+    </con:property>
+    <con:property>
+      <con:name>accountNumber</con:name>
+      <con:value>32400414598</con:value>
+    </con:property>
+    <con:property>
+      <con:name>IBAN</con:name>
+      <con:value>NO5232400414598</con:value>
+    </con:property>
+  </con:properties>
+  <con:reportParameters/>
+</con:testCase>

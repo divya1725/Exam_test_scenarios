@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="a348803c-0779-4f48-bd6a-8267ac27e381" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="getData" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="a348803c-0779-4f48-bd6a-8267ac27e381fileName">getData</con:setting>
+  </con:settings>
+  <con:testStep type="groovy" name="listOutProperties-smoketest" id="5b0bdfe1-dc1d-4c1f-b224-1ea29cb86248">
+    <con:settings/>
+    <con:config>
+      <script>def project=context.getTestCase().testSuite.project
+def map = project.getProperties()
+
+String env = testRunner.testCase.testSuite.project.getActiveEnvironmentName().toLowerCase()
+//env = env.toString().substring(2)
+log.info "Environmnet : $env"
+resultLog="Environmnet : $env \n"
+map.each{entry ->  
+	resultLog+= "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)+"\n"
+	log.info "Property : $entry.key ->  Value : " + project.getPropertyValue(entry.key)
+}
+return resultLog</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="jdbc" name="getSomeDataFromCIGTables" id="fcce9390-7aa4-41f4-9c6c-290b4ffeef96">
+    <con:settings>
+      <con:setting id="prettyPrintResponse">true</con:setting>
+    </con:settings>
+    <con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dbConnectionName>PWH</con:dbConnectionName>
+      <con:driver>oracle.jdbc.driver.OracleDriver</con:driver>
+      <con:connectionString>jdbc:oracle:thin:PWHDATA/pwh@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP) (HOST=dlt-exa853-scan.unix.cosng.net)(PORT=1530)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pwh_g_d6)))</con:connectionString>
+      <con:password/>
+      <con:connectionProperties/>
+      <con:query>select distinct cigr.rolebankid,cigr.CUSTOMERNUMBER,cigr.CUSTOMERID,ciga.accountnumber,ciga.IBANACCOUNTNUMBER from AUTH_CUSTOMERDATA_CIG cigc
+left outer join AUTH_ROLEDATA_CIG cigr on cigr.CUSTOMERNUMBER=cigc.CUSTOMERNUMBER
+left outer join AUTH_ACCOUNTDATA_CIG ciga on cigr.accountnumber=ciga.accountnumber
+fetch first 7 rows only</con:query>
+      <con:assertion type="JDBC Status" id="4c879d11-cf2e-4b3f-821b-e76dfb4ce25d" name="JDBC Status"/>
+      <con:assertion type="XPath Match" id="4060e2a2-d1b4-4c0a-ae4b-a71ed82740eb" name="Match content of [@rowNumber]">
+        <con:configuration>
+          <path>//Results[1]/ResultSet[1]/Row[4]/@rowNumber</path>
+          <content>4</content>
+          <allowWildcards>false</allowWildcards>
+          <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+          <ignoreComments>false</ignoreComments>
+        </con:configuration>
+      </con:assertion>
+      <con:properties/>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="pushDataToTestCases" id="fa8a27ff-d264-4df2-9d71-818306721e08">
+    <con:settings/>
+    <con:config>
+      <script>//Get total number of record in XML file
+def Result = context.expand( '${getSomeDataFromCIGTables#ResponseAsXml#//Results[1]}' )
+def bodyNode = new XmlSlurper().parseText(Result)
+def count = bodyNode.ResultSet.Row.size();
+log.info "Fetched $count auth CIG records from PWH"
+result=''
+for ( def i=0;i&lt;count;i++){
+		def tc = context.testCase.testSuite.getTestCaseAt(i+1).getTestStepByName("Properties")
+		log.info "Updating propertiest of testCase :"+	 tc.getTestCase().name 
+		tc.setPropertyValue("orgId",bodyNode.ResultSet.Row.ROLEBANKID[i].toString().toString())
+		tc.setPropertyValue("customerNumber",bodyNode.ResultSet.Row.CUSTOMERNUMBER[i].toString())
+		tc.setPropertyValue("customerIntId",bodyNode.ResultSet.Row.CUSTOMERID[i].toString())
+		tc.setPropertyValue("accountNumber",bodyNode.ResultSet.Row.ACCOUNTNUMBER[i].toString())
+		tc.setPropertyValue("IBAN",bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i].toString())
+		log.info "rolebankid to : "+bodyNode.ResultSet.Row.ROLEBANKID[i]
+		log.info "customernumber to : "+bodyNode.ResultSet.Row.CUSTOMERNUMBER[i]
+		log.info "customerid to : "+bodyNode.ResultSet.Row.CUSTOMERID[i]
+		log.info "accountnumber to : "+bodyNode.ResultSet.Row.ACCOUNTNUMBER[i]
+		log.info "ibanaccountnumber to : "+bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i]
+
+		result += "\n Updating properties of testCase : "+	 tc.getTestCase().name 
+		result += "\n rolebankid to : "+bodyNode.ResultSet.Row.ROLEBANKID[i]
+		result += "\n customernumber to : "+bodyNode.ResultSet.Row.CUSTOMERNUMBER[i]
+		result += "\n customerid to : "+bodyNode.ResultSet.Row.CUSTOMERID[i]
+		result += "\n accountnumber to : "+bodyNode.ResultSet.Row.ACCOUNTNUMBER[i]
+		result += "\n ibanaccountnumber to : "+bodyNode.ResultSet.Row.IBANACCOUNTNUMBER[i]
+	}
+
+	return result</script>
+    </con:config>
+  </con:testStep>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="2c7c9c19-78ea-4d79-a47c-65f6bd5e0af1">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="22f77e13-f328-4bef-9b4b-45addbcaf81a">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="30ce6aa7-0555-47cb-8540-05b627d5adbf">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>

@@ -98,7 +98,7 @@
         </con:property>
         <con:property>
           <con:name>timeStampEndToEndID</con:name>
-          <con:value>1_${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
+          <con:value>${Data Source#Counter}_${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
         </con:property>
         <con:property>
           <con:name>Unstructured_Remittance</con:name>
@@ -613,6 +613,17 @@
           <con:value>${Payment Status Read#ResponseAsXml#//Response[1]/e[1]/status[1]}</con:value>
         </con:property>
       </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script" id="1589821f-05ea-4dcf-875b-23f01776b8b1" disabled="true">
+    <con:settings/>
+    <con:config>
+      <script>def transactionsID = context.expand( '${Data Sink From Source#Transactions ID}' );
+def confirmStatus = context.expand( '${Data Sink From Source#Confirm Status}' );
+def transactionsStatus = context.expand( '${Data Sink From Source#Transactions Status}' );
+def paymentStatusRead = context.expand( '${Payment Status Read_Employee#ResponseAsXml#//Response[1]/e[1]/status[1]}' );
+
+system.out.println("1_transactionsID: "transactionsID+"_"+confirmStatus+"_"+transactionsStatus+"_"+paymentStatusRead);</script>
     </con:config>
   </con:testStep>
   <con:testStep type="datasourceloop" name="Data Source Loop" id="5cc16793-a07f-496c-bcbb-1eea5a53b7f4">

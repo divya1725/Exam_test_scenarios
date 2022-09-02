@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="33af6b4f-98fd-4477-991e-0ff194a0447c" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="NIC_TRR_REPORTS_LOOP" searchProperties="true" timeout="0" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="33af6b4f-98fd-4477-991e-0ff194a0447cfileName">NIC_TRR_REPORTS_LOOP</con:setting>
+  </con:settings>
+  <con:testStep type="properties" name="Properties" id="cd1c0fb9-118b-48d1-be3a-390e9862e8d1">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Bic_4201</con:name>
+          <con:value>SPTRNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_3625</con:name>
+          <con:value>SPAVNOBB</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_2544</con:name>
+          <con:value>VEFONO21</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_1802</con:name>
+          <con:value>SHEDNO22</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Bic_9021</con:name>
+          <con:value>BNPANOK0</con:value>
+        </con:property>
+        <con:property>
+          <con:name>LogRef</con:name>
+          <con:value>${= java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dMMyyHHmmss'))}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ReqExnDate</con:name>
+          <con:value>${= java.time.LocalDate.now()}</con:value>
+        </con:property>
+        <con:property>
+          <con:name>Path</con:name>
+          <con:value>C:\GITHUB_REPOSITORY\pm-regression-valuechain\NRTP_RealTimePayment\data\</con:value>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="datasource" name="Source" id="bbbdc206-5718-4272-bff4-2be82570d089">
+    <con:settings/>
+    <con:config xsi:type="con:DataSourceStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:dataSource type="Excel">
+        <con:configuration>
+          <file>C:/Users/xxdharms/OneDrive - Tietoevry/DOCUMENTS_SANATH/PRM_WORK_PACKAGES/Automate_100_50_25_20_15_10_5.xlsx</file>
+          <worksheet>100</worksheet>
+          <cell>A1</cell>
+          <ignoreEmpty>false</ignoreEmpty>
+          <evaluateFormulas>false</evaluateFormulas>
+        </con:configuration>
+      </con:dataSource>
+      <con:shared>true</con:shared>
+      <con:restartShared>true</con:restartShared>
+      <con:property>Counter</con:property>
+      <con:restartOnRun>true</con:restartOnRun>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="request" id="08d2c815-4a42-4b87-ba11-4ca8589e8cc7" name="TRR_REPORTS">
+    <con:settings/>
+    <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:interface>RealTimeTRRSoapBinding</con:interface>
+      <con:operation>SendTransactionReconciliationReport</con:operation>
+      <con:request name="TRR_REPORTS" id="5a2d6a35-1d52-44ff-a9fc-d6d8ed0472f5">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="WsdlSettings@enable-mtom">true</con:setting>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>https://ebs-nic-srv-daemon-d2.apps.os-global.finods.com/nic/services/RealTimeTRR</con:endpoint>
+        <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:eu:nets:realtime247:trr:core.2015.10.14">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:SendTransactionReconciliationReportRequest>
+         <urn:MessageId>${Properties#LogRef}</urn:MessageId>
+         <urn:FinInstId>${Properties#Bic_4201}</urn:FinInstId>
+         <urn:trr-file>cid:TRR_SPTRNO20_04072022.zip</urn:trr-file>
+      </urn:SendTransactionReconciliationReportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+        <con:assertion type="DataAndMetadataAssertion" id="2252a493-71a9-41b1-899c-006c99b86491" name="Smart Assertion">
+          <con:configuration xsi:type="con:DataAndMetadataAssertion">
+            <con:mode>Received Data</con:mode>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:OriginalMessageId[1]</con:path>
+              <con:element>OriginalMessageId</con:element>
+              <con:operatorId>9</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>50722115150</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:elements>
+              <con:path>declare namespace ns1='urn:eu:nets:realtime247:trr:core.2015.10.14';
+//ns1:SendTransactionReconciliationReportResponse[1]/ns1:SendingId[1]</con:path>
+              <con:element>SendingId</con:element>
+              <con:operatorId>1</con:operatorId>
+              <con:enabled>true</con:enabled>
+              <con:expectedValue>${TRR_REPORTS#RawRequest#declare namespace urn='urn:eu:nets:realtime247:trr:core.2015.10.14'; //urn:SendTransactionReconciliationReportRequest[1]/urn:FinInstId[1]}</con:expectedValue>
+              <con:caseSensitive>true</con:caseSensitive>
+              <con:numberType>false</con:numberType>
+            </con:elements>
+            <con:originalMessage><![CDATA[<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Body>
+      <SendTransactionReconciliationReportResponse xmlns="urn:eu:nets:realtime247:trr:core.2015.10.14" xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+         <OriginalMessageId>50722115150</OriginalMessageId>
+         <SendingId>SPTRNO22</SendingId>
+      </SendTransactionReconciliationReportResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:originalMessage>
+          </con:configuration>
+        </con:assertion>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:attachment>
+          <con:name>TRR_SPTRNO20_04072022.zip</con:name>
+          <con:contentType>application/zip</con:contentType>
+          <con:contentId>TRR_SPTRNO20_04072022.zip</con:contentId>
+          <con:url>${Properties#Path}TRR_SPTRNO20_04072022.zip</con:url>
+          <con:id>e2568126-6c4d-4b52-83ba-414f79e8e62d</con:id>
+        </con:attachment>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig action="http://realtime247.eu/realtime247/trr/RealTimeTRRPortType/SendTransactionReconciliationReport" mustUnderstand="NONE" version="200508"/>
+        <con:wsrmConfig version="1.2"/>
+      </con:request>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="groovy" name="Groovy Script" id="cea8ed16-c0f1-4ad7-bb06-c5949e60ac63">
+    <con:settings/>
+    <con:config>
+      <script>String counter = context.expand( '${Source#Counter}' )
+String messageId = context.expand( '${TRR_REPORTS#Response#declare namespace ns1=\'urn:eu:nets:realtime247:trr:core.2015.10.14\'; //ns1:SendTransactionReconciliationReportResponse[1]/ns1:OriginalMessageId[1]}' )
+
+testRunner.testCase.getTestStepByName("Result").setPropertyValue("Counter-"+counter,messageId);</script>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="delay" name="Delay" id="687673ec-6d40-4a9f-ab62-2f3fc5d635dc">
+    <con:settings/>
+    <con:config>
+      <delay>500</delay>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="datasourceloop" name="Loop" id="68bae8fe-5e0b-45c2-9979-6463f252b3ea">
+    <con:settings/>
+    <con:config>
+      <dataSourceStep>Source</dataSourceStep>
+      <targetStep>TRR_REPORTS</targetStep>
+      <discardResults>true</discardResults>
+    </con:config>
+  </con:testStep>
+  <con:testStep type="properties" name="Result" id="686e58d3-d277-42dd-8680-6ed66a945d3b">
+    <con:settings/>
+    <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:properties>
+        <con:property>
+          <con:name>Counter-1</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-2</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-3</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-4</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-5</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-6</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-7</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-8</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-9</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-10</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-11</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-12</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-13</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-14</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-15</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-16</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-17</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-18</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-19</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-20</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-21</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-22</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-23</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-24</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-25</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-26</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-27</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-28</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-29</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-30</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-31</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-32</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-33</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-34</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-35</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-36</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-37</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-38</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-39</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-40</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-41</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-42</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-43</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-44</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-45</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-46</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-47</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-48</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-49</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-50</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-51</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-52</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-53</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-54</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-55</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-56</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-57</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-58</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-59</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-60</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-61</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-62</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-63</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-64</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-65</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-66</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-67</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-68</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-69</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-70</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-71</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-72</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-73</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-74</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-75</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-76</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-77</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-78</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-79</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-80</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-81</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-82</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-83</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-84</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-85</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-86</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-87</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-88</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-89</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-90</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-91</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-92</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-93</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-94</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-95</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-96</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-97</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-98</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-99</con:name>
+          <con:value/>
+        </con:property>
+        <con:property>
+          <con:name>Counter-100</con:name>
+          <con:value/>
+        </con:property>
+      </con:properties>
+    </con:config>
+  </con:testStep>
+  <con:tearDownScript>testRunner.testCase.getTestStepByName("Result").properties.each {
+	testRunner.testCase.getTestStepByName("Result").properties[it.key].value = ""
+}</con:tearDownScript>
+  <con:properties/>
+  <con:reportParameters/>
+  <con:environmentSpec>
+    <con:entry environmentId="2f3b664f-e38d-4d41-8bd4-c2a81548437f">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="b2f6872f-554c-465f-a22b-7cecf4556840">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="9d51eee9-1b5f-4e6c-8e3a-97ebaee97054">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="5f0d236d-3362-42b4-8424-f0018c8cce79">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="62392bde-3bec-475a-8c2f-519d350793dc">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+    <con:entry environmentId="14c75db4-d0e3-4594-bf64-d63ab0f199d8">
+      <con:authProfile>Inherit From Parent</con:authProfile>
+    </con:entry>
+  </con:environmentSpec>
+</con:testCase>
